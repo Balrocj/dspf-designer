@@ -1,0 +1,104 @@
+{
+  "name": "dspf-designer",
+  "displayName": "DSPF Designer",
+  "description": "Visual designer for IBM i DSPF (Display Files) with drag-and-drop interface.",
+  "version": "1.2.0",
+  "publisher": "Balrocj",
+  "icon": "media/icon-256.png",
+  "engines": {
+    "vscode": "^1.106.1"
+  },
+  "categories": [
+    "Other",
+    "Visualization",
+    "Programming Languages"
+  ],
+  "preview": true,
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "workspaceContains:**/*.dspf",
+    "onStartupFinished",
+    "onLanguage:dds"
+  ],
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "dspfDesigner.editor",
+        "displayName": "DSPF Designer",
+        "selector": [
+          {
+            "filenamePattern": "*.dspf"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "commands": [
+      {
+        "command": "dspfDesigner.openDesigner",
+        "title": "Open Designer Mode",
+        "category": "DSPF"
+      },
+      {
+        "command": "dspfDesigner.exitDesigner",
+        "title": "Exit Designer Mode",
+        "category": "DSPF"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "dspfDesigner.openDesigner",
+          "when": "resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "dspfDesigner.openDesigner",
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds || editorLangId == dspf) && !dspfDesigner.isInDesignerMode",
+          "group": "navigation"
+        },
+        {
+          "command": "dspfDesigner.exitDesigner",
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds || editorLangId == dspf) && dspfDesigner.isInDesignerMode",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "dspfDesigner.openDesigner",
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds || editorLangId == dspf) && !dspfDesigner.isInDesignerMode"
+        },
+        {
+          "command": "dspfDesigner.exitDesigner",
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds || editorLangId == dspf) && dspfDesigner.isInDesignerMode"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.106.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.46.3",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3",
+    "ts-loader": "^9.5.4",
+    "webpack": "^5.102.1",
+    "webpack-cli": "^6.0.1",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}
