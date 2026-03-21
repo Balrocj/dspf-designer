@@ -13,6 +13,23 @@
     "Visualization",
     "Programming Languages"
   ],
+  "keywords": [
+    "ibm i",
+    "ibmi",
+    "as400",
+    "iSeries",
+    "dds",
+    "dspf",
+    "5250"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Balrocj/dspf-designer"
+  },
+  "homepage": "https://github.com/Balrocj/dspf-designer#readme",
+  "bugs": {
+    "url": "https://github.com/Balrocj/dspf-designer/issues"
+  },
   "preview": true,
   "main": "./dist/extension.js",
   "activationEvents": [

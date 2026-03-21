@@ -15,7 +15,7 @@ Modern drag-and-drop interface for building IBM i display files with real-time D
 
 ### 🔧 Comprehensive Field Support
 - **Variable Fields**: Character, numeric (zoned, packed, float), double-byte (DBCS)
-- **Special Fields**: DATE, TIME, SYSNAME, USER with automatic formatting
+- **Special Fields**: DATE, TIME, TIMESTAMP, SYSNAME, USER with automatic formatting
 - **Constants**: Static text with multi-line support
 - **Display Attributes**: Underline, reverse image, blinking, high intensity, column separator
 - **IBM i Colors**: All 7 standard colors (Green, White, Red, Turquoise, Yellow, Pink, Blue)
@@ -36,10 +36,11 @@ Real-time preview showing how your screen will appear on IBM i, directly generat
 
 ## Getting Started
 
-1. Open any `.dspf` file; a message will appear asking if you want to open designer mode. If you answer yes, it will start automatically.
-2. Drag fields from the toolbox onto the canvas
-3. Configure properties and indicators in the side panel
-4. Click **Save** to update the DDS source file
+1. Open any `.dspf` file.
+2. Click **Open Designer Mode** from the editor title bar (or command palette).
+3. Drag fields from the toolbox onto the canvas.
+4. Configure properties and indicators in the side panel.
+5. Click **Save** to update the DDS source file.
 
 ## Requirements
 
@@ -59,7 +60,7 @@ You can edit your DSPF files offline. You can edit DSPF files located on your lo
 
 ## Roadmap
 
-- Additional data types (binary, date/time formats) and fields
+- Additional data types and field formats
 - Record format creation wizard
 - Extended keyword subfile support 
 - Extended keyword support for more DDS features
