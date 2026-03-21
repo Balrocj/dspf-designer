@@ -250,6 +250,9 @@ export function showFieldProperties({
     }
 
     let currentUsage = field.usage || '';
+    const normalizedDataTypeForUi = (field.dataType === 'numeric' || field.dataType === 'binary')
+        ? 'zoned'
+        : field.dataType;
 
     if (!currentUsage) {
         if (field.type === 'input') {currentUsage = 'O';}
@@ -290,14 +293,14 @@ export function showFieldProperties({
                     <div class="property-group">
                         <label>Type</label>
                         <select id="prop-type">
-                            <option value="character" ${field.dataType === 'character' ? 'selected' : ''}>Character</option>
-                            <option value="date" ${field.dataType === 'date' ? 'selected' : ''}>Date (L)</option>
-                            <option value="time" ${field.dataType === 'time' ? 'selected' : ''}>Time (T)</option>
-                            <option value="timestamp" ${field.dataType === 'timestamp' ? 'selected' : ''}>Timestamp (Z)</option>
-                            <option value="packed" ${field.dataType === 'packed' ? 'selected' : ''}>Packed (Empaquetado)</option>
-                            <option value="zoned" ${field.dataType === 'zoned' ? 'selected' : ''}>Con Zona</option>
-                            <option value="float" ${field.dataType === 'float' ? 'selected' : ''}>Coma flotante</option>
-                            <option value="double" ${field.dataType === 'double' ? 'selected' : ''}>Double Byte</option>
+                            <option value="character" ${normalizedDataTypeForUi === 'character' ? 'selected' : ''}>Character</option>
+                            <option value="date" ${normalizedDataTypeForUi === 'date' ? 'selected' : ''}>Date (L)</option>
+                            <option value="time" ${normalizedDataTypeForUi === 'time' ? 'selected' : ''}>Time (T)</option>
+                            <option value="timestamp" ${normalizedDataTypeForUi === 'timestamp' ? 'selected' : ''}>Timestamp (Z)</option>
+                            <option value="packed" ${normalizedDataTypeForUi === 'packed' ? 'selected' : ''}>Packed (Empaquetado)</option>
+                            <option value="zoned" ${normalizedDataTypeForUi === 'zoned' ? 'selected' : ''}>Con Zona</option>
+                            <option value="float" ${normalizedDataTypeForUi === 'float' ? 'selected' : ''}>Coma flotante</option>
+                            <option value="double" ${normalizedDataTypeForUi === 'double' ? 'selected' : ''}>Double Byte</option>
                         </select>
                     </div>
                     <div class="property-group">
@@ -588,6 +591,8 @@ export function showFieldProperties({
     const checkNumTitles = Array.from(document.querySelectorAll('.check-num-title'));
     const dftvalGroup = document.querySelector('.dftval-group');
     const dftvalValueGroup = document.querySelector('.dftval-value-group');
+    const shiftSelectElement = document.getElementById('prop-shift');
+    const shiftGroup = shiftSelectElement ? shiftSelectElement.closest('.property-group') : null;
     const updateUsageRestrictedAttrs = () => {
         const show = field.type !== 'constant' && usageSelect && usageSelect.value !== 'O';
         usageRestrictedGroups.forEach(group => {
@@ -636,6 +641,21 @@ export function showFieldProperties({
         const selectedType = currentTypeSelect ? currentTypeSelect.value : field.dataType;
         const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
         const showEditingKeywords = field.type !== 'constant' && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B') && isNumericType;
+
+        const lockShiftForZonedOutputOnly = field.type !== 'constant'
+            && usageSelect
+            && usageSelect.value === 'O'
+            && selectedType === 'zoned';
+
+        if (shiftGroup) {
+            shiftGroup.style.display = '';
+        }
+        if (shiftSelectElement) {
+            shiftSelectElement.disabled = lockShiftForZonedOutputOnly;
+            shiftSelectElement.title = lockShiftForZonedOutputOnly
+                ? 'Shift se controla mediante EDTCDE para campos zoned de salida'
+                : '';
+        }
 
         if (editingKeywordsTabBtn) {
             editingKeywordsTabBtn.style.display = showEditingKeywords ? 'inline-flex' : 'none';
@@ -692,6 +712,7 @@ export function showFieldProperties({
                 break;
             case 'zoned':
                 options = `
+                        <option value="">None</option>
                         <option value="Y">Y - Numeric Only</option>
                         <option value="S">S - Signed Numeric</option>
                         <option value="N">N - Numeric Character Shift</option>
@@ -1176,6 +1197,22 @@ export function showFieldProperties({
     const edtcdeReplaceGroup = document.querySelector('.edtcde-replace-group');
     const edtcdeReplaceSelect = document.getElementById('prop-edtcde-replace-leading-zeros-with');
 
+    const updateEdtcdeReplaceVisibility = () => {
+        if (!edtcdeReplaceGroup) {
+            return;
+        }
+
+        const isEnabled = Boolean(edtcdeEnabledCheckbox && edtcdeEnabledCheckbox.checked);
+        const selectedCode = edtcdeValueSelect ? edtcdeValueSelect.value.trim().toUpperCase() : '';
+        const allowReplacement = isEnabled && selectedCode !== 'Z';
+
+        edtcdeReplaceGroup.style.display = allowReplacement ? 'block' : 'none';
+
+        if (!allowReplacement && edtcdeReplaceSelect) {
+            edtcdeReplaceSelect.value = '';
+        }
+    };
+
     if (field.edtcde && field.edtcde.value) {
         if (edtcdeEnabledCheckbox) {
             edtcdeEnabledCheckbox.checked = true;
@@ -1195,18 +1232,16 @@ export function showFieldProperties({
             edtcdeValueSelect.value = parsedValue;
         }
 
-        if (edtcdeReplaceGroup) {
-            edtcdeReplaceGroup.style.display = 'block';
-        }
-
         if (edtcdeReplaceSelect) {
             const replacement = field.edtcde.replaceLeadingZerosWith ? String(field.edtcde.replaceLeadingZerosWith).trim() : '';
-            if (replacement === '*' || replacement === '$') {
+            if ((replacement === '*' || replacement === '$') && String(field.edtcde.value).trim().toUpperCase() !== 'Z') {
                 edtcdeReplaceSelect.value = replacement;
             } else {
                 edtcdeReplaceSelect.value = '';
             }
         }
+
+        updateEdtcdeReplaceVisibility();
     }
 
     if (edtcdeEnabledCheckbox) {
@@ -1214,14 +1249,18 @@ export function showFieldProperties({
             if (edtcdeValueGroup) {
                 edtcdeValueGroup.style.display = this.checked ? 'block' : 'none';
             }
-            if (edtcdeReplaceGroup) {
-                edtcdeReplaceGroup.style.display = this.checked ? 'block' : 'none';
-            }
+            updateEdtcdeReplaceVisibility();
             if (this.checked && edtcdeValueSelect) {
                 edtcdeValueSelect.focus();
             }
         });
     }
+
+    if (edtcdeValueSelect) {
+        edtcdeValueSelect.addEventListener('change', updateEdtcdeReplaceVisibility);
+    }
+
+    updateEdtcdeReplaceVisibility();
 
     setupIndicatorButtons();
 

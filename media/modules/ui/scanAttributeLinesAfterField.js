@@ -339,7 +339,7 @@ export function scanAttributeLinesAfterField({
             if (edtcdeValue) {
                 const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
                 field.edtcde = { value: edtcdeValue };
-                if (replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') {
+                if ((replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') && edtcdeValue !== 'Z') {
                     field.edtcde.replaceLeadingZerosWith = replaceLeadingZerosWith;
                 }
                 Logger.parse(`Found EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);

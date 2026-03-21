@@ -12,8 +12,9 @@ export function generateFieldEdtcdeLinesUI({
     const replaceLeadingZerosWith = field.edtcde.replaceLeadingZerosWith
         ? String(field.edtcde.replaceLeadingZerosWith).trim()
         : '';
+    const allowReplacement = edtcdeValue !== 'Z';
 
-    const keyword = replaceLeadingZerosWith
+    const keyword = (allowReplacement && replaceLeadingZerosWith)
         ? `EDTCDE(${edtcdeValue} ${replaceLeadingZerosWith})`
         : `EDTCDE(${edtcdeValue})`;
 

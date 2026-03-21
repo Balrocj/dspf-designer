@@ -12,7 +12,14 @@ export function buildVariableTypeAndUsageUI({
     if (field.dataType === 'character') {
         typeChar = 'A';
     } else if (field.dataType === 'zoned') {
-        typeChar = field.shift || 'Y';
+        const hasExplicitShift = typeof field.shift === 'string' && field.shift.trim() !== '';
+        if (hasExplicitShift) {
+            typeChar = field.shift.trim();
+        } else if (field.usage === 'I' || field.usage === 'B') {
+            typeChar = 'S';
+        } else {
+            typeChar = '';
+        }
     } else if (field.dataType === 'float') {
         typeChar = 'F';
     } else if (field.dataType === 'double') {

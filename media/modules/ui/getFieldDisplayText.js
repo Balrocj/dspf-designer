@@ -6,6 +6,14 @@ export function getFieldDisplayText(options) {
     const { field, fieldLength, getFieldCharForDisplay } = options;
 
     function applyEdtcdeDisplayReplacement(baseText, digitChar) {
+        const edtcdeCode = field.edtcde && field.edtcde.value
+            ? String(field.edtcde.value).trim().toUpperCase()
+            : '';
+
+        if (edtcdeCode === 'Z') {
+            return baseText;
+        }
+
         const replacement = field.edtcde && field.edtcde.replaceLeadingZerosWith
             ? String(field.edtcde.replaceLeadingZerosWith).trim()
             : '';
@@ -39,6 +47,55 @@ export function getFieldDisplayText(options) {
     if (isNumeric) {
         const digitChar = getFieldCharForDisplay(field);
 
+        const edtcdeCode = field.edtcde && field.edtcde.value
+            ? String(field.edtcde.value).trim().toUpperCase()
+            : '';
+
+        const formatThousandsInDigitRuns = (baseText) => {
+            const escapedDigit = digitChar.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const digitRunRegex = new RegExp(`${escapedDigit}{4,}`, 'g');
+
+            return baseText.replace(digitRunRegex, (run) => run.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+        };
+
+        const applyEdtcdeCodeFormatting = (baseText) => {
+            if (!edtcdeCode) {
+                return baseText;
+            }
+
+            let formattedText = baseText;
+
+            if (['1', '2', '3', 'A', 'B', 'J', 'K', 'N', 'O'].includes(edtcdeCode)) {
+                formattedText = formatThousandsInDigitRuns(formattedText);
+            }
+
+            if (['A', 'B', 'C', 'D'].includes(edtcdeCode) && !formattedText.endsWith('CR')) {
+                formattedText = `${formattedText}CR`;
+            }
+
+            if (['J', 'K', 'L', 'M'].includes(edtcdeCode) && !formattedText.endsWith('-')) {
+                formattedText = `${formattedText}-`;
+            }
+
+            if (['N', 'O', 'P', 'Q'].includes(edtcdeCode)) {
+                formattedText = formattedText.replace(/-$/, '');
+                if (!formattedText.startsWith('-')) {
+                    formattedText = `-${formattedText}`;
+                }
+            }
+
+            if (edtcdeCode === 'Z') {
+                formattedText = formattedText.replace(/\./g, '');
+                formattedText = formattedText.replace(/-/g, '');
+            }
+
+            return formattedText;
+        };
+
+        let baseNumericText;
+        const isSignedInputOrBoth = (field.usage === 'I' || field.usage === 'B') && field.shift === 'S';
+        const hasEdtcdePriorityOnBoth = field.usage === 'B' && Boolean(edtcdeCode);
+
         if (field.dataType === 'float') {
             const decimals = Number.isInteger(field.decimals) ? field.decimals : 0;
             const integerDigits = Math.max(1, length - decimals);
@@ -46,16 +103,15 @@ export function getFieldDisplayText(options) {
                 ? `${digitChar.repeat(integerDigits)},${digitChar.repeat(decimals)}`
                 : digitChar.repeat(length);
             const precisionChar = field.precision === 'DOUBLE' ? 'D' : 'E';
-            const floatText = `-${mantissa}${precisionChar}-${digitChar.repeat(3)}`;
-            return applyEdtcdeDisplayReplacement(floatText, digitChar);
+            baseNumericText = `-${mantissa}${precisionChar}-${digitChar.repeat(3)}`;
+        } else if (isSignedInputOrBoth && !hasEdtcdePriorityOnBoth) {
+            baseNumericText = length >= 1 ? digitChar.repeat(length) + '-' : digitChar;
+        } else {
+            baseNumericText = digitChar.repeat(length);
         }
 
-        if (field.usage === 'I' && field.shift === 'S' || field.usage === 'B' && field.shift === 'S') {
-            const signedText = length >= 1 ? digitChar.repeat(length) + '-' : digitChar;
-            return applyEdtcdeDisplayReplacement(signedText, digitChar);
-        }
-
-        return applyEdtcdeDisplayReplacement(digitChar.repeat(length), digitChar);
+        const edtcdeFormatted = applyEdtcdeCodeFormatting(baseNumericText);
+        return applyEdtcdeDisplayReplacement(edtcdeFormatted, digitChar);
     }
     const fieldChar = getFieldCharForDisplay(field);
     return fieldChar.repeat(length);

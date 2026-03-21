@@ -222,13 +222,24 @@ export function applyFieldProperties({
             }
 
             const shiftSelect = document.getElementById('prop-shift');
+            const isShiftReadOnlyForZonedOutputOnly = field.dataType === 'zoned' && field.usage === 'O';
+
             if (shiftSelect) {
                 if (field.dataType === 'float') {
                     field.precision = shiftSelect.value;
                     Logger.debug('Precision updated to:', field.precision);
                 } else if (field.dataType === 'zoned' || field.dataType === 'double') {
-                    field.shift = shiftSelect.value;
-                    Logger.debug('Shift updated to:', field.shift);
+                    if (isShiftReadOnlyForZonedOutputOnly) {
+                        Logger.debug('Shift not updated from UI because it is controlled by EDTCDE for zoned Output fields');
+                    } else {
+                        const selectedShift = shiftSelect.value ? shiftSelect.value.trim() : '';
+                        if (selectedShift) {
+                            field.shift = selectedShift;
+                        } else {
+                            delete field.shift;
+                        }
+                        Logger.debug('Shift updated to:', field.shift || '(none)');
+                    }
                 }
             }
         }
@@ -385,7 +396,7 @@ export function applyFieldProperties({
             if (selectedEdtcde) {
                 const replacement = edtcdeReplaceSelect ? edtcdeReplaceSelect.value.trim() : '';
                 field.edtcde = { value: selectedEdtcde };
-                if (replacement === '*' || replacement === '$') {
+                if ((replacement === '*' || replacement === '$') && selectedEdtcde !== 'Z') {
                     field.edtcde.replaceLeadingZerosWith = replacement;
                 } else {
                     delete field.edtcde.replaceLeadingZerosWith;
@@ -395,6 +406,30 @@ export function applyFieldProperties({
             }
         } else {
             delete field.edtcde;
+        }
+
+        const edtcdeForShift = field.edtcde && field.edtcde.value
+            ? String(field.edtcde.value).trim().toUpperCase()
+            : '';
+        const edtcdeCodesThatForceYShift = ['1', '2', '3', 'A', 'B', 'C', 'D', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q'];
+        const appliesAutoShiftRule = field.type !== 'constant'
+            && field.dataType === 'zoned'
+            && (field.usage === 'O' || field.usage === 'B');
+
+        if (appliesAutoShiftRule) {
+            if (edtcdeForShift === 'Z') {
+                delete field.shift;
+                Logger.debug('Shift cleared for EDTCDE(Z) on zoned Output/Both field');
+            } else if (edtcdeCodesThatForceYShift.includes(edtcdeForShift)) {
+                field.shift = 'Y';
+                Logger.debug(`Shift forced to Y for EDTCDE(${edtcdeForShift}) on zoned Output/Both field`);
+            } else if (field.usage === 'B' && !field.shift) {
+                field.shift = 'S';
+                Logger.debug('Shift defaulted to S for zoned Both field without EDTCDE override');
+            } else if (field.usage === 'O') {
+                delete field.shift;
+                Logger.debug('Shift cleared by default for zoned Output field without EDTCDE override');
+            }
         }
 
         Logger.debug('Old field:', oldField);

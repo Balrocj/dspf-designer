@@ -39,7 +39,7 @@ export function createField({
         usage = 'I';
         dataType = 'zoned';
         decimals = 0;
-        shift = 'Y';
+        shift = 'S';
     } else if (type === 'keyword-date') {
         fieldName = 'DATE';
         ddsType = '';

@@ -37,7 +37,7 @@ export function parseDdsTypeSpecification({ typeSpec, hasDecimals = false }) {
     if (!typeChar) {
         // No type letter specified
         if (hasDecimals) {
-            dataType = 'packed';
+            dataType = 'zoned';
         } else {
             dataType = 'character';
         }

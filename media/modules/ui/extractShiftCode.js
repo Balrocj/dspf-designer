@@ -7,7 +7,7 @@ export function extractShiftCode({ typeSpec, dataType }) {
         if (typeMatch) {
             return typeMatch[1];
         }
-        return 'Y';
+        return null;
     } else if (dataType === 'double') {
         // Extract shift from typeChar (J/E/O/G)
         const typeMatch = typeSpec.match(/\d+([JEOG])/);

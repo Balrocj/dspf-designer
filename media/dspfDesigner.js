@@ -3999,7 +3999,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             if (edtcdeValue) {
                 const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
                 fieldObj.edtcde = { value: edtcdeValue };
-                if (replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') {
+                if ((replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') && edtcdeValue !== 'Z') {
                     fieldObj.edtcde.replaceLeadingZerosWith = replaceLeadingZerosWith;
                 }
                 Logger.parse(`Found inline EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for field ${fieldName}`);

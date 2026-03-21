@@ -4089,7 +4089,7 @@ __webpack_require__.r(__webpack_exports__);
             if (edtcdeValue) {
                 const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
                 fieldObj.edtcde = { value: edtcdeValue };
-                if (replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') {
+                if ((replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') && edtcdeValue !== 'Z') {
                     fieldObj.edtcde.replaceLeadingZerosWith = replaceLeadingZerosWith;
                 }
                 _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for field ${fieldName}`);
@@ -7885,6 +7885,9 @@ function showFieldProperties({
     }
 
     let currentUsage = field.usage || '';
+    const normalizedDataTypeForUi = (field.dataType === 'numeric' || field.dataType === 'binary')
+        ? 'zoned'
+        : field.dataType;
 
     if (!currentUsage) {
         if (field.type === 'input') {currentUsage = 'O';}
@@ -7925,14 +7928,14 @@ function showFieldProperties({
                     <div class="property-group">
                         <label>Type</label>
                         <select id="prop-type">
-                            <option value="character" ${field.dataType === 'character' ? 'selected' : ''}>Character</option>
-                            <option value="date" ${field.dataType === 'date' ? 'selected' : ''}>Date (L)</option>
-                            <option value="time" ${field.dataType === 'time' ? 'selected' : ''}>Time (T)</option>
-                            <option value="timestamp" ${field.dataType === 'timestamp' ? 'selected' : ''}>Timestamp (Z)</option>
-                            <option value="packed" ${field.dataType === 'packed' ? 'selected' : ''}>Packed (Empaquetado)</option>
-                            <option value="zoned" ${field.dataType === 'zoned' ? 'selected' : ''}>Con Zona</option>
-                            <option value="float" ${field.dataType === 'float' ? 'selected' : ''}>Coma flotante</option>
-                            <option value="double" ${field.dataType === 'double' ? 'selected' : ''}>Double Byte</option>
+                            <option value="character" ${normalizedDataTypeForUi === 'character' ? 'selected' : ''}>Character</option>
+                            <option value="date" ${normalizedDataTypeForUi === 'date' ? 'selected' : ''}>Date (L)</option>
+                            <option value="time" ${normalizedDataTypeForUi === 'time' ? 'selected' : ''}>Time (T)</option>
+                            <option value="timestamp" ${normalizedDataTypeForUi === 'timestamp' ? 'selected' : ''}>Timestamp (Z)</option>
+                            <option value="packed" ${normalizedDataTypeForUi === 'packed' ? 'selected' : ''}>Packed (Empaquetado)</option>
+                            <option value="zoned" ${normalizedDataTypeForUi === 'zoned' ? 'selected' : ''}>Con Zona</option>
+                            <option value="float" ${normalizedDataTypeForUi === 'float' ? 'selected' : ''}>Coma flotante</option>
+                            <option value="double" ${normalizedDataTypeForUi === 'double' ? 'selected' : ''}>Double Byte</option>
                         </select>
                     </div>
                     <div class="property-group">
@@ -8223,6 +8226,8 @@ function showFieldProperties({
     const checkNumTitles = Array.from(document.querySelectorAll('.check-num-title'));
     const dftvalGroup = document.querySelector('.dftval-group');
     const dftvalValueGroup = document.querySelector('.dftval-value-group');
+    const shiftSelectElement = document.getElementById('prop-shift');
+    const shiftGroup = shiftSelectElement ? shiftSelectElement.closest('.property-group') : null;
     const updateUsageRestrictedAttrs = () => {
         const show = field.type !== 'constant' && usageSelect && usageSelect.value !== 'O';
         usageRestrictedGroups.forEach(group => {
@@ -8271,6 +8276,21 @@ function showFieldProperties({
         const selectedType = currentTypeSelect ? currentTypeSelect.value : field.dataType;
         const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
         const showEditingKeywords = field.type !== 'constant' && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B') && isNumericType;
+
+        const lockShiftForZonedOutputOnly = field.type !== 'constant'
+            && usageSelect
+            && usageSelect.value === 'O'
+            && selectedType === 'zoned';
+
+        if (shiftGroup) {
+            shiftGroup.style.display = '';
+        }
+        if (shiftSelectElement) {
+            shiftSelectElement.disabled = lockShiftForZonedOutputOnly;
+            shiftSelectElement.title = lockShiftForZonedOutputOnly
+                ? 'Shift se controla mediante EDTCDE para campos zoned de salida'
+                : '';
+        }
 
         if (editingKeywordsTabBtn) {
             editingKeywordsTabBtn.style.display = showEditingKeywords ? 'inline-flex' : 'none';
@@ -8327,6 +8347,7 @@ function showFieldProperties({
                 break;
             case 'zoned':
                 options = `
+                        <option value="">None</option>
                         <option value="Y">Y - Numeric Only</option>
                         <option value="S">S - Signed Numeric</option>
                         <option value="N">N - Numeric Character Shift</option>
@@ -8811,6 +8832,22 @@ function showFieldProperties({
     const edtcdeReplaceGroup = document.querySelector('.edtcde-replace-group');
     const edtcdeReplaceSelect = document.getElementById('prop-edtcde-replace-leading-zeros-with');
 
+    const updateEdtcdeReplaceVisibility = () => {
+        if (!edtcdeReplaceGroup) {
+            return;
+        }
+
+        const isEnabled = Boolean(edtcdeEnabledCheckbox && edtcdeEnabledCheckbox.checked);
+        const selectedCode = edtcdeValueSelect ? edtcdeValueSelect.value.trim().toUpperCase() : '';
+        const allowReplacement = isEnabled && selectedCode !== 'Z';
+
+        edtcdeReplaceGroup.style.display = allowReplacement ? 'block' : 'none';
+
+        if (!allowReplacement && edtcdeReplaceSelect) {
+            edtcdeReplaceSelect.value = '';
+        }
+    };
+
     if (field.edtcde && field.edtcde.value) {
         if (edtcdeEnabledCheckbox) {
             edtcdeEnabledCheckbox.checked = true;
@@ -8830,18 +8867,16 @@ function showFieldProperties({
             edtcdeValueSelect.value = parsedValue;
         }
 
-        if (edtcdeReplaceGroup) {
-            edtcdeReplaceGroup.style.display = 'block';
-        }
-
         if (edtcdeReplaceSelect) {
             const replacement = field.edtcde.replaceLeadingZerosWith ? String(field.edtcde.replaceLeadingZerosWith).trim() : '';
-            if (replacement === '*' || replacement === '$') {
+            if ((replacement === '*' || replacement === '$') && String(field.edtcde.value).trim().toUpperCase() !== 'Z') {
                 edtcdeReplaceSelect.value = replacement;
             } else {
                 edtcdeReplaceSelect.value = '';
             }
         }
+
+        updateEdtcdeReplaceVisibility();
     }
 
     if (edtcdeEnabledCheckbox) {
@@ -8849,14 +8884,18 @@ function showFieldProperties({
             if (edtcdeValueGroup) {
                 edtcdeValueGroup.style.display = this.checked ? 'block' : 'none';
             }
-            if (edtcdeReplaceGroup) {
-                edtcdeReplaceGroup.style.display = this.checked ? 'block' : 'none';
-            }
+            updateEdtcdeReplaceVisibility();
             if (this.checked && edtcdeValueSelect) {
                 edtcdeValueSelect.focus();
             }
         });
     }
+
+    if (edtcdeValueSelect) {
+        edtcdeValueSelect.addEventListener('change', updateEdtcdeReplaceVisibility);
+    }
+
+    updateEdtcdeReplaceVisibility();
 
     setupIndicatorButtons();
 
@@ -9198,13 +9237,24 @@ function applyFieldProperties({
             }
 
             const shiftSelect = document.getElementById('prop-shift');
+            const isShiftReadOnlyForZonedOutputOnly = field.dataType === 'zoned' && field.usage === 'O';
+
             if (shiftSelect) {
                 if (field.dataType === 'float') {
                     field.precision = shiftSelect.value;
                     Logger.debug('Precision updated to:', field.precision);
                 } else if (field.dataType === 'zoned' || field.dataType === 'double') {
-                    field.shift = shiftSelect.value;
-                    Logger.debug('Shift updated to:', field.shift);
+                    if (isShiftReadOnlyForZonedOutputOnly) {
+                        Logger.debug('Shift not updated from UI because it is controlled by EDTCDE for zoned Output fields');
+                    } else {
+                        const selectedShift = shiftSelect.value ? shiftSelect.value.trim() : '';
+                        if (selectedShift) {
+                            field.shift = selectedShift;
+                        } else {
+                            delete field.shift;
+                        }
+                        Logger.debug('Shift updated to:', field.shift || '(none)');
+                    }
                 }
             }
         }
@@ -9361,7 +9411,7 @@ function applyFieldProperties({
             if (selectedEdtcde) {
                 const replacement = edtcdeReplaceSelect ? edtcdeReplaceSelect.value.trim() : '';
                 field.edtcde = { value: selectedEdtcde };
-                if (replacement === '*' || replacement === '$') {
+                if ((replacement === '*' || replacement === '$') && selectedEdtcde !== 'Z') {
                     field.edtcde.replaceLeadingZerosWith = replacement;
                 } else {
                     delete field.edtcde.replaceLeadingZerosWith;
@@ -9371,6 +9421,30 @@ function applyFieldProperties({
             }
         } else {
             delete field.edtcde;
+        }
+
+        const edtcdeForShift = field.edtcde && field.edtcde.value
+            ? String(field.edtcde.value).trim().toUpperCase()
+            : '';
+        const edtcdeCodesThatForceYShift = ['1', '2', '3', 'A', 'B', 'C', 'D', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q'];
+        const appliesAutoShiftRule = field.type !== 'constant'
+            && field.dataType === 'zoned'
+            && (field.usage === 'O' || field.usage === 'B');
+
+        if (appliesAutoShiftRule) {
+            if (edtcdeForShift === 'Z') {
+                delete field.shift;
+                Logger.debug('Shift cleared for EDTCDE(Z) on zoned Output/Both field');
+            } else if (edtcdeCodesThatForceYShift.includes(edtcdeForShift)) {
+                field.shift = 'Y';
+                Logger.debug(`Shift forced to Y for EDTCDE(${edtcdeForShift}) on zoned Output/Both field`);
+            } else if (field.usage === 'B' && !field.shift) {
+                field.shift = 'S';
+                Logger.debug('Shift defaulted to S for zoned Both field without EDTCDE override');
+            } else if (field.usage === 'O') {
+                delete field.shift;
+                Logger.debug('Shift cleared by default for zoned Output field without EDTCDE override');
+            }
         }
 
         Logger.debug('Old field:', oldField);
@@ -11513,7 +11587,7 @@ function createField({
         usage = 'I';
         dataType = 'zoned';
         decimals = 0;
-        shift = 'Y';
+        shift = 'S';
     } else if (type === 'keyword-date') {
         fieldName = 'DATE';
         ddsType = '';
@@ -12099,6 +12173,14 @@ function getFieldDisplayText(options) {
     const { field, fieldLength, getFieldCharForDisplay } = options;
 
     function applyEdtcdeDisplayReplacement(baseText, digitChar) {
+        const edtcdeCode = field.edtcde && field.edtcde.value
+            ? String(field.edtcde.value).trim().toUpperCase()
+            : '';
+
+        if (edtcdeCode === 'Z') {
+            return baseText;
+        }
+
         const replacement = field.edtcde && field.edtcde.replaceLeadingZerosWith
             ? String(field.edtcde.replaceLeadingZerosWith).trim()
             : '';
@@ -12132,6 +12214,55 @@ function getFieldDisplayText(options) {
     if (isNumeric) {
         const digitChar = getFieldCharForDisplay(field);
 
+        const edtcdeCode = field.edtcde && field.edtcde.value
+            ? String(field.edtcde.value).trim().toUpperCase()
+            : '';
+
+        const formatThousandsInDigitRuns = (baseText) => {
+            const escapedDigit = digitChar.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const digitRunRegex = new RegExp(`${escapedDigit}{4,}`, 'g');
+
+            return baseText.replace(digitRunRegex, (run) => run.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+        };
+
+        const applyEdtcdeCodeFormatting = (baseText) => {
+            if (!edtcdeCode) {
+                return baseText;
+            }
+
+            let formattedText = baseText;
+
+            if (['1', '2', '3', 'A', 'B', 'J', 'K', 'N', 'O'].includes(edtcdeCode)) {
+                formattedText = formatThousandsInDigitRuns(formattedText);
+            }
+
+            if (['A', 'B', 'C', 'D'].includes(edtcdeCode) && !formattedText.endsWith('CR')) {
+                formattedText = `${formattedText}CR`;
+            }
+
+            if (['J', 'K', 'L', 'M'].includes(edtcdeCode) && !formattedText.endsWith('-')) {
+                formattedText = `${formattedText}-`;
+            }
+
+            if (['N', 'O', 'P', 'Q'].includes(edtcdeCode)) {
+                formattedText = formattedText.replace(/-$/, '');
+                if (!formattedText.startsWith('-')) {
+                    formattedText = `-${formattedText}`;
+                }
+            }
+
+            if (edtcdeCode === 'Z') {
+                formattedText = formattedText.replace(/\./g, '');
+                formattedText = formattedText.replace(/-/g, '');
+            }
+
+            return formattedText;
+        };
+
+        let baseNumericText;
+        const isSignedInputOrBoth = (field.usage === 'I' || field.usage === 'B') && field.shift === 'S';
+        const hasEdtcdePriorityOnBoth = field.usage === 'B' && Boolean(edtcdeCode);
+
         if (field.dataType === 'float') {
             const decimals = Number.isInteger(field.decimals) ? field.decimals : 0;
             const integerDigits = Math.max(1, length - decimals);
@@ -12139,16 +12270,15 @@ function getFieldDisplayText(options) {
                 ? `${digitChar.repeat(integerDigits)},${digitChar.repeat(decimals)}`
                 : digitChar.repeat(length);
             const precisionChar = field.precision === 'DOUBLE' ? 'D' : 'E';
-            const floatText = `-${mantissa}${precisionChar}-${digitChar.repeat(3)}`;
-            return applyEdtcdeDisplayReplacement(floatText, digitChar);
+            baseNumericText = `-${mantissa}${precisionChar}-${digitChar.repeat(3)}`;
+        } else if (isSignedInputOrBoth && !hasEdtcdePriorityOnBoth) {
+            baseNumericText = length >= 1 ? digitChar.repeat(length) + '-' : digitChar;
+        } else {
+            baseNumericText = digitChar.repeat(length);
         }
 
-        if (field.usage === 'I' && field.shift === 'S' || field.usage === 'B' && field.shift === 'S') {
-            const signedText = length >= 1 ? digitChar.repeat(length) + '-' : digitChar;
-            return applyEdtcdeDisplayReplacement(signedText, digitChar);
-        }
-
-        return applyEdtcdeDisplayReplacement(digitChar.repeat(length), digitChar);
+        const edtcdeFormatted = applyEdtcdeCodeFormatting(baseNumericText);
+        return applyEdtcdeDisplayReplacement(edtcdeFormatted, digitChar);
     }
     const fieldChar = getFieldCharForDisplay(field);
     return fieldChar.repeat(length);
@@ -12625,7 +12755,7 @@ function parseDdsTypeSpecification({ typeSpec, hasDecimals = false }) {
     if (!typeChar) {
         // No type letter specified
         if (hasDecimals) {
-            dataType = 'packed';
+            dataType = 'zoned';
         } else {
             dataType = 'character';
         }
@@ -12755,7 +12885,7 @@ function extractShiftCode({ typeSpec, dataType }) {
         if (typeMatch) {
             return typeMatch[1];
         }
-        return 'Y';
+        return null;
     } else if (dataType === 'double') {
         // Extract shift from typeChar (J/E/O/G)
         const typeMatch = typeSpec.match(/\d+([JEOG])/);
@@ -13451,7 +13581,7 @@ function scanAttributeLinesAfterField({
             if (edtcdeValue) {
                 const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
                 field.edtcde = { value: edtcdeValue };
-                if (replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') {
+                if ((replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') && edtcdeValue !== 'Z') {
                     field.edtcde.replaceLeadingZerosWith = replaceLeadingZerosWith;
                 }
                 Logger.parse(`Found EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
@@ -13615,7 +13745,14 @@ function buildVariableTypeAndUsageUI({
     if (field.dataType === 'character') {
         typeChar = 'A';
     } else if (field.dataType === 'zoned') {
-        typeChar = field.shift || 'Y';
+        const hasExplicitShift = typeof field.shift === 'string' && field.shift.trim() !== '';
+        if (hasExplicitShift) {
+            typeChar = field.shift.trim();
+        } else if (field.usage === 'I' || field.usage === 'B') {
+            typeChar = 'S';
+        } else {
+            typeChar = '';
+        }
     } else if (field.dataType === 'float') {
         typeChar = 'F';
     } else if (field.dataType === 'double') {
@@ -14050,8 +14187,9 @@ function generateFieldEdtcdeLinesUI({
     const replaceLeadingZerosWith = field.edtcde.replaceLeadingZerosWith
         ? String(field.edtcde.replaceLeadingZerosWith).trim()
         : '';
+    const allowReplacement = edtcdeValue !== 'Z';
 
-    const keyword = replaceLeadingZerosWith
+    const keyword = (allowReplacement && replaceLeadingZerosWith)
         ? `EDTCDE(${edtcdeValue} ${replaceLeadingZerosWith})`
         : `EDTCDE(${edtcdeValue})`;
 
