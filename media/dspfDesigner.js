@@ -76,6 +76,7 @@ import { generateConstantFieldLinesUI } from './modules/ui/generateConstantField
 import { generateFieldDspatrLinesUI } from './modules/ui/generateFieldDspatrLines.js';
 import { generateFieldColorLinesUI } from './modules/ui/generateFieldColorLines.js';
 import { generateFieldCheckLinesUI } from './modules/ui/generateFieldCheckLines.js';
+import { generateFieldEdtcdeLinesUI } from './modules/ui/generateFieldEdtcdeLines.js';
 import { generateFieldDftvalLinesUI } from './modules/ui/generateFieldDftvalLines.js';
 import { generateDdsLineWithIndicatorsUI } from './modules/ui/generateDdsLineWithIndicators.js';
 import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChangesToField.js';
@@ -2695,6 +2696,13 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             Logger
         });
     }
+
+    // Helper: Generate EDTCDE keyword lines for a field
+    function generateFieldEdtcdeLines(field) {
+        return generateFieldEdtcdeLinesUI({
+            field
+        });
+    }
     
     // Helper: Generate constant field lines with continuation support AND indicators
     function generateConstantFieldLines(field) {
@@ -3071,6 +3079,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         // Generate DSPATR lines
         const attrLines = generateFieldDspatrLines(field);
         const checkLines = generateFieldCheckLines(field);
+        const edtcdeLines = generateFieldEdtcdeLines(field);
         const dftvalLines = generateFieldDftvalLines(field);
         
         // Build main line with indicators
@@ -3080,10 +3089,11 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         const fieldIndicatorLinesStr = fieldIndicatorLines.length > 0 ? fieldIndicatorLines.join('\n') + '\n' : '';
         const attrLinesStr = attrLines.length > 0 ? '\n' + attrLines.join('\n') : '';
         const checkLinesStr = checkLines.length > 0 ? '\n' + checkLines.join('\n') : '';
+        const edtcdeLinesStr = edtcdeLines.length > 0 ? '\n' + edtcdeLines.join('\n') : '';
         const dftvalLinesStr = dftvalLines.length > 0 ? '\n' + dftvalLines.join('\n') : '';
         const colorLinesStr = colorLines.length > 0 ? '\n' + colorLines.join('\n') : '';
 
-        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + dftvalLinesStr + colorLinesStr;
+        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + dftvalLinesStr + colorLinesStr;
         
         Logger.dds(`Generated DDS: name="${field.name}" padded="${fieldNamePadded}" type="${typeAndUsage}" padded="${typePartPadded}"`);
         Logger.dds(`Full line(s): "${result}"`);
@@ -3981,6 +3991,19 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 fieldObj.checkOptions[code] = true;
             });
             Logger.parse(`Found inline CHECK options for field ${fieldName}:`, codes);
+        }
+
+        const edtcdeMatch = line.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);
+        if (edtcdeMatch) {
+            const edtcdeValue = edtcdeMatch[1].replace(/["']/g, '').trim().toUpperCase();
+            if (edtcdeValue) {
+                const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
+                fieldObj.edtcde = { value: edtcdeValue };
+                if (replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') {
+                    fieldObj.edtcde.replaceLeadingZerosWith = replaceLeadingZerosWith;
+                }
+                Logger.parse(`Found inline EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for field ${fieldName}`);
+            }
         }
 
         // Note: DFTVAL is now extracted by scanAttributeLinesAfterField, not inline

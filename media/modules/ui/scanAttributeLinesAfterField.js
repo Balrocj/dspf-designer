@@ -333,6 +333,19 @@ export function scanAttributeLinesAfterField({
             }
         }
 
+        const edtcdeMatch = nextLine.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);
+        if (edtcdeMatch) {
+            const edtcdeValue = edtcdeMatch[1].replace(/["']/g, '').trim().toUpperCase();
+            if (edtcdeValue) {
+                const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
+                field.edtcde = { value: edtcdeValue };
+                if (replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') {
+                    field.edtcde.replaceLeadingZerosWith = replaceLeadingZerosWith;
+                }
+                Logger.parse(`Found EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+            }
+        }
+
         if (includeChecks) {
             const checkMatch = nextLine.match(/CHECK\(([^)]+)\)/);
             if (checkMatch) {

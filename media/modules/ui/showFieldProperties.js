@@ -508,6 +508,45 @@ export function showFieldProperties({
                         <input type="text" id="prop-dftval-value" placeholder="Default value" />
                     </div>
                 </div>
+
+                <div id="tab-editing-keywords" class="tab-panel">
+                    <div class="property-group" style="margin-top: 4px; margin-bottom: 6px; font-weight: 600; color: var(--vscode-descriptionForeground);">
+                        Edit code (EDTCDE)
+                    </div>
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-edtcde-enabled" />
+                            Enable EDTCDE
+                        </label>
+                    </div>
+                    <div class="property-group edtcde-value-group" style="display: none;">
+                        <label>Code</label>
+                        <select id="prop-edtcde-value">
+                            <option value="">Select code</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="J">J</option>
+                            <option value="W">W</option>
+                            <option value="Y">Y</option>
+                            <option value="Z">Z</option>
+                        </select>
+                    </div>
+
+                    <div class="property-group edtcde-replace-group" style="display: none;">
+                        <label>Replace leading zeros with</label>
+                        <select id="prop-edtcde-replace-leading-zeros-with">
+                            <option value="">(blank)</option>
+                            <option value="*">*</option>
+                            <option value="$">$</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             
             <div style="padding: 16px; border-top: 1px solid var(--border-color); background-color: var(--panel-background);">
@@ -527,6 +566,12 @@ export function showFieldProperties({
         generalKeywordsBtn.setAttribute('data-tab', 'general-keywords');
         generalKeywordsBtn.textContent = 'General keywords';
         tabsContainer.appendChild(generalKeywordsBtn);
+
+        const editingKeywordsBtn = document.createElement('button');
+        editingKeywordsBtn.className = 'properties-tab';
+        editingKeywordsBtn.setAttribute('data-tab', 'editing-keywords');
+        editingKeywordsBtn.textContent = 'Editing keywords';
+        tabsContainer.appendChild(editingKeywordsBtn);
     }
 
     const usageSelect = document.getElementById('prop-usage');
@@ -535,6 +580,8 @@ export function showFieldProperties({
     const keyingTabPanel = document.getElementById('tab-keying-options');
     const generalKeywordsTabBtn = document.querySelector('.properties-tab[data-tab="general-keywords"]');
     const generalKeywordsTabPanel = document.getElementById('tab-general-keywords');
+    const editingKeywordsTabBtn = document.querySelector('.properties-tab[data-tab="editing-keywords"]');
+    const editingKeywordsTabPanel = document.getElementById('tab-editing-keywords');
     const checkCharGroups = Array.from(document.querySelectorAll('.check-char'));
     const checkNumGroups = Array.from(document.querySelectorAll('.check-num'));
     const checkCharTitles = Array.from(document.querySelectorAll('.check-char-title'));
@@ -583,6 +630,26 @@ export function showFieldProperties({
         }
         if (generalKeywordsTabPanel) {
             generalKeywordsTabPanel.style.display = showDFTVAL ? '' : 'none';
+        }
+
+        const currentTypeSelect = document.getElementById('prop-type');
+        const selectedType = currentTypeSelect ? currentTypeSelect.value : field.dataType;
+        const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
+        const showEditingKeywords = field.type !== 'constant' && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B') && isNumericType;
+
+        if (editingKeywordsTabBtn) {
+            editingKeywordsTabBtn.style.display = showEditingKeywords ? 'inline-flex' : 'none';
+        }
+        if (editingKeywordsTabPanel) {
+            editingKeywordsTabPanel.style.display = showEditingKeywords ? '' : 'none';
+        }
+        if (!showEditingKeywords && editingKeywordsTabBtn && editingKeywordsTabBtn.classList.contains('active')) {
+            editingKeywordsTabBtn.classList.remove('active');
+            editingKeywordsTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
         }
     };
     updateUsageRestrictedAttrs();
@@ -1099,6 +1166,59 @@ export function showFieldProperties({
                 if (this.checked && dftvalValueInput) {
                     dftvalValueInput.focus();
                 }
+            }
+        });
+    }
+
+    const edtcdeEnabledCheckbox = document.getElementById('prop-edtcde-enabled');
+    const edtcdeValueSelect = document.getElementById('prop-edtcde-value');
+    const edtcdeValueGroup = document.querySelector('.edtcde-value-group');
+    const edtcdeReplaceGroup = document.querySelector('.edtcde-replace-group');
+    const edtcdeReplaceSelect = document.getElementById('prop-edtcde-replace-leading-zeros-with');
+
+    if (field.edtcde && field.edtcde.value) {
+        if (edtcdeEnabledCheckbox) {
+            edtcdeEnabledCheckbox.checked = true;
+        }
+        if (edtcdeValueGroup) {
+            edtcdeValueGroup.style.display = 'block';
+        }
+        if (edtcdeValueSelect) {
+            const parsedValue = String(field.edtcde.value).trim().toUpperCase();
+            const hasOption = Array.from(edtcdeValueSelect.options).some(option => option.value === parsedValue);
+            if (!hasOption) {
+                const extraOption = document.createElement('option');
+                extraOption.value = parsedValue;
+                extraOption.textContent = parsedValue;
+                edtcdeValueSelect.appendChild(extraOption);
+            }
+            edtcdeValueSelect.value = parsedValue;
+        }
+
+        if (edtcdeReplaceGroup) {
+            edtcdeReplaceGroup.style.display = 'block';
+        }
+
+        if (edtcdeReplaceSelect) {
+            const replacement = field.edtcde.replaceLeadingZerosWith ? String(field.edtcde.replaceLeadingZerosWith).trim() : '';
+            if (replacement === '*' || replacement === '$') {
+                edtcdeReplaceSelect.value = replacement;
+            } else {
+                edtcdeReplaceSelect.value = '';
+            }
+        }
+    }
+
+    if (edtcdeEnabledCheckbox) {
+        edtcdeEnabledCheckbox.addEventListener('change', function() {
+            if (edtcdeValueGroup) {
+                edtcdeValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (edtcdeReplaceGroup) {
+                edtcdeReplaceGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (this.checked && edtcdeValueSelect) {
+                edtcdeValueSelect.focus();
             }
         });
     }

@@ -5,6 +5,23 @@
 export function getFieldDisplayText(options) {
     const { field, fieldLength, getFieldCharForDisplay } = options;
 
+    function applyEdtcdeDisplayReplacement(baseText, digitChar) {
+        const replacement = field.edtcde && field.edtcde.replaceLeadingZerosWith
+            ? String(field.edtcde.replaceLeadingZerosWith).trim()
+            : '';
+
+        if (!replacement || (replacement !== '*' && replacement !== '$')) {
+            return baseText;
+        }
+
+        const firstDigitIndex = baseText.indexOf(digitChar);
+        if (firstDigitIndex === -1) {
+            return baseText;
+        }
+
+        return `${baseText.substring(0, firstDigitIndex)}${replacement}${baseText.substring(firstDigitIndex + 1)}`;
+    }
+
     if (field.dataType === 'date') {
         return 'yyyy-mm-dd';
     }
@@ -29,14 +46,16 @@ export function getFieldDisplayText(options) {
                 ? `${digitChar.repeat(integerDigits)},${digitChar.repeat(decimals)}`
                 : digitChar.repeat(length);
             const precisionChar = field.precision === 'DOUBLE' ? 'D' : 'E';
-            return `-${mantissa}${precisionChar}-${digitChar.repeat(3)}`;
+            const floatText = `-${mantissa}${precisionChar}-${digitChar.repeat(3)}`;
+            return applyEdtcdeDisplayReplacement(floatText, digitChar);
         }
 
         if (field.usage === 'I' && field.shift === 'S' || field.usage === 'B' && field.shift === 'S') {
-            return length >= 1 ? digitChar.repeat(length) + '-' : digitChar;
+            const signedText = length >= 1 ? digitChar.repeat(length) + '-' : digitChar;
+            return applyEdtcdeDisplayReplacement(signedText, digitChar);
         }
 
-        return digitChar.repeat(length);
+        return applyEdtcdeDisplayReplacement(digitChar.repeat(length), digitChar);
     }
     const fieldChar = getFieldCharForDisplay(field);
     return fieldChar.repeat(length);

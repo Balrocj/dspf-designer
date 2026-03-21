@@ -59,6 +59,11 @@ All notable changes to the "dspf-designer" extension will be documented in this 
   - Correct read-only decimals behavior
   - Consistent type/shift handling
 
+- Added support for keyword `EDTCDE` for numeric output/both fields:
+  - New `Editing keywords` panel supports `EDTCDE(code)` and `EDTCDE(code *|$)`.
+  - DDS parse/generation now preserves `*`/`$` replacement parameter.
+  - Visual rendering now replaces the first `6`/`9` with `*` or `$` when configured.  
+
 ### 🎨 Improved
 - Improved DSPSIZ radio UX:
   - Disabled unavailable size option
@@ -79,5 +84,5 @@ All notable changes to the "dspf-designer" extension will be documented in this 
   - If both sizes exist, both remain enabled.
 
 - Fixed WINDOW frame rendering for records with both DS3 and DS4 `WINDOW()` definitions:
-  - Designer now correctly draws the window frame using the dimensions matching the active display size (`DS3`/`DS4`).[
+  - Designer now correctly draws the window frame using the dimensions matching the active display size (`DS3`/`DS4`).
   - Previously, the frame always used the first-parsed (DS3) dimensions even when DS4 was selected.

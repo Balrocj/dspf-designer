@@ -83,10 +83,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_ui_generateFieldDspatrLines_js__WEBPACK_IMPORTED_MODULE_75__ = __webpack_require__(76);
 /* harmony import */ var _modules_ui_generateFieldColorLines_js__WEBPACK_IMPORTED_MODULE_76__ = __webpack_require__(77);
 /* harmony import */ var _modules_ui_generateFieldCheckLines_js__WEBPACK_IMPORTED_MODULE_77__ = __webpack_require__(78);
-/* harmony import */ var _modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_78__ = __webpack_require__(79);
-/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_79__ = __webpack_require__(80);
-/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(81);
+/* harmony import */ var _modules_ui_generateFieldEdtcdeLines_js__WEBPACK_IMPORTED_MODULE_78__ = __webpack_require__(79);
+/* harmony import */ var _modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_79__ = __webpack_require__(80);
+/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(81);
+/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(82);
 /* module decorator */ module = __webpack_require__.hmd(module);
+
 
 
 
@@ -2727,7 +2729,7 @@ __webpack_require__.r(__webpack_exports__);
     
     // Helper: Generate a DDS line with optional indicators
     function generateDdsLineWithIndicators(keyword, indicatorsOrGroups) {
-        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_79__.generateDdsLineWithIndicatorsUI)({
+        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_80__.generateDdsLineWithIndicatorsUI)({
             keyword,
             indicatorsOrGroups,
             IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils
@@ -2737,7 +2739,7 @@ __webpack_require__.r(__webpack_exports__);
     // Helper: Apply indicator changes from indicatorConfigurations Map back to field object
     // This ensures that any edits made through the IBM i modal are reflected in DDS generation
     function applyIndicatorChangesToField(field) {
-        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_80__.applyIndicatorChangesToFieldUI)({
+        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_81__.applyIndicatorChangesToFieldUI)({
             field,
             indicatorConfigurations,
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
@@ -2778,10 +2780,17 @@ __webpack_require__.r(__webpack_exports__);
 
     // Helper: Generate DFTVAL keyword lines for a field
     function generateFieldDftvalLines(field) {
-        return (0,_modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_78__.generateFieldDftvalLinesUI)({
+        return (0,_modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_79__.generateFieldDftvalLinesUI)({
             field,
             generateDdsLineWithIndicators,
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+
+    // Helper: Generate EDTCDE keyword lines for a field
+    function generateFieldEdtcdeLines(field) {
+        return (0,_modules_ui_generateFieldEdtcdeLines_js__WEBPACK_IMPORTED_MODULE_78__.generateFieldEdtcdeLinesUI)({
+            field
         });
     }
     
@@ -3160,6 +3169,7 @@ __webpack_require__.r(__webpack_exports__);
         // Generate DSPATR lines
         const attrLines = generateFieldDspatrLines(field);
         const checkLines = generateFieldCheckLines(field);
+        const edtcdeLines = generateFieldEdtcdeLines(field);
         const dftvalLines = generateFieldDftvalLines(field);
         
         // Build main line with indicators
@@ -3169,10 +3179,11 @@ __webpack_require__.r(__webpack_exports__);
         const fieldIndicatorLinesStr = fieldIndicatorLines.length > 0 ? fieldIndicatorLines.join('\n') + '\n' : '';
         const attrLinesStr = attrLines.length > 0 ? '\n' + attrLines.join('\n') : '';
         const checkLinesStr = checkLines.length > 0 ? '\n' + checkLines.join('\n') : '';
+        const edtcdeLinesStr = edtcdeLines.length > 0 ? '\n' + edtcdeLines.join('\n') : '';
         const dftvalLinesStr = dftvalLines.length > 0 ? '\n' + dftvalLines.join('\n') : '';
         const colorLinesStr = colorLines.length > 0 ? '\n' + colorLines.join('\n') : '';
 
-        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + dftvalLinesStr + colorLinesStr;
+        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + dftvalLinesStr + colorLinesStr;
         
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Generated DDS: name="${field.name}" padded="${fieldNamePadded}" type="${typeAndUsage}" padded="${typePartPadded}"`);
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Full line(s): "${result}"`);
@@ -4070,6 +4081,19 @@ __webpack_require__.r(__webpack_exports__);
                 fieldObj.checkOptions[code] = true;
             });
             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline CHECK options for field ${fieldName}:`, codes);
+        }
+
+        const edtcdeMatch = line.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);
+        if (edtcdeMatch) {
+            const edtcdeValue = edtcdeMatch[1].replace(/["']/g, '').trim().toUpperCase();
+            if (edtcdeValue) {
+                const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
+                fieldObj.edtcde = { value: edtcdeValue };
+                if (replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') {
+                    fieldObj.edtcde.replaceLeadingZerosWith = replaceLeadingZerosWith;
+                }
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for field ${fieldName}`);
+            }
         }
 
         // Note: DFTVAL is now extracted by scanAttributeLinesAfterField, not inline
@@ -8119,6 +8143,45 @@ function showFieldProperties({
                         <input type="text" id="prop-dftval-value" placeholder="Default value" />
                     </div>
                 </div>
+
+                <div id="tab-editing-keywords" class="tab-panel">
+                    <div class="property-group" style="margin-top: 4px; margin-bottom: 6px; font-weight: 600; color: var(--vscode-descriptionForeground);">
+                        Edit code (EDTCDE)
+                    </div>
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-edtcde-enabled" />
+                            Enable EDTCDE
+                        </label>
+                    </div>
+                    <div class="property-group edtcde-value-group" style="display: none;">
+                        <label>Code</label>
+                        <select id="prop-edtcde-value">
+                            <option value="">Select code</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="J">J</option>
+                            <option value="W">W</option>
+                            <option value="Y">Y</option>
+                            <option value="Z">Z</option>
+                        </select>
+                    </div>
+
+                    <div class="property-group edtcde-replace-group" style="display: none;">
+                        <label>Replace leading zeros with</label>
+                        <select id="prop-edtcde-replace-leading-zeros-with">
+                            <option value="">(blank)</option>
+                            <option value="*">*</option>
+                            <option value="$">$</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             
             <div style="padding: 16px; border-top: 1px solid var(--border-color); background-color: var(--panel-background);">
@@ -8138,6 +8201,12 @@ function showFieldProperties({
         generalKeywordsBtn.setAttribute('data-tab', 'general-keywords');
         generalKeywordsBtn.textContent = 'General keywords';
         tabsContainer.appendChild(generalKeywordsBtn);
+
+        const editingKeywordsBtn = document.createElement('button');
+        editingKeywordsBtn.className = 'properties-tab';
+        editingKeywordsBtn.setAttribute('data-tab', 'editing-keywords');
+        editingKeywordsBtn.textContent = 'Editing keywords';
+        tabsContainer.appendChild(editingKeywordsBtn);
     }
 
     const usageSelect = document.getElementById('prop-usage');
@@ -8146,6 +8215,8 @@ function showFieldProperties({
     const keyingTabPanel = document.getElementById('tab-keying-options');
     const generalKeywordsTabBtn = document.querySelector('.properties-tab[data-tab="general-keywords"]');
     const generalKeywordsTabPanel = document.getElementById('tab-general-keywords');
+    const editingKeywordsTabBtn = document.querySelector('.properties-tab[data-tab="editing-keywords"]');
+    const editingKeywordsTabPanel = document.getElementById('tab-editing-keywords');
     const checkCharGroups = Array.from(document.querySelectorAll('.check-char'));
     const checkNumGroups = Array.from(document.querySelectorAll('.check-num'));
     const checkCharTitles = Array.from(document.querySelectorAll('.check-char-title'));
@@ -8194,6 +8265,26 @@ function showFieldProperties({
         }
         if (generalKeywordsTabPanel) {
             generalKeywordsTabPanel.style.display = showDFTVAL ? '' : 'none';
+        }
+
+        const currentTypeSelect = document.getElementById('prop-type');
+        const selectedType = currentTypeSelect ? currentTypeSelect.value : field.dataType;
+        const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
+        const showEditingKeywords = field.type !== 'constant' && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B') && isNumericType;
+
+        if (editingKeywordsTabBtn) {
+            editingKeywordsTabBtn.style.display = showEditingKeywords ? 'inline-flex' : 'none';
+        }
+        if (editingKeywordsTabPanel) {
+            editingKeywordsTabPanel.style.display = showEditingKeywords ? '' : 'none';
+        }
+        if (!showEditingKeywords && editingKeywordsTabBtn && editingKeywordsTabBtn.classList.contains('active')) {
+            editingKeywordsTabBtn.classList.remove('active');
+            editingKeywordsTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
         }
     };
     updateUsageRestrictedAttrs();
@@ -8714,6 +8805,59 @@ function showFieldProperties({
         });
     }
 
+    const edtcdeEnabledCheckbox = document.getElementById('prop-edtcde-enabled');
+    const edtcdeValueSelect = document.getElementById('prop-edtcde-value');
+    const edtcdeValueGroup = document.querySelector('.edtcde-value-group');
+    const edtcdeReplaceGroup = document.querySelector('.edtcde-replace-group');
+    const edtcdeReplaceSelect = document.getElementById('prop-edtcde-replace-leading-zeros-with');
+
+    if (field.edtcde && field.edtcde.value) {
+        if (edtcdeEnabledCheckbox) {
+            edtcdeEnabledCheckbox.checked = true;
+        }
+        if (edtcdeValueGroup) {
+            edtcdeValueGroup.style.display = 'block';
+        }
+        if (edtcdeValueSelect) {
+            const parsedValue = String(field.edtcde.value).trim().toUpperCase();
+            const hasOption = Array.from(edtcdeValueSelect.options).some(option => option.value === parsedValue);
+            if (!hasOption) {
+                const extraOption = document.createElement('option');
+                extraOption.value = parsedValue;
+                extraOption.textContent = parsedValue;
+                edtcdeValueSelect.appendChild(extraOption);
+            }
+            edtcdeValueSelect.value = parsedValue;
+        }
+
+        if (edtcdeReplaceGroup) {
+            edtcdeReplaceGroup.style.display = 'block';
+        }
+
+        if (edtcdeReplaceSelect) {
+            const replacement = field.edtcde.replaceLeadingZerosWith ? String(field.edtcde.replaceLeadingZerosWith).trim() : '';
+            if (replacement === '*' || replacement === '$') {
+                edtcdeReplaceSelect.value = replacement;
+            } else {
+                edtcdeReplaceSelect.value = '';
+            }
+        }
+    }
+
+    if (edtcdeEnabledCheckbox) {
+        edtcdeEnabledCheckbox.addEventListener('change', function() {
+            if (edtcdeValueGroup) {
+                edtcdeValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (edtcdeReplaceGroup) {
+                edtcdeReplaceGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (this.checked && edtcdeValueSelect) {
+                edtcdeValueSelect.focus();
+            }
+        });
+    }
+
     setupIndicatorButtons();
 
     if (field.colorIndicators) {
@@ -8881,6 +9025,7 @@ function applyFieldProperties({
             checkOptions: field.checkOptions ? { ...field.checkOptions } : undefined,
             checkIndicators: field.checkIndicators ? JSON.parse(JSON.stringify(field.checkIndicators)) : undefined,
             keywordIndicators: field.keywordIndicators ? JSON.parse(JSON.stringify(field.keywordIndicators)) : undefined,
+            edtcde: field.edtcde ? { ...field.edtcde } : undefined,
             dftval: field.dftval ? { ...field.dftval } : undefined,
             dftvalIndicators: field.dftvalIndicators ? JSON.parse(JSON.stringify(field.dftvalIndicators)) : undefined
         };
@@ -9205,6 +9350,29 @@ function applyFieldProperties({
             delete field.dftvalIndicators;
         }
 
+        const edtcdeEnabledCheckbox = document.getElementById('prop-edtcde-enabled');
+        const edtcdeValueSelect = document.getElementById('prop-edtcde-value');
+        const edtcdeReplaceSelect = document.getElementById('prop-edtcde-replace-leading-zeros-with');
+        const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(field.dataType);
+        const canUseEdtcde = field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B') && isNumericType;
+
+        if (canUseEdtcde && edtcdeEnabledCheckbox && edtcdeEnabledCheckbox.checked && edtcdeValueSelect) {
+            const selectedEdtcde = edtcdeValueSelect.value.trim().toUpperCase();
+            if (selectedEdtcde) {
+                const replacement = edtcdeReplaceSelect ? edtcdeReplaceSelect.value.trim() : '';
+                field.edtcde = { value: selectedEdtcde };
+                if (replacement === '*' || replacement === '$') {
+                    field.edtcde.replaceLeadingZerosWith = replacement;
+                } else {
+                    delete field.edtcde.replaceLeadingZerosWith;
+                }
+            } else {
+                delete field.edtcde;
+            }
+        } else {
+            delete field.edtcde;
+        }
+
         Logger.debug('Old field:', oldField);
         Logger.debug('New field:', field);
 
@@ -9237,6 +9405,7 @@ function applyFieldProperties({
         const checkIndicatorsModified = Boolean(field.checkIndicatorsModified);
         const dftvalChanged = JSON.stringify(oldField.dftval || null) !== JSON.stringify(field.dftval || null);
         const dftvalIndicatorsChanged = JSON.stringify(oldField.dftvalIndicators || null) !== JSON.stringify(field.dftvalIndicators || null);
+        const edtcdeChanged = JSON.stringify(oldField.edtcde || null) !== JSON.stringify(field.edtcde || null);
 
         const valueChanged = field.type === 'constant' && oldField.value !== field.value;
 
@@ -9256,11 +9425,12 @@ function applyFieldProperties({
             checkOptionsChanged ||
             checkIndicatorsModified ||
             dftvalChanged ||
-            dftvalIndicatorsChanged
+            dftvalIndicatorsChanged ||
+            edtcdeChanged
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;
@@ -11928,6 +12098,23 @@ __webpack_require__.r(__webpack_exports__);
 function getFieldDisplayText(options) {
     const { field, fieldLength, getFieldCharForDisplay } = options;
 
+    function applyEdtcdeDisplayReplacement(baseText, digitChar) {
+        const replacement = field.edtcde && field.edtcde.replaceLeadingZerosWith
+            ? String(field.edtcde.replaceLeadingZerosWith).trim()
+            : '';
+
+        if (!replacement || (replacement !== '*' && replacement !== '$')) {
+            return baseText;
+        }
+
+        const firstDigitIndex = baseText.indexOf(digitChar);
+        if (firstDigitIndex === -1) {
+            return baseText;
+        }
+
+        return `${baseText.substring(0, firstDigitIndex)}${replacement}${baseText.substring(firstDigitIndex + 1)}`;
+    }
+
     if (field.dataType === 'date') {
         return 'yyyy-mm-dd';
     }
@@ -11952,14 +12139,16 @@ function getFieldDisplayText(options) {
                 ? `${digitChar.repeat(integerDigits)},${digitChar.repeat(decimals)}`
                 : digitChar.repeat(length);
             const precisionChar = field.precision === 'DOUBLE' ? 'D' : 'E';
-            return `-${mantissa}${precisionChar}-${digitChar.repeat(3)}`;
+            const floatText = `-${mantissa}${precisionChar}-${digitChar.repeat(3)}`;
+            return applyEdtcdeDisplayReplacement(floatText, digitChar);
         }
 
         if (field.usage === 'I' && field.shift === 'S' || field.usage === 'B' && field.shift === 'S') {
-            return length >= 1 ? digitChar.repeat(length) + '-' : digitChar;
+            const signedText = length >= 1 ? digitChar.repeat(length) + '-' : digitChar;
+            return applyEdtcdeDisplayReplacement(signedText, digitChar);
         }
 
-        return digitChar.repeat(length);
+        return applyEdtcdeDisplayReplacement(digitChar.repeat(length), digitChar);
     }
     const fieldChar = getFieldCharForDisplay(field);
     return fieldChar.repeat(length);
@@ -13256,6 +13445,19 @@ function scanAttributeLinesAfterField({
             }
         }
 
+        const edtcdeMatch = nextLine.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);
+        if (edtcdeMatch) {
+            const edtcdeValue = edtcdeMatch[1].replace(/["']/g, '').trim().toUpperCase();
+            if (edtcdeValue) {
+                const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
+                field.edtcde = { value: edtcdeValue };
+                if (replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') {
+                    field.edtcde.replaceLeadingZerosWith = replaceLeadingZerosWith;
+                }
+                Logger.parse(`Found EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+            }
+        }
+
         if (includeChecks) {
             const checkMatch = nextLine.match(/CHECK\(([^)]+)\)/);
             if (checkMatch) {
@@ -13832,6 +14034,38 @@ function generateFieldCheckLinesUI({
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldEdtcdeLinesUI: () => (/* binding */ generateFieldEdtcdeLinesUI)
+/* harmony export */ });
+// Generate EDTCDE keyword lines for a field
+function generateFieldEdtcdeLinesUI({
+    field
+}) {
+    const lines = [];
+
+    if (!field.edtcde || !field.edtcde.value) {
+        return lines;
+    }
+
+    const edtcdeValue = String(field.edtcde.value).trim().toUpperCase();
+    const replaceLeadingZerosWith = field.edtcde.replaceLeadingZerosWith
+        ? String(field.edtcde.replaceLeadingZerosWith).trim()
+        : '';
+
+    const keyword = replaceLeadingZerosWith
+        ? `EDTCDE(${edtcdeValue} ${replaceLeadingZerosWith})`
+        : `EDTCDE(${edtcdeValue})`;
+
+    lines.push(`     A                                      ${keyword}`);
+    return lines;
+}
+
+
+/***/ }),
+/* 80 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   generateFieldDftvalLinesUI: () => (/* binding */ generateFieldDftvalLinesUI)
 /* harmony export */ });
 // Generate DFTVAL keyword lines for a field
@@ -13877,7 +14111,7 @@ function generateFieldDftvalLinesUI({
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -14020,7 +14254,7 @@ function generateDdsLineWithIndicatorsUI({
 
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
