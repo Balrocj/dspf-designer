@@ -5,6 +5,77 @@
 export function getFieldDisplayText(options) {
     const { field, fieldLength, getFieldCharForDisplay } = options;
 
+    // EDTWRD: plantilla IBM i de edición de palabra.
+    // Estructura de la plantilla (después de quitar comillas externas):
+    //   - Posición 1 (índice 0): carácter de supresión/relleno de ceros.
+    //       Si es '0' → suprimir ceros a la izquierda (reemplazar por espacios).
+    //       Si es otro char → usarlo como relleno. En el Designer lo mostramos
+    //       como digitChar para indicar que ahí va un dígito.
+    //   - Posiciones 2..N: cada ' ' (espacio) = posición de dígito (→ digitChar).
+    //       '&' = espacio literal forzado (→ ' ').
+    //       Cualquier otro carácter = literal fijo (se muestra tal cual).
+    function applyEdtwrdFormatting(digitChar) {
+        const rawTemplate = field.edtwrd && typeof field.edtwrd === 'object'
+            ? (field.edtwrd.value || '')
+            : (field.edtwrd || '');
+
+        // Quitar comillas externas: '0(   )   -    ' → 0(   )   -
+        const template = String(rawTemplate).replace(/^'(.*)'$/, '$1');
+
+        if (!template) {
+            return null;
+        }
+
+        // Posición 0: carácter de supresión. En el Designer lo mostramos como digitChar
+        // porque indica dónde irá el dígito más significativo del número.
+        const suppressChar = template[0];
+        const suppressDisplay = digitChar; // siempre mostramos digitChar en pos 0
+
+        // Posiciones 1..N: espacio → dígito, & → espacio literal, resto → literal
+        let result = suppressDisplay;
+        for (let i = 1; i < template.length; i++) {
+            const ch = template[i];
+            if (ch === ' ') {
+                result += digitChar;  // posición de dígito
+            } else if (ch === '&') {
+                result += ' ';        // espacio forzado literal
+            } else {
+                result += ch;         // carácter literal (separator)
+            }
+        }
+        return result;
+    }
+
+    // EDTMSK: máscara de edición IBM i.
+    // Estructura de la máscara (después de quitar comillas):
+    //   - ' ' (espacio) → posición de dígito (→ digitChar)
+    //   - '&' → espacio literal forzado (→ ' ')
+    //   - cualquier otro carácter → literal fijo (se muestra tal cual)
+    function applyEdtmskFormatting(digitChar) {
+        const rawMask = field.edtmsk && typeof field.edtmsk === 'object'
+            ? (field.edtmsk.value || '')
+            : (field.edtmsk || '');
+
+        const mask = String(rawMask).replace(/^'(.*)'$/, '$1');
+
+        if (!mask) {
+            return null;
+        }
+
+        let result = '';
+        for (let i = 0; i < mask.length; i++) {
+            const ch = mask[i];
+            if (ch === ' ') {
+                result += digitChar;  // posición de dígito
+            } else if (ch === '&') {
+                result += ' ';        // espacio literal forzado
+            } else {
+                result += ch;         // literal fijo (-, /, etc.)
+            }
+        }
+        return result;
+    }
+
     function applyEdtcdeDisplayReplacement(baseText, digitChar) {
         const edtcdeCode = field.edtcde && field.edtcde.value
             ? String(field.edtcde.value).trim().toUpperCase()
@@ -89,6 +160,37 @@ export function getFieldDisplayText(options) {
                 formattedText = formattedText.replace(/-/g, '');
             }
 
+            // Y: fecha con separadores → MM-DD-YY (6 dígitos) o MM-DD-YYYY (8 dígitos)
+            // El separador de fecha IBM i por defecto es '-' (datsep del job).
+            if (edtcdeCode === 'Y') {
+                const len = baseText.length;
+                if (len === 6) {
+                    formattedText = `${digitChar.repeat(2)}-${digitChar.repeat(2)}-${digitChar.repeat(2)}`;
+                } else if (len === 8) {
+                    formattedText = `${digitChar.repeat(2)}-${digitChar.repeat(2)}-${digitChar.repeat(4)}`;
+                } else {
+                    // Insertar '-' cada 2 dígitos como mejor aproximación
+                    let r = '';
+                    for (let i = 0; i < len; i++) {
+                        if (i > 0 && i % 2 === 0 && i < len - 1) { r += '-'; }
+                        r += digitChar;
+                    }
+                    formattedText = r;
+                }
+            }
+
+            // W: fecha juliana → YY-DDD (5 dígitos) o YYYY-DDD (7 dígitos)
+            if (edtcdeCode === 'W') {
+                const len = baseText.length;
+                if (len === 5) {
+                    formattedText = `${digitChar.repeat(2)}-${digitChar.repeat(3)}`;
+                } else if (len === 7) {
+                    formattedText = `${digitChar.repeat(4)}-${digitChar.repeat(3)}`;
+                } else {
+                    formattedText = `${digitChar.repeat(Math.max(1, len - 3))}-${digitChar.repeat(3)}`;
+                }
+            }
+
             return formattedText;
         };
 
@@ -108,6 +210,17 @@ export function getFieldDisplayText(options) {
             baseNumericText = length >= 1 ? digitChar.repeat(length) + '-' : digitChar;
         } else {
             baseNumericText = digitChar.repeat(length);
+        }
+
+        // EDTWRD y EDTMSK tienen prioridad sobre EDTCDE (en IBM i no pueden coexistir)
+        const edtwrdResult = applyEdtwrdFormatting(digitChar);
+        if (edtwrdResult !== null) {
+            return edtwrdResult;
+        }
+
+        const edtmskResult = applyEdtmskFormatting(digitChar);
+        if (edtmskResult !== null) {
+            return edtmskResult;
         }
 
         const edtcdeFormatted = applyEdtcdeCodeFormatting(baseNumericText);

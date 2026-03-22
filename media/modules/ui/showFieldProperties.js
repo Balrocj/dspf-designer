@@ -526,18 +526,25 @@ export function showFieldProperties({
                         <label>Code</label>
                         <select id="prop-edtcde-value">
                             <option value="">Select code</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                            <option value="D">D</option>
-                            <option value="J">J</option>
-                            <option value="W">W</option>
-                            <option value="Y">Y</option>
-                            <option value="Z">Z</option>
+                            <option value="1">1 - Comma/period, no sign</option>
+                            <option value="2">2 - Period/comma, no sign</option>
+                            <option value="3">3 - Comma/period, no separator</option>
+                            <option value="4">4 - No separator, no sign</option>
+                            <option value="A">A - Comma/period + CR</option>
+                            <option value="B">B - Period/comma + CR</option>
+                            <option value="C">C - No separator + CR</option>
+                            <option value="D">D - No separator/period + CR</option>
+                            <option value="J">J - Comma/period + minus</option>
+                            <option value="K">K - Period/comma + minus</option>
+                            <option value="L">L - No separator + minus</option>
+                            <option value="M">M - No separator/period + minus</option>
+                            <option value="N">N - Comma/period, leading -</option>
+                            <option value="O">O - Period/comma, leading -</option>
+                            <option value="P">P - No separator, leading -</option>
+                            <option value="Q">Q - No separator/period, leading -</option>
+                            <option value="W">W - Julian date (YY/DDD)</option>
+                            <option value="Y">Y - Date (MM/DD/YY)</option>
+                            <option value="Z">Z - No sign, no separator</option>
                         </select>
                     </div>
 
@@ -1238,7 +1245,7 @@ export function showFieldProperties({
 
         const isEnabled = Boolean(edtcdeEnabledCheckbox && edtcdeEnabledCheckbox.checked);
         const selectedCode = edtcdeValueSelect ? edtcdeValueSelect.value.trim().toUpperCase() : '';
-        const allowReplacement = isEnabled && selectedCode !== 'Z';
+        const allowReplacement = isEnabled && !['Z', 'Y', 'W'].includes(selectedCode);
 
         edtcdeReplaceGroup.style.display = allowReplacement ? 'block' : 'none';
 
