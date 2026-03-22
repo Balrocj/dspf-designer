@@ -84,10 +84,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_ui_generateFieldColorLines_js__WEBPACK_IMPORTED_MODULE_76__ = __webpack_require__(77);
 /* harmony import */ var _modules_ui_generateFieldCheckLines_js__WEBPACK_IMPORTED_MODULE_77__ = __webpack_require__(78);
 /* harmony import */ var _modules_ui_generateFieldEdtcdeLines_js__WEBPACK_IMPORTED_MODULE_78__ = __webpack_require__(79);
-/* harmony import */ var _modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_79__ = __webpack_require__(80);
-/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(81);
-/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(82);
+/* harmony import */ var _modules_ui_generateFieldEditKeywordsLines_js__WEBPACK_IMPORTED_MODULE_79__ = __webpack_require__(80);
+/* harmony import */ var _modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(81);
+/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(82);
+/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_82__ = __webpack_require__(83);
 /* module decorator */ module = __webpack_require__.hmd(module);
+
 
 
 
@@ -1269,7 +1271,7 @@ __webpack_require__.r(__webpack_exports__);
                         startIndex: index,
                         field,
                         contextLabel: 'PREVIEW',
-                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|DFTVAL\(/
+                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(/
                     });
                     
                     _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Parsed preview field: ${field.name} (${field.type}) at ${field.row},${field.col} for record ${currentRecordName}`);
@@ -1352,8 +1354,8 @@ __webpack_require__.r(__webpack_exports__);
                                 field,
                                 contextLabel: 'PREVIEW-COMPANION',
                                 includeDftval: true,
-                                attributeRegex: /COLOR\(|DSPATR\(|DFTVAL\(/,
-                                stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|EDTCDE\(|VALUES\(|RANGE\()/
+                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(/,
+                                stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|EDTCDE\(|EDTWRD\(|EDTMSK\(|VALUES\(|RANGE\()/
                             });
                             
                             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Preview: Parsed companion field: ${field.name} at ${field.row},${field.col} with color=${field.color}, attrs=${field.attributes ? Object.keys(field.attributes).join(',') : 'none'}`);
@@ -1962,7 +1964,7 @@ __webpack_require__.r(__webpack_exports__);
             const contentAfter43 = nextLine.length > 43 ? nextLine.substring(43).trim() : '';
             
             // Check for known attribute keywords (DSPATR, COLOR, CHECK, DFTVAL, etc.)
-            const hasKnownKeyword = /^(DSPATR|COLOR|CHECK|DFTVAL|EDTCDE|EDTWRD|COMP|RANGE|VALUES|TEXT|COLHDG|CHGINPDFT|MSGID|SFLMSG|DFT|CMP|REFFLD)\s*\(/.test(contentAfter43);
+            const hasKnownKeyword = /^(DSPATR|COLOR|CHECK|DFTVAL|EDTCDE|EDTWRD|EDTMSK|COMP|RANGE|VALUES|TEXT|COLHDG|CHGINPDFT|MSGID|SFLMSG|DFT|CMP|REFFLD)\s*\(/.test(contentAfter43);
             
             if (contentAfter43.length > 0 || hasKnownKeyword) {
                 // This is an attribute or keyword line - include it in the block
@@ -2667,7 +2669,7 @@ __webpack_require__.r(__webpack_exports__);
 
                 // Unknown keywords: keep them. Known attributes (COLOR, DSPATR, EDTCDE, etc.) are regenerated
                 if (contentAfter43.length > 0) {
-                    const isKnown = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex ? _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex.test(contentAfter43) : /^(DSPATR|COLOR|CHECK|DFTVAL|EDTCDE|EDTWRD|COMP|RANGE|VALUES|TEXT|COLHDG|CHGINPDFT|MSGID|SFLMSG|DFT|CMP|REFFLD)\s*\(/.test(contentAfter43);
+                    const isKnown = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex ? _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex.test(contentAfter43) : /^(DSPATR|COLOR|CHECK|DFTVAL|EDTCDE|EDTWRD|EDTMSK|COMP|RANGE|VALUES|TEXT|COLHDG|CHGINPDFT|MSGID|SFLMSG|DFT|CMP|REFFLD)\s*\(/.test(contentAfter43);
                     if (!isKnown) {
                         preservedExtras.push(line);
                         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Preserving unknown keyword line ${globalIndex + 1}: "${contentAfter43}"`);
@@ -2729,7 +2731,7 @@ __webpack_require__.r(__webpack_exports__);
     
     // Helper: Generate a DDS line with optional indicators
     function generateDdsLineWithIndicators(keyword, indicatorsOrGroups) {
-        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_80__.generateDdsLineWithIndicatorsUI)({
+        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_81__.generateDdsLineWithIndicatorsUI)({
             keyword,
             indicatorsOrGroups,
             IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils
@@ -2739,7 +2741,7 @@ __webpack_require__.r(__webpack_exports__);
     // Helper: Apply indicator changes from indicatorConfigurations Map back to field object
     // This ensures that any edits made through the IBM i modal are reflected in DDS generation
     function applyIndicatorChangesToField(field) {
-        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_81__.applyIndicatorChangesToFieldUI)({
+        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_82__.applyIndicatorChangesToFieldUI)({
             field,
             indicatorConfigurations,
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
@@ -2780,7 +2782,7 @@ __webpack_require__.r(__webpack_exports__);
 
     // Helper: Generate DFTVAL keyword lines for a field
     function generateFieldDftvalLines(field) {
-        return (0,_modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_79__.generateFieldDftvalLinesUI)({
+        return (0,_modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_80__.generateFieldDftvalLinesUI)({
             field,
             generateDdsLineWithIndicators,
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
@@ -2790,6 +2792,13 @@ __webpack_require__.r(__webpack_exports__);
     // Helper: Generate EDTCDE keyword lines for a field
     function generateFieldEdtcdeLines(field) {
         return (0,_modules_ui_generateFieldEdtcdeLines_js__WEBPACK_IMPORTED_MODULE_78__.generateFieldEdtcdeLinesUI)({
+            field
+        });
+    }
+
+    // Helper: Generate EDTWRD/EDTMSK keyword lines for a field
+    function generateFieldEditKeywordsLines(field) {
+        return (0,_modules_ui_generateFieldEditKeywordsLines_js__WEBPACK_IMPORTED_MODULE_79__.generateFieldEditKeywordsLinesUI)({
             field
         });
     }
@@ -3170,6 +3179,7 @@ __webpack_require__.r(__webpack_exports__);
         const attrLines = generateFieldDspatrLines(field);
         const checkLines = generateFieldCheckLines(field);
         const edtcdeLines = generateFieldEdtcdeLines(field);
+        const editKeywordLines = generateFieldEditKeywordsLines(field);
         const dftvalLines = generateFieldDftvalLines(field);
         
         // Build main line with indicators
@@ -3180,10 +3190,11 @@ __webpack_require__.r(__webpack_exports__);
         const attrLinesStr = attrLines.length > 0 ? '\n' + attrLines.join('\n') : '';
         const checkLinesStr = checkLines.length > 0 ? '\n' + checkLines.join('\n') : '';
         const edtcdeLinesStr = edtcdeLines.length > 0 ? '\n' + edtcdeLines.join('\n') : '';
+        const editKeywordLinesStr = editKeywordLines.length > 0 ? '\n' + editKeywordLines.join('\n') : '';
         const dftvalLinesStr = dftvalLines.length > 0 ? '\n' + dftvalLines.join('\n') : '';
         const colorLinesStr = colorLines.length > 0 ? '\n' + colorLines.join('\n') : '';
 
-        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + dftvalLinesStr + colorLinesStr;
+        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + dftvalLinesStr + colorLinesStr;
         
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Generated DDS: name="${field.name}" padded="${fieldNamePadded}" type="${typeAndUsage}" padded="${typePartPadded}"`);
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Full line(s): "${result}"`);
@@ -3279,13 +3290,15 @@ __webpack_require__.r(__webpack_exports__);
                 // These lines don't have field names like "A FIELDNAME 10A"
                 // Field lines have a recognizable pattern: field name (at least 3 chars) followed by type spec
                 // The type spec can be: "10A", "10", "10Y 0", or with spaces "64   O"
-                const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{2,}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
+                const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{0,9}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
                 const hasAttributeKeyword = (
                     trimmedLine.includes('DSPATR(') ||
                     trimmedLine.includes('COLOR(') ||
                     trimmedLine.includes('CHECK(') ||
                     trimmedLine.includes('VALUES(') ||
                     trimmedLine.includes('EDTCDE(') ||
+                    trimmedLine.includes('EDTWRD(') ||
+                    trimmedLine.includes('EDTMSK(') ||
                     trimmedLine.includes('DFTVAL(')
                 );
                 const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
@@ -3459,13 +3472,15 @@ __webpack_require__.r(__webpack_exports__);
                         trimmedLine.includes('SFLCTL')
                     );
                     
-                    const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{2,}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
+                    const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{0,9}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
                     const hasAttributeKeyword = (
                         trimmedLine.includes('DSPATR(') ||
                         trimmedLine.includes('COLOR(') ||
                         trimmedLine.includes('CHECK(') ||
                         trimmedLine.includes('VALUES(') ||
-                        trimmedLine.includes('EDTCDE(')
+                        trimmedLine.includes('EDTCDE(') ||
+                        trimmedLine.includes('EDTWRD(') ||
+                        trimmedLine.includes('EDTMSK(')
                     );
                     const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
                     
@@ -4094,6 +4109,34 @@ __webpack_require__.r(__webpack_exports__);
                 }
                 _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for field ${fieldName}`);
             }
+        }
+
+        const parseInlineKeywordTextArg = (keywordName, lineText) => {
+            const quotedRegex = new RegExp(`${keywordName}\\(\\s*'((?:''|[^'])*)'\\s*\\)`, 'i');
+            const quotedMatch = lineText.match(quotedRegex);
+            if (quotedMatch) {
+                return quotedMatch[1].replace(/''/g, "'");
+            }
+
+            const genericRegex = new RegExp(`${keywordName}\\(\\s*([^)]*?)\\s*\\)`, 'i');
+            const genericMatch = lineText.match(genericRegex);
+            if (!genericMatch) {
+                return '';
+            }
+
+            return genericMatch[1].trim();
+        };
+
+        const edtwrdValue = parseInlineKeywordTextArg('EDTWRD', line);
+        if (edtwrdValue.length > 0) {
+            fieldObj.edtwrd = { value: edtwrdValue };
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline EDTWRD('${edtwrdValue}') for field ${fieldName}`);
+        }
+
+        const edtmskValue = parseInlineKeywordTextArg('EDTMSK', line);
+        if (edtmskValue.length > 0) {
+            fieldObj.edtmsk = { value: edtmskValue };
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline EDTMSK('${edtmskValue}') for field ${fieldName}`);
         }
 
         // Note: DFTVAL is now extracted by scanAttributeLinesAfterField, not inline
@@ -5735,7 +5778,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   CHECK_NUMERIC_CODES: () => (/* binding */ CHECK_NUMERIC_CODES),
 /* harmony export */   attributeContentRegex: () => (/* binding */ attributeContentRegex)
 /* harmony export */ });
-const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'EDTCDE', 'EDTWRD', 'RANGE'];
+const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE'];
 const ATTRIBUTE_KEYWORDS_SET = new Set(ATTRIBUTE_KEYWORDS);
 const attributeContentRegex = new RegExp(`\\b(?:${ATTRIBUTE_KEYWORDS.join('|')})\\(`);
 
@@ -8184,6 +8227,34 @@ function showFieldProperties({
                             <option value="$">$</option>
                         </select>
                     </div>
+
+                    <div class="property-group" style="margin-top: 12px; margin-bottom: 6px; font-weight: 600; color: var(--vscode-descriptionForeground);">
+                        Edit word (EDTWRD)
+                    </div>
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-edtwrd-enabled" />
+                            Enable EDTWRD
+                        </label>
+                    </div>
+                    <div class="property-group edtwrd-value-group" style="display: none;">
+                        <label>Word</label>
+                        <input type="text" id="prop-edtwrd-value" placeholder="e.g. .  " />
+                    </div>
+
+                    <div class="property-group" style="margin-top: 12px; margin-bottom: 6px; font-weight: 600; color: var(--vscode-descriptionForeground);">
+                        Edit mask (EDTMSK)
+                    </div>
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-edtmsk-enabled" />
+                            Enable EDTMSK
+                        </label>
+                    </div>
+                    <div class="property-group edtmsk-value-group" style="display: none;">
+                        <label>Mask</label>
+                        <input type="text" id="prop-edtmsk-value" placeholder="e.g. 000,000.00" />
+                    </div>
                 </div>
             </div>
             
@@ -8831,6 +8902,12 @@ function showFieldProperties({
     const edtcdeValueGroup = document.querySelector('.edtcde-value-group');
     const edtcdeReplaceGroup = document.querySelector('.edtcde-replace-group');
     const edtcdeReplaceSelect = document.getElementById('prop-edtcde-replace-leading-zeros-with');
+    const edtwrdEnabledCheckbox = document.getElementById('prop-edtwrd-enabled');
+    const edtwrdValueInput = document.getElementById('prop-edtwrd-value');
+    const edtwrdValueGroup = document.querySelector('.edtwrd-value-group');
+    const edtmskEnabledCheckbox = document.getElementById('prop-edtmsk-enabled');
+    const edtmskValueInput = document.getElementById('prop-edtmsk-value');
+    const edtmskValueGroup = document.querySelector('.edtmsk-value-group');
 
     const updateEdtcdeReplaceVisibility = () => {
         if (!edtcdeReplaceGroup) {
@@ -8896,6 +8973,70 @@ function showFieldProperties({
     }
 
     updateEdtcdeReplaceVisibility();
+
+    const resolveKeywordTextValue = (keywordData) => {
+        if (!keywordData) {
+            return '';
+        }
+
+        if (typeof keywordData === 'string') {
+            return keywordData;
+        }
+
+        if (typeof keywordData.value === 'string') {
+            return keywordData.value;
+        }
+
+        return '';
+    };
+
+    const edtwrdValue = resolveKeywordTextValue(field.edtwrd);
+    if (edtwrdValue.length > 0) {
+        if (edtwrdEnabledCheckbox) {
+            edtwrdEnabledCheckbox.checked = true;
+        }
+        if (edtwrdValueGroup) {
+            edtwrdValueGroup.style.display = 'block';
+        }
+        if (edtwrdValueInput) {
+            edtwrdValueInput.value = edtwrdValue;
+        }
+    }
+
+    if (edtwrdEnabledCheckbox) {
+        edtwrdEnabledCheckbox.addEventListener('change', function() {
+            if (edtwrdValueGroup) {
+                edtwrdValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (this.checked && edtwrdValueInput) {
+                edtwrdValueInput.focus();
+            }
+        });
+    }
+
+    const edtmskValue = resolveKeywordTextValue(field.edtmsk);
+    if (edtmskValue.length > 0) {
+        if (edtmskEnabledCheckbox) {
+            edtmskEnabledCheckbox.checked = true;
+        }
+        if (edtmskValueGroup) {
+            edtmskValueGroup.style.display = 'block';
+        }
+        if (edtmskValueInput) {
+            edtmskValueInput.value = edtmskValue;
+        }
+    }
+
+    if (edtmskEnabledCheckbox) {
+        edtmskEnabledCheckbox.addEventListener('change', function() {
+            if (edtmskValueGroup) {
+                edtmskValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (this.checked && edtmskValueInput) {
+                edtmskValueInput.focus();
+            }
+        });
+    }
 
     setupIndicatorButtons();
 
@@ -9065,6 +9206,8 @@ function applyFieldProperties({
             checkIndicators: field.checkIndicators ? JSON.parse(JSON.stringify(field.checkIndicators)) : undefined,
             keywordIndicators: field.keywordIndicators ? JSON.parse(JSON.stringify(field.keywordIndicators)) : undefined,
             edtcde: field.edtcde ? { ...field.edtcde } : undefined,
+            edtwrd: field.edtwrd ? { ...field.edtwrd } : undefined,
+            edtmsk: field.edtmsk ? { ...field.edtmsk } : undefined,
             dftval: field.dftval ? { ...field.dftval } : undefined,
             dftvalIndicators: field.dftvalIndicators ? JSON.parse(JSON.stringify(field.dftvalIndicators)) : undefined
         };
@@ -9423,6 +9566,35 @@ function applyFieldProperties({
             delete field.edtcde;
         }
 
+        const edtwrdEnabledCheckbox = document.getElementById('prop-edtwrd-enabled');
+        const edtwrdValueInput = document.getElementById('prop-edtwrd-value');
+        const edtmskEnabledCheckbox = document.getElementById('prop-edtmsk-enabled');
+        const edtmskValueInput = document.getElementById('prop-edtmsk-value');
+
+        const canUseEditKeywords = field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B') && isNumericType;
+
+        if (canUseEditKeywords && edtwrdEnabledCheckbox && edtwrdEnabledCheckbox.checked && edtwrdValueInput) {
+            const edtwrdValue = edtwrdValueInput.value;
+            if (edtwrdValue.length > 0) {
+                field.edtwrd = { value: edtwrdValue };
+            } else {
+                delete field.edtwrd;
+            }
+        } else {
+            delete field.edtwrd;
+        }
+
+        if (canUseEditKeywords && edtmskEnabledCheckbox && edtmskEnabledCheckbox.checked && edtmskValueInput) {
+            const edtmskValue = edtmskValueInput.value;
+            if (edtmskValue.length > 0) {
+                field.edtmsk = { value: edtmskValue };
+            } else {
+                delete field.edtmsk;
+            }
+        } else {
+            delete field.edtmsk;
+        }
+
         const edtcdeForShift = field.edtcde && field.edtcde.value
             ? String(field.edtcde.value).trim().toUpperCase()
             : '';
@@ -9480,6 +9652,8 @@ function applyFieldProperties({
         const dftvalChanged = JSON.stringify(oldField.dftval || null) !== JSON.stringify(field.dftval || null);
         const dftvalIndicatorsChanged = JSON.stringify(oldField.dftvalIndicators || null) !== JSON.stringify(field.dftvalIndicators || null);
         const edtcdeChanged = JSON.stringify(oldField.edtcde || null) !== JSON.stringify(field.edtcde || null);
+        const edtwrdChanged = JSON.stringify(oldField.edtwrd || null) !== JSON.stringify(field.edtwrd || null);
+        const edtmskChanged = JSON.stringify(oldField.edtmsk || null) !== JSON.stringify(field.edtmsk || null);
 
         const valueChanged = field.type === 'constant' && oldField.value !== field.value;
 
@@ -9500,11 +9674,13 @@ function applyFieldProperties({
             checkIndicatorsModified ||
             dftvalChanged ||
             dftvalIndicatorsChanged ||
-            edtcdeChanged
+            edtcdeChanged ||
+            edtwrdChanged ||
+            edtmskChanged
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;
@@ -13257,7 +13433,7 @@ function scanAttributeLinesAfterField({
         includeChecks = false,
         preserveOriginalSpacing = false,
         stopOnFieldKeywordsRegex = null,
-        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|DFTVAL\(/,
+        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(/,
     } = options;
 
     let lineOffset = 1;
@@ -13282,7 +13458,7 @@ function scanAttributeLinesAfterField({
         // Check if this is an indicator-only line (belongs to next field)
         // Format: "A  11 42 54" or "AO 50" with NO field name after column 18
         const contentAfterColumn18 = nextLine.length > 18 ? nextLine.substring(18).trim() : '';
-        const hasFieldNameAfter18 = /^[A-Z][A-Z0-9_]{2,}\s+\d+/i.test(contentAfterColumn18);
+        const hasFieldNameAfter18 = /^[A-Z][A-Z0-9_]{0,9}\s+\d+/i.test(contentAfterColumn18);
         const indicatorAreaContent = nextLine.length > 6 ? nextLine.substring(6, 18).trim() : '';
         const hasIndicatorPattern = /^O?\s*[N\d\s]+$/.test(indicatorAreaContent);
         const isIndicatorOnlyLine = nextLine.length > 6 &&
@@ -13292,7 +13468,7 @@ function scanAttributeLinesAfterField({
                                     indicatorAreaContent.length > 0 &&
                                     contentAfterColumn18 === '';
 
-        const hasFieldName = /\b[A-Z][A-Z0-9_]{2,}\s+\d+[A-Z]/i.test(nextTrimmed);
+        const hasFieldName = /\b[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(nextTrimmed);
         const hasConstant = nextTrimmed.match(/\d+\s+\d+'/);
         const isRecordDef = nextTrimmed.match(/^A\s+R\s+\w+/);
         const isBlank = nextTrimmed === '' || nextTrimmed === 'A';
@@ -13575,6 +13751,22 @@ function scanAttributeLinesAfterField({
             }
         }
 
+        const parseKeywordTextArg = (keywordName, lineText) => {
+            const quotedRegex = new RegExp(`${keywordName}\\(\\s*'((?:''|[^'])*)'\\s*\\)`, 'i');
+            const quotedMatch = lineText.match(quotedRegex);
+            if (quotedMatch) {
+                return quotedMatch[1].replace(/''/g, "'");
+            }
+
+            const genericRegex = new RegExp(`${keywordName}\\(\\s*([^)]*?)\\s*\\)`, 'i');
+            const genericMatch = lineText.match(genericRegex);
+            if (!genericMatch) {
+                return '';
+            }
+
+            return genericMatch[1].trim();
+        };
+
         const edtcdeMatch = nextLine.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);
         if (edtcdeMatch) {
             const edtcdeValue = edtcdeMatch[1].replace(/["']/g, '').trim().toUpperCase();
@@ -13586,6 +13778,18 @@ function scanAttributeLinesAfterField({
                 }
                 Logger.parse(`Found EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
             }
+        }
+
+        const edtwrdValue = parseKeywordTextArg('EDTWRD', nextLine);
+        if (edtwrdValue.length > 0) {
+            field.edtwrd = { value: edtwrdValue };
+            Logger.parse(`Found EDTWRD('${edtwrdValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
+
+        const edtmskValue = parseKeywordTextArg('EDTMSK', nextLine);
+        if (edtmskValue.length > 0) {
+            field.edtmsk = { value: edtmskValue };
+            Logger.parse(`Found EDTMSK('${edtmskValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
         if (includeChecks) {
@@ -14204,6 +14408,48 @@ function generateFieldEdtcdeLinesUI({
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldEditKeywordsLinesUI: () => (/* binding */ generateFieldEditKeywordsLinesUI)
+/* harmony export */ });
+// Generate EDTWRD/EDTMSK keyword lines for a field
+function generateFieldEditKeywordsLinesUI({
+    field
+}) {
+    const lines = [];
+
+    const escapeSingleQuotes = (text) => String(text).replace(/'/g, "''");
+    const resolveValue = (keywordData) => {
+        if (!keywordData) {
+            return '';
+        }
+        if (typeof keywordData === 'string') {
+            return keywordData;
+        }
+        if (typeof keywordData.value === 'string') {
+            return keywordData.value;
+        }
+        return '';
+    };
+
+    const edtwrdValue = resolveValue(field.edtwrd);
+    if (edtwrdValue.length > 0) {
+        lines.push(`     A                                      EDTWRD('${escapeSingleQuotes(edtwrdValue)}')`);
+    }
+
+    const edtmskValue = resolveValue(field.edtmsk);
+    if (edtmskValue.length > 0) {
+        lines.push(`     A                                      EDTMSK('${escapeSingleQuotes(edtmskValue)}')`);
+    }
+
+    return lines;
+}
+
+
+/***/ }),
+/* 81 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   generateFieldDftvalLinesUI: () => (/* binding */ generateFieldDftvalLinesUI)
 /* harmony export */ });
 // Generate DFTVAL keyword lines for a field
@@ -14249,7 +14495,7 @@ function generateFieldDftvalLinesUI({
 
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -14392,7 +14638,7 @@ function generateDdsLineWithIndicatorsUI({
 
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);

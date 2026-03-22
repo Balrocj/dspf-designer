@@ -549,6 +549,34 @@ export function showFieldProperties({
                             <option value="$">$</option>
                         </select>
                     </div>
+
+                    <div class="property-group" style="margin-top: 12px; margin-bottom: 6px; font-weight: 600; color: var(--vscode-descriptionForeground);">
+                        Edit word (EDTWRD)
+                    </div>
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-edtwrd-enabled" />
+                            Enable EDTWRD
+                        </label>
+                    </div>
+                    <div class="property-group edtwrd-value-group" style="display: none;">
+                        <label>Word</label>
+                        <input type="text" id="prop-edtwrd-value" placeholder="e.g. .  " />
+                    </div>
+
+                    <div class="property-group" style="margin-top: 12px; margin-bottom: 6px; font-weight: 600; color: var(--vscode-descriptionForeground);">
+                        Edit mask (EDTMSK)
+                    </div>
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-edtmsk-enabled" />
+                            Enable EDTMSK
+                        </label>
+                    </div>
+                    <div class="property-group edtmsk-value-group" style="display: none;">
+                        <label>Mask</label>
+                        <input type="text" id="prop-edtmsk-value" placeholder="e.g. 000,000.00" />
+                    </div>
                 </div>
             </div>
             
@@ -1196,6 +1224,12 @@ export function showFieldProperties({
     const edtcdeValueGroup = document.querySelector('.edtcde-value-group');
     const edtcdeReplaceGroup = document.querySelector('.edtcde-replace-group');
     const edtcdeReplaceSelect = document.getElementById('prop-edtcde-replace-leading-zeros-with');
+    const edtwrdEnabledCheckbox = document.getElementById('prop-edtwrd-enabled');
+    const edtwrdValueInput = document.getElementById('prop-edtwrd-value');
+    const edtwrdValueGroup = document.querySelector('.edtwrd-value-group');
+    const edtmskEnabledCheckbox = document.getElementById('prop-edtmsk-enabled');
+    const edtmskValueInput = document.getElementById('prop-edtmsk-value');
+    const edtmskValueGroup = document.querySelector('.edtmsk-value-group');
 
     const updateEdtcdeReplaceVisibility = () => {
         if (!edtcdeReplaceGroup) {
@@ -1261,6 +1295,70 @@ export function showFieldProperties({
     }
 
     updateEdtcdeReplaceVisibility();
+
+    const resolveKeywordTextValue = (keywordData) => {
+        if (!keywordData) {
+            return '';
+        }
+
+        if (typeof keywordData === 'string') {
+            return keywordData;
+        }
+
+        if (typeof keywordData.value === 'string') {
+            return keywordData.value;
+        }
+
+        return '';
+    };
+
+    const edtwrdValue = resolveKeywordTextValue(field.edtwrd);
+    if (edtwrdValue.length > 0) {
+        if (edtwrdEnabledCheckbox) {
+            edtwrdEnabledCheckbox.checked = true;
+        }
+        if (edtwrdValueGroup) {
+            edtwrdValueGroup.style.display = 'block';
+        }
+        if (edtwrdValueInput) {
+            edtwrdValueInput.value = edtwrdValue;
+        }
+    }
+
+    if (edtwrdEnabledCheckbox) {
+        edtwrdEnabledCheckbox.addEventListener('change', function() {
+            if (edtwrdValueGroup) {
+                edtwrdValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (this.checked && edtwrdValueInput) {
+                edtwrdValueInput.focus();
+            }
+        });
+    }
+
+    const edtmskValue = resolveKeywordTextValue(field.edtmsk);
+    if (edtmskValue.length > 0) {
+        if (edtmskEnabledCheckbox) {
+            edtmskEnabledCheckbox.checked = true;
+        }
+        if (edtmskValueGroup) {
+            edtmskValueGroup.style.display = 'block';
+        }
+        if (edtmskValueInput) {
+            edtmskValueInput.value = edtmskValue;
+        }
+    }
+
+    if (edtmskEnabledCheckbox) {
+        edtmskEnabledCheckbox.addEventListener('change', function() {
+            if (edtmskValueGroup) {
+                edtmskValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (this.checked && edtmskValueInput) {
+                edtmskValueInput.focus();
+            }
+        });
+    }
 
     setupIndicatorButtons();
 

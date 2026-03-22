@@ -15,7 +15,7 @@ export function scanAttributeLinesAfterField({
         includeChecks = false,
         preserveOriginalSpacing = false,
         stopOnFieldKeywordsRegex = null,
-        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|DFTVAL\(/,
+        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(/,
     } = options;
 
     let lineOffset = 1;
@@ -40,7 +40,7 @@ export function scanAttributeLinesAfterField({
         // Check if this is an indicator-only line (belongs to next field)
         // Format: "A  11 42 54" or "AO 50" with NO field name after column 18
         const contentAfterColumn18 = nextLine.length > 18 ? nextLine.substring(18).trim() : '';
-        const hasFieldNameAfter18 = /^[A-Z][A-Z0-9_]{2,}\s+\d+/i.test(contentAfterColumn18);
+        const hasFieldNameAfter18 = /^[A-Z][A-Z0-9_]{0,9}\s+\d+/i.test(contentAfterColumn18);
         const indicatorAreaContent = nextLine.length > 6 ? nextLine.substring(6, 18).trim() : '';
         const hasIndicatorPattern = /^O?\s*[N\d\s]+$/.test(indicatorAreaContent);
         const isIndicatorOnlyLine = nextLine.length > 6 &&
@@ -50,7 +50,7 @@ export function scanAttributeLinesAfterField({
                                     indicatorAreaContent.length > 0 &&
                                     contentAfterColumn18 === '';
 
-        const hasFieldName = /\b[A-Z][A-Z0-9_]{2,}\s+\d+[A-Z]/i.test(nextTrimmed);
+        const hasFieldName = /\b[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(nextTrimmed);
         const hasConstant = nextTrimmed.match(/\d+\s+\d+'/);
         const isRecordDef = nextTrimmed.match(/^A\s+R\s+\w+/);
         const isBlank = nextTrimmed === '' || nextTrimmed === 'A';
@@ -333,6 +333,22 @@ export function scanAttributeLinesAfterField({
             }
         }
 
+        const parseKeywordTextArg = (keywordName, lineText) => {
+            const quotedRegex = new RegExp(`${keywordName}\\(\\s*'((?:''|[^'])*)'\\s*\\)`, 'i');
+            const quotedMatch = lineText.match(quotedRegex);
+            if (quotedMatch) {
+                return quotedMatch[1].replace(/''/g, "'");
+            }
+
+            const genericRegex = new RegExp(`${keywordName}\\(\\s*([^)]*?)\\s*\\)`, 'i');
+            const genericMatch = lineText.match(genericRegex);
+            if (!genericMatch) {
+                return '';
+            }
+
+            return genericMatch[1].trim();
+        };
+
         const edtcdeMatch = nextLine.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);
         if (edtcdeMatch) {
             const edtcdeValue = edtcdeMatch[1].replace(/["']/g, '').trim().toUpperCase();
@@ -344,6 +360,18 @@ export function scanAttributeLinesAfterField({
                 }
                 Logger.parse(`Found EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
             }
+        }
+
+        const edtwrdValue = parseKeywordTextArg('EDTWRD', nextLine);
+        if (edtwrdValue.length > 0) {
+            field.edtwrd = { value: edtwrdValue };
+            Logger.parse(`Found EDTWRD('${edtwrdValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
+
+        const edtmskValue = parseKeywordTextArg('EDTMSK', nextLine);
+        if (edtmskValue.length > 0) {
+            field.edtmsk = { value: edtmskValue };
+            Logger.parse(`Found EDTMSK('${edtmskValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
         if (includeChecks) {

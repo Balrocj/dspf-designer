@@ -77,6 +77,7 @@ import { generateFieldDspatrLinesUI } from './modules/ui/generateFieldDspatrLine
 import { generateFieldColorLinesUI } from './modules/ui/generateFieldColorLines.js';
 import { generateFieldCheckLinesUI } from './modules/ui/generateFieldCheckLines.js';
 import { generateFieldEdtcdeLinesUI } from './modules/ui/generateFieldEdtcdeLines.js';
+import { generateFieldEditKeywordsLinesUI } from './modules/ui/generateFieldEditKeywordsLines.js';
 import { generateFieldDftvalLinesUI } from './modules/ui/generateFieldDftvalLines.js';
 import { generateDdsLineWithIndicatorsUI } from './modules/ui/generateDdsLineWithIndicators.js';
 import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChangesToField.js';
@@ -1179,7 +1180,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         startIndex: index,
                         field,
                         contextLabel: 'PREVIEW',
-                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|DFTVAL\(/
+                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(/
                     });
                     
                     Logger.debug(`Parsed preview field: ${field.name} (${field.type}) at ${field.row},${field.col} for record ${currentRecordName}`);
@@ -1262,8 +1263,8 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                                 field,
                                 contextLabel: 'PREVIEW-COMPANION',
                                 includeDftval: true,
-                                attributeRegex: /COLOR\(|DSPATR\(|DFTVAL\(/,
-                                stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|EDTCDE\(|VALUES\(|RANGE\()/
+                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(/,
+                                stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|EDTCDE\(|EDTWRD\(|EDTMSK\(|VALUES\(|RANGE\()/
                             });
                             
                             Logger.debug(`Preview: Parsed companion field: ${field.name} at ${field.row},${field.col} with color=${field.color}, attrs=${field.attributes ? Object.keys(field.attributes).join(',') : 'none'}`);
@@ -1872,7 +1873,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             const contentAfter43 = nextLine.length > 43 ? nextLine.substring(43).trim() : '';
             
             // Check for known attribute keywords (DSPATR, COLOR, CHECK, DFTVAL, etc.)
-            const hasKnownKeyword = /^(DSPATR|COLOR|CHECK|DFTVAL|EDTCDE|EDTWRD|COMP|RANGE|VALUES|TEXT|COLHDG|CHGINPDFT|MSGID|SFLMSG|DFT|CMP|REFFLD)\s*\(/.test(contentAfter43);
+            const hasKnownKeyword = /^(DSPATR|COLOR|CHECK|DFTVAL|EDTCDE|EDTWRD|EDTMSK|COMP|RANGE|VALUES|TEXT|COLHDG|CHGINPDFT|MSGID|SFLMSG|DFT|CMP|REFFLD)\s*\(/.test(contentAfter43);
             
             if (contentAfter43.length > 0 || hasKnownKeyword) {
                 // This is an attribute or keyword line - include it in the block
@@ -2577,7 +2578,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
 
                 // Unknown keywords: keep them. Known attributes (COLOR, DSPATR, EDTCDE, etc.) are regenerated
                 if (contentAfter43.length > 0) {
-                    const isKnown = attributeContentRegex ? attributeContentRegex.test(contentAfter43) : /^(DSPATR|COLOR|CHECK|DFTVAL|EDTCDE|EDTWRD|COMP|RANGE|VALUES|TEXT|COLHDG|CHGINPDFT|MSGID|SFLMSG|DFT|CMP|REFFLD)\s*\(/.test(contentAfter43);
+                    const isKnown = attributeContentRegex ? attributeContentRegex.test(contentAfter43) : /^(DSPATR|COLOR|CHECK|DFTVAL|EDTCDE|EDTWRD|EDTMSK|COMP|RANGE|VALUES|TEXT|COLHDG|CHGINPDFT|MSGID|SFLMSG|DFT|CMP|REFFLD)\s*\(/.test(contentAfter43);
                     if (!isKnown) {
                         preservedExtras.push(line);
                         Logger.dds(`Preserving unknown keyword line ${globalIndex + 1}: "${contentAfter43}"`);
@@ -2700,6 +2701,13 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     // Helper: Generate EDTCDE keyword lines for a field
     function generateFieldEdtcdeLines(field) {
         return generateFieldEdtcdeLinesUI({
+            field
+        });
+    }
+
+    // Helper: Generate EDTWRD/EDTMSK keyword lines for a field
+    function generateFieldEditKeywordsLines(field) {
+        return generateFieldEditKeywordsLinesUI({
             field
         });
     }
@@ -3080,6 +3088,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         const attrLines = generateFieldDspatrLines(field);
         const checkLines = generateFieldCheckLines(field);
         const edtcdeLines = generateFieldEdtcdeLines(field);
+        const editKeywordLines = generateFieldEditKeywordsLines(field);
         const dftvalLines = generateFieldDftvalLines(field);
         
         // Build main line with indicators
@@ -3090,10 +3099,11 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         const attrLinesStr = attrLines.length > 0 ? '\n' + attrLines.join('\n') : '';
         const checkLinesStr = checkLines.length > 0 ? '\n' + checkLines.join('\n') : '';
         const edtcdeLinesStr = edtcdeLines.length > 0 ? '\n' + edtcdeLines.join('\n') : '';
+        const editKeywordLinesStr = editKeywordLines.length > 0 ? '\n' + editKeywordLines.join('\n') : '';
         const dftvalLinesStr = dftvalLines.length > 0 ? '\n' + dftvalLines.join('\n') : '';
         const colorLinesStr = colorLines.length > 0 ? '\n' + colorLines.join('\n') : '';
 
-        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + dftvalLinesStr + colorLinesStr;
+        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + dftvalLinesStr + colorLinesStr;
         
         Logger.dds(`Generated DDS: name="${field.name}" padded="${fieldNamePadded}" type="${typeAndUsage}" padded="${typePartPadded}"`);
         Logger.dds(`Full line(s): "${result}"`);
@@ -3189,13 +3199,15 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 // These lines don't have field names like "A FIELDNAME 10A"
                 // Field lines have a recognizable pattern: field name (at least 3 chars) followed by type spec
                 // The type spec can be: "10A", "10", "10Y 0", or with spaces "64   O"
-                const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{2,}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
+                const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{0,9}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
                 const hasAttributeKeyword = (
                     trimmedLine.includes('DSPATR(') ||
                     trimmedLine.includes('COLOR(') ||
                     trimmedLine.includes('CHECK(') ||
                     trimmedLine.includes('VALUES(') ||
                     trimmedLine.includes('EDTCDE(') ||
+                    trimmedLine.includes('EDTWRD(') ||
+                    trimmedLine.includes('EDTMSK(') ||
                     trimmedLine.includes('DFTVAL(')
                 );
                 const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
@@ -3369,13 +3381,15 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         trimmedLine.includes('SFLCTL')
                     );
                     
-                    const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{2,}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
+                    const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{0,9}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
                     const hasAttributeKeyword = (
                         trimmedLine.includes('DSPATR(') ||
                         trimmedLine.includes('COLOR(') ||
                         trimmedLine.includes('CHECK(') ||
                         trimmedLine.includes('VALUES(') ||
-                        trimmedLine.includes('EDTCDE(')
+                        trimmedLine.includes('EDTCDE(') ||
+                        trimmedLine.includes('EDTWRD(') ||
+                        trimmedLine.includes('EDTMSK(')
                     );
                     const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
                     
@@ -4004,6 +4018,34 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 }
                 Logger.parse(`Found inline EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for field ${fieldName}`);
             }
+        }
+
+        const parseInlineKeywordTextArg = (keywordName, lineText) => {
+            const quotedRegex = new RegExp(`${keywordName}\\(\\s*'((?:''|[^'])*)'\\s*\\)`, 'i');
+            const quotedMatch = lineText.match(quotedRegex);
+            if (quotedMatch) {
+                return quotedMatch[1].replace(/''/g, "'");
+            }
+
+            const genericRegex = new RegExp(`${keywordName}\\(\\s*([^)]*?)\\s*\\)`, 'i');
+            const genericMatch = lineText.match(genericRegex);
+            if (!genericMatch) {
+                return '';
+            }
+
+            return genericMatch[1].trim();
+        };
+
+        const edtwrdValue = parseInlineKeywordTextArg('EDTWRD', line);
+        if (edtwrdValue.length > 0) {
+            fieldObj.edtwrd = { value: edtwrdValue };
+            Logger.parse(`Found inline EDTWRD('${edtwrdValue}') for field ${fieldName}`);
+        }
+
+        const edtmskValue = parseInlineKeywordTextArg('EDTMSK', line);
+        if (edtmskValue.length > 0) {
+            fieldObj.edtmsk = { value: edtmskValue };
+            Logger.parse(`Found inline EDTMSK('${edtmskValue}') for field ${fieldName}`);
         }
 
         // Note: DFTVAL is now extracted by scanAttributeLinesAfterField, not inline
