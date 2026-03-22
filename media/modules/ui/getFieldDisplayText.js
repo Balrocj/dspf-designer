@@ -212,7 +212,16 @@ export function getFieldDisplayText(options) {
             baseNumericText = digitChar.repeat(length);
         }
 
-        // EDTWRD y EDTMSK tienen prioridad sobre EDTCDE (en IBM i no pueden coexistir)
+        // Prioridad de keywords de edición (en IBM i son mutuamente excluyentes,
+        // pero si coexisten en el DDS, EDTCDE tiene precedencia sobre EDTMSK/EDTWRD):
+        // 1. EDTWRD (si existe y no hay EDTCDE)
+        // 2. EDTMSK (si existe y no hay EDTCDE ni EDTWRD)
+        // 3. EDTCDE (siempre que exista, gana sobre los anteriores)
+        if (edtcdeCode) {
+            const edtcdeFormatted = applyEdtcdeCodeFormatting(baseNumericText);
+            return applyEdtcdeDisplayReplacement(edtcdeFormatted, digitChar);
+        }
+
         const edtwrdResult = applyEdtwrdFormatting(digitChar);
         if (edtwrdResult !== null) {
             return edtwrdResult;
