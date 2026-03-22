@@ -1,4 +1,4 @@
-export const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE'];
+export const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE'];
 export const ATTRIBUTE_KEYWORDS_SET = new Set(ATTRIBUTE_KEYWORDS);
 export const attributeContentRegex = new RegExp(`\\b(?:${ATTRIBUTE_KEYWORDS.join('|')})\\(`);
 

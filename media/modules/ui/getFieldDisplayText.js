@@ -161,7 +161,7 @@ export function getFieldDisplayText(options) {
             }
 
             // Y: fecha con separadores → MM-DD-YY (6 dígitos) o MM-DD-YYYY (8 dígitos)
-            // El separador de fecha IBM i por defecto es '-' (datsep del job).
+            // El separador de fecha IBM i por defecto es '-' (Mas adelante se debería leer del sysval QDATSEP).
             if (edtcdeCode === 'Y') {
                 const len = baseText.length;
                 if (len === 6) {

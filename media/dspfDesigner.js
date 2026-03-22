@@ -78,6 +78,7 @@ import { generateFieldColorLinesUI } from './modules/ui/generateFieldColorLines.
 import { generateFieldCheckLinesUI } from './modules/ui/generateFieldCheckLines.js';
 import { generateFieldEdtcdeLinesUI } from './modules/ui/generateFieldEdtcdeLines.js';
 import { generateFieldEditKeywordsLinesUI } from './modules/ui/generateFieldEditKeywordsLines.js';
+import { generateFieldDftLinesUI } from './modules/ui/generateFieldDftLines.js';
 import { generateFieldDftvalLinesUI } from './modules/ui/generateFieldDftvalLines.js';
 import { generateDdsLineWithIndicatorsUI } from './modules/ui/generateDdsLineWithIndicators.js';
 import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChangesToField.js';
@@ -1180,7 +1181,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         startIndex: index,
                         field,
                         contextLabel: 'PREVIEW',
-                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(/
+                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(/
                     });
                     
                     Logger.debug(`Parsed preview field: ${field.name} (${field.type}) at ${field.row},${field.col} for record ${currentRecordName}`);
@@ -1263,7 +1264,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                                 field,
                                 contextLabel: 'PREVIEW-COMPANION',
                                 includeDftval: true,
-                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(/,
+                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(/,
                                 stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|EDTCDE\(|EDTWRD\(|EDTMSK\(|VALUES\(|RANGE\()/
                             });
                             
@@ -2698,6 +2699,13 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         });
     }
 
+    // Helper: Generate DFT keyword lines for a field
+    function generateFieldDftLines(field) {
+        return generateFieldDftLinesUI({
+            field
+        });
+    }
+
     // Helper: Generate EDTCDE keyword lines for a field
     function generateFieldEdtcdeLines(field) {
         return generateFieldEdtcdeLinesUI({
@@ -3089,6 +3097,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         const checkLines = generateFieldCheckLines(field);
         const edtcdeLines = generateFieldEdtcdeLines(field);
         const editKeywordLines = generateFieldEditKeywordsLines(field);
+        const dftLines = generateFieldDftLines(field);
         const dftvalLines = generateFieldDftvalLines(field);
         
         // Build main line with indicators
@@ -3100,10 +3109,11 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         const checkLinesStr = checkLines.length > 0 ? '\n' + checkLines.join('\n') : '';
         const edtcdeLinesStr = edtcdeLines.length > 0 ? '\n' + edtcdeLines.join('\n') : '';
         const editKeywordLinesStr = editKeywordLines.length > 0 ? '\n' + editKeywordLines.join('\n') : '';
+        const dftLinesStr = dftLines.length > 0 ? '\n' + dftLines.join('\n') : '';
         const dftvalLinesStr = dftvalLines.length > 0 ? '\n' + dftvalLines.join('\n') : '';
         const colorLinesStr = colorLines.length > 0 ? '\n' + colorLines.join('\n') : '';
 
-        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + dftvalLinesStr + colorLinesStr;
+        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + dftLinesStr + dftvalLinesStr + colorLinesStr;
         
         Logger.dds(`Generated DDS: name="${field.name}" padded="${fieldNamePadded}" type="${typeAndUsage}" padded="${typePartPadded}"`);
         Logger.dds(`Full line(s): "${result}"`);
@@ -3208,6 +3218,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                     trimmedLine.includes('EDTCDE(') ||
                     trimmedLine.includes('EDTWRD(') ||
                     trimmedLine.includes('EDTMSK(') ||
+                    trimmedLine.includes('DFT(') ||
                     trimmedLine.includes('DFTVAL(')
                 );
                 const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
@@ -3389,7 +3400,9 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         trimmedLine.includes('VALUES(') ||
                         trimmedLine.includes('EDTCDE(') ||
                         trimmedLine.includes('EDTWRD(') ||
-                        trimmedLine.includes('EDTMSK(')
+                        trimmedLine.includes('EDTMSK(') ||
+                        trimmedLine.includes('DFT(') ||
+                        trimmedLine.includes('DFTVAL(')
                     );
                     const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
                     
@@ -4046,6 +4059,12 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         if (edtmskValue.length > 0) {
             fieldObj.edtmsk = { value: edtmskValue };
             Logger.parse(`Found inline EDTMSK('${edtmskValue}') for field ${fieldName}`);
+        }
+
+        const dftValue = parseInlineKeywordTextArg('DFT', line);
+        if (dftValue.length > 0) {
+            fieldObj.dft = { value: dftValue };
+            Logger.parse(`Found inline DFT(${dftValue}) for field ${fieldName}`);
         }
 
         // Note: DFTVAL is now extracted by scanAttributeLinesAfterField, not inline

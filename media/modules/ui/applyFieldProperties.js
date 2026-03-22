@@ -52,6 +52,7 @@ export function applyFieldProperties({
             edtcde: field.edtcde ? { ...field.edtcde } : undefined,
             edtwrd: field.edtwrd ? { ...field.edtwrd } : undefined,
             edtmsk: field.edtmsk ? { ...field.edtmsk } : undefined,
+            dft: field.dft ? { ...field.dft } : undefined,
             dftval: field.dftval ? { ...field.dftval } : undefined,
             dftvalIndicators: field.dftvalIndicators ? JSON.parse(JSON.stringify(field.dftvalIndicators)) : undefined
         };
@@ -360,6 +361,25 @@ export function applyFieldProperties({
             delete field.checkIndicators;
         }
 
+        if (field.type !== 'constant') {
+            const dftCheckbox = document.getElementById('prop-dft-enabled');
+            const dftValueInput = document.getElementById('prop-dft-value');
+
+            if (dftCheckbox && dftCheckbox.checked && dftValueInput) {
+                const dftValue = dftValueInput.value.trim();
+                if (dftValue) {
+                    field.dft = { value: dftValue };
+                    Logger.debug(`DFT set to '${dftValue}' for field ${field.name}`);
+                } else {
+                    delete field.dft;
+                }
+            } else {
+                delete field.dft;
+            }
+        } else {
+            delete field.dft;
+        }
+
         if (field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B')) {
             const dftvalCheckbox = document.getElementById('prop-dftval-enabled');
             const dftvalValueInput = document.getElementById('prop-dftval-value');
@@ -493,6 +513,7 @@ export function applyFieldProperties({
         const precisionChanged = field.dataType === 'float' && oldField.precision !== field.precision;
         const checkOptionsChanged = JSON.stringify(oldField.checkOptions || {}) !== JSON.stringify(field.checkOptions || {});
         const checkIndicatorsModified = Boolean(field.checkIndicatorsModified);
+        const dftChanged = JSON.stringify(oldField.dft || null) !== JSON.stringify(field.dft || null);
         const dftvalChanged = JSON.stringify(oldField.dftval || null) !== JSON.stringify(field.dftval || null);
         const dftvalIndicatorsChanged = JSON.stringify(oldField.dftvalIndicators || null) !== JSON.stringify(field.dftvalIndicators || null);
         const edtcdeChanged = JSON.stringify(oldField.edtcde || null) !== JSON.stringify(field.edtcde || null);
@@ -516,6 +537,7 @@ export function applyFieldProperties({
             valueChanged ||
             checkOptionsChanged ||
             checkIndicatorsModified ||
+            dftChanged ||
             dftvalChanged ||
             dftvalIndicatorsChanged ||
             edtcdeChanged ||
@@ -524,7 +546,7 @@ export function applyFieldProperties({
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;

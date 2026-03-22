@@ -15,7 +15,7 @@ export function scanAttributeLinesAfterField({
         includeChecks = false,
         preserveOriginalSpacing = false,
         stopOnFieldKeywordsRegex = null,
-        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(/,
+        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(/,
     } = options;
 
     let lineOffset = 1;
@@ -372,6 +372,12 @@ export function scanAttributeLinesAfterField({
         if (edtmskValue.length > 0) {
             field.edtmsk = { value: edtmskValue };
             Logger.parse(`Found EDTMSK('${edtmskValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
+
+        const dftValue = parseKeywordTextArg('DFT', nextLine);
+        if (dftValue.length > 0) {
+            field.dft = { value: dftValue };
+            Logger.parse(`Found DFT(${dftValue}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
         if (includeChecks) {

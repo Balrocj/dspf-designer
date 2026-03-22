@@ -499,6 +499,17 @@ export function showFieldProperties({
                 </div>
 
                 <div id="tab-general-keywords" class="tab-panel">
+                    <div class="property-group dft-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-dft-enabled" />
+                            Default (DFT)
+                        </label>
+                    </div>
+                    <div class="property-group dft-value-group" style="display: none;">
+                        <label>Value</label>
+                        <input type="text" id="prop-dft-value" placeholder="e.g. *DATE or 'ABC'" />
+                    </div>
+
                     <div class="property-group dftval-group" style="display: flex; align-items: center; gap: 8px;">
                         <label style="flex: 1;">
                             <input type="checkbox" id="prop-dftval-enabled" />
@@ -624,6 +635,8 @@ export function showFieldProperties({
     const checkNumGroups = Array.from(document.querySelectorAll('.check-num'));
     const checkCharTitles = Array.from(document.querySelectorAll('.check-char-title'));
     const checkNumTitles = Array.from(document.querySelectorAll('.check-num-title'));
+    const dftGroup = document.querySelector('.dft-group');
+    const dftValueGroup = document.querySelector('.dft-value-group');
     const dftvalGroup = document.querySelector('.dftval-group');
     const dftvalValueGroup = document.querySelector('.dftval-value-group');
     const shiftSelectElement = document.getElementById('prop-shift');
@@ -658,7 +671,16 @@ export function showFieldProperties({
             basicTab?.classList.add('active');
             basicPanel?.classList.add('active');
         }
-        const showDFTVAL = field.type !== 'constant' && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B');
+        const isVariableField = field.type !== 'constant' && field.type !== 'keyword' && !field.isKeyword;
+        const showGeneralKeywords = isVariableField;
+        const showDFT = isVariableField;
+        const showDFTVAL = isVariableField && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B');
+        if (dftGroup) {
+            dftGroup.style.display = showDFT ? 'flex' : 'none';
+        }
+        if (dftValueGroup) {
+            dftValueGroup.style.display = showDFT ? 'block' : 'none';
+        }
         if (dftvalGroup) {
             dftvalGroup.style.display = showDFTVAL ? 'flex' : 'none';
         }
@@ -666,10 +688,10 @@ export function showFieldProperties({
             dftvalValueGroup.style.display = showDFTVAL ? 'block' : 'none';
         }
         if (generalKeywordsTabBtn) {
-            generalKeywordsTabBtn.style.display = showDFTVAL ? 'inline-flex' : 'none';
+            generalKeywordsTabBtn.style.display = showGeneralKeywords ? 'inline-flex' : 'none';
         }
         if (generalKeywordsTabPanel) {
-            generalKeywordsTabPanel.style.display = showDFTVAL ? '' : 'none';
+            generalKeywordsTabPanel.style.display = showGeneralKeywords ? '' : 'none';
         }
 
         const currentTypeSelect = document.getElementById('prop-type');
@@ -1160,6 +1182,30 @@ export function showFieldProperties({
                 }
             }
         }
+    }
+
+    const dftEnabledCheckbox = document.getElementById('prop-dft-enabled');
+    const dftValueInput = document.getElementById('prop-dft-value');
+    if (field.dft) {
+        if (dftEnabledCheckbox) {
+            dftEnabledCheckbox.checked = true;
+        }
+        if (dftValueInput && field.dft.value) {
+            dftValueInput.value = field.dft.value;
+            dftValueInput.parentElement.style.display = 'block';
+        }
+
+    }
+
+    if (dftEnabledCheckbox) {
+        dftEnabledCheckbox.addEventListener('change', function() {
+            if (dftValueGroup) {
+                dftValueGroup.style.display = this.checked ? 'block' : 'none';
+                if (this.checked && dftValueInput) {
+                    dftValueInput.focus();
+                }
+            }
+        });
     }
 
     const dftvalEnabledCheckbox = document.getElementById('prop-dftval-enabled');
