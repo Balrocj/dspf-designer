@@ -54,6 +54,7 @@ You can edit your DSPF files offline. You can edit DSPF files located on your lo
 ## Known Limitations
 
 - This extension is currently in preview; not all DDS features are available in the designer yet
+- Not all DDS keywords are implemented in the designer yet (focus on the most common ones)
 - Some advanced or less common DDS keywords may require editing in Source view
 - Subfile and complex DDS features have limited visual support in this version
 - This version focuses on editing existing record formats (record creation coming soon)

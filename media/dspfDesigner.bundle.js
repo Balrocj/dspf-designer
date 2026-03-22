@@ -1,99 +1,97 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-/******/ 	var __webpack_modules__ = ({
-
-/***/ "./media/dspfDesigner.js":
-/*!*******************************!*\
-  !*** ./media/dspfDesigner.js ***!
-  \*******************************/
+/******/ 	var __webpack_modules__ = ([
+/* 0 */
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _modules_utils_colorUtils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/utils/colorUtils.js */ "./media/modules/utils/colorUtils.js");
-/* harmony import */ var _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/utils/screenCoordinates.js */ "./media/modules/utils/screenCoordinates.js");
-/* harmony import */ var _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/utils/indicatorUtils.js */ "./media/modules/utils/indicatorUtils.js");
-/* harmony import */ var _modules_utils_displaySizeUtils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/utils/displaySizeUtils.js */ "./media/modules/utils/displaySizeUtils.js");
-/* harmony import */ var _modules_utils_idGenerator_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/utils/idGenerator.js */ "./media/modules/utils/idGenerator.js");
-/* harmony import */ var _modules_utils_fieldNameValidator_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/utils/fieldNameValidator.js */ "./media/modules/utils/fieldNameValidator.js");
-/* harmony import */ var _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/core/logger.js */ "./media/modules/core/logger.js");
-/* harmony import */ var _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/core/ddsConstants.js */ "./media/modules/core/ddsConstants.js");
-/* harmony import */ var _modules_utils_charMetrics_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/utils/charMetrics.js */ "./media/modules/utils/charMetrics.js");
-/* harmony import */ var _modules_ui_rulers_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/ui/rulers.js */ "./media/modules/ui/rulers.js");
-/* harmony import */ var _modules_ui_canvasSetup_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/ui/canvasSetup.js */ "./media/modules/ui/canvasSetup.js");
-/* harmony import */ var _modules_ui_toolbarSetup_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modules/ui/toolbarSetup.js */ "./media/modules/ui/toolbarSetup.js");
-/* harmony import */ var _modules_ui_displaySizeSelector_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./modules/ui/displaySizeSelector.js */ "./media/modules/ui/displaySizeSelector.js");
-/* harmony import */ var _modules_ui_canvasSize_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./modules/ui/canvasSize.js */ "./media/modules/ui/canvasSize.js");
-/* harmony import */ var _modules_ui_dragAndDrop_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./modules/ui/dragAndDrop.js */ "./media/modules/ui/dragAndDrop.js");
-/* harmony import */ var _modules_ui_gridLines_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./modules/ui/gridLines.js */ "./media/modules/ui/gridLines.js");
-/* harmony import */ var _modules_ui_previewDisplaySizeListeners_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./modules/ui/previewDisplaySizeListeners.js */ "./media/modules/ui/previewDisplaySizeListeners.js");
-/* harmony import */ var _modules_ui_sourceSearch_js__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./modules/ui/sourceSearch.js */ "./media/modules/ui/sourceSearch.js");
-/* harmony import */ var _modules_ui_navigation_js__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./modules/ui/navigation.js */ "./media/modules/ui/navigation.js");
-/* harmony import */ var _modules_ui_windowResize_js__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./modules/ui/windowResize.js */ "./media/modules/ui/windowResize.js");
-/* harmony import */ var _modules_ui_sourceView_js__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./modules/ui/sourceView.js */ "./media/modules/ui/sourceView.js");
-/* harmony import */ var _modules_ui_moveField_js__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./modules/ui/moveField.js */ "./media/modules/ui/moveField.js");
-/* harmony import */ var _modules_ui_applyWindowDimensions_js__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./modules/ui/applyWindowDimensions.js */ "./media/modules/ui/applyWindowDimensions.js");
-/* harmony import */ var _modules_ui_showScreenProperties_js__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./modules/ui/showScreenProperties.js */ "./media/modules/ui/showScreenProperties.js");
-/* harmony import */ var _modules_ui_saveDocument_js__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./modules/ui/saveDocument.js */ "./media/modules/ui/saveDocument.js");
-/* harmony import */ var _modules_ui_setViewZoom_js__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./modules/ui/setViewZoom.js */ "./media/modules/ui/setViewZoom.js");
-/* harmony import */ var _modules_ui_switchToView_js__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./modules/ui/switchToView.js */ "./media/modules/ui/switchToView.js");
-/* harmony import */ var _modules_ui_indicatorButtons_js__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./modules/ui/indicatorButtons.js */ "./media/modules/ui/indicatorButtons.js");
-/* harmony import */ var _modules_ui_showFieldProperties_js__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./modules/ui/showFieldProperties.js */ "./media/modules/ui/showFieldProperties.js");
-/* harmony import */ var _modules_ui_applyFieldProperties_js__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./modules/ui/applyFieldProperties.js */ "./media/modules/ui/applyFieldProperties.js");
-/* harmony import */ var _modules_ui_propertiesTabs_js__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./modules/ui/propertiesTabs.js */ "./media/modules/ui/propertiesTabs.js");
-/* harmony import */ var _modules_ui_subfileControl_js__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./modules/ui/subfileControl.js */ "./media/modules/ui/subfileControl.js");
-/* harmony import */ var _modules_ui_functionKeys_js__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./modules/ui/functionKeys.js */ "./media/modules/ui/functionKeys.js");
-/* harmony import */ var _modules_ui_deleteConfirmation_js__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./modules/ui/deleteConfirmation.js */ "./media/modules/ui/deleteConfirmation.js");
-/* harmony import */ var _modules_ui_previewView_js__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./modules/ui/previewView.js */ "./media/modules/ui/previewView.js");
-/* harmony import */ var _modules_ui_updateReadOnlyMode_js__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./modules/ui/updateReadOnlyMode.js */ "./media/modules/ui/updateReadOnlyMode.js");
-/* harmony import */ var _modules_ui_selectField_js__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./modules/ui/selectField.js */ "./media/modules/ui/selectField.js");
-/* harmony import */ var _modules_ui_deselectAllFields_js__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./modules/ui/deselectAllFields.js */ "./media/modules/ui/deselectAllFields.js");
-/* harmony import */ var _modules_ui_editField_js__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./modules/ui/editField.js */ "./media/modules/ui/editField.js");
-/* harmony import */ var _modules_ui_scrollToRecordInSource_js__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./modules/ui/scrollToRecordInSource.js */ "./media/modules/ui/scrollToRecordInSource.js");
-/* harmony import */ var _modules_ui_recordNavigation_js__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./modules/ui/recordNavigation.js */ "./media/modules/ui/recordNavigation.js");
-/* harmony import */ var _modules_ui_createField_js__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! ./modules/ui/createField.js */ "./media/modules/ui/createField.js");
-/* harmony import */ var _modules_ui_generateUniqueFieldName_js__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! ./modules/ui/generateUniqueFieldName.js */ "./media/modules/ui/generateUniqueFieldName.js");
-/* harmony import */ var _modules_ui_applyAttributeClasses_js__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! ./modules/ui/applyAttributeClasses.js */ "./media/modules/ui/applyAttributeClasses.js");
-/* harmony import */ var _modules_ui_computeFieldDisplay_js__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! ./modules/ui/computeFieldDisplay.js */ "./media/modules/ui/computeFieldDisplay.js");
-/* harmony import */ var _modules_ui_setFieldContent_js__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! ./modules/ui/setFieldContent.js */ "./media/modules/ui/setFieldContent.js");
-/* harmony import */ var _modules_ui_setupFieldElement_js__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! ./modules/ui/setupFieldElement.js */ "./media/modules/ui/setupFieldElement.js");
-/* harmony import */ var _modules_ui_renderField_js__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(/*! ./modules/ui/renderField.js */ "./media/modules/ui/renderField.js");
-/* harmony import */ var _modules_ui_renderWindowField_js__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(/*! ./modules/ui/renderWindowField.js */ "./media/modules/ui/renderWindowField.js");
-/* harmony import */ var _modules_ui_getFieldCharForDisplay_js__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! ./modules/ui/getFieldCharForDisplay.js */ "./media/modules/ui/getFieldCharForDisplay.js");
-/* harmony import */ var _modules_ui_getFieldDisplayText_js__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./modules/ui/getFieldDisplayText.js */ "./media/modules/ui/getFieldDisplayText.js");
-/* harmony import */ var _modules_ui_generateWindowFieldHtml_js__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! ./modules/ui/generateWindowFieldHtml.js */ "./media/modules/ui/generateWindowFieldHtml.js");
-/* harmony import */ var _modules_ui_generateId_js__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(/*! ./modules/ui/generateId.js */ "./media/modules/ui/generateId.js");
-/* harmony import */ var _modules_ui_getDefaultLength_js__WEBPACK_IMPORTED_MODULE_53__ = __webpack_require__(/*! ./modules/ui/getDefaultLength.js */ "./media/modules/ui/getDefaultLength.js");
-/* harmony import */ var _modules_ui_getKeywordDisplay_js__WEBPACK_IMPORTED_MODULE_54__ = __webpack_require__(/*! ./modules/ui/getKeywordDisplay.js */ "./media/modules/ui/getKeywordDisplay.js");
-/* harmony import */ var _modules_ui_extractAttributes_js__WEBPACK_IMPORTED_MODULE_55__ = __webpack_require__(/*! ./modules/ui/extractAttributes.js */ "./media/modules/ui/extractAttributes.js");
-/* harmony import */ var _modules_ui_renderAttributeRows_js__WEBPACK_IMPORTED_MODULE_56__ = __webpack_require__(/*! ./modules/ui/renderAttributeRows.js */ "./media/modules/ui/renderAttributeRows.js");
-/* harmony import */ var _modules_ui_getAttributeCheckboxMap_js__WEBPACK_IMPORTED_MODULE_57__ = __webpack_require__(/*! ./modules/ui/getAttributeCheckboxMap.js */ "./media/modules/ui/getAttributeCheckboxMap.js");
-/* harmony import */ var _modules_ui_formatIndicatorLabel_js__WEBPACK_IMPORTED_MODULE_58__ = __webpack_require__(/*! ./modules/ui/formatIndicatorLabel.js */ "./media/modules/ui/formatIndicatorLabel.js");
-/* harmony import */ var _modules_ui_setIndicatorButtonState_js__WEBPACK_IMPORTED_MODULE_59__ = __webpack_require__(/*! ./modules/ui/setIndicatorButtonState.js */ "./media/modules/ui/setIndicatorButtonState.js");
-/* harmony import */ var _modules_ui_applyColorChanges_js__WEBPACK_IMPORTED_MODULE_60__ = __webpack_require__(/*! ./modules/ui/applyColorChanges.js */ "./media/modules/ui/applyColorChanges.js");
-/* harmony import */ var _modules_ui_getRecordType_js__WEBPACK_IMPORTED_MODULE_61__ = __webpack_require__(/*! ./modules/ui/getRecordType.js */ "./media/modules/ui/getRecordType.js");
-/* harmony import */ var _modules_ui_extractRowColFromParts_js__WEBPACK_IMPORTED_MODULE_62__ = __webpack_require__(/*! ./modules/ui/extractRowColFromParts.js */ "./media/modules/ui/extractRowColFromParts.js");
-/* harmony import */ var _modules_ui_parseDdsTypeSpecification_js__WEBPACK_IMPORTED_MODULE_63__ = __webpack_require__(/*! ./modules/ui/parseDdsTypeSpecification.js */ "./media/modules/ui/parseDdsTypeSpecification.js");
-/* harmony import */ var _modules_ui_parseUsageAndDecimals_js__WEBPACK_IMPORTED_MODULE_64__ = __webpack_require__(/*! ./modules/ui/parseUsageAndDecimals.js */ "./media/modules/ui/parseUsageAndDecimals.js");
-/* harmony import */ var _modules_ui_extractFloatPrecision_js__WEBPACK_IMPORTED_MODULE_65__ = __webpack_require__(/*! ./modules/ui/extractFloatPrecision.js */ "./media/modules/ui/extractFloatPrecision.js");
-/* harmony import */ var _modules_ui_extractShiftCode_js__WEBPACK_IMPORTED_MODULE_66__ = __webpack_require__(/*! ./modules/ui/extractShiftCode.js */ "./media/modules/ui/extractShiftCode.js");
-/* harmony import */ var _modules_ui_parseWindowDimensionsFromLine_js__WEBPACK_IMPORTED_MODULE_67__ = __webpack_require__(/*! ./modules/ui/parseWindowDimensionsFromLine.js */ "./media/modules/ui/parseWindowDimensionsFromLine.js");
-/* harmony import */ var _modules_ui_processMultiLineContinuation_js__WEBPACK_IMPORTED_MODULE_68__ = __webpack_require__(/*! ./modules/ui/processMultiLineContinuation.js */ "./media/modules/ui/processMultiLineContinuation.js");
-/* harmony import */ var _modules_ui_scanIndicatorsBackward_js__WEBPACK_IMPORTED_MODULE_69__ = __webpack_require__(/*! ./modules/ui/scanIndicatorsBackward.js */ "./media/modules/ui/scanIndicatorsBackward.js");
-/* harmony import */ var _modules_ui_scanAttributeLinesAfterField_js__WEBPACK_IMPORTED_MODULE_70__ = __webpack_require__(/*! ./modules/ui/scanAttributeLinesAfterField.js */ "./media/modules/ui/scanAttributeLinesAfterField.js");
-/* harmony import */ var _modules_ui_showNotification_js__WEBPACK_IMPORTED_MODULE_71__ = __webpack_require__(/*! ./modules/ui/showNotification.js */ "./media/modules/ui/showNotification.js");
-/* harmony import */ var _modules_ui_updateDocumentInEditor_js__WEBPACK_IMPORTED_MODULE_72__ = __webpack_require__(/*! ./modules/ui/updateDocumentInEditor.js */ "./media/modules/ui/updateDocumentInEditor.js");
-/* harmony import */ var _modules_ui_buildVariableTypeAndUsage_js__WEBPACK_IMPORTED_MODULE_73__ = __webpack_require__(/*! ./modules/ui/buildVariableTypeAndUsage.js */ "./media/modules/ui/buildVariableTypeAndUsage.js");
-/* harmony import */ var _modules_ui_generateConstantFieldLines_js__WEBPACK_IMPORTED_MODULE_74__ = __webpack_require__(/*! ./modules/ui/generateConstantFieldLines.js */ "./media/modules/ui/generateConstantFieldLines.js");
-/* harmony import */ var _modules_ui_generateFieldDspatrLines_js__WEBPACK_IMPORTED_MODULE_75__ = __webpack_require__(/*! ./modules/ui/generateFieldDspatrLines.js */ "./media/modules/ui/generateFieldDspatrLines.js");
-/* harmony import */ var _modules_ui_generateFieldColorLines_js__WEBPACK_IMPORTED_MODULE_76__ = __webpack_require__(/*! ./modules/ui/generateFieldColorLines.js */ "./media/modules/ui/generateFieldColorLines.js");
-/* harmony import */ var _modules_ui_generateFieldCheckLines_js__WEBPACK_IMPORTED_MODULE_77__ = __webpack_require__(/*! ./modules/ui/generateFieldCheckLines.js */ "./media/modules/ui/generateFieldCheckLines.js");
-/* harmony import */ var _modules_ui_generateFieldEdtcdeLines_js__WEBPACK_IMPORTED_MODULE_78__ = __webpack_require__(/*! ./modules/ui/generateFieldEdtcdeLines.js */ "./media/modules/ui/generateFieldEdtcdeLines.js");
-/* harmony import */ var _modules_ui_generateFieldEditKeywordsLines_js__WEBPACK_IMPORTED_MODULE_79__ = __webpack_require__(/*! ./modules/ui/generateFieldEditKeywordsLines.js */ "./media/modules/ui/generateFieldEditKeywordsLines.js");
-/* harmony import */ var _modules_ui_generateFieldDftLines_js__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(/*! ./modules/ui/generateFieldDftLines.js */ "./media/modules/ui/generateFieldDftLines.js");
-/* harmony import */ var _modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(/*! ./modules/ui/generateFieldDftvalLines.js */ "./media/modules/ui/generateFieldDftvalLines.js");
-/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_82__ = __webpack_require__(/*! ./modules/ui/generateDdsLineWithIndicators.js */ "./media/modules/ui/generateDdsLineWithIndicators.js");
-/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(/*! ./modules/ui/applyIndicatorChangesToField.js */ "./media/modules/ui/applyIndicatorChangesToField.js");
+/* harmony import */ var _modules_utils_colorUtils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/* harmony import */ var _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
+/* harmony import */ var _modules_utils_displaySizeUtils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4);
+/* harmony import */ var _modules_utils_idGenerator_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+/* harmony import */ var _modules_utils_fieldNameValidator_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(6);
+/* harmony import */ var _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(7);
+/* harmony import */ var _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(8);
+/* harmony import */ var _modules_utils_charMetrics_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(9);
+/* harmony import */ var _modules_ui_rulers_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(10);
+/* harmony import */ var _modules_ui_canvasSetup_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(11);
+/* harmony import */ var _modules_ui_toolbarSetup_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(12);
+/* harmony import */ var _modules_ui_displaySizeSelector_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(13);
+/* harmony import */ var _modules_ui_canvasSize_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(14);
+/* harmony import */ var _modules_ui_dragAndDrop_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(15);
+/* harmony import */ var _modules_ui_gridLines_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(16);
+/* harmony import */ var _modules_ui_previewDisplaySizeListeners_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(17);
+/* harmony import */ var _modules_ui_sourceSearch_js__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(18);
+/* harmony import */ var _modules_ui_navigation_js__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(19);
+/* harmony import */ var _modules_ui_windowResize_js__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(20);
+/* harmony import */ var _modules_ui_sourceView_js__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(21);
+/* harmony import */ var _modules_ui_moveField_js__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(22);
+/* harmony import */ var _modules_ui_applyWindowDimensions_js__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(23);
+/* harmony import */ var _modules_ui_showScreenProperties_js__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(24);
+/* harmony import */ var _modules_ui_saveDocument_js__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(25);
+/* harmony import */ var _modules_ui_setViewZoom_js__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(26);
+/* harmony import */ var _modules_ui_switchToView_js__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(27);
+/* harmony import */ var _modules_ui_indicatorButtons_js__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(28);
+/* harmony import */ var _modules_ui_showFieldProperties_js__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(29);
+/* harmony import */ var _modules_ui_applyFieldProperties_js__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(30);
+/* harmony import */ var _modules_ui_propertiesTabs_js__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(31);
+/* harmony import */ var _modules_ui_subfileControl_js__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(32);
+/* harmony import */ var _modules_ui_functionKeys_js__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(33);
+/* harmony import */ var _modules_ui_deleteConfirmation_js__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(34);
+/* harmony import */ var _modules_ui_previewView_js__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(35);
+/* harmony import */ var _modules_ui_updateReadOnlyMode_js__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(36);
+/* harmony import */ var _modules_ui_selectField_js__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(37);
+/* harmony import */ var _modules_ui_deselectAllFields_js__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(38);
+/* harmony import */ var _modules_ui_editField_js__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(39);
+/* harmony import */ var _modules_ui_scrollToRecordInSource_js__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(40);
+/* harmony import */ var _modules_ui_recordNavigation_js__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(41);
+/* harmony import */ var _modules_ui_createField_js__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(42);
+/* harmony import */ var _modules_ui_generateUniqueFieldName_js__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(43);
+/* harmony import */ var _modules_ui_applyAttributeClasses_js__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(44);
+/* harmony import */ var _modules_ui_computeFieldDisplay_js__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(45);
+/* harmony import */ var _modules_ui_setFieldContent_js__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(46);
+/* harmony import */ var _modules_ui_setupFieldElement_js__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(47);
+/* harmony import */ var _modules_ui_renderField_js__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(48);
+/* harmony import */ var _modules_ui_renderWindowField_js__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(49);
+/* harmony import */ var _modules_ui_getFieldCharForDisplay_js__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(50);
+/* harmony import */ var _modules_ui_getFieldDisplayText_js__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(51);
+/* harmony import */ var _modules_ui_generateWindowFieldHtml_js__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(52);
+/* harmony import */ var _modules_ui_generateId_js__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(53);
+/* harmony import */ var _modules_ui_getDefaultLength_js__WEBPACK_IMPORTED_MODULE_53__ = __webpack_require__(54);
+/* harmony import */ var _modules_ui_getKeywordDisplay_js__WEBPACK_IMPORTED_MODULE_54__ = __webpack_require__(55);
+/* harmony import */ var _modules_ui_extractAttributes_js__WEBPACK_IMPORTED_MODULE_55__ = __webpack_require__(56);
+/* harmony import */ var _modules_ui_renderAttributeRows_js__WEBPACK_IMPORTED_MODULE_56__ = __webpack_require__(57);
+/* harmony import */ var _modules_ui_getAttributeCheckboxMap_js__WEBPACK_IMPORTED_MODULE_57__ = __webpack_require__(58);
+/* harmony import */ var _modules_ui_formatIndicatorLabel_js__WEBPACK_IMPORTED_MODULE_58__ = __webpack_require__(59);
+/* harmony import */ var _modules_ui_setIndicatorButtonState_js__WEBPACK_IMPORTED_MODULE_59__ = __webpack_require__(60);
+/* harmony import */ var _modules_ui_applyColorChanges_js__WEBPACK_IMPORTED_MODULE_60__ = __webpack_require__(61);
+/* harmony import */ var _modules_ui_getRecordType_js__WEBPACK_IMPORTED_MODULE_61__ = __webpack_require__(62);
+/* harmony import */ var _modules_ui_extractRowColFromParts_js__WEBPACK_IMPORTED_MODULE_62__ = __webpack_require__(63);
+/* harmony import */ var _modules_ui_parseDdsTypeSpecification_js__WEBPACK_IMPORTED_MODULE_63__ = __webpack_require__(64);
+/* harmony import */ var _modules_ui_parseUsageAndDecimals_js__WEBPACK_IMPORTED_MODULE_64__ = __webpack_require__(65);
+/* harmony import */ var _modules_ui_extractFloatPrecision_js__WEBPACK_IMPORTED_MODULE_65__ = __webpack_require__(66);
+/* harmony import */ var _modules_ui_extractShiftCode_js__WEBPACK_IMPORTED_MODULE_66__ = __webpack_require__(67);
+/* harmony import */ var _modules_ui_parseWindowDimensionsFromLine_js__WEBPACK_IMPORTED_MODULE_67__ = __webpack_require__(68);
+/* harmony import */ var _modules_ui_processMultiLineContinuation_js__WEBPACK_IMPORTED_MODULE_68__ = __webpack_require__(69);
+/* harmony import */ var _modules_ui_scanIndicatorsBackward_js__WEBPACK_IMPORTED_MODULE_69__ = __webpack_require__(70);
+/* harmony import */ var _modules_ui_scanAttributeLinesAfterField_js__WEBPACK_IMPORTED_MODULE_70__ = __webpack_require__(71);
+/* harmony import */ var _modules_ui_showNotification_js__WEBPACK_IMPORTED_MODULE_71__ = __webpack_require__(72);
+/* harmony import */ var _modules_ui_updateDocumentInEditor_js__WEBPACK_IMPORTED_MODULE_72__ = __webpack_require__(73);
+/* harmony import */ var _modules_ui_buildVariableTypeAndUsage_js__WEBPACK_IMPORTED_MODULE_73__ = __webpack_require__(74);
+/* harmony import */ var _modules_ui_generateConstantFieldLines_js__WEBPACK_IMPORTED_MODULE_74__ = __webpack_require__(75);
+/* harmony import */ var _modules_ui_generateFieldDspatrLines_js__WEBPACK_IMPORTED_MODULE_75__ = __webpack_require__(76);
+/* harmony import */ var _modules_ui_generateFieldColorLines_js__WEBPACK_IMPORTED_MODULE_76__ = __webpack_require__(77);
+/* harmony import */ var _modules_ui_generateFieldCheckLines_js__WEBPACK_IMPORTED_MODULE_77__ = __webpack_require__(78);
+/* harmony import */ var _modules_ui_generateFieldEdtcdeLines_js__WEBPACK_IMPORTED_MODULE_78__ = __webpack_require__(79);
+/* harmony import */ var _modules_ui_generateFieldEditKeywordsLines_js__WEBPACK_IMPORTED_MODULE_79__ = __webpack_require__(80);
+/* harmony import */ var _modules_ui_generateFieldValuesLines_js__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(81);
+/* harmony import */ var _modules_ui_generateFieldDftLines_js__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(82);
+/* harmony import */ var _modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_82__ = __webpack_require__(83);
+/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(84);
+/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(85);
 /* module decorator */ module = __webpack_require__.hmd(module);
+
 
 
 
@@ -1277,7 +1275,7 @@ __webpack_require__.r(__webpack_exports__);
                         startIndex: index,
                         field,
                         contextLabel: 'PREVIEW',
-                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(/
+                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(/
                     });
                     
                     _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Parsed preview field: ${field.name} (${field.type}) at ${field.row},${field.col} for record ${currentRecordName}`);
@@ -1360,8 +1358,8 @@ __webpack_require__.r(__webpack_exports__);
                                 field,
                                 contextLabel: 'PREVIEW-COMPANION',
                                 includeDftval: true,
-                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(/,
-                                stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|EDTCDE\(|EDTWRD\(|EDTMSK\(|VALUES\(|RANGE\()/
+                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(/,
+                                stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|RANGE\()/
                             });
                             
                             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Preview: Parsed companion field: ${field.name} at ${field.row},${field.col} with color=${field.color}, attrs=${field.attributes ? Object.keys(field.attributes).join(',') : 'none'}`);
@@ -2645,6 +2643,9 @@ __webpack_require__.r(__webpack_exports__);
             const blockLines = lines.slice(fieldBlock.startLine, fieldBlock.endLine + 1);
             const preservedExtras = [];
 
+            // Track whether we are inside a multi-line VALUES continuation block
+            let insideValuesContinuation = false;
+
             blockLines.forEach((line, idx) => {
                 // SKIP INDEX 0: that's the original field declaration that will be regenerated
                 if (idx === 0) {
@@ -2671,6 +2672,30 @@ __webpack_require__.r(__webpack_exports__);
                     preservedExtras.push(line);
                     _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Preserving comment line ${globalIndex + 1}`);
                     return;
+                }
+
+                // Detect VALUES( lines and track multi-line continuation.
+                // A continuation line is one whose DDS line ends with - or + before the newline.
+                // When VALUES( is found on a line that ends with a continuation char, subsequent
+                // lines that are pure quoted-value continuations (no keyword word) must also be skipped.
+                if (/VALUES\(/i.test(contentAfter43)) {
+                    insideValuesContinuation = /[+-]\s*$/.test(contentAfter43);
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping known VALUES line ${globalIndex + 1}, continuation=${insideValuesContinuation}`);
+                    return; // regenerated by generateFieldValuesLines
+                }
+
+                // Skip continuation lines that belong to a multi-line VALUES block
+                if (insideValuesContinuation) {
+                    // A pure continuation line has only quoted tokens (and possibly a closing paren)
+                    const isPureValuesContinuation = /^'/.test(contentAfter43) || /^\)/.test(contentAfter43);
+                    if (isPureValuesContinuation) {
+                        // If this line does NOT end with a continuation char, the block is closed
+                        insideValuesContinuation = /[+-]\s*$/.test(contentAfter43);
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping VALUES continuation line ${globalIndex + 1}, continuation=${insideValuesContinuation}`);
+                        return;
+                    }
+                    // If it doesn't look like a continuation token, stop tracking
+                    insideValuesContinuation = false;
                 }
 
                 // Unknown keywords: keep them. Known attributes (COLOR, DSPATR, EDTCDE, etc.) are regenerated
@@ -2737,7 +2762,7 @@ __webpack_require__.r(__webpack_exports__);
     
     // Helper: Generate a DDS line with optional indicators
     function generateDdsLineWithIndicators(keyword, indicatorsOrGroups) {
-        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_82__.generateDdsLineWithIndicatorsUI)({
+        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_83__.generateDdsLineWithIndicatorsUI)({
             keyword,
             indicatorsOrGroups,
             IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils
@@ -2747,7 +2772,7 @@ __webpack_require__.r(__webpack_exports__);
     // Helper: Apply indicator changes from indicatorConfigurations Map back to field object
     // This ensures that any edits made through the IBM i modal are reflected in DDS generation
     function applyIndicatorChangesToField(field) {
-        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_83__.applyIndicatorChangesToFieldUI)({
+        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_84__.applyIndicatorChangesToFieldUI)({
             field,
             indicatorConfigurations,
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
@@ -2788,7 +2813,7 @@ __webpack_require__.r(__webpack_exports__);
 
     // Helper: Generate DFTVAL keyword lines for a field
     function generateFieldDftvalLines(field) {
-        return (0,_modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_81__.generateFieldDftvalLinesUI)({
+        return (0,_modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_82__.generateFieldDftvalLinesUI)({
             field,
             generateDdsLineWithIndicators,
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
@@ -2796,8 +2821,16 @@ __webpack_require__.r(__webpack_exports__);
     }
 
     // Helper: Generate DFT keyword lines for a field
+    // Helper: Generate VALUES keyword lines for a field
+    function generateFieldValuesLines(field) {
+        return (0,_modules_ui_generateFieldValuesLines_js__WEBPACK_IMPORTED_MODULE_80__.generateFieldValuesLinesUI)({
+            field
+        });
+    }
+
+    // Helper: Generate DFT keyword lines for a field
     function generateFieldDftLines(field) {
-        return (0,_modules_ui_generateFieldDftLines_js__WEBPACK_IMPORTED_MODULE_80__.generateFieldDftLinesUI)({
+        return (0,_modules_ui_generateFieldDftLines_js__WEBPACK_IMPORTED_MODULE_81__.generateFieldDftLinesUI)({
             field
         });
     }
@@ -3193,6 +3226,7 @@ __webpack_require__.r(__webpack_exports__);
         const checkLines = generateFieldCheckLines(field);
         const edtcdeLines = generateFieldEdtcdeLines(field);
         const editKeywordLines = generateFieldEditKeywordsLines(field);
+        const valuesLines = generateFieldValuesLines(field);
         const dftLines = generateFieldDftLines(field);
         const dftvalLines = generateFieldDftvalLines(field);
         
@@ -3205,11 +3239,12 @@ __webpack_require__.r(__webpack_exports__);
         const checkLinesStr = checkLines.length > 0 ? '\n' + checkLines.join('\n') : '';
         const edtcdeLinesStr = edtcdeLines.length > 0 ? '\n' + edtcdeLines.join('\n') : '';
         const editKeywordLinesStr = editKeywordLines.length > 0 ? '\n' + editKeywordLines.join('\n') : '';
+        const valuesLinesStr = valuesLines.length > 0 ? '\n' + valuesLines.join('\n') : '';
         const dftLinesStr = dftLines.length > 0 ? '\n' + dftLines.join('\n') : '';
         const dftvalLinesStr = dftvalLines.length > 0 ? '\n' + dftvalLines.join('\n') : '';
         const colorLinesStr = colorLines.length > 0 ? '\n' + colorLines.join('\n') : '';
 
-        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + dftLinesStr + dftvalLinesStr + colorLinesStr;
+        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + valuesLinesStr + dftLinesStr + dftvalLinesStr + colorLinesStr;
         
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Generated DDS: name="${field.name}" padded="${fieldNamePadded}" type="${typeAndUsage}" padded="${typePartPadded}"`);
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Full line(s): "${result}"`);
@@ -4163,6 +4198,15 @@ __webpack_require__.r(__webpack_exports__);
             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline DFT(${dftValue}) for field ${fieldName}`);
         }
 
+            const valuesMatch = line.match(/VALUES\(([^)]*)\)/i);
+            if (valuesMatch) {
+                const rawValues = valuesMatch[1].replace(/\s+/g, ' ').trim();
+                if (rawValues.length > 0) {
+                    fieldObj.values = rawValues;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline VALUES(${rawValues}) for field ${fieldName}`);
+                }
+            }
+
         // Note: DFTVAL is now extracted by scanAttributeLinesAfterField, not inline
         
         // Add precision for float types
@@ -5106,35 +5150,611 @@ if ( true && module.exports) {
 })();
 
 /***/ }),
-
-/***/ "./media/modules/core/ddsConstants.js":
-/*!********************************************!*\
-  !*** ./media/modules/core/ddsConstants.js ***!
-  \********************************************/
+/* 1 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ATTRIBUTE_KEYWORDS: () => (/* binding */ ATTRIBUTE_KEYWORDS),
-/* harmony export */   ATTRIBUTE_KEYWORDS_SET: () => (/* binding */ ATTRIBUTE_KEYWORDS_SET),
-/* harmony export */   CHECK_CHAR_CODES: () => (/* binding */ CHECK_CHAR_CODES),
-/* harmony export */   CHECK_NUMERIC_CODES: () => (/* binding */ CHECK_NUMERIC_CODES),
-/* harmony export */   attributeContentRegex: () => (/* binding */ attributeContentRegex)
+/* harmony export */   ColorUtils: () => (/* binding */ ColorUtils)
 /* harmony export */ });
-const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE'];
-const ATTRIBUTE_KEYWORDS_SET = new Set(ATTRIBUTE_KEYWORDS);
-const attributeContentRegex = new RegExp(`\\b(?:${ATTRIBUTE_KEYWORDS.join('|')})\\(`);
+const ColorUtils = {
+    IBM_COLORS: {
+        'WHT': '#FFFFFF',
+        'BLU': '#3B78FF',
+        'RED': '#FF3B3B',
+        'TRQ': '#00FFFF',
+        'YLW': '#FFFF00',
+        'GRN': '#00FF00',
+        'PNK': '#FF00FF'
+    },
 
-const CHECK_CHAR_CODES = ['ME', 'ER', 'MF', 'FE', 'RB', 'RZ', 'RL', 'LC'];
-const CHECK_NUMERIC_CODES = ['ME', 'ER', 'MF', 'FE', 'RB', 'RZ', 'RL'];
+    getColor(field, defaultColor = '#00ff00') {
+        if (field && field.color && this.IBM_COLORS[field.color]) {
+            return this.IBM_COLORS[field.color];
+        }
+
+        if (field && field.colorIndicators) {
+            const colorCodes = Object.keys(field.colorIndicators);
+            if (colorCodes.length > 0) {
+                const firstColorCode = colorCodes[0];
+                if (this.IBM_COLORS[firstColorCode]) {
+                    return this.IBM_COLORS[firstColorCode];
+                }
+            }
+        }
+
+        return defaultColor;
+    },
+
+    getColorStyle(field, defaultColor = '#00ff00') {
+        const color = this.getColor(field, defaultColor);
+        return `color: ${color};`;
+    },
+
+    getDefaultForFieldType(fieldType) {
+        const defaults = {
+            'constant': '#00ff00',
+            'input': '#ffff00',
+            'output': '#00ff00',
+            'keyword': '#00ffff',
+            'text': '#00ff00',
+            'number': '#ffff00'
+        };
+        return defaults[fieldType] || '#00ff00';
+    },
+
+    isValidColorCode(colorCode) {
+        return colorCode && this.IBM_COLORS.hasOwnProperty(colorCode);
+    },
+
+    getAllColorCodes() {
+        return Object.keys(this.IBM_COLORS);
+    },
+
+    getColorName(colorCode) {
+        const names = {
+            'WHT': 'White',
+            'BLU': 'Blue',
+            'RED': 'Red',
+            'TRQ': 'Turquoise',
+            'YLW': 'Yellow',
+            'GRN': 'Green',
+            'PNK': 'Pink'
+        };
+        return names[colorCode] || colorCode;
+    }
+};
 
 
 /***/ }),
+/* 2 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-/***/ "./media/modules/core/logger.js":
-/*!**************************************!*\
-  !*** ./media/modules/core/logger.js ***!
-  \**************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ScreenCoordinates: () => (/* binding */ ScreenCoordinates)
+/* harmony export */ });
+const ScreenCoordinates = {
+    CHAR_HEIGHT: 20,
+    CHAR_WIDTH: 8,
+
+    SCREEN_SIZES: {
+        'DS3': { rows: 24, cols: 80 },
+        'DS4': { rows: 27, cols: 132 }
+    },
+
+    toPixels(row, col, offset = { row: 0, col: 0 }) {
+        return {
+            top: (row - 1 - offset.row) * this.CHAR_HEIGHT,
+            left: (col - 1 - offset.col) * this.CHAR_WIDTH
+        };
+    },
+
+    fromPixels(top, left, offset = { row: 0, col: 0 }) {
+        return {
+            row: Math.floor(top / this.CHAR_HEIGHT) + 1 + offset.row,
+            col: Math.floor(left / this.CHAR_WIDTH) + 1 + offset.col
+        };
+    },
+
+    fromClientPoint(clientX, clientY, rect, zoom = 1, offset = { row: 0, col: 0 }) {
+        const left = (clientX - rect.left) / zoom;
+        const top = (clientY - rect.top) / zoom;
+        return this.fromPixels(top, left, offset);
+    },
+
+    sizeFromPixels(height, width, zoom = 1) {
+        return {
+            rows: Math.round((height / zoom) / this.CHAR_HEIGHT),
+            cols: Math.round((width / zoom) / this.CHAR_WIDTH)
+        };
+    },
+
+    getScreenDimensions(displaySize) {
+        return this.SCREEN_SIZES[displaySize] || this.SCREEN_SIZES.DS3;
+    },
+
+    isValidPosition(row, col, displaySize) {
+        const dims = this.getScreenDimensions(displaySize);
+        return row >= 1 && row <= dims.rows &&
+               col >= 1 && col <= dims.cols;
+    },
+
+    getWidthInPixels(length) {
+        return length * this.CHAR_WIDTH;
+    },
+
+    getHeightInPixels(rows) {
+        return rows * this.CHAR_HEIGHT;
+    },
+
+    createWindowOffset(windowDimensions) {
+        if (!windowDimensions) {
+            return { row: 0, col: 0 };
+        }
+        return {
+            row: windowDimensions.row - 1,
+            col: windowDimensions.col - 1
+        };
+    },
+
+    calculateFieldWrapping(field, displaySize = 'DS3') {
+        const dims = this.getScreenDimensions(displaySize);
+        const maxCols = dims.cols;
+
+        if (field.type === 'constant' || field.type === 'keyword' || field.isKeyword) {
+            return [{ row: field.row, col: field.col, length: field.length }];
+        }
+
+        const isNumeric = ['numeric', 'zoned', 'packed', 'float', 'binary', 'double'].includes(field.dataType);
+        if (isNumeric) {
+            return [{ row: field.row, col: field.col, length: field.length }];
+        }
+
+        const startCol = field.col;
+        const fieldLength = field.length || 10;
+        const segments = [];
+
+        let remainingLength = fieldLength;
+        let currentRow = field.row;
+        let currentCol = startCol;
+
+        while (remainingLength > 0) {
+            const availableSpace = maxCols - currentCol + 1;
+            const segmentLength = Math.min(remainingLength, availableSpace);
+
+            segments.push({
+                row: currentRow,
+                col: currentCol,
+                length: segmentLength
+            });
+
+            remainingLength -= segmentLength;
+
+            if (remainingLength > 0) {
+                currentRow++;
+                currentCol = 1;
+            }
+        }
+
+        return segments;
+    }
+};
+
+
+/***/ }),
+/* 3 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   IndicatorUtils: () => (/* binding */ IndicatorUtils)
+/* harmony export */ });
+const IndicatorUtils = {
+    _logParse(message, ...args) {
+        const logger = globalThis.Logger;
+        if (logger && typeof logger.parse === 'function') {
+            logger.parse(message, ...args);
+        }
+    },
+
+    parse(indicatorStr) {
+        if (!indicatorStr || typeof indicatorStr !== 'string') {
+            return [];
+        }
+
+        const tokens = indicatorStr.trim().split(/\s+/);
+        const indicators = [];
+
+        tokens.forEach(token => {
+            const matches = token.match(/N?\d{1,2}/g);
+            if (matches) {
+                matches.forEach(ind => {
+                    const isNegated = ind.startsWith('N');
+                    const number = isNegated ? ind.substring(1) : ind;
+                    indicators.push({
+                        number: number.padStart(2, '0'),
+                        not: isNegated
+                    });
+                });
+            }
+        });
+
+        return indicators;
+    },
+
+    formatForDds(indicators) {
+        if (!indicators || indicators.length === 0) {
+            return '';
+        }
+
+        const tokens = indicators.map(ind => ind.not ? ('N' + String(ind.number).padStart(2, '0')) : String(ind.number).padStart(2, '0'));
+        let result = '';
+        tokens.forEach(token => {
+            if (result === '') {
+                result = token;
+            } else {
+                result += token.startsWith('N') ? token : ' ' + token;
+            }
+        });
+        return result;
+    },
+
+    formatForDisplay(indicators) {
+        if (!indicators || indicators.length === 0) {
+            return '';
+        }
+
+        return indicators.map(ind =>
+            ind.not ? `NOT ${ind.number}` : ind.number
+        ).join(', ');
+    },
+
+    isValid(indicatorStr) {
+        if (!indicatorStr) {
+            return true;
+        }
+        return /^(N?\d{1,2}(\s+N?\d{1,2})*)$/.test(indicatorStr.trim());
+    },
+
+    create(number, not = false) {
+        return {
+            number: String(number).padStart(2, '0'),
+            not: Boolean(not)
+        };
+    },
+
+    extractFromDdsLine(fullLine, debugContext = '') {
+        if (!fullLine || fullLine.length <= 6 || fullLine[5] !== 'A') {
+            return [];
+        }
+
+        const indicatorArea = fullLine.substring(6, 44);
+        const indicatorStr = indicatorArea.trim();
+
+        if (debugContext && indicatorStr) {
+            this._logParse(`${debugContext} indicator area: "${indicatorArea}" from line: "${fullLine}"`);
+        }
+
+        if (!indicatorStr) {
+            return [];
+        }
+
+        const indicators = this.parse(indicatorStr);
+
+        if (debugContext && indicators.length > 0) {
+            this._logParse(`${debugContext} found indicators:`, indicators);
+        }
+
+        return indicators;
+    },
+
+    extractWithOrSupport(lines, startIndex, keyword, debugContext = '') {
+        const result = {
+            groups: [],
+            isOr: false
+        };
+
+        let currentIndex = startIndex;
+        let foundKeyword = false;
+
+        while (currentIndex < lines.length && !foundKeyword) {
+            const line = lines[currentIndex];
+
+            if (!line || line.length <= 6 || line[5] !== 'A') {
+                break;
+            }
+
+            const isOrLine = line[6] === 'O';
+            const hasKeyword = keyword ? line.includes(keyword) : false;
+
+            const indicators = this.extractFromDdsLine(line, debugContext);
+
+            if (indicators.length > 0) {
+                result.groups.push({ indicators: indicators });
+                if (isOrLine) {
+                    result.isOr = true;
+                }
+
+                if (debugContext) {
+                    this._logParse(`${debugContext} line ${currentIndex + 1} (${isOrLine ? 'OR' : 'AND'}): found ${indicators.length} indicators`);
+                }
+            }
+
+            if (hasKeyword) {
+                foundKeyword = true;
+            }
+
+            currentIndex++;
+        }
+
+        if (result.groups.length === 1 && !result.isOr) {
+            return { groups: result.groups, isOr: false };
+        }
+
+        return result;
+    },
+
+    formatGroupsForDds(groups) {
+        if (!groups || groups.length === 0) {
+            return [''];
+        }
+
+        const lines = [];
+        groups.forEach((group, index) => {
+            const formatted = this.formatForDds(group.indicators);
+            const prefix = index === 0 ? '' : 'O';
+            lines.push(prefix + formatted);
+        });
+
+        return lines;
+    },
+
+    flattenGroups(groups) {
+        if (!groups || groups.length === 0) {
+            return [];
+        }
+
+        const allIndicators = [];
+        groups.forEach(group => {
+            if (group.indicators) {
+                allIndicators.push(...group.indicators);
+            }
+        });
+        return allIndicators;
+    }
+};
+
+
+/***/ }),
+/* 4 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DisplaySizeUtils: () => (/* binding */ DisplaySizeUtils)
+/* harmony export */ });
+const DisplaySizeUtils = {
+    getAvailableDisplaySizes(documentContent) {
+        const lines = documentContent.split('\n');
+        let hasDS3 = false;
+        let hasDS4 = false;
+        let inDspsizBlock = false;
+        let currentBlock = '';
+
+        const processDspsizBlock = (blockText) => {
+            const normalizedBlock = (blockText || '').toUpperCase();
+            const blockHasDS3 = normalizedBlock.includes('*DS3');
+            const blockHasDS4 = normalizedBlock.includes('*DS4');
+
+            if (blockHasDS3) {
+                hasDS3 = true;
+            }
+            if (blockHasDS4) {
+                hasDS4 = true;
+            }
+
+            if (!blockHasDS3 && !blockHasDS4) {
+                hasDS3 = true;
+            }
+        };
+
+        for (let line of lines) {
+            const trimmed = line.trim();
+
+            if (!inDspsizBlock && trimmed.includes('DSPSIZ(')) {
+                inDspsizBlock = true;
+                currentBlock = trimmed.substring(trimmed.indexOf('DSPSIZ('));
+
+                if (trimmed.includes(')')) {
+                    processDspsizBlock(currentBlock);
+                    inDspsizBlock = false;
+                    currentBlock = '';
+                }
+
+                continue;
+            }
+
+            if (inDspsizBlock) {
+                currentBlock += ` ${trimmed}`;
+
+                if (trimmed.includes(')')) {
+                    processDspsizBlock(currentBlock);
+                    inDspsizBlock = false;
+                    currentBlock = '';
+                }
+            }
+        }
+
+        if (inDspsizBlock && currentBlock) {
+            processDspsizBlock(currentBlock);
+        }
+
+        let singleSize = null;
+        if (hasDS3 && !hasDS4) {
+            singleSize = 'DS3';
+        } else if (hasDS4 && !hasDS3) {
+            singleSize = 'DS4';
+        }
+
+        return { hasDS3, hasDS4, singleSize };
+    }
+};
+
+
+/***/ }),
+/* 5 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   IdGenerator: () => (/* binding */ IdGenerator)
+/* harmony export */ });
+const IdGenerator = {
+    _counters: {},
+
+    generateFieldId() {
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substr(2, 9);
+        return `field_${timestamp}_${random}`;
+    },
+
+    generateUniqueName(prefix, existingNames = []) {
+        if (!this._counters[prefix]) {
+            this._counters[prefix] = 1;
+        }
+
+        let name;
+        let attempts = 0;
+        const maxAttempts = 1000;
+
+        do {
+            name = prefix + this._counters[prefix];
+            this._counters[prefix]++;
+            attempts++;
+
+            if (attempts > maxAttempts) {
+                name = prefix + Date.now();
+                break;
+            }
+        } while (existingNames.includes(name));
+
+        return name;
+    },
+
+    resetCounter(prefix) {
+        if (this._counters[prefix]) {
+            this._counters[prefix] = 1;
+        }
+    },
+
+    resetAllCounters() {
+        this._counters = {};
+    },
+
+    getCounter(prefix) {
+        return this._counters[prefix] || 0;
+    },
+
+    generateUniqueRecordName(prefix = 'REC', existingNames = []) {
+        return this.generateUniqueName(prefix, existingNames);
+    },
+
+    generateUniqueId(prefix = 'id') {
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substr(2, 9);
+        return `${prefix}-${timestamp}-${random}`;
+    }
+};
+
+
+/***/ }),
+/* 6 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FieldNameValidator: () => (/* binding */ FieldNameValidator)
+/* harmony export */ });
+const FieldNameValidator = {
+    MAX_LENGTH: 10,
+
+    isValid(name, options = {}) {
+        const {
+            allowEmpty = false,
+            mustStartWithLetter = true,
+            maxLength = this.MAX_LENGTH
+        } = options;
+
+        if (!name || name.length === 0) {
+            return allowEmpty;
+        }
+
+        if (name.length > maxLength) {
+            return false;
+        }
+
+        if (mustStartWithLetter) {
+            return /^[A-Z][A-Z0-9_]*$/i.test(name);
+        } else {
+            return /^[A-Z0-9_]+$/i.test(name);
+        }
+    },
+
+    validate(name, options = {}) {
+        if (!this.isValid(name, options)) {
+            const { mustStartWithLetter = true, maxLength = this.MAX_LENGTH } = options;
+
+            if (!name || name.length === 0) {
+                throw new Error('Field name cannot be empty');
+            }
+
+            if (name.length > maxLength) {
+                throw new Error(`Field name cannot exceed ${maxLength} characters`);
+            }
+
+            if (mustStartWithLetter) {
+                throw new Error('Field name must start with a letter and contain only letters, numbers, and underscores');
+            } else {
+                throw new Error('Field name must contain only letters, numbers, and underscores');
+            }
+        }
+
+        return name;
+    },
+
+    sanitize(name, fallback = 'FIELD') {
+        if (!name || name.length === 0) {
+            return fallback;
+        }
+
+        let sanitized = name.toUpperCase();
+        sanitized = sanitized.replace(/[^A-Z0-9_]/g, '');
+
+        if (!/^[A-Z]/.test(sanitized)) {
+            sanitized = 'F' + sanitized;
+        }
+
+        if (sanitized.length > this.MAX_LENGTH) {
+            sanitized = sanitized.substring(0, this.MAX_LENGTH);
+        }
+
+        if (!this.isValid(sanitized)) {
+            return fallback;
+        }
+
+        return sanitized;
+    },
+
+    isReservedKeyword(name) {
+        const reserved = ['DATE', 'TIME', 'SYSNAME', 'USER', 'PAGE'];
+        return reserved.includes(name.toUpperCase());
+    }
+};
+
+
+/***/ }),
+/* 7 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -5215,801 +5835,1109 @@ if (!globalThis.Logger) {
 
 
 /***/ }),
-
-/***/ "./media/modules/ui/applyAttributeClasses.js":
-/*!***************************************************!*\
-  !*** ./media/modules/ui/applyAttributeClasses.js ***!
-  \***************************************************/
+/* 8 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   applyAttributeClasses: () => (/* binding */ applyAttributeClasses)
+/* harmony export */   ATTRIBUTE_KEYWORDS: () => (/* binding */ ATTRIBUTE_KEYWORDS),
+/* harmony export */   ATTRIBUTE_KEYWORDS_SET: () => (/* binding */ ATTRIBUTE_KEYWORDS_SET),
+/* harmony export */   CHECK_CHAR_CODES: () => (/* binding */ CHECK_CHAR_CODES),
+/* harmony export */   CHECK_NUMERIC_CODES: () => (/* binding */ CHECK_NUMERIC_CODES),
+/* harmony export */   attributeContentRegex: () => (/* binding */ attributeContentRegex)
 /* harmony export */ });
-function applyAttributeClasses(options) {
-    const { fieldElement, attributes } = options;
+const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE'];
+const ATTRIBUTE_KEYWORDS_SET = new Set(ATTRIBUTE_KEYWORDS);
+const attributeContentRegex = new RegExp(`\\b(?:${ATTRIBUTE_KEYWORDS.join('|')})\\(`);
 
-    if (!attributes) {
+const CHECK_CHAR_CODES = ['ME', 'ER', 'MF', 'FE', 'RB', 'RZ', 'RL', 'LC'];
+const CHECK_NUMERIC_CODES = ['ME', 'ER', 'MF', 'FE', 'RB', 'RZ', 'RL'];
+
+
+/***/ }),
+/* 9 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   calibrateCharMetrics: () => (/* binding */ calibrateCharMetrics)
+/* harmony export */ });
+async function calibrateCharMetrics(screenCoordinates, logger) {
+    try {
+        if (document.fonts && document.fonts.ready) {
+            await document.fonts.ready;
+        }
+    } catch (err) {
+        if (logger && typeof logger.warn === 'function') {
+            logger.warn('Font readiness check failed, using immediate metrics', err);
+        }
+    }
+
+    await new Promise(requestAnimationFrame);
+    const probe = document.createElement('span');
+    const sampleText = 'WWWWWWWWWW';
+    probe.textContent = sampleText;
+    probe.style.position = 'absolute';
+    probe.style.visibility = 'hidden';
+    probe.style.whiteSpace = 'pre';
+    probe.style.fontFamily = "'3270', 'IBM Plex Mono', 'Consolas', 'Courier New', monospace";
+    probe.style.fontSize = '15px';
+    probe.style.lineHeight = '20px';
+    document.body.appendChild(probe);
+    const rect = probe.getBoundingClientRect();
+    document.body.removeChild(probe);
+
+    const width = rect.width / sampleText.length;
+    const height = rect.height;
+    if (width && height) {
+        screenCoordinates.CHAR_WIDTH = width;
+        screenCoordinates.CHAR_HEIGHT = height;
+        if (logger && typeof logger.ui === 'function') {
+            logger.ui(`Calibrated char metrics -> width: ${width.toFixed(2)}px, height: ${height.toFixed(2)}px`);
+        }
+        return { width, height };
+    }
+
+    if (logger && typeof logger.warn === 'function') {
+        logger.warn('Could not calibrate char metrics, using defaults');
+    }
+    return null;
+}
+
+
+/***/ }),
+/* 10 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupRulers: () => (/* binding */ setupRulers)
+/* harmony export */ });
+function setupRulers(currentDisplaySize, screenCoordinates, logger) {
+    const horizontalRuler = document.getElementById('horizontal-ruler');
+    const verticalRuler = document.getElementById('vertical-ruler');
+
+    if (!horizontalRuler || !verticalRuler) {
+        if (logger && typeof logger.warn === 'function') {
+            logger.warn('Rulers not found, retrying in 100ms...');
+        }
+        setTimeout(() => setupRulers(currentDisplaySize, screenCoordinates, logger), 100);
         return;
     }
 
-    if (attributes.underline) {
-        fieldElement.classList.add('underline');
+    if (logger && typeof logger.ui === 'function') {
+        logger.ui(`Setting up rulers for ${currentDisplaySize}...`);
     }
-    if (attributes.blink) {
-        fieldElement.classList.add('blink');
+
+    horizontalRuler.innerHTML = '';
+    verticalRuler.innerHTML = '';
+
+    const maxCols = currentDisplaySize === 'DS3' ? 80 : 132;
+    const maxRows = currentDisplaySize === 'DS3' ? 24 : 27;
+
+    for (let col = 1; col <= maxCols; col++) {
+        const leftPos = screenCoordinates.toPixels(1, col).left;
+
+        const tick = document.createElement('div');
+        tick.className = 'ruler-tick';
+        tick.style.left = leftPos + 'px';
+        horizontalRuler.appendChild(tick);
+
+        if (col % 5 === 0 || col === 1) {
+            const marker = document.createElement('div');
+            marker.className = 'ruler-marker';
+            marker.textContent = col.toString();
+            marker.style.left = leftPos + 'px';
+            horizontalRuler.appendChild(marker);
+        }
     }
-    if (attributes.reverse) {
-        fieldElement.classList.add('reverse');
+
+    for (let row = 1; row <= maxRows; row++) {
+        const { top: topPos } = screenCoordinates.toPixels(row, 1);
+
+        const tick = document.createElement('div');
+        tick.className = 'ruler-tick';
+        tick.style.top = topPos + 'px';
+        verticalRuler.appendChild(tick);
+
+        if (row % 5 === 0 || row === 1) {
+            const marker = document.createElement('div');
+            marker.className = 'ruler-marker';
+            marker.textContent = row.toString();
+            marker.style.top = topPos + 'px';
+            verticalRuler.appendChild(marker);
+        }
+    }
+
+    if (logger && typeof logger.success === 'function') {
+        logger.success(`Rulers setup complete for ${currentDisplaySize}!`);
     }
 }
 
 
 /***/ }),
-
-/***/ "./media/modules/ui/applyColorChanges.js":
-/*!***********************************************!*\
-  !*** ./media/modules/ui/applyColorChanges.js ***!
-  \***********************************************/
+/* 11 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   applyColorChanges: () => (/* binding */ applyColorChanges)
+/* harmony export */   setupCanvasInteraction: () => (/* binding */ setupCanvasInteraction)
 /* harmony export */ });
-// Shared function to apply color changes from checkboxes to field object
-function applyColorChanges({ field, Logger, transferIndicators }) {
-    const colorMap = {
-        'color-green': 'GRN',
-        'color-white': 'WHT',
-        'color-red': 'RED',
-        'color-turquoise': 'TRQ',
-        'color-yellow': 'YLW',
-        'color-pink': 'PNK',
-        'color-blue': 'BLU'
-    };
+function setupCanvasInteraction(deselectAllFields, showScreenProperties) {
+    const canvas = document.getElementById('fields-container');
 
-    // Collect all selected colors
-    const selectedColors = [];
-    for (const [checkboxId, colorCode] of Object.entries(colorMap)) {
-        const checkbox = document.getElementById(checkboxId);
-        if (checkbox && checkbox.checked) {
-            selectedColors.push(colorCode);
+    canvas.addEventListener('click', function(e) {
+        if (e.target === this) {
+            deselectAllFields();
+            showScreenProperties();
         }
+    });
+}
+
+
+/***/ }),
+/* 12 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupToolbarButtons: () => (/* binding */ setupToolbarButtons)
+/* harmony export */ });
+function setupToolbarButtons({
+    Logger,
+    vscode,
+    saveDocument,
+    navigateToPreviousRecord,
+    navigateToNextRecord,
+    setViewZoom,
+    getCurrentZoom,
+    switchToView
+}) {
+    document.getElementById('saveBtn').addEventListener('click', function() {
+        Logger.ui('Save button clicked!');
+        saveDocument();
+    });
+
+    // Setup back button (if it exists, for multi-record files)
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', function() {
+            Logger.ui('Back button clicked');
+            vscode.postMessage({ type: 'backToRecordList' });
+        });
     }
 
-    // Update field colors
-    if (selectedColors.length > 0) {
-        // Set the first color as the primary color (for backward compatibility)
-        field.color = selectedColors[0];
-        // Store all colors in the colors array
-        field.colors = selectedColors;
-        Logger.debug(`Colors set to [${selectedColors.join(', ')}] for field ${field.name}`);
+    // Setup navigation buttons
+    const prevRecordBtn = document.getElementById('prevRecordBtn');
+    const nextRecordBtn = document.getElementById('nextRecordBtn');
 
-        // Initialize colorIndicators if needed
-        if (!field.colorIndicators) {
-            field.colorIndicators = {};
-        }
+    if (prevRecordBtn) {
+        prevRecordBtn.addEventListener('click', function() {
+            Logger.ui('Previous Record button clicked');
+            navigateToPreviousRecord();
+        });
+    }
 
-        // Use unified indicator transfer helper
-        transferIndicators({
-            kind: 'color',
-            keys: selectedColors,
-            field: field,
-            fieldType: 'field'
+    if (nextRecordBtn) {
+        nextRecordBtn.addEventListener('click', function() {
+            Logger.ui('Next Record button clicked');
+            navigateToNextRecord();
+        });
+    }
+
+    const zoomOutBtn = document.getElementById('zoomOutBtn');
+    const zoomInBtn = document.getElementById('zoomInBtn');
+    const zoomResetBtn = document.getElementById('zoomResetBtn');
+
+    if (zoomOutBtn) {
+        zoomOutBtn.addEventListener('click', function() {
+            setViewZoom(getCurrentZoom() - 0.05);
+        });
+    }
+
+    if (zoomInBtn) {
+        zoomInBtn.addEventListener('click', function() {
+            setViewZoom(getCurrentZoom() + 0.05);
+        });
+    }
+
+    if (zoomResetBtn) {
+        zoomResetBtn.addEventListener('click', function() {
+            setViewZoom(1);
+        });
+    }
+
+    // Setup tab buttons
+    const designerTab = document.getElementById('designerTab');
+    const previewTab = document.getElementById('previewTab');
+    const sourceTab = document.getElementById('sourceTab');
+
+    if (designerTab) {
+        designerTab.addEventListener('click', function(e) {
+            e.preventDefault();
+            Logger.ui('Designer tab clicked');
+            switchToView('designer');
         });
     } else {
-        // Remove colors if no checkbox is selected
-        delete field.color;
-        delete field.colors;
-        delete field.colorIndicators;
-        Logger.debug(`Colors removed for field ${field.name}`);
+        Logger.error('Designer tab not found');
     }
+
+    if (previewTab) {
+        previewTab.addEventListener('click', function(e) {
+            e.preventDefault();
+            Logger.ui('Preview tab clicked');
+            switchToView('preview');
+        });
+    } else {
+        Logger.error('Preview tab not found');
+    }
+
+    if (sourceTab) {
+        sourceTab.addEventListener('click', function(e) {
+            e.preventDefault();
+            Logger.ui('Source tab clicked');
+            switchToView('source');
+        });
+    } else {
+        Logger.error('Source tab not found');
+    }
+
+    Logger.success('Toolbar buttons setup complete');
 }
 
 
 /***/ }),
-
-/***/ "./media/modules/ui/applyFieldProperties.js":
-/*!**************************************************!*\
-  !*** ./media/modules/ui/applyFieldProperties.js ***!
-  \**************************************************/
+/* 13 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   applyFieldProperties: () => (/* binding */ applyFieldProperties)
+/* harmony export */   setupDisplaySizeSelector: () => (/* binding */ setupDisplaySizeSelector)
 /* harmony export */ });
-function applyFieldProperties({
-    field,
+function setupDisplaySizeSelector({
     Logger,
-    getSelectedField,
-    setSelectedField,
-    getFields,
-    getCurrentRecord,
-    getCurrentDocument,
-    setCurrentDocument,
-    applyColorChanges,
-    getAttributeCheckboxMap,
-    transferIndicators,
-    KEYWORD_ATTRIBUTE_ALLOW_LIST,
-    updateFieldInDds,
+    getCurrentDisplaySize,
+    setCurrentDisplaySize,
+    updateCanvasSize,
+    setupRulers,
     parseDspfFields,
-    updateSourceViewUI,
-    vscode,
-    showFieldProperties,
-    selectField
+    getCurrentDocument,
+    applyDefaultZoomForDisplaySize,
+    updatePreviewView
 }) {
-    try {
-        const selectedField = getSelectedField ? getSelectedField() : null;
-        const fields = getFields ? getFields() : [];
-        const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+    const designerRadioButtons = document.querySelectorAll('input[name="displaySize"]');
+    designerRadioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            setCurrentDisplaySize(this.value);
+            const currentDisplaySize = getCurrentDisplaySize();
+            Logger.ui(`Designer display size changed to: ${currentDisplaySize}`);
 
-        if (selectedField && selectedField.id === field.id) {
-            if (selectedField.indicators) {
-                field.indicators = selectedField.indicators;
+            if (applyDefaultZoomForDisplaySize) {
+                applyDefaultZoomForDisplaySize(currentDisplaySize);
             }
-            if (selectedField.fieldIndicatorsModified) {
-                field.fieldIndicatorsModified = selectedField.fieldIndicatorsModified;
+
+            updateCanvasSize(currentDisplaySize);
+            setupRulers();
+
+            parseDspfFields(getCurrentDocument());
+
+            const previewView = document.getElementById('preview-view');
+            if (previewView && previewView.classList.contains('active')) {
+                updatePreviewView();
             }
-            if (selectedField.colorIndicatorsModified) {
-                field.colorIndicatorsModified = selectedField.colorIndicatorsModified;
-            }
-            if (selectedField.attributeIndicatorsModified) {
-                field.attributeIndicatorsModified = selectedField.attributeIndicatorsModified;
-            }
-            if (selectedField.dftvalIndicatorsModified) {
-                field.dftvalIndicatorsModified = selectedField.dftvalIndicatorsModified;
-            }
+        });
+    });
+}
+
+
+/***/ }),
+/* 14 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updateCanvasSize: () => (/* binding */ updateCanvasSize)
+/* harmony export */ });
+function updateCanvasSize(displaySize, ScreenCoordinates, Logger) {
+    const canvas = document.getElementById('fields-container');
+    const screenWithRulers = document.getElementById('screen-with-rulers');
+    const horizontalRuler = document.getElementById('horizontal-ruler');
+    const verticalRuler = document.getElementById('vertical-ruler');
+
+    if (!canvas || !screenWithRulers) {return;}
+
+    const dims = ScreenCoordinates.getScreenDimensions(displaySize);
+    const widthPx = ScreenCoordinates.getWidthInPixels(dims.cols);
+    const heightPx = ScreenCoordinates.getHeightInPixels(dims.rows);
+    if (canvas) {
+        canvas.style.width = `${widthPx}px`;
+        canvas.style.height = `${heightPx}px`;
+    }
+    if (horizontalRuler) {
+        horizontalRuler.style.width = `${widthPx + 4}px`;
+        horizontalRuler.style.backgroundSize = `${ScreenCoordinates.CHAR_WIDTH}px 100%`;
+    }
+    if (verticalRuler) {
+        verticalRuler.style.height = `${heightPx + 4}px`;
+        verticalRuler.style.backgroundSize = `100% ${ScreenCoordinates.CHAR_HEIGHT}px`;
+    }
+    if (screenWithRulers) {
+        screenWithRulers.style.width = `${widthPx + 42}px`;
+        screenWithRulers.style.height = `${heightPx + 42}px`;
+    }
+
+    Logger.ui(`Canvas resized for ${displaySize}`);
+}
+
+
+/***/ }),
+/* 15 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupDragAndDrop: () => (/* binding */ setupDragAndDrop)
+/* harmony export */ });
+function setupDragAndDrop({
+    Logger,
+    ScreenCoordinates,
+    getCurrentRecord,
+    getCurrentDisplaySize,
+    getCurrentZoom,
+    getWindowDimensions,
+    moveField,
+    createField
+}) {
+    const toolItems = document.querySelectorAll('.tool-item');
+    const canvas = document.getElementById('fields-container');
+
+    if (!canvas) {
+        Logger.error('Fields container not found, skipping drag and drop setup');
+        return;
+    }
+
+    Logger.ui('Setting up drag and drop for', toolItems.length, 'tool items');
+
+    toolItems.forEach((item, index) => {
+        Logger.debug(`Setting up drag for item ${index}:`, item.dataset.type);
+
+        item.addEventListener('dragstart', function(e) {
+            e.dataTransfer.setData('text/plain', this.dataset.type);
+            e.dataTransfer.effectAllowed = 'copy';
+            this.classList.add('dragging');
+            Logger.debug('Drag started for:', this.dataset.type);
+        });
+
+        item.addEventListener('dragend', function() {
+            this.classList.remove('dragging');
+            Logger.debug('Drag ended for:', this.dataset.type);
+        });
+    });
+
+    canvas.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        this.classList.add('drop-zone');
+    });
+
+    canvas.addEventListener('dragenter', function(e) {
+        e.preventDefault();
+        this.classList.add('drop-zone');
+    });
+
+    canvas.addEventListener('dragleave', function(e) {
+        if (!this.contains(e.relatedTarget)) {
+            this.classList.remove('drop-zone');
         }
+    });
 
-        const oldField = {
-            ...field,
-            attributes: field.attributes ? { ...field.attributes } : undefined,
-            colorIndicators: field.colorIndicators ? JSON.parse(JSON.stringify(field.colorIndicators)) : undefined,
-            attributeIndicators: field.attributeIndicators ? JSON.parse(JSON.stringify(field.attributeIndicators)) : undefined,
-            checkOptions: field.checkOptions ? { ...field.checkOptions } : undefined,
-            checkIndicators: field.checkIndicators ? JSON.parse(JSON.stringify(field.checkIndicators)) : undefined,
-            keywordIndicators: field.keywordIndicators ? JSON.parse(JSON.stringify(field.keywordIndicators)) : undefined,
-            edtcde: field.edtcde ? { ...field.edtcde } : undefined,
-            edtwrd: field.edtwrd ? { ...field.edtwrd } : undefined,
-            edtmsk: field.edtmsk ? { ...field.edtmsk } : undefined,
-            dft: field.dft ? { ...field.dft } : undefined,
-            dftval: field.dftval ? { ...field.dftval } : undefined,
-            dftvalIndicators: field.dftvalIndicators ? JSON.parse(JSON.stringify(field.dftvalIndicators)) : undefined
-        };
+    canvas.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('drop-zone');
 
-        Logger.debug('Applying properties to field:', oldField.name);
+        const data = e.dataTransfer.getData('text/plain');
+        Logger.debug('Drop event triggered with data:', data);
 
-        if (field.type === 'keyword' || field.isKeyword) {
-            field.row = parseInt(document.getElementById('prop-row').value);
-            field.col = parseInt(document.getElementById('prop-col').value);
-
-            applyColorChanges(field);
-
-            const attributeMap = getAttributeCheckboxMap(KEYWORD_ATTRIBUTE_ALLOW_LIST);
-
-            if (!field.attributes) {
-                field.attributes = {};
-            }
-
-            const selectedKeywordAttrs = [];
-            for (const [attrName, checkboxId] of Object.entries(attributeMap)) {
-                const checkbox = document.getElementById(checkboxId);
-                if (checkbox && checkbox.checked) {
-                    field.attributes[attrName] = true;
-                    selectedKeywordAttrs.push(attrName);
-                } else {
-                    delete field.attributes[attrName];
-                    Logger.debug(`Attribute ${attrName} removed from keyword ${field.name}`);
-                }
-            }
-
-            transferIndicators({
-                kind: 'attr',
-                keys: selectedKeywordAttrs,
-                field: field,
-                fieldType: 'keyword',
-                attrFormat: 'individual'
-            });
-
-            if (Object.keys(field.attributes).length === 0) {
-                delete field.attributes;
-            }
-
-            transferIndicators({
-                kind: 'keyword',
-                keys: [field.name],
-                field: field,
-                fieldType: 'keyword'
-            });
-
-            Logger.debug('Old keyword:', oldField);
-            Logger.debug('New keyword:', field);
-
-            updateFieldInDds(field, oldField);
-
-            const latestDocument = getCurrentDocument ? getCurrentDocument() : '';
-            parseDspfFields(latestDocument);
-
-            const updatedField = fields.find(f => f.name === field.name && f.record === currentRecord);
-            if (updatedField) {
-                if (setSelectedField) {
-                    setSelectedField(updatedField);
-                }
-                selectField(updatedField);
-                showFieldProperties(updatedField);
-                Logger.debug('Re-selected keyword after re-parse:', updatedField.name);
-            }
-
-            updateSourceViewUI({
-                Logger,
-                vscode,
-                getCurrentDocument,
-                setCurrentDocument,
-                getCurrentRecord,
-                parseDspfFields
-            });
-            Logger.debug('Source view synchronized after keyword update');
-
-            vscode.postMessage({
-                type: 'applyChangesSuccess',
-                message: `Keyword "${field.name}" updated successfully`
-            });
-
-            showFieldProperties(field);
-
-            Logger.success('Keyword properties applied and DDS updated');
+        if (!data) {
+            Logger.error('No data received in drop event');
             return;
         }
 
-        if (field.type !== 'constant') {
-            const nameInput = document.getElementById('prop-name');
-            if (nameInput) {
-                const newName = nameInput.value.trim().toUpperCase();
+        const rect = this.getBoundingClientRect();
+        const currentZoom = getCurrentZoom ? getCurrentZoom() : 1;
 
-                Logger.debug('Name validation - Field ID:', field.id, 'Old name:', oldField.name, 'New name:', newName, 'Current record:', currentRecord);
-
-                if (!newName) {
-                    alert('Field name cannot be empty.');
-                    return;
-                }
-
-                if (newName !== oldField.name) {
-                    Logger.debug('Name changed, checking for duplicates...');
-                    Logger.debug('Current record:', currentRecord);
-                    Logger.debug('All fields:', fields.map(f => `${f.name} (record: ${f.record || 'undefined'})`));
-
-                    const fieldsInCurrentRecord = fields.filter(f => {
-                        return f.record === currentRecord || (!f.record && currentRecord);
-                    });
-
-                    const duplicateField = fieldsInCurrentRecord.find(f =>
-                        f.id !== field.id &&
-                        f.name === newName
-                    );
-
-                    Logger.debug('Duplicate field found:', duplicateField);
-
-                    if (duplicateField) {
-                        vscode.postMessage({
-                            type: 'error',
-                            message: `A field with the name "${newName}" already exists in record "${currentRecord}".`
-                        });
-
-                        nameInput.value = oldField.name;
-                        return;
-                    }
-                }
-
-                field.name = newName;
-            }
-        }
-
-        field.row = parseInt(document.getElementById('prop-row').value);
-        field.col = parseInt(document.getElementById('prop-col').value);
-        field.length = parseInt(document.getElementById('prop-length').value) || null;
-
-        if (field.type !== 'constant') {
-            const decimalsInput = document.getElementById('prop-decimals');
-            if (decimalsInput) {
-                field.decimals = (field.dataType === 'double') ? 0 : (parseInt(decimalsInput.value) || 0);
-            }
-        }
-
-        if (field.type !== 'constant') {
-            const usageSelect = document.getElementById('prop-usage');
-            if (usageSelect) {
-                field.usage = usageSelect.value;
-                Logger.debug('Usage updated to:', field.usage);
-            }
-
-            const typeSelect = document.getElementById('prop-type');
-            if (typeSelect) {
-                field.dataType = typeSelect.value;
-                Logger.debug('Data type updated to:', field.dataType);
-                if (field.dataType === 'date') {
-                    field.length = 10;
-                    field.decimals = 0;
-                    delete field.shift;
-                    delete field.precision;
-                } else if (field.dataType === 'time') {
-                    field.length = 8;
-                    field.decimals = 0;
-                    delete field.shift;
-                    delete field.precision;
-                } else if (field.dataType === 'timestamp') {
-                    field.length = 26;
-                    field.decimals = 0;
-                    delete field.shift;
-                    delete field.precision;
-                }
-            }
-
-            const shiftSelect = document.getElementById('prop-shift');
-            const isShiftReadOnlyForZonedOutputOnly = field.dataType === 'zoned' && field.usage === 'O';
-
-            if (shiftSelect) {
-                if (field.dataType === 'float') {
-                    field.precision = shiftSelect.value;
-                    Logger.debug('Precision updated to:', field.precision);
-                } else if (field.dataType === 'zoned' || field.dataType === 'double') {
-                    if (isShiftReadOnlyForZonedOutputOnly) {
-                        Logger.debug('Shift not updated from UI because it is controlled by EDTCDE for zoned Output fields');
-                    } else {
-                        const selectedShift = shiftSelect.value ? shiftSelect.value.trim() : '';
-                        if (selectedShift) {
-                            field.shift = selectedShift;
-                        } else {
-                            delete field.shift;
-                        }
-                        Logger.debug('Shift updated to:', field.shift || '(none)');
-                    }
-                }
-            }
-        }
-
-        if (field.type === 'constant') {
-            field.value = document.getElementById('prop-value').value;
-        }
-
-        applyColorChanges(field);
-
-        if (field.type === 'constant' || field.type !== 'keyword') {
-            const attributeMap = getAttributeCheckboxMap();
-
-            if (!field.attributes) {
-                field.attributes = {};
-            }
-
-            const selectedAttrs = [];
-            for (const [attrName, checkboxId] of Object.entries(attributeMap)) {
-                const checkbox = document.getElementById(checkboxId);
-                if (checkbox && checkbox.checked) {
-                    field.attributes[attrName] = true;
-                    selectedAttrs.push(attrName);
-                } else {
-                    delete field.attributes[attrName];
-                    Logger.debug(`Attribute ${attrName} removed from field ${field.name}`);
-                }
-            }
-
-            const attrFormat = field.hasGroupedDspatr ? 'grouped' : 'individual';
-            const attrIndicatorsModified = transferIndicators({
-                kind: 'attr',
-                keys: selectedAttrs,
-                field: field,
-                fieldType: 'field',
-                attrFormat: attrFormat
-            });
-
-            if (Object.keys(field.attributes).length === 0) {
-                delete field.attributes;
-            }
-
-            if (field.hasGroupedDspatr && !attrIndicatorsModified) {
-                const oldAttrSet = new Set(Object.keys(oldField.attributes || {}).filter(k => oldField.attributes[k]));
-                const newAttrSet = new Set(Object.keys(field.attributes || {}).filter(k => field.attributes[k]));
-
-                const setsAreDifferent = oldAttrSet.size !== newAttrSet.size ||
-                    [...oldAttrSet].some(attr => !newAttrSet.has(attr));
-
-                if (setsAreDifferent) {
-                    field.attributeIndicatorsModified = true;
-                    Logger.debug('Grouped DSPATR format detected attribute changes, will regenerate line');
-                }
-            }
-        }
-
-        if (field.type !== 'constant' && field.usage !== 'O') {
-            const dataTypeForChecks = field.dataType;
-            const isCharCheck = dataTypeForChecks === 'character' || dataTypeForChecks === 'double';
-            const isNumericCheck = ['packed', 'zoned', 'float'].includes(dataTypeForChecks);
-            const newCheckOptions = {};
-            const applyCheckValue = (id, code) => {
-                const el = document.getElementById(id);
-                if (el && el.checked) {newCheckOptions[code] = true;}
+        const gridPosition = ScreenCoordinates
+            ? ScreenCoordinates.fromClientPoint(e.clientX, e.clientY, rect, currentZoom)
+            : {
+                row: Math.max(1, Math.floor(((e.clientY - rect.top) / currentZoom) / 20) + 1),
+                col: Math.max(1, Math.floor(((e.clientX - rect.left) / currentZoom) / 8) + 1)
             };
-            if (isCharCheck) {
-                applyCheckValue('check-me', 'ME');
-                applyCheckValue('check-er', 'ER');
-                applyCheckValue('check-mf', 'MF');
-                applyCheckValue('check-fe', 'FE');
-                applyCheckValue('check-rb', 'RB');
-                applyCheckValue('check-rz', 'RZ');
-                applyCheckValue('check-rl', 'RL');
-                applyCheckValue('check-lc', 'LC');
-            }
-            if (isNumericCheck) {
-                applyCheckValue('check-num-me', 'ME');
-                applyCheckValue('check-num-er', 'ER');
-                applyCheckValue('check-num-mf', 'MF');
-                applyCheckValue('check-num-fe', 'FE');
-                applyCheckValue('check-num-rb', 'RB');
-                applyCheckValue('check-num-rz', 'RZ');
-                applyCheckValue('check-num-rl', 'RL');
-            }
 
-            if (Object.keys(newCheckOptions).length > 0) {
-                field.checkOptions = newCheckOptions;
-            } else {
-                delete field.checkOptions;
-            }
+        const x = (e.clientX - rect.left) / currentZoom;
+        const y = (e.clientY - rect.top) / currentZoom;
 
-            const allowedIndicatorCodes = ['ME', 'ER'];
-            let checkIndicatorsModified = false;
-            if (!field.checkIndicators) {field.checkIndicators = {};}
-            allowedIndicatorCodes.forEach(code => {
-                if (selectedField && selectedField.checkIndicators && selectedField.checkIndicators[code]) {
-                    field.checkIndicators[code] = selectedField.checkIndicators[code];
-                    checkIndicatorsModified = true;
-                    Logger.debug(`Transferred CHECK(${code}) indicators from selectedField:`, field.checkIndicators[code]);
-                } else if (field.checkIndicators[code] && !(newCheckOptions && newCheckOptions[code])) {
-                    delete field.checkIndicators[code];
-                    checkIndicatorsModified = true;
+        let row = Math.max(1, gridPosition.row);
+        let col = Math.max(1, gridPosition.col);
+
+        const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+        const windowDimensions = currentRecord ? getWindowDimensions(currentRecord) : null;
+        if (windowDimensions && windowDimensions.hasWindow) {
+            const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : null;
+            const windowDim = currentDisplaySize === 'DS3' ? windowDimensions.ds3 : windowDimensions.ds4;
+            if (windowDim) {
+                const relRow = row - (windowDim.row - 1);
+                const relCol = col - windowDim.col;
+
+                if (relRow > 0 && relCol > 0) {
+                    row = relRow;
+                    col = relCol;
+                    Logger.window(`🪟 [WINDOW] Converted absolute screen (${row + (windowDim.row - 1)}, ${col + windowDim.col}) to WINDOW-relative (${row}, ${col})`);
                 }
-            });
-            Object.keys(field.checkIndicators).forEach(code => {
-                if (!newCheckOptions[code]) {delete field.checkIndicators[code];}
-            });
-            if (Object.keys(field.checkIndicators).length === 0) {
-                delete field.checkIndicators;
             }
-            if (checkIndicatorsModified) {
-                field.checkIndicatorsModified = true;
-            }
-        } else {
-            delete field.checkOptions;
-            delete field.checkIndicators;
         }
 
-        if (field.type !== 'constant') {
-            const dftCheckbox = document.getElementById('prop-dft-enabled');
-            const dftValueInput = document.getElementById('prop-dft-value');
+        Logger.debug('Drop at pixel:', { x, y, currentZoom }, 'grid:', { row, col });
 
-            if (dftCheckbox && dftCheckbox.checked && dftValueInput) {
-                const dftValue = dftValueInput.value.trim();
-                if (dftValue) {
-                    field.dft = { value: dftValue };
-                    Logger.debug(`DFT set to '${dftValue}' for field ${field.name}`);
-                } else {
-                    delete field.dft;
-                }
+        try {
+            const dropData = JSON.parse(data);
+            if (dropData.type === 'existing-field') {
+                Logger.debug('Moving existing field:', dropData.fieldId);
+                moveField(dropData.fieldId, row, col);
             } else {
-                delete field.dft;
+                createField(data, row, col);
             }
-        } else {
-            delete field.dft;
+        } catch (e) {
+            Logger.debug('Creating new field type:', data);
+            createField(data, row, col);
         }
+    });
 
-        if (field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B')) {
-            const dftvalCheckbox = document.getElementById('prop-dftval-enabled');
-            const dftvalValueInput = document.getElementById('prop-dftval-value');
-
-            if (dftvalCheckbox && dftvalCheckbox.checked && dftvalValueInput) {
-                const dftvalValue = dftvalValueInput.value.trim();
-                if (dftvalValue) {
-                    field.dftval = { value: dftvalValue };
-                    Logger.debug(`DFTVAL set to '${dftvalValue}' for field ${field.name}`);
-
-                    if (selectedField && selectedField.dftvalIndicators) {
-                        field.dftvalIndicators = selectedField.dftvalIndicators;
-                        Logger.debug('Transferred DFTVAL indicators from selectedField:', field.dftvalIndicators);
-                    }
-                } else {
-                    delete field.dftval;
-                    delete field.dftvalIndicators;
-                }
-            } else {
-                delete field.dftval;
-                delete field.dftvalIndicators;
-            }
-        } else {
-            delete field.dftval;
-            delete field.dftvalIndicators;
-        }
-
-        const edtcdeEnabledCheckbox = document.getElementById('prop-edtcde-enabled');
-        const edtcdeValueSelect = document.getElementById('prop-edtcde-value');
-        const edtcdeReplaceSelect = document.getElementById('prop-edtcde-replace-leading-zeros-with');
-        const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(field.dataType);
-        const canUseEdtcde = field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B') && isNumericType;
-
-        if (canUseEdtcde && edtcdeEnabledCheckbox && edtcdeEnabledCheckbox.checked && edtcdeValueSelect) {
-            const selectedEdtcde = edtcdeValueSelect.value.trim().toUpperCase();
-            if (selectedEdtcde) {
-                const replacement = edtcdeReplaceSelect ? edtcdeReplaceSelect.value.trim() : '';
-                field.edtcde = { value: selectedEdtcde };
-                if ((replacement === '*' || replacement === '$') && selectedEdtcde !== 'Z') {
-                    field.edtcde.replaceLeadingZerosWith = replacement;
-                } else {
-                    delete field.edtcde.replaceLeadingZerosWith;
-                }
-            } else {
-                delete field.edtcde;
-            }
-        } else {
-            delete field.edtcde;
-        }
-
-        const edtwrdEnabledCheckbox = document.getElementById('prop-edtwrd-enabled');
-        const edtwrdValueInput = document.getElementById('prop-edtwrd-value');
-        const edtmskEnabledCheckbox = document.getElementById('prop-edtmsk-enabled');
-        const edtmskValueInput = document.getElementById('prop-edtmsk-value');
-
-        const canUseEditKeywords = field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B') && isNumericType;
-
-        if (canUseEditKeywords && edtwrdEnabledCheckbox && edtwrdEnabledCheckbox.checked && edtwrdValueInput) {
-            const edtwrdValue = edtwrdValueInput.value;
-            if (edtwrdValue.length > 0) {
-                field.edtwrd = { value: edtwrdValue };
-            } else {
-                delete field.edtwrd;
-            }
-        } else {
-            delete field.edtwrd;
-        }
-
-        if (canUseEditKeywords && edtmskEnabledCheckbox && edtmskEnabledCheckbox.checked && edtmskValueInput) {
-            const edtmskValue = edtmskValueInput.value;
-            if (edtmskValue.length > 0) {
-                field.edtmsk = { value: edtmskValue };
-            } else {
-                delete field.edtmsk;
-            }
-        } else {
-            delete field.edtmsk;
-        }
-
-        const edtcdeForShift = field.edtcde && field.edtcde.value
-            ? String(field.edtcde.value).trim().toUpperCase()
-            : '';
-        const edtcdeCodesThatForceYShift = ['1', '2', '3', 'A', 'B', 'C', 'D', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q'];
-        const appliesAutoShiftRule = field.type !== 'constant'
-            && field.dataType === 'zoned'
-            && (field.usage === 'O' || field.usage === 'B');
-
-        if (appliesAutoShiftRule) {
-            if (edtcdeForShift === 'Z') {
-                delete field.shift;
-                Logger.debug('Shift cleared for EDTCDE(Z) on zoned Output/Both field');
-            } else if (edtcdeCodesThatForceYShift.includes(edtcdeForShift)) {
-                field.shift = 'Y';
-                Logger.debug(`Shift forced to Y for EDTCDE(${edtcdeForShift}) on zoned Output/Both field`);
-            } else if (field.usage === 'B' && !field.shift) {
-                field.shift = 'S';
-                Logger.debug('Shift defaulted to S for zoned Both field without EDTCDE override');
-            } else if (field.usage === 'O') {
-                delete field.shift;
-                Logger.debug('Shift cleared by default for zoned Output field without EDTCDE override');
-            }
-        }
-
-        Logger.debug('Old field:', oldField);
-        Logger.debug('New field:', field);
-
-        const positionChanged = oldField.row !== field.row || oldField.col !== field.col;
-        const nameChanged = oldField.name !== field.name;
-        const indicatorsModified = Boolean(
-            field.colorIndicatorsModified ||
-            field.attributeIndicatorsModified ||
-            field.keywordIndicatorsModified ||
-            field.fieldIndicatorsModified ||
-            field.dftvalIndicatorsModified
-        );
-
-        const oldColors = JSON.stringify(oldField.colors || [oldField.color].filter(Boolean));
-        const newColors = JSON.stringify(field.colors || [field.color].filter(Boolean));
-        const colorChanged = oldColors !== newColors;
-
-        const oldAttrs = JSON.stringify(oldField.attributes || {});
-        const newAttrs = JSON.stringify(field.attributes || {});
-        const attributesChanged = oldAttrs !== newAttrs;
-
-        const usageChanged = oldField.usage !== field.usage;
-
-        const dataTypeChanged = oldField.dataType !== field.dataType;
-        const lengthChanged = oldField.length !== field.length;
-        const decimalsChanged = oldField.decimals !== field.decimals;
-        const shiftChanged = (field.dataType === 'zoned' || field.dataType === 'double') && oldField.shift !== field.shift;
-        const precisionChanged = field.dataType === 'float' && oldField.precision !== field.precision;
-        const checkOptionsChanged = JSON.stringify(oldField.checkOptions || {}) !== JSON.stringify(field.checkOptions || {});
-        const checkIndicatorsModified = Boolean(field.checkIndicatorsModified);
-        const dftChanged = JSON.stringify(oldField.dft || null) !== JSON.stringify(field.dft || null);
-        const dftvalChanged = JSON.stringify(oldField.dftval || null) !== JSON.stringify(field.dftval || null);
-        const dftvalIndicatorsChanged = JSON.stringify(oldField.dftvalIndicators || null) !== JSON.stringify(field.dftvalIndicators || null);
-        const edtcdeChanged = JSON.stringify(oldField.edtcde || null) !== JSON.stringify(field.edtcde || null);
-        const edtwrdChanged = JSON.stringify(oldField.edtwrd || null) !== JSON.stringify(field.edtwrd || null);
-        const edtmskChanged = JSON.stringify(oldField.edtmsk || null) !== JSON.stringify(field.edtmsk || null);
-
-        const valueChanged = field.type === 'constant' && oldField.value !== field.value;
-
-        const shouldUpdateDds = Boolean(
-            indicatorsModified ||
-            positionChanged ||
-            nameChanged ||
-            colorChanged ||
-            attributesChanged ||
-            usageChanged ||
-            dataTypeChanged ||
-            lengthChanged ||
-            decimalsChanged ||
-            shiftChanged ||
-            precisionChanged ||
-            valueChanged ||
-            checkOptionsChanged ||
-            checkIndicatorsModified ||
-            dftChanged ||
-            dftvalChanged ||
-            dftvalIndicatorsChanged ||
-            edtcdeChanged ||
-            edtwrdChanged ||
-            edtmskChanged
-        );
-
-        if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
-            updateFieldInDds(field, oldField);
-            delete field.colorIndicatorsModified;
-            delete field.attributeIndicatorsModified;
-            delete field.checkIndicatorsModified;
-            delete field.keywordIndicatorsModified;
-            delete field.dftvalIndicatorsModified;
-
-            const latestDocument = getCurrentDocument ? getCurrentDocument() : '';
-            parseDspfFields(latestDocument);
-
-            const updatedField = fields.find(f => f.name === field.name && f.record === currentRecord);
-            if (updatedField) {
-                if (setSelectedField) {
-                    setSelectedField(updatedField);
-                }
-                selectField(updatedField);
-                showFieldProperties(updatedField);
-                Logger.debug('Re-selected field after re-parse:', updatedField.name);
-            }
-
-            updateSourceViewUI({
-                Logger,
-                vscode,
-                getCurrentDocument,
-                setCurrentDocument,
-                getCurrentRecord,
-                parseDspfFields
-            });
-            Logger.debug('Source view synchronized after field update');
-
-            vscode.postMessage({
-                type: 'applyChangesSuccess',
-                message: `Changes applied to field "${field.name}"`
-            });
-        } else {
-            Logger.debug('Skipping DDS update - no relevant changes detected');
-
-            vscode.postMessage({
-                type: 'applyChangesSuccess',
-                message: `No changes detected for field "${field.name}"`
-            });
-        }
-
-        showFieldProperties(field);
-
-        Logger.success('Field properties applied');
-    } catch (error) {
-        Logger.error('Error applying field properties:', error);
-        vscode.postMessage({
-            type: 'applyChangesError',
-            message: `Error applying changes: ${error.message}`
-        });
-    }
+    Logger.success('Drag and drop setup complete');
 }
 
 
 /***/ }),
-
-/***/ "./media/modules/ui/applyIndicatorChangesToField.js":
-/*!**********************************************************!*\
-  !*** ./media/modules/ui/applyIndicatorChangesToField.js ***!
-  \**********************************************************/
+/* 16 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   applyIndicatorChangesToFieldUI: () => (/* binding */ applyIndicatorChangesToFieldUI)
+/* harmony export */   setupGridLines: () => (/* binding */ setupGridLines)
 /* harmony export */ });
-function applyIndicatorChangesToFieldUI({
-    field,
-    indicatorConfigurations,
-    Logger
-}) {
-    if (!field) {return;}
-
-    Logger.dds(`Applying indicator changes from Map to field: ${field.name}`);
-
-    // Iterate through color indicators
-    if (field.colors && Array.isArray(field.colors)) {
-        field.colors.forEach(color => {
-            const key = `color:${color}`;
-            if (indicatorConfigurations.has(key)) {
-                const indicatorData = indicatorConfigurations.get(key);
-
-                if (!field.colorIndicators) {
-                    field.colorIndicators = {};
-                }
-
-                // Convert from Map format to field format
-                if (indicatorData.isOr && indicatorData.groups) {
-                    // OR format - preserve groups structure
-                    field.colorIndicators[color] = indicatorData;
-                    Logger.dds(`Applied OR indicators for color ${color}:`, indicatorData);
-                } else if (indicatorData instanceof Set) {
-                    // AND format - convert Set to array for DDS generation
-                    // The Set contains JSON strings, so we need to parse them back to objects
-                    const indicatorArray = Array.from(indicatorData).map(jsonStr => JSON.parse(jsonStr));
-                    field.colorIndicators[color] = indicatorArray;
-                    Logger.dds(`Applied AND indicators for color ${color}:`, indicatorArray);
-                }
-            }
-        });
+function setupGridLines({ Logger, setupRulers }) {
+    const screenGrid = document.getElementById('screen-grid');
+    if (screenGrid) {
+        Logger.success('Grid lines setup complete');
     }
-
-    // Iterate through attribute indicators
-    if (field.attributes) {
-        Object.keys(field.attributes).forEach(attrName => {
-            if (!field.attributes[attrName]) {return;} // Skip inactive attributes
-
-            const key = `attr:${attrName}`;
-            if (indicatorConfigurations.has(key)) {
-                const indicatorData = indicatorConfigurations.get(key);
-
-                if (!field.attributeIndicators) {
-                    field.attributeIndicators = {};
-                }
-
-                // Convert from Map format to field format
-                if (indicatorData.isOr && indicatorData.groups) {
-                    // OR format - preserve groups structure
-                    field.attributeIndicators[attrName] = indicatorData;
-                    Logger.dds(`Applied OR indicators for attribute ${attrName}:`, indicatorData);
-                } else if (indicatorData instanceof Set) {
-                    // AND format - convert Set to array for DDS generation
-                    // The Set contains JSON strings, so we need to parse them back to objects
-                    const indicatorArray = Array.from(indicatorData).map(jsonStr => JSON.parse(jsonStr));
-                    field.attributeIndicators[attrName] = indicatorArray;
-                    Logger.dds(`Applied AND indicators for attribute ${attrName}:`, indicatorArray);
-                }
-            }
-        });
-    }
+    setupRulers();
 }
 
 
 /***/ }),
+/* 17 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-/***/ "./media/modules/ui/applyWindowDimensions.js":
-/*!***************************************************!*\
-  !*** ./media/modules/ui/applyWindowDimensions.js ***!
-  \***************************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupPreviewDisplaySizeListeners: () => (/* binding */ setupPreviewDisplaySizeListeners)
+/* harmony export */ });
+function setupPreviewDisplaySizeListeners({
+    Logger,
+    getCurrentDisplaySize,
+    setCurrentDisplaySize,
+    updateCanvasSize,
+    setupRulers,
+    parseDspfFields,
+    getCurrentDocument,
+    applyDefaultZoomForDisplaySize,
+    updatePreviewView
+}) {
+    const previewRadioButtons = document.querySelectorAll('input[name="preview-display-size"]');
+    previewRadioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const nextDisplaySize = this.value;
+            setCurrentDisplaySize(nextDisplaySize);
+            Logger.debug(`Preview display size changed to: ${nextDisplaySize}`);
+
+            if (applyDefaultZoomForDisplaySize) {
+                applyDefaultZoomForDisplaySize(nextDisplaySize);
+            }
+
+            const designerRadios = document.querySelectorAll('input[name="displaySize"]');
+            designerRadios.forEach(dr => {
+                dr.checked = dr.value === nextDisplaySize;
+            });
+
+            updateCanvasSize(nextDisplaySize);
+            setupRulers();
+
+            parseDspfFields(getCurrentDocument());
+            updatePreviewView();
+        });
+    });
+}
+
+
+/***/ }),
+/* 18 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupSourceSearch: () => (/* binding */ setupSourceSearch)
+/* harmony export */ });
+let searchMatches = [];
+let currentMatchIndex = -1;
+let searchSetupDone = false;
+let hotkeySetupDone = false;
+
+function setupSourceSearchHotkey() {
+    if (hotkeySetupDone) {
+        return;
+    }
+    hotkeySetupDone = true;
+
+    document.addEventListener('keydown', function(e) {
+        const isFindKey = e.key && e.key.toLowerCase() === 'f';
+        if ((e.ctrlKey || e.metaKey) && (isFindKey || e.code === 'KeyF')) {
+            const sourceView = document.getElementById('source-view');
+            const searchBox = document.getElementById('source-search-box');
+            if (sourceView && searchBox && sourceView.classList.contains('active')) {
+                e.preventDefault();
+                e.stopPropagation();
+                searchBox.classList.add('visible');
+                const searchInput = document.getElementById('source-search-input');
+                if (searchInput) {
+                    searchInput.focus();
+                    searchInput.select();
+                }
+            }
+        }
+    }, true);
+}
+
+function setupSourceSearch({ Logger }) {
+    setupSourceSearchHotkey();
+
+    if (searchSetupDone) {
+        return;
+    }
+    searchSetupDone = true;
+
+    const sourceEditor = document.getElementById('source-editor');
+    const searchBox = document.getElementById('source-search-box');
+    const searchInput = document.getElementById('source-search-input');
+    const searchPrevBtn = document.getElementById('search-prev-btn');
+    const searchNextBtn = document.getElementById('search-next-btn');
+    const searchCloseBtn = document.getElementById('search-close-btn');
+    const searchInfo = document.getElementById('search-info');
+    const highlightsContent = document.getElementById('search-highlights-content');
+
+    if (!sourceEditor || !searchBox || !searchInput || !searchPrevBtn || !searchNextBtn || !searchCloseBtn || !searchInfo || !highlightsContent) {
+        Logger.warn('Source search elements not found, skipping setup');
+        return;
+    }
+
+    sourceEditor.addEventListener('scroll', function() {
+        highlightsContent.style.transform = `translate(${-sourceEditor.scrollLeft}px, ${-sourceEditor.scrollTop}px)`;
+    });
+
+    function renderHighlights() {
+        const query = searchInput.value;
+        if (!query || searchMatches.length === 0) {
+            highlightsContent.innerHTML = '';
+            return;
+        }
+
+        const text = sourceEditor.value;
+        let html = '';
+        let lastIndex = 0;
+
+        searchMatches.forEach((matchIndex, i) => {
+            html += escapeHtml(text.substring(lastIndex, matchIndex));
+
+            const isCurrent = i === currentMatchIndex;
+            const className = isCurrent ? 'search-highlight-current' : 'search-highlight';
+            html += `<span class="${className}">${escapeHtml(text.substr(matchIndex, query.length))}</span>`;
+
+            lastIndex = matchIndex + query.length;
+        });
+
+        html += escapeHtml(text.substring(lastIndex));
+        highlightsContent.innerHTML = html;
+        highlightsContent.style.transform = `translate(${-sourceEditor.scrollLeft}px, ${-sourceEditor.scrollTop}px)`;
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function performSearch() {
+        const query = searchInput.value;
+        if (!query) {
+            searchMatches = [];
+            currentMatchIndex = -1;
+            searchInfo.textContent = '';
+            renderHighlights();
+            return;
+        }
+
+        const text = sourceEditor.value;
+        searchMatches = [];
+        const lowerQuery = query.toLowerCase();
+        const lowerText = text.toLowerCase();
+        let index = lowerText.indexOf(lowerQuery);
+
+        while (index !== -1) {
+            searchMatches.push(index);
+            index = lowerText.indexOf(lowerQuery, index + 1);
+        }
+
+        if (searchMatches.length > 0) {
+            currentMatchIndex = 0;
+            highlightMatch();
+            searchInfo.textContent = `${currentMatchIndex + 1} of ${searchMatches.length}`;
+        } else {
+            searchInfo.textContent = 'No results';
+            currentMatchIndex = -1;
+        }
+
+        renderHighlights();
+    }
+
+    function highlightMatch() {
+        if (currentMatchIndex >= 0 && currentMatchIndex < searchMatches.length) {
+            const matchPos = searchMatches[currentMatchIndex];
+            sourceEditor.focus();
+            sourceEditor.setSelectionRange(matchPos, matchPos + searchInput.value.length);
+            sourceEditor.scrollTop = Math.max(0, (matchPos / sourceEditor.value.length) * sourceEditor.scrollHeight - 200);
+            searchInfo.textContent = `${currentMatchIndex + 1} of ${searchMatches.length}`;
+            renderHighlights();
+            setTimeout(() => searchInput.focus(), 0);
+        }
+    }
+
+    searchInput.addEventListener('input', performSearch);
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (e.shiftKey) {
+                searchPrevBtn.click();
+            } else {
+                searchNextBtn.click();
+            }
+        } else if (e.key === 'Escape') {
+            searchCloseBtn.click();
+        }
+    });
+
+    searchPrevBtn.addEventListener('click', function() {
+        if (searchMatches.length > 0) {
+            currentMatchIndex = (currentMatchIndex - 1 + searchMatches.length) % searchMatches.length;
+            highlightMatch();
+        }
+    });
+
+    searchNextBtn.addEventListener('click', function() {
+        if (searchMatches.length > 0) {
+            currentMatchIndex = (currentMatchIndex + 1) % searchMatches.length;
+            highlightMatch();
+        }
+    });
+
+    searchCloseBtn.addEventListener('click', function() {
+        searchBox.classList.remove('visible');
+        searchInput.value = '';
+        searchMatches = [];
+        currentMatchIndex = -1;
+        searchInfo.textContent = '';
+        renderHighlights();
+        sourceEditor.focus();
+    });
+
+    Logger.debug('Source search setup complete');
+}
+
+
+/***/ }),
+/* 19 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updateNavigationButtons: () => (/* binding */ updateNavigationButtons),
+/* harmony export */   updateRecordTitle: () => (/* binding */ updateRecordTitle)
+/* harmony export */ });
+function updateRecordTitle({ Logger, getCurrentRecord }) {
+    const titleElement = document.querySelector('.toolbar-left h2');
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+    if (titleElement && currentRecord) {
+        titleElement.textContent = `DSPF Designer - ${currentRecord}`;
+        Logger.debug(`Updated title to: DSPF Designer - ${currentRecord}`);
+    }
+}
+
+function updateNavigationButtons({ getCurrentRecord, getAllRecords }) {
+    const prevBtn = document.getElementById('prevRecordBtn');
+    const nextBtn = document.getElementById('nextRecordBtn');
+    const allRecords = getAllRecords ? getAllRecords() : null;
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+
+    if (!prevBtn || !nextBtn || !allRecords || allRecords.length === 0) {
+        return;
+    }
+
+    const currentIndex = allRecords.findIndex(r => r.name === currentRecord);
+    prevBtn.disabled = (currentIndex <= 0);
+    nextBtn.disabled = (currentIndex >= allRecords.length - 1);
+}
+
+
+/***/ }),
+/* 20 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupWindowResize: () => (/* binding */ setupWindowResize)
+/* harmony export */ });
+function setupWindowResize({
+    windowFrame,
+    originalDimensions,
+    Logger,
+    ScreenCoordinates,
+    getCurrentDisplaySize,
+    getCurrentZoom,
+    updateWindowDimensions
+}) {
+    const handles = windowFrame.querySelectorAll('.window-resize-handle');
+
+    handles.forEach(handle => {
+        handle.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const corner = this.className.split(' ')[1];
+            const startX = e.clientX;
+            const startY = e.clientY;
+            const startWidth = windowFrame.offsetWidth;
+            const startHeight = windowFrame.offsetHeight;
+            const startLeft = windowFrame.offsetLeft;
+            const startTop = windowFrame.offsetTop;
+
+            function onMouseMove(e) {
+                const currentZoom = getCurrentZoom ? getCurrentZoom() : 1;
+                const deltaX = (e.clientX - startX) / currentZoom;
+                const deltaY = (e.clientY - startY) / currentZoom;
+
+                let newWidth = startWidth;
+                let newHeight = startHeight;
+                let newLeft = startLeft;
+                let newTop = startTop;
+
+                if (corner.includes('e')) {
+                    newWidth = Math.max(80, startWidth + deltaX);
+                }
+                if (corner.includes('w')) {
+                    const widthChange = -deltaX;
+                    newWidth = Math.max(80, startWidth + widthChange);
+                    newLeft = startLeft - (newWidth - startWidth);
+                }
+                if (corner.includes('s')) {
+                    newHeight = Math.max(40, startHeight + deltaY);
+                }
+                if (corner.includes('n')) {
+                    const heightChange = -deltaY;
+                    newHeight = Math.max(40, startHeight + heightChange);
+                    newTop = startTop - (newHeight - startHeight);
+                }
+
+                windowFrame.style.width = `${newWidth}px`;
+                windowFrame.style.height = `${newHeight}px`;
+                windowFrame.style.left = `${newLeft}px`;
+                windowFrame.style.top = `${newTop}px`;
+            }
+
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+
+                const currentZoom = getCurrentZoom ? getCurrentZoom() : 1;
+                const gridPosition = ScreenCoordinates
+                    ? ScreenCoordinates.fromPixels(windowFrame.offsetTop, windowFrame.offsetLeft)
+                    : {
+                        row: Math.round(windowFrame.offsetTop / 20) + 1,
+                        col: Math.round(windowFrame.offsetLeft / 8) + 1
+                    };
+                const gridSize = ScreenCoordinates
+                    ? ScreenCoordinates.sizeFromPixels(windowFrame.offsetHeight, windowFrame.offsetWidth, 1)
+                    : {
+                        rows: Math.round(windowFrame.offsetHeight / 20),
+                        cols: Math.round(windowFrame.offsetWidth / 8)
+                    };
+
+                let newRow = gridPosition.row;
+                let newCol = gridPosition.col;
+                let newHeight = gridSize.rows;
+                let newWidth = gridSize.cols - 4;
+
+                const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : 'DS3';
+                const maxRows = currentDisplaySize === 'DS3' ? 24 : 27;
+                const maxCols = currentDisplaySize === 'DS3' ? 80 : 132;
+
+                newRow = Math.max(1, Math.min(newRow, maxRows));
+                newCol = Math.max(1, Math.min(newCol, maxCols));
+                newHeight = Math.max(1, Math.min(newHeight, maxRows - newRow + 1));
+                newWidth = Math.max(1, Math.min(newWidth, maxCols - newCol + 1));
+
+                Logger.window(`Window resized to: row=${newRow}, col=${newCol}, height=${newHeight}, width=${newWidth}, zoom=${currentZoom}`);
+                Logger.debug(`Validation check - Display: ${currentDisplaySize}, Max rows: ${maxRows}, Max cols: ${maxCols}`);
+
+                updateWindowDimensions(originalDimensions, newRow, newCol, newHeight, newWidth);
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+    });
+}
+
+
+/***/ }),
+/* 21 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updateSourceView: () => (/* binding */ updateSourceView)
+/* harmony export */ });
+let currentDeps = null;
+
+function generateColumnRuler() {
+    const rulerMain = document.querySelector('.ruler-main');
+    if (!rulerMain) {
+        return;
+    }
+    const rulerText = '        .....AAN01N02N03..Name++++++RLen++TDpBLinPosFunctions+++++++++++++++++++++++++++Comments+++++++++++';
+    rulerMain.textContent = rulerText;
+}
+
+function updateLineNumbers(sourceEditor) {
+    const lineNumbers = document.getElementById('source-line-numbers');
+    if (!sourceEditor || !lineNumbers) {
+        return;
+    }
+
+    const lines = sourceEditor.value.split('\n');
+    const lineCount = lines.length;
+
+    let numbersHTML = '';
+    for (let i = 1; i <= lineCount; i++) {
+        numbersHTML += i + '\n';
+    }
+
+    lineNumbers.textContent = numbersHTML;
+}
+
+function syncLineNumbersScroll(event) {
+    const sourceEditor = event.target;
+    const lineNumbers = document.getElementById('source-line-numbers');
+    const rulerContent = document.querySelector('.ruler-content');
+
+    if (!sourceEditor || !lineNumbers) {
+        return;
+    }
+
+    lineNumbers.scrollTop = sourceEditor.scrollTop;
+
+    if (rulerContent) {
+        rulerContent.scrollLeft = sourceEditor.scrollLeft;
+    }
+}
+
+function handleSourceChange(event) {
+    if (!currentDeps) {
+        return;
+    }
+
+    const { Logger, vscode, setCurrentDocument, getCurrentRecord, parseDspfFields } = currentDeps;
+    const updatedDocument = event.target.value;
+    setCurrentDocument(updatedDocument);
+
+    updateLineNumbers(event.target);
+
+    vscode.postMessage({
+        type: 'update',
+        content: updatedDocument,
+        currentRecord: getCurrentRecord()
+    });
+
+    parseDspfFields(updatedDocument);
+    Logger.debug('Source editor changed, designer view updated');
+}
+
+function updateSourceView({ Logger, vscode, getCurrentDocument, setCurrentDocument, getCurrentRecord, parseDspfFields }) {
+    const sourceEditor = document.getElementById('source-editor');
+    if (!sourceEditor) {
+        return;
+    }
+
+    currentDeps = {
+        Logger,
+        vscode,
+        setCurrentDocument,
+        getCurrentRecord,
+        parseDspfFields
+    };
+
+    const currentDocument = getCurrentDocument();
+    if (sourceEditor.value !== currentDocument) {
+        const cursorStart = sourceEditor.selectionStart;
+        const cursorEnd = sourceEditor.selectionEnd;
+        const scrollTop = sourceEditor.scrollTop;
+
+        sourceEditor.value = currentDocument;
+
+        sourceEditor.setSelectionRange(cursorStart, cursorEnd);
+        sourceEditor.scrollTop = scrollTop;
+    }
+
+    updateLineNumbers(sourceEditor);
+    generateColumnRuler();
+
+    sourceEditor.removeEventListener('input', handleSourceChange);
+    sourceEditor.addEventListener('input', handleSourceChange);
+
+    sourceEditor.removeEventListener('scroll', syncLineNumbersScroll);
+    sourceEditor.addEventListener('scroll', syncLineNumbersScroll);
+}
+
+
+/***/ }),
+/* 22 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   moveField: () => (/* binding */ moveField)
+/* harmony export */ });
+function moveField(options) {
+    const {
+        fieldId,
+        newRow,
+        newCol,
+        Logger,
+        fields,
+        getCurrentRecord,
+        setCurrentRecord,
+        getCurrentDisplaySize,
+        getWindowDimensions,
+        renderField,
+        renderWindowField,
+        getSubfileRelationship,
+        getSflpagValue,
+        selectField,
+        updateFieldInDds
+    } = options;
+
+    const field = fields.find(f => f.id === fieldId);
+    if (!field) {
+        Logger.error('Field not found for moving:', fieldId);
+        return;
+    }
+
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+    const oldRow = field.row;
+    const oldCol = field.col;
+
+    Logger.debug(`Moving field ${field.name} from (${oldRow},${oldCol}) to (${newRow},${newCol}) in record: ${currentRecord || 'ALL'}`);
+
+    field.row = newRow;
+    field.col = newCol;
+
+    const oldElement = document.querySelector(`[data-field-id="${fieldId}"]`);
+    if (oldElement) {
+        oldElement.remove();
+    }
+
+    const copyPattern = `${fieldId}_repeat`;
+    const allElements = document.querySelectorAll('[data-field-id]');
+    let removedCopies = 0;
+
+    allElements.forEach(el => {
+        const elFieldId = el.getAttribute('data-field-id');
+        if (elFieldId && elFieldId.includes(copyPattern)) {
+            el.remove();
+            removedCopies++;
+        }
+    });
+
+    if (removedCopies > 0) {
+        Logger.dds(`Removed ${removedCopies} visual copies during move`);
+    }
+
+    const winDimsForMove = currentRecord ? getWindowDimensions(currentRecord) : null;
+    if (winDimsForMove && winDimsForMove.hasWindow) {
+        const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : null;
+        const winDim = currentDisplaySize === 'DS3' ? winDimsForMove.ds3 : winDimsForMove.ds4;
+        if (winDim) {
+            renderWindowField(field, winDim);
+        } else {
+            renderField(field);
+        }
+    } else {
+        renderField(field);
+    }
+
+    const subfileRel = currentRecord ? getSubfileRelationship(currentRecord) : null;
+    if (subfileRel && subfileRel.sflRecord === currentRecord) {
+        const sflpagValue = getSflpagValue(subfileRel.sflctlRecord);
+        if (sflpagValue > 1) {
+            Logger.dds(`Regenerating ${sflpagValue - 1} visual copies for field ${field.name} after move in SFL record`);
+            for (let repeat = 1; repeat < sflpagValue; repeat++) {
+                const visualCopy = {
+                    ...field,
+                    row: field.row + repeat,
+                    isVisualCopy: true,
+                    id: `${fieldId}_repeat${repeat}`
+                };
+
+                if (winDimsForMove && winDimsForMove.hasWindow) {
+                    const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : null;
+                    const winDim = currentDisplaySize === 'DS3' ? winDimsForMove.ds3 : winDimsForMove.ds4;
+                    if (winDim) {
+                        renderWindowField(visualCopy, winDim);
+                    } else {
+                        renderField(visualCopy);
+                    }
+                } else {
+                    renderField(visualCopy);
+                }
+            }
+        }
+    }
+
+    selectField(field);
+
+    const preservedRecord = currentRecord;
+    updateFieldInDds(field, { ...field, row: oldRow, col: oldCol });
+
+    if (preservedRecord && setCurrentRecord) {
+        const currentRecordAfter = getCurrentRecord ? getCurrentRecord() : null;
+        if (currentRecordAfter && preservedRecord !== currentRecordAfter) {
+            Logger.debug('Restoring record context after move:', preservedRecord);
+            setCurrentRecord(preservedRecord);
+        }
+    }
+
+    Logger.success('Field moved and DDS updated, maintaining record filter:', getCurrentRecord ? getCurrentRecord() : currentRecord);
+}
+
+
+/***/ }),
+/* 23 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -6151,2548 +7079,576 @@ function applyWindowDimensions(options) {
 
 
 /***/ }),
-
-/***/ "./media/modules/ui/buildVariableTypeAndUsage.js":
-/*!*******************************************************!*\
-  !*** ./media/modules/ui/buildVariableTypeAndUsage.js ***!
-  \*******************************************************/
+/* 24 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   buildVariableTypeAndUsageUI: () => (/* binding */ buildVariableTypeAndUsageUI)
+/* harmony export */   showScreenProperties: () => (/* binding */ showScreenProperties)
 /* harmony export */ });
-function buildVariableTypeAndUsageUI({
-    field
-}) {
-    const isDate = field.dataType === 'date';
-    const isTime = field.dataType === 'time';
-    const isTimestamp = field.dataType === 'timestamp';
-    const length = isDate ? 10 : (isTime ? 8 : (isTimestamp ? 26 : (field.length || 10)));
-    const decimals = field.decimals || 0;
-
-    // Map dataType to DDS type character
-    let typeChar = 'A';
-    if (field.dataType === 'character') {
-        typeChar = 'A';
-    } else if (field.dataType === 'zoned') {
-        const hasExplicitShift = typeof field.shift === 'string' && field.shift.trim() !== '';
-        if (hasExplicitShift) {
-            typeChar = field.shift.trim();
-        } else if (field.usage === 'I' || field.usage === 'B') {
-            typeChar = 'S';
-        } else {
-            typeChar = '';
-        }
-    } else if (field.dataType === 'float') {
-        typeChar = 'F';
-    } else if (field.dataType === 'double') {
-        typeChar = field.shift || 'J';
-    } else if (field.dataType === 'date') {
-        typeChar = 'L';
-    } else if (field.dataType === 'time') {
-        typeChar = 'T';
-    } else if (field.dataType === 'timestamp') {
-        typeChar = 'Z';
-    }
-
-    const typeSpec = isDate ? 'L' : (isTime ? 'T' : (isTimestamp ? 'Z' : `${length}${typeChar}`));
-    const isNumeric = ['zoned', 'float', 'double'].includes(field.dataType);
-
-    // Determine usage character
-    let usageChar = 'O';
-    if (field.usage === 'I') {
-        usageChar = 'I';
-    } else if (field.usage === 'O') {
-        usageChar = 'O';
-    } else if (field.usage === 'B') {
-        usageChar = 'B';
-    } else {
-        // Fallback to old field.type
-        if (field.type === 'input') {
-            usageChar = 'I';
-        } else if (field.type === 'output') {
-            usageChar = 'O';
-        } else {
-            usageChar = 'O';
-        }
-    }
-
-    // Build type and usage string
-    let typeAndUsage = '';
-    if (field.dataType === 'double') {
-        typeAndUsage = `${typeSpec}  ${usageChar}`;
-    } else if (isNumeric && decimals > 0) {
-        typeAndUsage = `${typeSpec} ${decimals}${usageChar}`;
-    } else if (isNumeric) {
-        typeAndUsage = `${typeSpec} 0${usageChar}`;
-    } else {
-        typeAndUsage = `${typeSpec}  ${usageChar}`;
-    }
-
-    return typeAndUsage;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/canvasSetup.js":
-/*!*****************************************!*\
-  !*** ./media/modules/ui/canvasSetup.js ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setupCanvasInteraction: () => (/* binding */ setupCanvasInteraction)
-/* harmony export */ });
-function setupCanvasInteraction(deselectAllFields, showScreenProperties) {
-    const canvas = document.getElementById('fields-container');
-
-    canvas.addEventListener('click', function(e) {
-        if (e.target === this) {
-            deselectAllFields();
-            showScreenProperties();
-        }
-    });
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/canvasSize.js":
-/*!****************************************!*\
-  !*** ./media/modules/ui/canvasSize.js ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   updateCanvasSize: () => (/* binding */ updateCanvasSize)
-/* harmony export */ });
-function updateCanvasSize(displaySize, ScreenCoordinates, Logger) {
-    const canvas = document.getElementById('fields-container');
-    const screenWithRulers = document.getElementById('screen-with-rulers');
-    const horizontalRuler = document.getElementById('horizontal-ruler');
-    const verticalRuler = document.getElementById('vertical-ruler');
-
-    if (!canvas || !screenWithRulers) {return;}
-
-    const dims = ScreenCoordinates.getScreenDimensions(displaySize);
-    const widthPx = ScreenCoordinates.getWidthInPixels(dims.cols);
-    const heightPx = ScreenCoordinates.getHeightInPixels(dims.rows);
-    if (canvas) {
-        canvas.style.width = `${widthPx}px`;
-        canvas.style.height = `${heightPx}px`;
-    }
-    if (horizontalRuler) {
-        horizontalRuler.style.width = `${widthPx + 4}px`;
-        horizontalRuler.style.backgroundSize = `${ScreenCoordinates.CHAR_WIDTH}px 100%`;
-    }
-    if (verticalRuler) {
-        verticalRuler.style.height = `${heightPx + 4}px`;
-        verticalRuler.style.backgroundSize = `100% ${ScreenCoordinates.CHAR_HEIGHT}px`;
-    }
-    if (screenWithRulers) {
-        screenWithRulers.style.width = `${widthPx + 42}px`;
-        screenWithRulers.style.height = `${heightPx + 42}px`;
-    }
-
-    Logger.ui(`Canvas resized for ${displaySize}`);
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/computeFieldDisplay.js":
-/*!*************************************************!*\
-  !*** ./media/modules/ui/computeFieldDisplay.js ***!
-  \*************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   computeFieldDisplay: () => (/* binding */ computeFieldDisplay)
-/* harmony export */ });
-function computeFieldDisplay(options) {
-    const {
-        field,
-        mode = 'designer',
-        ColorUtils,
-        ScreenCoordinates,
-        getKeywordDisplay,
-        getFieldDisplayText
-    } = options;
-
-    const isPreview = mode === 'preview';
-    let text = '';
-    let color = '';
-    let classes = [];
-
-    // Constants
-    if (field.type === 'constant') {
-        text = field.value || '';
-        classes.push('constant');
-        let effectiveColorCode = field.color;
-        if (!effectiveColorCode && field.colors && field.colors.length > 0) {
-            effectiveColorCode = field.colors[0];
-        }
-        if (effectiveColorCode && ColorUtils.isValidColorCode(effectiveColorCode)) {
-            color = ColorUtils.IBM_COLORS[effectiveColorCode];
-        }
-    }
-    // Keywords shown like constants
-    else if (field.type === 'keyword' || field.isKeyword) {
-        text = getKeywordDisplay(field.name);
-        classes.push('constant');
-        let effectiveColorCode = field.color;
-        if (!effectiveColorCode && field.colors && field.colors.length > 0) {
-            effectiveColorCode = field.colors[0];
-        }
-        // If a color code exists, use it; otherwise let CSS default (green) apply
-        if (effectiveColorCode && ColorUtils.isValidColorCode(effectiveColorCode)) {
-            color = ColorUtils.IBM_COLORS[effectiveColorCode];
-        }
-    }
-    // Variables
-    else {
-        const fieldLength = field.length || 1;
-        text = getFieldDisplayText(field, fieldLength);
-
-        // Type class
-        if (field.type === 'input') {classes.push('input-field');}
-        else if (field.type === 'output') {classes.push('output-field');}
-        else {classes.push(`${field.type}-field`);} // fallback
-
-        // Color
-        color = ColorUtils.getColorStyle(field, '#00ffff').replace('color: ', '').replace(';', '') || '#00ffff';
-    }
-
-    // Attributes -> classes
-    if (field.attributes) {
-        if (field.attributes.underline) {classes.push('underline');}
-        if (field.attributes.reverse) {classes.push('reverse');}
-        if (isPreview && field.attributes.blink) {classes.push('blink');}
-        if (isPreview && field.attributes.nonDisplay) {classes.push('non-display');}
-    }
-
-    // Also check attributeIndicators (when attributes have indicators with OR groups)
-    if (field.attributeIndicators) {
-        if (field.attributeIndicators.underline) {classes.push('underline');}
-        if (field.attributeIndicators.reverse) {classes.push('reverse');}
-        if (isPreview && field.attributeIndicators.blink) {classes.push('blink');}
-        if (isPreview && field.attributeIndicators.nonDisplay) {classes.push('non-display');}
-        if (field.attributeIndicators.highlight) {classes.push('highlight');}
-    }
-
-    // Width in pixels
-    const widthPx = ScreenCoordinates.getWidthInPixels(text.length || field.length || 1);
-
-    return { text, widthPx, color, classes };
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/createField.js":
-/*!*****************************************!*\
-  !*** ./media/modules/ui/createField.js ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   createField: () => (/* binding */ createField)
-/* harmony export */ });
-// Función para crear los campos desde el toolbox
-function createField({
-    type,
-    row,
-    col,
-    Logger,
-    fields,
-    generateUniqueFieldName,
-    generateId,
-    getDefaultLength,
-    getWindowDimensions,
-    getCurrentRecord,
-    getCurrentDisplaySize,
-    renderField,
-    renderWindowField,
-    getSubfileRelationship,
-    getSflpagValue,
-    selectField,
-    addFieldToDds,
-    showFieldProperties
-}) {
-    let fieldName;
-    let ddsType;
-    let usage;
-    let dataType;
-    let decimals;
-    let shift;
-    let isKeyword = false;
-
-    if (type === 'text') {
-        fieldName = generateUniqueFieldName('TXT_');
-        ddsType = 'A';
-        usage = 'O';
-        dataType = 'character';
-        decimals = 0;
-    } else if (type === 'number') {
-        fieldName = generateUniqueFieldName('NUM_');
-        ddsType = 'Y';
-        usage = 'I';
-        dataType = 'zoned';
-        decimals = 0;
-        shift = 'S';
-    } else if (type === 'keyword-date') {
-        fieldName = 'DATE';
-        ddsType = '';
-        usage = '';
-        dataType = 'keyword';
-        decimals = 0;
-        isKeyword = true;
-    } else if (type === 'keyword-time') {
-        fieldName = 'TIME';
-        ddsType = '';
-        usage = '';
-        dataType = 'keyword';
-        decimals = 0;
-        isKeyword = true;
-    } else if (type === 'keyword-sysname') {
-        fieldName = 'SYSNAME';
-        ddsType = '';
-        usage = '';
-        dataType = 'keyword';
-        decimals = 0;
-        isKeyword = true;
-    } else if (type === 'keyword-user') {
-        fieldName = 'USER';
-        ddsType = '';
-        usage = '';
-        dataType = 'keyword';
-        decimals = 0;
-        isKeyword = true;
-    } else if (type === 'field-date') {
-        fieldName = generateUniqueFieldName('DATE_');
-        ddsType = 'L';
-        usage = 'O';
-        dataType = 'date';
-        decimals = 0;
-    } else if (type === 'field-time') {
-        fieldName = generateUniqueFieldName('TIME_');
-        ddsType = 'T';
-        usage = 'O';
-        dataType = 'time';
-        decimals = 0;
-    } else if (type === 'field-timestamp') {
-        fieldName = generateUniqueFieldName('TS_');
-        ddsType = 'Z';
-        usage = 'O';
-        dataType = 'timestamp';
-        decimals = 0;
-    } else {
-        fieldName = generateUniqueFieldName(type === 'constant' ? 'CONST_' : `${type.toUpperCase()}_`);
-        ddsType = type === 'constant' ? '' : 'A';
-        usage = 'O';
-        dataType = type === 'constant' ? 'constant' : 'character';
-        decimals = 0;
-    }
-
-    const field = {
-        id: generateId(),
-        name: fieldName,
-        type: type === 'number' ? 'input' : (isKeyword ? 'keyword' : (type === 'field-date' || type === 'field-time' || type === 'field-timestamp' ? 'output' : type)),
-        ddsType: ddsType,
-        usage: usage,
-        dataType: dataType,
-        row: row,
-        col: col,
-        length: isKeyword ? null : getDefaultLength(type),
-        decimals: decimals,
-        value: type === 'constant' ? 'TEXT' : '',
-        isKeyword: isKeyword
-    };
-
-    if (shift) {
-        field.shift = shift;
-    }
-
-    fields.push(field);
-
-    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
-    const winDimsForCreate = getWindowDimensions ? getWindowDimensions(currentRecord) : null;
-    const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : null;
-    if (winDimsForCreate && winDimsForCreate.hasWindow) {
-        const winDim = currentDisplaySize === 'DS3' ? winDimsForCreate.ds3 : winDimsForCreate.ds4;
-        if (winDim) {
-            renderWindowField(field, winDim);
-        } else {
-            renderField(field);
-        }
-    } else {
-        renderField(field);
-    }
-
-    Logger.ui(`[CREATE] Field created: ${field.name} (id: ${field.id}) at row ${field.row}, col ${field.col}`);
-    Logger.ui(`[CREATE] Field pushed to array, total fields: ${fields.length}`);
-
-    const subfileRelationship = getSubfileRelationship ? getSubfileRelationship(currentRecord) : null;
-    const sflpagRepeat = subfileRelationship ? getSflpagValue(subfileRelationship.sflctlRecord) : 1;
-
-    Logger.ui(`[CREATE] Checking SFLPAG: subfileRelationship=${!!subfileRelationship}, sflpagRepeat=${sflpagRepeat}`);
-
-    if (sflpagRepeat > 1) {
-        const shouldRepeat = (
-            (currentRecord === subfileRelationship.sflRecord && !field.isBackgroundRecord) ||
-            (currentRecord === subfileRelationship.sflctlRecord && field.isBackgroundRecord)
-        );
-
-        if (shouldRepeat) {
-            Logger.debug(`Creating ${sflpagRepeat - 1} visual copies for new field in SFL`);
-            for (let repeat = 1; repeat < sflpagRepeat; repeat++) {
-                const visualCopy = {
-                    ...field,
-                    id: field.id + '_repeat' + repeat,
-                    row: field.row + repeat,
-                    isVisualCopy: true
-                };
-                if (winDimsForCreate && winDimsForCreate.hasWindow) {
-                    const winDim = currentDisplaySize === 'DS3' ? winDimsForCreate.ds3 : winDimsForCreate.ds4;
-                    if (winDim) {
-                        renderWindowField(visualCopy, winDim);
-                    } else {
-                        renderField(visualCopy);
-                    }
-                } else {
-                    renderField(visualCopy);
-                }
-            }
-        }
-    }
-
-    if (selectField) {
-        selectField(field);
-    }
-
-    if (addFieldToDds) {
-        addFieldToDds(field);
-    }
-
-    Logger.success('New field created:', fieldName, 'at', { row, col });
-
-    if (showFieldProperties) {
-        showFieldProperties(field);
-    }
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/deleteConfirmation.js":
-/*!************************************************!*\
-  !*** ./media/modules/ui/deleteConfirmation.js ***!
-  \************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   executeDeleteField: () => (/* binding */ executeDeleteField),
-/* harmony export */   showDeleteConfirmation: () => (/* binding */ showDeleteConfirmation)
-/* harmony export */ });
-function showDeleteConfirmation(options) {
-    const { field, Logger, onConfirm } = options;
-
-    const overlay = document.createElement('div');
-    overlay.className = 'confirmation-modal-overlay';
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    `;
-
-    const modal = document.createElement('div');
-    modal.className = 'confirmation-modal';
-    modal.style.cssText = `
-        background: #2d2d30;
-        border: 1px solid #454545;
-        border-radius: 6px;
-        padding: 20px;
-        min-width: 400px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        color: #cccccc;
-    `;
-
-    let fieldTypeLabel = 'Field';
-    if (field.type === 'keyword') {
-        fieldTypeLabel = 'Keyword';
-    } else if (field.type === 'constant') {
-        fieldTypeLabel = 'Constant';
-    }
-
-    modal.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
-            <span style="font-size: 20px; color: #f48771;">⚠</span>
-            <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #f48771;">Delete ${fieldTypeLabel}</h3>
-        </div>
-        <p style="margin: 0 0 8px 0; font-size: 13px; line-height: 1.5; color: #cccccc;">
-            Are you sure you want to delete the ${fieldTypeLabel.toLowerCase()} <strong>"${field.name}"</strong>?
-        </p>
-        <p style="margin: 0 0 20px 0; font-size: 12px; font-style: italic; color: #999999;">
-            This action cannot be undone.
-        </p>
-        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-            <button id="confirm-delete-no" style="
-                padding: 6px 14px;
-                background-color: #3c3c3c;
-                color: #cccccc;
-                border: 1px solid #555555;
-                border-radius: 2px;
-                cursor: pointer;
-                font-size: 13px;
-                font-weight: 400;
-                min-width: 70px;
-                transition: background-color 0.15s;
-            ">No</button>
-            <button id="confirm-delete-yes" style="
-                padding: 6px 14px;
-                background-color: #c74e39;
-                color: white;
-                border: none;
-                border-radius: 2px;
-                cursor: pointer;
-                font-size: 13px;
-                font-weight: 400;
-                min-width: 70px;
-                transition: background-color 0.15s;
-            ">Yes</button>
-        </div>
-    `;
-
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-
-    const noButton = document.getElementById('confirm-delete-no');
-    const yesButton = document.getElementById('confirm-delete-yes');
-
-    setTimeout(() => {
-        noButton.focus();
-    }, 100);
-
-    noButton.addEventListener('mouseenter', function() {
-        this.style.backgroundColor = '#505050';
-    });
-    noButton.addEventListener('mouseleave', function() {
-        this.style.backgroundColor = '#3c3c3c';
-    });
-
-    yesButton.addEventListener('mouseenter', function() {
-        this.style.backgroundColor = '#a84233';
-    });
-    yesButton.addEventListener('mouseleave', function() {
-        this.style.backgroundColor = '#c74e39';
-    });
-
-    const cleanup = () => {
-        overlay.remove();
-        document.removeEventListener('keydown', handleKeyDown);
-    };
-
-    noButton.addEventListener('click', function() {
-        cleanup();
-        Logger.debug('Delete cancelled by user');
-    });
-
-    yesButton.addEventListener('click', function() {
-        cleanup();
-        onConfirm();
-    });
-
-    const handleKeyDown = (e) => {
-        if (e.key === 'Escape') {
-            cleanup();
-        } else if (e.key === 'Enter') {
-            cleanup();
-            onConfirm();
-        }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    overlay.addEventListener('click', function(e) {
-        if (e.target === overlay) {
-            cleanup();
-        }
-    });
-}
-
-function executeDeleteField(options) {
-    const { field, Logger, fields, deselectAllFields, removeFieldFromDds } = options;
-
-    const originalElement = document.querySelector(`[data-field-id="${field.id}"]`);
-    if (originalElement) {
-        originalElement.remove();
-        Logger.debug('Removed original field element from DOM');
-    }
-
-    const copyPattern = `${field.id}_repeat`;
-    const allElements = document.querySelectorAll('[data-field-id]');
-    let removedCopies = 0;
-
-    allElements.forEach(el => {
-        if (el.dataset.fieldId.startsWith(copyPattern)) {
-            el.remove();
-            removedCopies++;
-            Logger.debug(`Removed visual copy: ${el.dataset.fieldId}`);
-        }
-    });
-
-    Logger.success(`Removed field from DOM: 1 original + ${removedCopies} visual copies`);
-
-    const index = fields.findIndex(f => f.id === field.id);
-    Logger.debug('Finding field in array, index:', index);
-    if (index > -1) {
-        fields.splice(index, 1);
-        Logger.success('Field removed from fields array, remaining:', fields.length);
-    } else {
-        Logger.error('Field not found in fields array with id:', field.id);
-        Logger.debug('All fields in array:', fields.map(f => ({ id: f.id, name: f.name, type: f.type })));
-    }
-
-    deselectAllFields();
-
-    removeFieldFromDds(field);
-
-    Logger.success('Field deletion process completed');
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/deselectAllFields.js":
-/*!***********************************************!*\
-  !*** ./media/modules/ui/deselectAllFields.js ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   deselectAllFields: () => (/* binding */ deselectAllFields)
-/* harmony export */ });
-function deselectAllFields({
-    Logger,
-    indicatorConfigurations,
-    setSelectedField,
-    showFieldProperties
-}) {
-    document.querySelectorAll('.dspf-field.selected').forEach(el => {
-        el.classList.remove('selected');
-    });
-
-    Logger.debug('Clearing indicatorConfigurations when deselecting all fields');
-    indicatorConfigurations.clear();
-
-    if (setSelectedField) {
-        setSelectedField(null);
-    }
-    if (showFieldProperties) {
-        showFieldProperties(null);
-    }
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/displaySizeSelector.js":
-/*!*************************************************!*\
-  !*** ./media/modules/ui/displaySizeSelector.js ***!
-  \*************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setupDisplaySizeSelector: () => (/* binding */ setupDisplaySizeSelector)
-/* harmony export */ });
-function setupDisplaySizeSelector({
-    Logger,
-    getCurrentDisplaySize,
-    setCurrentDisplaySize,
-    updateCanvasSize,
-    setupRulers,
-    parseDspfFields,
-    getCurrentDocument,
-    applyDefaultZoomForDisplaySize,
-    updatePreviewView
-}) {
-    const designerRadioButtons = document.querySelectorAll('input[name="displaySize"]');
-    designerRadioButtons.forEach(radio => {
-        radio.addEventListener('change', function() {
-            setCurrentDisplaySize(this.value);
-            const currentDisplaySize = getCurrentDisplaySize();
-            Logger.ui(`Designer display size changed to: ${currentDisplaySize}`);
-
-            if (applyDefaultZoomForDisplaySize) {
-                applyDefaultZoomForDisplaySize(currentDisplaySize);
-            }
-
-            updateCanvasSize(currentDisplaySize);
-            setupRulers();
-
-            parseDspfFields(getCurrentDocument());
-
-            const previewView = document.getElementById('preview-view');
-            if (previewView && previewView.classList.contains('active')) {
-                updatePreviewView();
-            }
-        });
-    });
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/dragAndDrop.js":
-/*!*****************************************!*\
-  !*** ./media/modules/ui/dragAndDrop.js ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setupDragAndDrop: () => (/* binding */ setupDragAndDrop)
-/* harmony export */ });
-function setupDragAndDrop({
-    Logger,
-    ScreenCoordinates,
-    getCurrentRecord,
-    getCurrentDisplaySize,
-    getCurrentZoom,
-    getWindowDimensions,
-    moveField,
-    createField
-}) {
-    const toolItems = document.querySelectorAll('.tool-item');
-    const canvas = document.getElementById('fields-container');
-
-    if (!canvas) {
-        Logger.error('Fields container not found, skipping drag and drop setup');
-        return;
-    }
-
-    Logger.ui('Setting up drag and drop for', toolItems.length, 'tool items');
-
-    toolItems.forEach((item, index) => {
-        Logger.debug(`Setting up drag for item ${index}:`, item.dataset.type);
-
-        item.addEventListener('dragstart', function(e) {
-            e.dataTransfer.setData('text/plain', this.dataset.type);
-            e.dataTransfer.effectAllowed = 'copy';
-            this.classList.add('dragging');
-            Logger.debug('Drag started for:', this.dataset.type);
-        });
-
-        item.addEventListener('dragend', function() {
-            this.classList.remove('dragging');
-            Logger.debug('Drag ended for:', this.dataset.type);
-        });
-    });
-
-    canvas.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'copy';
-        this.classList.add('drop-zone');
-    });
-
-    canvas.addEventListener('dragenter', function(e) {
-        e.preventDefault();
-        this.classList.add('drop-zone');
-    });
-
-    canvas.addEventListener('dragleave', function(e) {
-        if (!this.contains(e.relatedTarget)) {
-            this.classList.remove('drop-zone');
-        }
-    });
-
-    canvas.addEventListener('drop', function(e) {
-        e.preventDefault();
-        this.classList.remove('drop-zone');
-
-        const data = e.dataTransfer.getData('text/plain');
-        Logger.debug('Drop event triggered with data:', data);
-
-        if (!data) {
-            Logger.error('No data received in drop event');
-            return;
-        }
-
-        const rect = this.getBoundingClientRect();
-        const currentZoom = getCurrentZoom ? getCurrentZoom() : 1;
-
-        const gridPosition = ScreenCoordinates
-            ? ScreenCoordinates.fromClientPoint(e.clientX, e.clientY, rect, currentZoom)
-            : {
-                row: Math.max(1, Math.floor(((e.clientY - rect.top) / currentZoom) / 20) + 1),
-                col: Math.max(1, Math.floor(((e.clientX - rect.left) / currentZoom) / 8) + 1)
-            };
-
-        const x = (e.clientX - rect.left) / currentZoom;
-        const y = (e.clientY - rect.top) / currentZoom;
-
-        let row = Math.max(1, gridPosition.row);
-        let col = Math.max(1, gridPosition.col);
-
-        const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
-        const windowDimensions = currentRecord ? getWindowDimensions(currentRecord) : null;
-        if (windowDimensions && windowDimensions.hasWindow) {
-            const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : null;
-            const windowDim = currentDisplaySize === 'DS3' ? windowDimensions.ds3 : windowDimensions.ds4;
-            if (windowDim) {
-                const relRow = row - (windowDim.row - 1);
-                const relCol = col - windowDim.col;
-
-                if (relRow > 0 && relCol > 0) {
-                    row = relRow;
-                    col = relCol;
-                    Logger.window(`🪟 [WINDOW] Converted absolute screen (${row + (windowDim.row - 1)}, ${col + windowDim.col}) to WINDOW-relative (${row}, ${col})`);
-                }
-            }
-        }
-
-        Logger.debug('Drop at pixel:', { x, y, currentZoom }, 'grid:', { row, col });
-
-        try {
-            const dropData = JSON.parse(data);
-            if (dropData.type === 'existing-field') {
-                Logger.debug('Moving existing field:', dropData.fieldId);
-                moveField(dropData.fieldId, row, col);
-            } else {
-                createField(data, row, col);
-            }
-        } catch (e) {
-            Logger.debug('Creating new field type:', data);
-            createField(data, row, col);
-        }
-    });
-
-    Logger.success('Drag and drop setup complete');
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/editField.js":
-/*!***************************************!*\
-  !*** ./media/modules/ui/editField.js ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   editField: () => (/* binding */ editField)
-/* harmony export */ });
-function editField({
-    field,
-    Logger,
-    isReadOnly,
-    selectField
-}) {
-    if (isReadOnly) {
-        Logger.warn('Cannot edit field in read-only mode');
-        return;
-    }
-
-    if (selectField) {
-        selectField(field);
-    }
-
-    if (field.type !== 'constant') {
-        const nameInput = document.getElementById('prop-name');
-        if (nameInput) {
-            setTimeout(() => {
-                nameInput.focus();
-                nameInput.select();
-            }, 100);
-        }
-    }
-
-    Logger.debug('Field selected for editing in properties panel');
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/extractAttributes.js":
-/*!***********************************************!*\
-  !*** ./media/modules/ui/extractAttributes.js ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   extractAttributes: () => (/* binding */ extractAttributes)
-/* harmony export */ });
-// Extract display attributes with indicators
-// Returns: { attrs: {...}, indicators: [], isGroupedFormat: boolean }
-function extractAttributes({ content, fullLine = null, IndicatorUtils, Logger }) {
-    const attrs = {};
-    const result = { attrs: attrs, indicators: [], isGroupedFormat: false };
-
-    // Extract ALL indicators from DDS line
-    // Format: "A  41 43                                  DSPATR(BL)"
-    if (fullLine) {
-        result.indicators = IndicatorUtils.extractFromDdsLine(fullLine, 'extractAttributes');
-    }
-
-    // Check for grouped format: DSPATR(HI RI UL)
-    const groupedMatch = content.match(/DSPATR\(([A-Z]{2}(?:\s+[A-Z]{2})+)\)/);
-    if (groupedMatch) {
-        result.isGroupedFormat = true;
-        // Split the grouped attributes by spaces
-        const attrCodes = groupedMatch[1].split(/\s+/);
-        Logger.parse(`Found grouped DSPATR format with codes:`, attrCodes);
-
-        attrCodes.forEach(code => {
-            switch (code) {
-                case 'UL': attrs.underline = true; break;
-                case 'BL': attrs.blink = true; break;
-                case 'HI': attrs.highlight = true; break;
-                case 'RI': attrs.reverse = true; break;
-                case 'PC': attrs.cursorPosition = true; break;
-                case 'CS': attrs.columnSeparator = true; break;
-                case 'ND': attrs.nonDisplay = true; break;
-                case 'MDT': attrs.modifiedDataTag = true; break;
-                case 'PR': attrs.protect = true; break;
-                case 'OID': attrs.operatorId = true; break;
-                case 'SP': attrs.selectLightPen = true; break;
-            }
-        });
-    } else {
-        // Individual format: DSPATR(UL) or DSPATR(BL) etc.
-        if (content.includes('DSPATR(UL)')) {attrs.underline = true;}
-        if (content.includes('DSPATR(BL)')) {attrs.blink = true;}
-        if (content.includes('DSPATR(HI)')) {attrs.highlight = true;}
-        if (content.includes('DSPATR(RI)')) {attrs.reverse = true;}
-        if (content.includes('DSPATR(PC)')) {attrs.cursorPosition = true;}
-        if (content.includes('DSPATR(CS)')) {attrs.columnSeparator = true;}
-        if (content.includes('DSPATR(ND)')) {attrs.nonDisplay = true;}
-        if (content.includes('DSPATR(MDT)')) {attrs.modifiedDataTag = true;}
-        if (content.includes('DSPATR(PR)')) {attrs.protect = true;}
-        if (content.includes('DSPATR(OID)')) {attrs.operatorId = true;}
-        if (content.includes('DSPATR(SP)')) {attrs.selectLightPen = true;}
-    }
-
-    return result;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/extractFloatPrecision.js":
-/*!***************************************************!*\
-  !*** ./media/modules/ui/extractFloatPrecision.js ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   extractFloatPrecision: () => (/* binding */ extractFloatPrecision)
-/* harmony export */ });
-// Extract FLTPCN precision from line
-// Returns: 'SINGLE', 'DOUBLE', or null
-function extractFloatPrecision({ line, dataType }) {
-    if (dataType !== 'float') {
-        return null;
-    }
-
-    if (line.includes('FLTPCN')) {
-        if (line.includes('*SINGLE')) {
-            return 'SINGLE';
-        } else if (line.includes('*DOUBLE')) {
-            return 'DOUBLE';
-        }
-    }
-
-    return null;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/extractRowColFromParts.js":
-/*!****************************************************!*\
-  !*** ./media/modules/ui/extractRowColFromParts.js ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   extractRowColFromParts: () => (/* binding */ extractRowColFromParts)
-/* harmony export */ });
-// Extract row and column from parts array
-// Returns: { row, col, nextIndex } or null if invalid
-function extractRowColFromParts({ parts, startIndex }) {
-    if (startIndex >= parts.length) {
-        return null;
-    }
-
-    const rowStr = parts[startIndex];
-    const row = parseInt(rowStr);
-
-    if (isNaN(row)) {
-        return null;
-    }
-
-    // Check for col
-    if (startIndex + 1 < parts.length) {
-        const colStr = parts[startIndex + 1];
-        const col = parseInt(colStr);
-
-        if (!isNaN(col)) {
-            return {
-                row: row,
-                col: col,
-                nextIndex: startIndex + 2
-            };
-        }
-    }
-
-    // Compact fixed format support when col has 3 digits and no separator exists,
-    // e.g. "6118" => row=6, col=118 or "20118" => row=20, col=118
-    const compactMatch = rowStr.match(/^(\d{1,2})(\d{3})$/);
-    if (!compactMatch) {
-        return null;
-    }
-
-    const compactRow = parseInt(compactMatch[1], 10);
-    const compactCol = parseInt(compactMatch[2], 10);
-    if (isNaN(compactRow) || isNaN(compactCol)) {
-        return null;
-    }
-
-    return {
-        row: compactRow,
-        col: compactCol,
-        nextIndex: startIndex + 1
-    };
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/extractShiftCode.js":
-/*!**********************************************!*\
-  !*** ./media/modules/ui/extractShiftCode.js ***!
-  \**********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   extractShiftCode: () => (/* binding */ extractShiftCode)
-/* harmony export */ });
-// Extract shift code from type spec for zoned/double types
-// Returns: shift code (S/Y/N/D/I for zoned, J/E/O/G for double) or null
-function extractShiftCode({ typeSpec, dataType }) {
-    if (dataType === 'zoned') {
-        // Extract shift from typeChar (S/Y/N/D/I)
-        const typeMatch = typeSpec.match(/\d+([SYNDI])/);
-        if (typeMatch) {
-            return typeMatch[1];
-        }
-        return null;
-    } else if (dataType === 'double') {
-        // Extract shift from typeChar (J/E/O/G)
-        const typeMatch = typeSpec.match(/\d+([JEOG])/);
-        if (typeMatch) {
-            return typeMatch[1];
-        }
-        return 'J';
-    }
-
-    return null;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/formatIndicatorLabel.js":
-/*!**************************************************!*\
-  !*** ./media/modules/ui/formatIndicatorLabel.js ***!
-  \**************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   formatIndicatorLabel: () => (/* binding */ formatIndicatorLabel)
-/* harmony export */ });
-// Convierte un array de indicadores en texto como "02 43 11" o "N03 51"
-function formatIndicatorLabel(list) {
-    if (!Array.isArray(list) || list.length === 0) {
-        return 'No ind.';
-    }
-
-    return list
-        .map(ind => (ind.not ? `N${ind.number.padStart(2, '0')}` : ind.number.padStart(2, '0')))
-        .join(' ');
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/functionKeys.js":
-/*!******************************************!*\
-  !*** ./media/modules/ui/functionKeys.js ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   createFunctionKeyRow: () => (/* binding */ createFunctionKeyRow),
-/* harmony export */   loadFunctionKeys: () => (/* binding */ loadFunctionKeys),
-/* harmony export */   saveFunctionKeys: () => (/* binding */ saveFunctionKeys)
-/* harmony export */ });
-function loadFunctionKeys(options) {
-    const { getCurrentDocument, getCurrentRecord, createFunctionKeyRow } = options;
-    const container = document.getElementById('function-keys-list');
-    if (!container) {return;}
-
-    const currentDocument = getCurrentDocument();
-    const currentRecord = getCurrentRecord();
-
-    const lines = currentDocument.split('\n');
-    let inTargetRecord = false;
-    const functionKeysMap = {};
-
-    for (let line of lines) {
-        if (line.includes(`R ${currentRecord}`) || line.includes(`R  ${currentRecord}`)) {
-            inTargetRecord = true;
-            continue;
-        }
-
-        if (inTargetRecord && line.match(/^\s*A\s+R\s+\w+/)) {
-            break;
-        }
-
-        if (inTargetRecord) {
-            const cfMatch = line.match(/CF(\d+)\((\d+)(?:\s+'([^']*)')?\)/i);
-            const caMatch = line.match(/CA(\d+)\((\d+)(?:\s+'([^']*)')?\)/i);
-
-            if (cfMatch) {
-                functionKeysMap[`F${parseInt(cfMatch[1])}`] = {
-                    type: 'CF',
-                    indicator: cfMatch[2],
-                    description: cfMatch[3] || ''
-                };
-            } else if (caMatch) {
-                functionKeysMap[`F${parseInt(caMatch[1])}`] = {
-                    type: 'CA',
-                    indicator: caMatch[2],
-                    description: caMatch[3] || ''
-                };
-            }
-        }
-    }
-
-    container.innerHTML = '';
-
-    for (let i = 1; i <= 24; i++) {
-        const key = `F${i}`;
-        const fkData = functionKeysMap[key] || { type: '', indicator: '', description: '' };
-        container.appendChild(createFunctionKeyRow({ fk: { key, ...fkData } }));
-    }
-}
-
-function createFunctionKeyRow(options) {
-    const { fk = null, key, type, indicator, description, index = null, IdGenerator, saveFunctionKeys } = options;
-    const row = document.createElement('div');
-    row.className = 'function-key-row';
-    const rowId = IdGenerator.generateUniqueId('fk-row');
-    row.dataset.rowId = rowId;
-    row.style.cssText = 'display: grid; grid-template-columns: 70px 240px 70px 1fr; gap: 8px; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 8px; align-items: center; min-width: 600px;';
-
-    const resolvedFk = fk || { key, type, indicator, description };
-    const resolvedKey = resolvedFk && resolvedFk.key ? resolvedFk.key : 'F1';
-    const resolvedType = resolvedFk && resolvedFk.type ? resolvedFk.type : '';
-    const resolvedIndicator = resolvedFk && resolvedFk.indicator ? resolvedFk.indicator : '';
-    const resolvedDescription = resolvedFk && resolvedFk.description ? resolvedFk.description : '';
-
-    row.innerHTML = `
-        <select class="fk-key" style="width: 100%; padding: 4px;">
-            ${generateFunctionKeyOptions(resolvedKey)}
-        </select>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">
-                <input type="radio" name="type-${rowId}" value="" ${resolvedType === '' ? 'checked' : ''} />
-                <span style="font-size: 12px;">Unspecified</span>
-            </label>
-            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">
-                <input type="radio" name="type-${rowId}" value="CA" ${resolvedType === 'CA' ? 'checked' : ''} />
-                <span style="font-size: 12px;">Attention</span>
-            </label>
-            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">
-                <input type="radio" name="type-${rowId}" value="CF" ${resolvedType === 'CF' ? 'checked' : ''} />
-                <span style="font-size: 12px;">Function</span>
-            </label>
-        </div>
-        <input type="number" class="fk-indicator" value="${resolvedIndicator}" placeholder="Ind" min="1" max="99" style="width: 100%; padding: 4px; text-align: center;" />
-        <input type="text" class="fk-description" value="${resolvedDescription}" placeholder="Description" style="width: 100%; padding: 4px; min-width: 150px;" />
-    `;
-
-    row.querySelectorAll('select, input').forEach(el => {
-        el.addEventListener('change', saveFunctionKeys);
-        el.addEventListener('blur', saveFunctionKeys);
-    });
-
-    return row;
-}
-
-function saveFunctionKeys(options) {
+function showScreenProperties(options) {
     const {
         Logger,
+        vscode,
         isReadOnly,
         getCurrentDocument,
         setCurrentDocument,
         getCurrentRecord,
-        updateDocumentInEditor
+        getRecordType,
+        IdGenerator,
+        getWindowDimensions,
+        setupPropertiesTabs,
+        loadSubfileControl,
+        applySubfileControl,
+        loadFunctionKeys,
+        createFunctionKeyRow,
+        saveFunctionKeys,
+        updateDocumentInEditor,
+        generateDdsLineWithIndicators,
+        indicatorConfigurations,
+        DisplaySizeUtils,
+        IndicatorUtils,
+        scanIndicatorsBackward,
+        setIndicatorButtonState,
+        openIBMiModal,
+        applyWindowDimensions,
+        showScreenProperties: refreshScreenProperties
     } = options;
 
-    if (isReadOnly) {
-        Logger.warn('Cannot save function keys in read-only mode');
+    const propertiesPanel = document.getElementById('field-properties');
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+
+    if (!currentRecord) {
+        propertiesPanel.innerHTML = '<p>No screen selected</p>';
         return;
     }
 
-    Logger.ui('Saving function keys...');
+    const recordType = getRecordType(currentRecord);
+    const windowDimensions = getWindowDimensions(currentRecord);
 
-    const container = document.getElementById('function-keys-list');
-    if (!container) {return;}
+    let windowDimensionsHtml = '';
+    if (windowDimensions.hasWindow) {
+        const isReference = windowDimensions.isReference || false;
+        const referenceName = windowDimensions.referenceName || '';
 
-    const configuredKeys = [];
-    const rows = container.querySelectorAll('.function-key-row');
+        windowDimensionsHtml = `
+                <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
+                <h4 style="margin: 12px 0 8px 0; color: var(--text-color); font-size: 14px;">Window</h4>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-color);">Type</label>
+                    <div style="display: flex; gap: 16px; margin-bottom: 12px;">
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <input type="radio" name="window-type" id="window-type-coords" value="coordinates" ${!isReference ? 'checked' : ''} />
+                            <span>Coordinates</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <input type="radio" name="window-type" id="window-type-ref" value="reference" ${isReference ? 'checked' : ''} />
+                            <span>Reference</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="window-reference-section" style="display: ${isReference ? 'block' : 'none'}; margin-bottom: 16px;">
+                    <div class="property-group" style="margin: 0;">
+                        <label>Window Reference</label>
+                        <input type="text" id="window-reference-name" value="${referenceName}" placeholder="e.g. WIND1" maxlength="10" style="padding: 6px 8px; text-transform: uppercase;" />
+                    </div>
+                    ${isReference && windowDimensions.ds3 ? `
+                        <div style="margin-top: 8px; padding: 8px; background-color: rgba(0, 122, 204, 0.1); border-left: 3px solid #007ACC; font-size: 11px; color: var(--text-muted);">
+                            <strong>Note:</strong> Resolved coordinates from ${referenceName}:<br/>
+                            Row: ${windowDimensions.ds3.row}, Col: ${windowDimensions.ds3.col}, Height: ${windowDimensions.ds3.height}, Width: ${windowDimensions.ds3.width}
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div id="window-coordinates-section" style="display: ${!isReference ? 'block' : 'none'};">
+                    ${windowDimensions.ds3 ? `
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; margin-bottom: 4px; font-weight: 600; color: #888;">*DS3 (24 x 80)</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Row</label>
+                                <input type="number" id="window-ds3-row" value="${windowDimensions.ds3.row}" min="1" max="24" style="padding: 4px 8px;" />
+                            </div>
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Column</label>
+                                <input type="number" id="window-ds3-col" value="${windowDimensions.ds3.col}" min="1" max="80" style="padding: 4px 8px;" />
+                            </div>
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Height</label>
+                                <input type="number" id="window-ds3-height" value="${windowDimensions.ds3.height}" min="1" max="24" style="padding: 4px 8px;" />
+                            </div>
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Width</label>
+                                <input type="number" id="window-ds3-width" value="${windowDimensions.ds3.width}" min="1" max="80" style="padding: 4px 8px;" />
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${windowDimensions.ds4 ? `
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; margin-bottom: 4px; font-weight: 600; color: #888;">*DS4 (27 x 132)</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Row</label>
+                                <input type="number" id="window-ds4-row" value="${windowDimensions.ds4.row}" min="1" max="27" style="padding: 4px 8px;" />
+                            </div>
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Column</label>
+                                <input type="number" id="window-ds4-col" value="${windowDimensions.ds4.col}" min="1" max="132" style="padding: 4px 8px;" />
+                            </div>
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Height</label>
+                                <input type="number" id="window-ds4-height" value="${windowDimensions.ds4.height}" min="1" max="27" style="padding: 4px 8px;" />
+                            </div>
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Width</label>
+                                <input type="number" id="window-ds4-width" value="${windowDimensions.ds4.width}" min="1" max="132" style="padding: 4px 8px;" />
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <button id="apply-window-dimensions-btn" style="width: 100%; padding: 8px; margin-top: 8px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    Apply Changes
+                </button>
+            `;
+    }
 
-    rows.forEach(row => {
-        const keySelect = row.querySelector('.fk-key');
-        const typeRadios = row.querySelectorAll('input[type="radio"]');
-        const indicatorInput = row.querySelector('.fk-indicator');
-        const descriptionInput = row.querySelector('.fk-description');
+    propertiesPanel.innerHTML = `
+            <div class="properties-tabs">
+                <button class="properties-tab active" data-tab="basic">Basic</button>
+                ${recordType === 'SFLCTL' ? '<button class="properties-tab" data-tab="subfile-control">Subfile Control</button>' : ''}
+                ${recordType !== 'SFL' ? '<button class="properties-tab" data-tab="function-keys">Function Keys</button>' : ''}
+            </div>
+            
+            <div class="properties-content">
+                <div id="tab-basic" class="tab-panel active">
+                    <div class="property-group">
+                        <label>Name</label>
+                        <input type="text" id="screen-name" value="${currentRecord}" readonly style="background-color: #2d2d2d; cursor: not-allowed;" />
+                    </div>
+                    <div class="property-group">
+                        <label>Type</label>
+                        <input type="text" id="screen-type" value="${recordType}" readonly style="background-color: #2d2d2d; cursor: not-allowed;" />
+                    </div>
+                    ${windowDimensionsHtml}
+                </div>
+                
+                ${recordType === 'SFLCTL' ? `
+                <div id="tab-subfile-control" class="tab-panel">
+                    <div class="subfile-control-section">
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Size (SFLSIZ)</label>
+                        
+                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sflsiz-ds3-enabled" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="sflsiz-ds3-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS3 (24x80):</label>
+                            </div>
+                            <input type="number" id="sflsiz-ds3" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />
+                            
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sflsiz-ds4-enabled" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="sflsiz-ds4-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS4 (27x132):</label>
+                            </div>
+                            <input type="number" id="sflsiz-ds4" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />
+                        </div>
+                        
+                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
+                        
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Page (SFLPAG)</label>
+                        
+                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sflpag-ds3-enabled" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="sflpag-ds3-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS3 (24x80):</label>
+                            </div>
+                            <input type="number" id="sflpag-ds3" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />
+                            
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sflpag-ds4-enabled" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="sflpag-ds4-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS4 (27x132):</label>
+                            </div>
+                            <input type="number" id="sflpag-ds4" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />
+                        </div>
+                        
+                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
+                        
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Lines (SFLLIN)</label>
+                        <p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin-bottom: 12px;">Number of lines displayed (without indicators)</p>
+                        
+                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sfllin-ds3-enabled" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="sfllin-ds3-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS3 (24x80):</label>
+                            </div>
+                            <input type="number" id="sfllin-ds3" placeholder="0" min="0" max="99" style="padding: 6px 8px; width: 100px;" disabled />
+                            
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sfllin-ds4-enabled" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="sfllin-ds4-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS4 (27x132):</label>
+                            </div>
+                            <input type="number" id="sfllin-ds4" placeholder="0" min="0" max="99" style="padding: 6px 8px; width: 100px;" disabled />
+                            </div>
+                        </div>
+                        
+                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
+                        
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Display (SFLDSP)</label>
+                        
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                            <input type="checkbox" id="sfldsp-enabled" style="width: 18px; height: 18px; cursor: pointer;">
+                            <label for="sfldsp-enabled" style="margin: 0; cursor: pointer;">Include in code</label>
+                            <button id="sfldsp-indicators-btn" class="indicator-config-btn" disabled>
+                                <span class="indicator-icon">🔢</span>
+                                <span class="indicator-text">No ind.</span>
+                            </button>
+                        </div>
+                        
+                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
+                        
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Display Control (SFLDSPCTL)</label>
+                        
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                            <input type="checkbox" id="sfldspctl-enabled" style="width: 18px; height: 18px; cursor: pointer;">
+                            <label for="sfldspctl-enabled" style="margin: 0; cursor: pointer;">Include in code</label>
+                            <button id="sfldspctl-indicators-btn" class="indicator-config-btn" disabled>
+                                <span class="indicator-icon">🔢</span>
+                                <span class="indicator-text">No ind.</span>
+                            </button>
+                        </div>
+                        
+                        <button id="apply-subfile-control-btn" style="width: 100%; padding: 10px; margin-top: 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                            Apply Changes
+                        </button>
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${recordType !== 'SFL' ? `
+                <div id="tab-function-keys" class="tab-panel">
+                    <div class="function-keys-header" style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Function Keys</label>
+                        <!-- Column headers -->
+                        <div style="display: grid; grid-template-columns: 70px 240px 70px 1fr; gap: 8px; padding: 4px 8px; font-size: 11px; font-weight: 600; color: var(--vscode-descriptionForeground); border-bottom: 1px solid var(--border-color); margin-bottom: 8px;">
+                            <span>Key</span>
+                            <span>Type</span>
+                            <span>Indicator</span>
+                            <span>Description</span>
+                        </div>
+                    </div>
+                    
+                    <div id="function-keys-list" style="max-height: 400px; overflow-y: auto; overflow-x: auto;">
+                        <!-- Function keys will be populated here -->
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+        `;
 
-        const key = keySelect.value;
-        let type = '';
-        typeRadios.forEach(radio => {
-            if (radio.checked) {
-                type = radio.value;
+    setupPropertiesTabs();
+
+    if (recordType === 'SFLCTL') {
+        const applySubfileControlHandler = () => applySubfileControl({
+            Logger,
+            vscode,
+            getCurrentDocument,
+            setCurrentDocument,
+            getCurrentRecord,
+            getCurrentView: options.getCurrentView,
+            updateDocumentInEditor,
+            generateDdsLineWithIndicators,
+            indicatorConfigurations,
+            showScreenProperties: refreshScreenProperties,
+            parseDspfFields: options.parseDspfFields,
+            updatePreviewView: options.updatePreviewView
+        });
+        loadSubfileControl({
+            Logger,
+            getCurrentDocument,
+            getCurrentRecord,
+            DisplaySizeUtils,
+            IndicatorUtils,
+            scanIndicatorsBackward,
+            indicatorConfigurations,
+            setIndicatorButtonState,
+            openIBMiModal,
+            applySubfileControl: applySubfileControlHandler
+        });
+    }
+
+    if (recordType !== 'SFL') {
+        const saveFunctionKeysHandler = () => saveFunctionKeys({
+            Logger,
+            isReadOnly,
+            getCurrentDocument,
+            setCurrentDocument,
+            getCurrentRecord,
+            updateDocumentInEditor
+        });
+        const createFunctionKeyRowHandler = (args) => createFunctionKeyRow({
+            ...args,
+            IdGenerator,
+            saveFunctionKeys: saveFunctionKeysHandler
+        });
+        loadFunctionKeys({
+            getCurrentDocument,
+            getCurrentRecord,
+            createFunctionKeyRow: createFunctionKeyRowHandler
+        });
+    }
+
+    const applyWindowBtn = document.getElementById('apply-window-dimensions-btn');
+    if (applyWindowBtn) {
+        applyWindowBtn.addEventListener('click', function() {
+            applyWindowDimensions();
+        });
+    }
+
+    const windowTypeCoords = document.getElementById('window-type-coords');
+    const windowTypeRef = document.getElementById('window-type-ref');
+    const coordsSection = document.getElementById('window-coordinates-section');
+    const refSection = document.getElementById('window-reference-section');
+
+    if (windowTypeCoords && windowTypeRef && coordsSection && refSection) {
+        windowTypeCoords.addEventListener('change', function() {
+            if (this.checked) {
+                coordsSection.style.display = 'block';
+                refSection.style.display = 'none';
             }
         });
-        const indicator = indicatorInput.value.trim();
-        const description = descriptionInput.value.trim();
 
-        if (type && indicator) {
-            configuredKeys.push({ key, type, indicator, description });
-        }
+        windowTypeRef.addEventListener('change', function() {
+            if (this.checked) {
+                coordsSection.style.display = 'none';
+                refSection.style.display = 'block';
+            }
+        });
+    }
+}
+
+
+/***/ }),
+/* 25 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   saveDocument: () => (/* binding */ saveDocument)
+/* harmony export */ });
+function saveDocument(options) {
+    const {
+        Logger,
+        vscode,
+        getCurrentDocument,
+        getCurrentRecord,
+        showNotification
+    } = options;
+
+    const currentDocument = getCurrentDocument ? getCurrentDocument() : '';
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+
+    Logger.debug('Save function called, currentDocument:', currentDocument ? currentDocument.substring(0, 100) : 'null');
+
+    vscode.postMessage({
+        type: 'update',
+        content: currentDocument,
+        currentRecord: currentRecord
     });
 
-    const currentDocument = getCurrentDocument();
-    const currentRecord = getCurrentRecord();
-    const lines = currentDocument.split('\n');
-    let inTargetRecord = false;
-    let recordLineIndex = -1;
-    let insertIndex = -1;
-    let recordStartIndex = -1;
-    const linesToRemove = [];
+    showNotification('✅ Document saved successfully', 'success');
+    Logger.success('Document saved, preserving record context:', currentRecord);
+}
 
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
 
-        if (line.includes(`R ${currentRecord}`) || line.includes(`R  ${currentRecord}`)) {
-            inTargetRecord = true;
-            recordStartIndex = i;
-            recordLineIndex = i;
-            continue;
-        }
+/***/ }),
+/* 26 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-        if (inTargetRecord && line.match(/^\s*A\s+R\s+\w+/)) {
-            insertIndex = i;
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setViewZoom: () => (/* binding */ setViewZoom)
+/* harmony export */ });
+function setViewZoom(options) {
+    const {
+        zoomValue,
+        setCurrentZoom
+    } = options;
+
+    const clampedZoom = Math.max(0.5, Math.min(2, zoomValue));
+    if (setCurrentZoom) {
+        setCurrentZoom(clampedZoom);
+    }
+
+    const viewsContainer = document.getElementById('views-container');
+    if (viewsContainer) {
+        viewsContainer.style.setProperty('--view-zoom', clampedZoom.toString());
+    }
+
+    const zoomLabel = document.getElementById('zoomLabel');
+    if (zoomLabel) {
+        zoomLabel.textContent = `${Math.round(clampedZoom * 100)}%`;
+    }
+}
+
+
+/***/ }),
+/* 27 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   switchToView: () => (/* binding */ switchToView)
+/* harmony export */ });
+function switchToView({
+    viewName,
+    Logger,
+    setCurrentView,
+    getSelectedField,
+    setSelectedField,
+    getFields,
+    getCurrentDocument,
+    parseDspfFields,
+    showFieldProperties,
+    updatePreviewView,
+    updateSourceViewUI,
+    vscode,
+    setCurrentDocument,
+    getCurrentRecord,
+    setupSourceSearchUI,
+    scrollToRecordInSource
+}) {
+    Logger.ui('Switching to view:', viewName);
+
+    if (setCurrentView) {
+        setCurrentView(viewName);
+    }
+
+    document.querySelectorAll('.view').forEach(view => {
+        view.classList.remove('active');
+        view.style.display = 'none';
+        Logger.debug('Hidden view:', view.id);
+    });
+
+    document.querySelectorAll('.tab-button').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    const propertiesPanel = document.getElementById('properties-panel');
+
+    switch (viewName) {
+        case 'designer': {
+            const designerView = document.getElementById('designer-view');
+            const designerTab = document.getElementById('designerTab');
+            if (designerView && designerTab) {
+                designerView.style.display = 'flex';
+                designerView.classList.add('active');
+                designerTab.classList.add('active');
+                if (propertiesPanel) {
+                    propertiesPanel.classList.remove('hidden');
+                }
+
+                const previouslySelectedField = getSelectedField ? getSelectedField() : null;
+                const previouslySelectedFieldName = previouslySelectedField ? previouslySelectedField.name : null;
+                const currentDocument = getCurrentDocument ? getCurrentDocument() : '';
+
+                parseDspfFields(currentDocument);
+
+                if (previouslySelectedFieldName) {
+                    const currentFields = getFields ? getFields() : [];
+                    const updatedField = currentFields.find(field => field.name === previouslySelectedFieldName);
+                    if (updatedField) {
+                        if (setSelectedField) {
+                            setSelectedField(updatedField);
+                        }
+                        showFieldProperties(updatedField);
+
+                        const fieldElement = document.querySelector(`[data-field-name="${updatedField.name}"]`);
+                        if (fieldElement) {
+                            fieldElement.classList.add('field-updated');
+                            setTimeout(() => {
+                                fieldElement.classList.remove('field-updated');
+                            }, 800);
+                        }
+                        Logger.debug('Auto-updated properties for field:', updatedField.name);
+                    } else {
+                        if (setSelectedField) {
+                            setSelectedField(null);
+                        }
+                        showFieldProperties(null);
+                        Logger.warn('Previously selected field no longer exists, resetting properties');
+                    }
+                } else {
+                    if (setSelectedField) {
+                        setSelectedField(null);
+                    }
+                    showFieldProperties(null);
+                }
+
+                Logger.debug('Designer view activated and visible');
+            } else {
+                Logger.error('Designer elements not found');
+            }
             break;
         }
-
-        if (inTargetRecord) {
-            if (line.match(/CF\d+\(/) || line.match(/CA\d+\(/) ||
-                line.includes('PAGEDOWN(') || line.includes('PAGEUP(')) {
-                linesToRemove.push(i);
+        case 'preview': {
+            const previewView = document.getElementById('preview-view');
+            const previewTab = document.getElementById('previewTab');
+            if (previewView && previewTab) {
+                previewView.style.display = 'flex';
+                previewView.classList.add('active');
+                previewTab.classList.add('active');
+                if (propertiesPanel) {
+                    propertiesPanel.classList.add('hidden');
+                }
+                updatePreviewView();
+                Logger.debug('Preview view activated and visible');
+            } else {
+                Logger.error('Preview elements not found');
             }
+            break;
+        }
+        case 'source': {
+            const sourceView = document.getElementById('source-view');
+            const sourceTab = document.getElementById('sourceTab');
+            if (sourceView && sourceTab) {
+                sourceView.style.display = 'flex';
+                sourceView.classList.add('active');
+                sourceTab.classList.add('active');
+                if (propertiesPanel) {
+                    propertiesPanel.classList.add('hidden');
+                }
+                updateSourceViewUI({
+                    Logger,
+                    vscode,
+                    getCurrentDocument,
+                    setCurrentDocument,
+                    getCurrentRecord,
+                    parseDspfFields
+                });
+                setupSourceSearchUI({ Logger });
+                scrollToRecordInSource();
+                Logger.debug('Source view activated and visible');
+            } else {
+                Logger.error('Source elements not found');
+            }
+            break;
         }
     }
 
-    if (recordLineIndex !== -1) {
-        insertIndex = recordLineIndex + 1;
-    } else if (insertIndex === -1) {
-        insertIndex = lines.length;
-    }
-
-    for (let i = linesToRemove.length - 1; i >= 0; i--) {
-        const removedIndex = linesToRemove[i];
-        lines.splice(removedIndex, 1);
-
-        if (removedIndex < insertIndex) {
-            insertIndex--;
-        }
-    }
-
-    const newLines = [];
-    configuredKeys.forEach(fk => {
-        let keyword = '';
-
-        if (fk.key === 'PAGEDOWN' || fk.key === 'PAGEUP') {
-            keyword = fk.key;
-        } else {
-            const fNum = fk.key.substring(1).padStart(2, '0');
-            keyword = `${fk.type}${fNum}`;
-        }
-
-        const indicator = fk.indicator.padStart(2, '0');
-        const desc = fk.description ? ` '${fk.description}'` : '';
-        const line = `     A                                      ${keyword}(${indicator}${desc})`;
-        newLines.push(line);
+    document.querySelectorAll('.view').forEach(view => {
+        const isActive = view.classList.contains('active');
+        const displayStyle = window.getComputedStyle(view).display;
+        Logger.debug(`${view.id}: active=${isActive}, display=${displayStyle}`);
     });
-
-    lines.splice(insertIndex, 0, ...newLines);
-
-    const nextDocument = lines.join('\n');
-    setCurrentDocument(nextDocument);
-    updateDocumentInEditor();
-
-    Logger.success(`Saved ${configuredKeys.length} function keys to DDS`);
-}
-
-function generateFunctionKeyOptions(selectedKey) {
-    const keys = [];
-    for (let i = 1; i <= 24; i++) {
-        keys.push(`F${i}`);
-    }
-
-    return keys.map(k => `<option value="${k}" ${k === selectedKey ? 'selected' : ''}>${k}</option>`).join('');
 }
 
 
 /***/ }),
-
-/***/ "./media/modules/ui/generateConstantFieldLines.js":
-/*!********************************************************!*\
-  !*** ./media/modules/ui/generateConstantFieldLines.js ***!
-  \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateConstantFieldLinesUI: () => (/* binding */ generateConstantFieldLinesUI)
-/* harmony export */ });
-// Generate constant field lines with continuation support AND indicators
-function generateConstantFieldLinesUI({
-    field,
-    IndicatorUtils
-}) {
-    const rowStr = field.row.toString().padStart(2, ' ');
-    const colStr = field.col.toString().padStart(2, ' ');
-    const constantValue = field.value || 'TEXT';
-
-    // DDS format: text starts at column 45
-    // Dash for continuation goes at column 79
-    // Closing quote goes at column 80
-    // So we have 34 characters (columns 45-78) for actual text per line
-    const maxCharsPerLine = 34;
-    const lines = [];
-
-    // Build indicator prefix for the main line and prepended indicator lines
-    let indicatorPrefix = '            '; // 12 spaces (default, no indicators)
-    const fieldIndicatorLines = []; // For lines BEFORE the constant line
-
-    if (field.indicators && field.indicators.groups && field.indicators.groups.length > 0) {
-        const groups = field.indicators.groups;
-        const isOr = field.indicators.isOr || false;
-
-        if (isOr && groups.length > 1) {
-            // OR FORMAT: Multiple groups
-            let allLinesBeforeConst = [];
-
-            groups.forEach((group, groupIndex) => {
-                const groupIndicators = group.indicators || [];
-                if (groupIndicators.length === 0) {return;}
-
-                const numChunks = Math.ceil(groupIndicators.length / 3);
-                for (let chunkIndex = 0; chunkIndex < numChunks; chunkIndex++) {
-                    const startIdx = chunkIndex * 3;
-                    const chunk = groupIndicators.slice(startIdx, startIdx + 3);
-                    const chunkIndPart = IndicatorUtils.formatForDds(chunk);
-                    const firstIsNegative = chunk[0]?.not;
-
-                    let prefix, prefixSpaces;
-                    if (chunkIndex === 0) {
-                        prefix = groupIndex === 0 ? 'A' : 'AO';
-                        prefixSpaces = firstIsNegative ? ' ' : '  ';
-                        if (prefix === 'AO') {
-                            prefixSpaces = firstIsNegative ? '' : ' ';
-                        }
-                    } else {
-                        prefix = 'A';
-                        prefixSpaces = firstIsNegative ? ' ' : '  ';
-                    }
-
-                    allLinesBeforeConst.push(`     ${prefix}${prefixSpaces}${chunkIndPart}`);
-                }
-            });
-
-            // Last line goes to constant line, rest go before
-            if (allLinesBeforeConst.length > 1) {
-                fieldIndicatorLines.push(...allLinesBeforeConst.slice(0, -1));
-                const lastLine = allLinesBeforeConst[allLinesBeforeConst.length - 1];
-                const isAO = lastLine.startsWith('     AO');
-
-                let indicatorPart;
-                if (isAO) {
-                    indicatorPart = lastLine.substring(7);
-                } else {
-                    indicatorPart = lastLine.substring(6);
-                }
-                indicatorPart = indicatorPart.trimEnd();
-
-                if (isAO) {
-                    indicatorPrefix = 'O' + indicatorPart;
-                } else {
-                    indicatorPrefix = indicatorPart;
-                }
-
-                const spacesNeeded = 12 - indicatorPrefix.length;
-                indicatorPrefix = indicatorPrefix + ' '.repeat(Math.max(0, spacesNeeded));
-            } else if (allLinesBeforeConst.length === 1) {
-                const lastLine = allLinesBeforeConst[0];
-                const isAO = lastLine.startsWith('     AO');
-
-                let indicatorPart;
-                if (isAO) {
-                    indicatorPart = lastLine.substring(7);
-                } else {
-                    indicatorPart = lastLine.substring(6);
-                }
-                indicatorPart = indicatorPart.trimEnd();
-
-                if (isAO) {
-                    indicatorPrefix = 'O' + indicatorPart;
-                } else {
-                    indicatorPrefix = indicatorPart;
-                }
-
-                const spacesNeeded = 12 - indicatorPrefix.length;
-                indicatorPrefix = indicatorPrefix + ' '.repeat(Math.max(0, spacesNeeded));
-            }
-        } else {
-            // AND FORMAT: Single group
-            const allIndicators = groups.length > 0 ? groups[0].indicators : [];
-
-            if (allIndicators.length > 3) {
-                const numChunks = Math.ceil(allIndicators.length / 3);
-
-                for (let chunkIndex = 0; chunkIndex < numChunks - 1; chunkIndex++) {
-                    const startIdx = chunkIndex * 3;
-                    const chunk = allIndicators.slice(startIdx, startIdx + 3);
-                    const chunkIndPart = IndicatorUtils.formatForDds(chunk);
-                    const chunkFirstIsNegative = chunk[0]?.not;
-                    const chunkPrefixSpaces = chunkFirstIsNegative ? ' ' : '  ';
-                    fieldIndicatorLines.push(`     A${chunkPrefixSpaces}${chunkIndPart}`);
-                }
-
-                const lastChunkStart = (numChunks - 1) * 3;
-                const lastChunk = allIndicators.slice(lastChunkStart);
-                const indPart = IndicatorUtils.formatForDds(lastChunk);
-                const firstIsNegative = lastChunk[0]?.not;
-                const prefixSpaces = firstIsNegative ? ' ' : '  ';
-                const spacesNeeded = 12 - prefixSpaces.length - indPart.length;
-                indicatorPrefix = prefixSpaces + indPart + ' '.repeat(Math.max(0, spacesNeeded));
-            } else if (allIndicators.length > 0) {
-                const indPart = IndicatorUtils.formatForDds(allIndicators);
-                const firstIsNegative = allIndicators[0]?.not;
-                const prefixSpaces = firstIsNegative ? ' ' : '  ';
-                const spacesNeeded = 12 - prefixSpaces.length - indPart.length;
-                indicatorPrefix = prefixSpaces + indPart + ' '.repeat(Math.max(0, spacesNeeded));
-            }
-        }
-    }
-
-    // Add field indicator lines BEFORE constant line
-    if (fieldIndicatorLines.length > 0) {
-        lines.push(...fieldIndicatorLines);
-    }
-
-    // Build constant line(s) with indicator prefix
-    // Format: "     A  03                           19 11'TEXT'"
-    const spacingAfterIndicators = ' '.repeat(21); // 21 spaces to reach column 38 (coordinates start at column 39)
-
-    if (constantValue.length <= maxCharsPerLine) {
-        // Short constant - single line with indicators
-        lines.push(`     A${indicatorPrefix}${spacingAfterIndicators}${rowStr} ${colStr}'${constantValue}'`);
-    } else {
-        // Long constant - split into multiple lines with dash continuation
-        let remainingText = constantValue;
-        let isFirstLine = true;
-
-        while (remainingText.length > 0) {
-            const chunk = remainingText.substring(0, maxCharsPerLine);
-            remainingText = remainingText.substring(maxCharsPerLine);
-            const hasContinuation = remainingText.length > 0;
-
-            if (isFirstLine) {
-                // First line: includes indicators, row, column, text from column 45
-                lines.push(`     A${indicatorPrefix}${spacingAfterIndicators}${rowStr} ${colStr}'${chunk}${hasContinuation ? '-' : '\''}`);
-                isFirstLine = false;
-            } else {
-                // Continuation lines: NO indicators, text starts at column 45, NO opening quote
-                lines.push(`     A                                      ${chunk}${hasContinuation ? '-' : '\''}`);
-            }
-        }
-    }
-
-    return lines;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/generateDdsLineWithIndicators.js":
-/*!***********************************************************!*\
-  !*** ./media/modules/ui/generateDdsLineWithIndicators.js ***!
-  \***********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateDdsLineWithIndicatorsUI: () => (/* binding */ generateDdsLineWithIndicatorsUI)
-/* harmony export */ });
-// Generate a DDS line with optional indicators
-function generateDdsLineWithIndicatorsUI({
-    keyword,
-    indicatorsOrGroups,
-    IndicatorUtils
-}) {
-    // Support both old format (array) and new format (groups structure)
-    let indicators = [];
-    let groups = [];
-    let isOr = false;
-
-    if (Array.isArray(indicatorsOrGroups)) {
-        // Old format - backward compatibility
-        indicators = indicatorsOrGroups;
-    } else if (indicatorsOrGroups && indicatorsOrGroups.groups) {
-        // New format with OR support
-        groups = indicatorsOrGroups.groups;
-        isOr = indicatorsOrGroups.isOr;
-    }
-
-    // If we have groups with OR, generate multiple lines with AO prefix
-    if (groups.length > 1 && isOr) {
-        const lines = [];
-        groups.forEach((group, groupIndex) => {
-            // Check if this group has more than 3 indicators
-            if (group.indicators.length > 3) {
-                // Split this OR group into multiple lines (3 indicators per line)
-                const numChunks = Math.ceil(group.indicators.length / 3);
-
-                for (let chunkIndex = 0; chunkIndex < numChunks; chunkIndex++) {
-                    const startIdx = chunkIndex * 3;
-                    const chunk = group.indicators.slice(startIdx, startIdx + 3);
-                    const indPart = IndicatorUtils.formatForDds(chunk);
-
-                    // Determine prefix:
-                    // - First group, any chunk: 'A' (no O)
-                    // - Other groups, first chunk: 'AO' (marca inicio del grupo OR)
-                    // - Other groups, other chunks: 'A' (continuación AND dentro del grupo)
-                    const isFirstChunk = chunkIndex === 0;
-                    const isFirstGroup = groupIndex === 0;
-                    const prefix = (isFirstGroup || !isFirstChunk) ? 'A' : 'AO';
-
-                    const firstIsNegative = chunk[0]?.not;
-                    let prefixSpaces = firstIsNegative ? ' ' : '  ';
-
-                    // Adjust spaces for AO prefix
-                    if (prefix === 'AO') {
-                        prefixSpaces = firstIsNegative ? '' : ' ';
-                    }
-
-                    // targetWidth must be 36 for AO to compensate for the extra character
-                    const targetWidth = prefix === 'AO' ? 36 : 37;
-                    const spacesNeeded = Math.max(1, targetWidth - indPart.length);
-
-                    // Only add keyword on the LAST line of the LAST group
-                    const isLastChunkOfLastGroup = groupIndex === groups.length - 1 && chunkIndex === numChunks - 1;
-                    if (isLastChunkOfLastGroup) {
-                        lines.push(`     ${prefix}${prefixSpaces}${indPart}${' '.repeat(spacesNeeded)}${keyword}`);
-                    } else {
-                        lines.push(`     ${prefix}${prefixSpaces}${indPart}`);
-                    }
-                }
-            } else {
-                // This group has 3 or fewer indicators - single line
-                const indPart = IndicatorUtils.formatForDds(group.indicators);
-                const prefix = groupIndex === 0 ? 'A' : 'AO';
-                const firstIsNegative = group.indicators.length > 0 && group.indicators[0].not;
-                let prefixSpaces = firstIsNegative ? ' ' : '  ';
-
-                // Adjust spaces for AO prefix
-                if (prefix === 'AO') {
-                    prefixSpaces = firstIsNegative ? '' : ' ';
-                }
-
-                // targetWidth must be 36 for AO to compensate for the extra character
-                const targetWidth = prefix === 'AO' ? 36 : 37;
-                const spacesNeeded = Math.max(1, targetWidth - indPart.length);
-
-                // Only add keyword on the LAST group
-                if (groupIndex === groups.length - 1) {
-                    lines.push(`     ${prefix}${prefixSpaces}${indPart}${' '.repeat(spacesNeeded)}${keyword}`);
-                } else {
-                    lines.push(`     ${prefix}${prefixSpaces}${indPart}`);
-                }
-            }
-        });
-        return lines.join('\n');
-    }
-
-    // Single group or old format - get all indicators
-    const finalIndicators = groups.length > 0 ? groups[0].indicators : indicators;
-
-    if (finalIndicators && finalIndicators.length > 0) {
-        // If more than 3 indicators (AND format), split into multiple lines (3 per line max)
-        if (finalIndicators.length > 3 && !isOr) {
-            const lines = [];
-            // Split indicators into chunks of 3, process from end to start
-            const numChunks = Math.ceil(finalIndicators.length / 3);
-
-            for (let chunkIndex = 0; chunkIndex < numChunks; chunkIndex++) {
-                const startIdx = chunkIndex * 3;
-                const chunk = finalIndicators.slice(startIdx, startIdx + 3);
-                const indPart = IndicatorUtils.formatForDds(chunk);
-                const firstIsNegative = chunk[0]?.not;
-                const prefixSpaces = firstIsNegative ? ' ' : '  ';
-
-                // Check if this is the last chunk (will have the keyword)
-                const isLastChunk = chunkIndex === numChunks - 1;
-
-                if (isLastChunk) {
-                    // Last chunk - add keyword
-                    const targetWidth = firstIsNegative ? 37 : 36;
-                    const spacesNeeded = Math.max(1, targetWidth - indPart.length);
-                    lines.push(`     A${prefixSpaces}${indPart}${' '.repeat(spacesNeeded)}${keyword}`);
-                } else {
-                    // Not last chunk - just indicators
-                    lines.push(`     A${prefixSpaces}${indPart}`);
-                }
-            }
-            return lines.join('\n');
-        }
-
-        // 3 or fewer indicators - single line
-        const indPart = IndicatorUtils.formatForDds(finalIndicators);
-        const firstIsNegative = finalIndicators[0]?.not;
-        const prefixSpaces = firstIsNegative ? ' ' : '  ';
-        const targetWidth = firstIsNegative ? 37 : 36;
-        const spacesNeeded = Math.max(1, targetWidth - indPart.length);
-        return `     A${prefixSpaces}${indPart}${' '.repeat(spacesNeeded)}${keyword}`;
-    }
-
-    return `     A                                      ${keyword}`;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/generateFieldCheckLines.js":
-/*!*****************************************************!*\
-  !*** ./media/modules/ui/generateFieldCheckLines.js ***!
-  \*****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateFieldCheckLinesUI: () => (/* binding */ generateFieldCheckLinesUI)
-/* harmony export */ });
-// Generate CHECK keyword lines for a field
-function generateFieldCheckLinesUI({
-    field,
-    CHECK_CHAR_CODES,
-    CHECK_NUMERIC_CODES,
-    generateDdsLineWithIndicators,
-    Logger
-}) {
-    const lines = [];
-    if (!field.checkOptions) {return lines;}
-    const orderedCodes = [...CHECK_CHAR_CODES, ...CHECK_NUMERIC_CODES];
-    const seen = new Set();
-    orderedCodes.forEach(code => {
-        if (seen.has(code)) {return;}
-        seen.add(code);
-        if (!field.checkOptions[code]) {return;}
-        const keyword = `CHECK(${code})`;
-        if (['ME', 'ER'].includes(code)) {
-            // ME and ER support indicators with OR groups
-            const indicatorData = field.checkIndicators && field.checkIndicators[code] ? field.checkIndicators[code] : null;
-
-            Logger.debug(`[CHECK GEN ${code}] field.checkIndicators[${code}]:`, indicatorData);
-
-            const hasIndicators = indicatorData && indicatorData.groups && indicatorData.groups.length > 0;
-
-            Logger.debug(`[CHECK GEN ${code}] hasIndicators=${hasIndicators}`);
-
-            if (hasIndicators) {
-                Logger.debug(`[CHECK GEN ${code}] Calling generateDdsLineWithIndicators with keyword="${keyword}"`);
-                const generated = generateDdsLineWithIndicators(keyword, indicatorData);
-                Logger.debug(`[CHECK GEN ${code}] Generated result (type=${typeof generated}):`, generated);
-                Logger.debug(`[CHECK GEN ${code}] Generated length: ${generated.length} chars`);
-                lines.push(generated); // Push complete string (may contain \n for OR groups)
-            } else {
-                Logger.debug(`[CHECK GEN ${code}] No indicators, using default line`);
-                lines.push(`     A                                      ${keyword}`);
-            }
-
-            Logger.debug(`[CHECK GEN ${code}] Returning ${lines.length} line(s) for this code`);
-        } else {
-            lines.push(`     A                                      ${keyword}`);
-        }
-    });
-    return lines;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/generateFieldColorLines.js":
-/*!*****************************************************!*\
-  !*** ./media/modules/ui/generateFieldColorLines.js ***!
-  \*****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateFieldColorLinesUI: () => (/* binding */ generateFieldColorLinesUI)
-/* harmony export */ });
-// Generate COLOR lines for a field
-function generateFieldColorLinesUI({
-    field,
-    applyIndicatorChangesToField,
-    generateDdsLineWithIndicators,
-    Logger
-}) {
-    // Apply any pending indicator changes from the Map before generating DDS
-    applyIndicatorChangesToField(field);
-
-    const lines = [];
-
-    if (field.colors && field.colors.length > 1) {
-        // Multiple colors - each on separate line with indicators
-        field.colors.forEach(color => {
-            const indicatorData = field.colorIndicators && field.colorIndicators[color] ? field.colorIndicators[color] : [];
-
-            // Check if we should preserve original lines (originalColorLines is now an array)
-            if (field.originalColorLines && field.originalColorLines[color] && !field.colorIndicatorsModified && Array.isArray(field.originalColorLines[color])) {
-                Logger.dds(`Preserving ${field.originalColorLines[color].length} original COLOR line(s) for ${color}`);
-                lines.push(...field.originalColorLines[color]);
-            } else {
-                // Generate new line(s) - may be multiple if OR groups exist
-                const generated = generateDdsLineWithIndicators(`COLOR(${color})`, indicatorData);
-                lines.push(generated);
-            }
-        });
-    } else if (field.color) {
-        // Single color - check if it has indicators
-        const indicatorData = field.colorIndicators && field.colorIndicators[field.color] ? field.colorIndicators[field.color] : [];
-
-        // Check if indicatorData has any groups with indicators
-        const hasIndicators = Array.isArray(indicatorData) ? indicatorData.length > 0 :
-                             (indicatorData.groups && indicatorData.groups.length > 0);
-
-        if (hasIndicators) {
-            // Has indicators - must be on separate line
-            if (field.originalColorLines && field.originalColorLines[field.color] && !field.colorIndicatorsModified && Array.isArray(field.originalColorLines[field.color])) {
-                lines.push(...field.originalColorLines[field.color]);
-            } else {
-                const generated = generateDdsLineWithIndicators(`COLOR(${field.color})`, indicatorData);
-                lines.push(generated);
-            }
-        }
-        // If no indicators, return empty array (will be added inline)
-    }
-
-    return lines;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/generateFieldDftLines.js":
-/*!***************************************************!*\
-  !*** ./media/modules/ui/generateFieldDftLines.js ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateFieldDftLinesUI: () => (/* binding */ generateFieldDftLinesUI)
-/* harmony export */ });
-// Generate DFT keyword lines for a field
-function generateFieldDftLinesUI({
-    field
-}) {
-    const lines = [];
-
-    if (!field.dft) {
-        return lines;
-    }
-
-    const dftValue = typeof field.dft === 'string'
-        ? field.dft.trim()
-        : (field.dft.value ? String(field.dft.value).trim() : '');
-
-    if (!dftValue) {
-        return lines;
-    }
-
-    const escapedValue = dftValue.replace(/'/g, "''");
-    const keyword = `DFT('${escapedValue}')`;
-    lines.push(`     A                                      ${keyword}`);
-
-    return lines;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/generateFieldDftvalLines.js":
-/*!******************************************************!*\
-  !*** ./media/modules/ui/generateFieldDftvalLines.js ***!
-  \******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateFieldDftvalLinesUI: () => (/* binding */ generateFieldDftvalLinesUI)
-/* harmony export */ });
-// Generate DFTVAL keyword lines for a field
-function generateFieldDftvalLinesUI({
-    field,
-    generateDdsLineWithIndicators,
-    Logger
-}) {
-    const lines = [];
-    if (!field.dftval || !field.dftval.value) {return lines;}
-    const dftvalValue = field.dftval.value;
-    const keyword = `DFTVAL('${dftvalValue}')`;
-
-    // Support both old format (array) and new format (groups structure)
-    const indicatorData = field.dftvalIndicators;
-
-    Logger.debug(`[DFTVAL GEN] field.dftvalIndicators:`, indicatorData);
-
-    // Check if indicatorData has any groups with indicators
-    const hasIndicators = Array.isArray(indicatorData) ? indicatorData.length > 0 :
-                         (indicatorData && indicatorData.groups && indicatorData.groups.length > 0);
-
-    Logger.debug(`[DFTVAL GEN] hasIndicators=${hasIndicators}`);
-
-    if (hasIndicators) {
-        // Has indicators - must be on separate line(s)
-        // Generate line(s) - may be multiple if OR groups exist (SAME AS COLOR)
-        Logger.debug(`[DFTVAL GEN] Calling generateDdsLineWithIndicators with keyword="${keyword}"`);
-        const generated = generateDdsLineWithIndicators(keyword, indicatorData);
-        Logger.debug(`[DFTVAL GEN] Generated result (type=${typeof generated}):`, generated);
-        Logger.debug(`[DFTVAL GEN] Generated length: ${generated.length} chars`);
-        lines.push(generated); // Push the complete string (may contain \n for OR groups)
-    } else {
-        // No indicators - return empty array (will be added inline if needed)
-        // For DFTVAL, we always generate a separate line even without indicators
-        Logger.debug(`[DFTVAL GEN] No indicators, using default line`);
-        lines.push(`     A                                      ${keyword}`);
-    }
-
-    Logger.debug(`[DFTVAL GEN] Returning ${lines.length} line(s):`, lines);
-    return lines;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/generateFieldDspatrLines.js":
-/*!******************************************************!*\
-  !*** ./media/modules/ui/generateFieldDspatrLines.js ***!
-  \******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateFieldDspatrLinesUI: () => (/* binding */ generateFieldDspatrLinesUI)
-/* harmony export */ });
-//Generate DSPATR lines for a field
-function generateFieldDspatrLinesUI({
-    field,
-    DSPATR_ATTRIBUTE_MAP,
-    applyIndicatorChangesToField,
-    generateDdsLineWithIndicators,
-    Logger
-}) {
-    // Apply any pending indicator changes from the Map before generating DDS
-    applyIndicatorChangesToField(field);
-
-    const lines = [];
-
-    if (!field.attributes || Object.keys(field.attributes).length === 0) {
-        return lines;
-    }
-
-    // Check if this field originally had a grouped DSPATR format
-    if (field.hasGroupedDspatr) {
-        // Preserve grouped format: regenerate DSPATR(XX YY ZZ) with active attributes
-        const activeCodes = [];
-        for (const [attrName, ddsCode] of Object.entries(DSPATR_ATTRIBUTE_MAP)) {
-            if (field.attributes[attrName]) {
-                activeCodes.push(ddsCode);
-            }
-        }
-
-        if (activeCodes.length > 0) {
-            // Get indicators from the first attribute (all share same indicators in grouped format)
-            const firstAttr = Object.keys(field.attributes).find(k => field.attributes[k]);
-            const indicatorData = field.attributeIndicators && firstAttr ?
-                (field.attributeIndicators[firstAttr] || []) : [];
-
-            const groupedDspatr = `DSPATR(${activeCodes.join(' ')})`;
-            const generated = generateDdsLineWithIndicators(groupedDspatr, indicatorData);
-            // Split by newline in case generateDdsLineWithIndicators returns multiple lines (OR groups)
-            const generatedLines = generated.split('\n');
-            lines.push(...generatedLines);
-            Logger.dds('Generated grouped DSPATR line with indicators');
-        }
-    } else {
-        // Individual format: one DSPATR per line
-        for (const [attrName, ddsCode] of Object.entries(DSPATR_ATTRIBUTE_MAP)) {
-            if (field.attributes[attrName]) {
-                // Preserve original line(s) if indicators haven't changed (now an array)
-                if (field.originalAttrLines && field.originalAttrLines[attrName] && !field.attributeIndicatorsModified && Array.isArray(field.originalAttrLines[attrName])) {
-                    Logger.dds(`Preserving ${field.originalAttrLines[attrName].length} original DSPATR line(s) for ${attrName}`);
-                    lines.push(...field.originalAttrLines[attrName]);
-                } else {
-                    Logger.dds(`Generating new DSPATR line(s) for ${attrName}`);
-                    const indicatorData = field.attributeIndicators && field.attributeIndicators[attrName] ? field.attributeIndicators[attrName] : [];
-                    const generated = generateDdsLineWithIndicators(`DSPATR(${ddsCode})`, indicatorData);
-                    // Split by newline in case generateDdsLineWithIndicators returns multiple lines (OR groups)
-                    const generatedLines = generated.split('\n');
-                    lines.push(...generatedLines);
-                }
-            }
-        }
-    }
-
-    return lines;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/generateFieldEditKeywordsLines.js":
-/*!************************************************************!*\
-  !*** ./media/modules/ui/generateFieldEditKeywordsLines.js ***!
-  \************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateFieldEditKeywordsLinesUI: () => (/* binding */ generateFieldEditKeywordsLinesUI)
-/* harmony export */ });
-// Generate EDTWRD/EDTMSK keyword lines for a field
-function generateFieldEditKeywordsLinesUI({
-    field
-}) {
-    const lines = [];
-
-    const escapeSingleQuotes = (text) => String(text).replace(/'/g, "''");
-    const resolveValue = (keywordData) => {
-        if (!keywordData) {
-            return '';
-        }
-        if (typeof keywordData === 'string') {
-            return keywordData;
-        }
-        if (typeof keywordData.value === 'string') {
-            return keywordData.value;
-        }
-        return '';
-    };
-
-    const edtwrdValue = resolveValue(field.edtwrd);
-    if (edtwrdValue.length > 0) {
-        lines.push(`     A                                      EDTWRD('${escapeSingleQuotes(edtwrdValue)}')`);
-    }
-
-    const edtmskValue = resolveValue(field.edtmsk);
-    if (edtmskValue.length > 0) {
-        lines.push(`     A                                      EDTMSK('${escapeSingleQuotes(edtmskValue)}')`);
-    }
-
-    return lines;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/generateFieldEdtcdeLines.js":
-/*!******************************************************!*\
-  !*** ./media/modules/ui/generateFieldEdtcdeLines.js ***!
-  \******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateFieldEdtcdeLinesUI: () => (/* binding */ generateFieldEdtcdeLinesUI)
-/* harmony export */ });
-// Generate EDTCDE keyword lines for a field
-function generateFieldEdtcdeLinesUI({
-    field
-}) {
-    const lines = [];
-
-    if (!field.edtcde || !field.edtcde.value) {
-        return lines;
-    }
-
-    const edtcdeValue = String(field.edtcde.value).trim().toUpperCase();
-    const replaceLeadingZerosWith = field.edtcde.replaceLeadingZerosWith
-        ? String(field.edtcde.replaceLeadingZerosWith).trim()
-        : '';
-    const allowReplacement = edtcdeValue !== 'Z';
-
-    const keyword = (allowReplacement && replaceLeadingZerosWith)
-        ? `EDTCDE(${edtcdeValue} ${replaceLeadingZerosWith})`
-        : `EDTCDE(${edtcdeValue})`;
-
-    lines.push(`     A                                      ${keyword}`);
-    return lines;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/generateId.js":
-/*!****************************************!*\
-  !*** ./media/modules/ui/generateId.js ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateId: () => (/* binding */ generateId)
-/* harmony export */ });
-function generateId(IdGenerator) {
-    return IdGenerator.generateFieldId();
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/generateUniqueFieldName.js":
-/*!*****************************************************!*\
-  !*** ./media/modules/ui/generateUniqueFieldName.js ***!
-  \*****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateUniqueFieldName: () => (/* binding */ generateUniqueFieldName)
-/* harmony export */ });
-function generateUniqueFieldName(options) {
-    const { prefix, fields, IdGenerator } = options;
-
-    const existingNames = fields.map(field => field.name);
-    return IdGenerator.generateUniqueName(prefix, existingNames);
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/generateWindowFieldHtml.js":
-/*!*****************************************************!*\
-  !*** ./media/modules/ui/generateWindowFieldHtml.js ***!
-  \*****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateWindowFieldHtml: () => (/* binding */ generateWindowFieldHtml)
-/* harmony export */ });
-function generateWindowFieldHtml(options) {
-    const { field, windowDimensions, generateFieldHtml } = options;
-
-    return generateFieldHtml(field, { row: windowDimensions.row, col: windowDimensions.col });
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/getAttributeCheckboxMap.js":
-/*!*****************************************************!*\
-  !*** ./media/modules/ui/getAttributeCheckboxMap.js ***!
-  \*****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getAttributeCheckboxMap: () => (/* binding */ getAttributeCheckboxMap)
-/* harmony export */ });
-// construye un objeto que mapea cada atributo (por ejemplo underline, blink, etc.) 
-// al id del checkbox correspondiente en el panel de propiedades.
-// Si se pasa allowedKeys, filtra el mapa para incluir solo esos atributos permitidos.
-function getAttributeCheckboxMap(options) {
-    const { allowedKeys = null, attributeUiDefs } = options;
-    const allowSet = allowedKeys ? new Set(allowedKeys) : null;
-    const map = {};
-
-    attributeUiDefs.forEach(def => {
-        if (!allowSet || allowSet.has(def.key)) {
-            map[def.key] = def.checkboxId;
-        }
-    });
-
-    return map;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/getDefaultLength.js":
-/*!**********************************************!*\
-  !*** ./media/modules/ui/getDefaultLength.js ***!
-  \**********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getDefaultLength: () => (/* binding */ getDefaultLength)
-/* harmony export */ });
-function getDefaultLength(type) {
-    switch (type) {
-        case 'text':
-            return 10;
-        case 'number':
-            return 6;
-        case 'constant':
-            return null;
-        case 'field-date':
-            return 10;
-        case 'field-time':
-            return 8;
-        case 'field-timestamp':
-            return 26;
-        default:
-            return 10;
-    }
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/getFieldCharForDisplay.js":
-/*!****************************************************!*\
-  !*** ./media/modules/ui/getFieldCharForDisplay.js ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getFieldCharForDisplay: () => (/* binding */ getFieldCharForDisplay)
-/* harmony export */ });
-// Function to get display character for a field
-function getFieldCharForDisplay(options) {
-    const { field } = options;
-
-    let fieldChar = '_';
-
-    if (field.dataType === 'numeric' || field.dataType === 'zoned' || field.dataType === 'packed' || field.dataType === 'float' || field.dataType === 'binary') {
-        if (field.usage === 'O') {
-            fieldChar = '6';
-        } else if (field.usage === 'I') {
-            fieldChar = '3';
-        } else if (field.usage === 'B') {
-            fieldChar = '9';
-        } else {
-            fieldChar = '6';
-        }
-    } else {
-        if (field.usage === 'I') {
-            fieldChar = 'I';
-        } else if (field.usage === 'B') {
-            fieldChar = 'B';
-        } else if (field.usage === 'O') {
-            fieldChar = 'O';
-        } else {
-            fieldChar = 'O';
-        }
-    }
-
-    return fieldChar;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/getFieldDisplayText.js":
-/*!*************************************************!*\
-  !*** ./media/modules/ui/getFieldDisplayText.js ***!
-  \*************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getFieldDisplayText: () => (/* binding */ getFieldDisplayText)
-/* harmony export */ });
-// Muestra como se debe mostrar un campo en la interfaz de usuario, dependiendo de su tipo y longitud. 
-// Para campos numéricos, se muestra una representación con caracteres específicos para indicar la longitud 
-// y el formato del número. Para otros tipos de campos, se muestra una repetición del carácter correspondiente 
-// a la longitud del campo.
-function getFieldDisplayText(options) {
-    const { field, fieldLength, getFieldCharForDisplay } = options;
-
-    // EDTWRD: plantilla IBM i de edición de palabra.
-    // Estructura de la plantilla (después de quitar comillas externas):
-    //   - Posición 1 (índice 0): carácter de supresión/relleno de ceros.
-    //       Si es '0' → suprimir ceros a la izquierda (reemplazar por espacios).
-    //       Si es otro char → usarlo como relleno. En el Designer lo mostramos
-    //       como digitChar para indicar que ahí va un dígito.
-    //   - Posiciones 2..N: cada ' ' (espacio) = posición de dígito (→ digitChar).
-    //       '&' = espacio literal forzado (→ ' ').
-    //       Cualquier otro carácter = literal fijo (se muestra tal cual).
-    function applyEdtwrdFormatting(digitChar) {
-        const rawTemplate = field.edtwrd && typeof field.edtwrd === 'object'
-            ? (field.edtwrd.value || '')
-            : (field.edtwrd || '');
-
-        // Quitar comillas externas: '0(   )   -    ' → 0(   )   -
-        const template = String(rawTemplate).replace(/^'(.*)'$/, '$1');
-
-        if (!template) {
-            return null;
-        }
-
-        // Posición 0: carácter de supresión. En el Designer lo mostramos como digitChar
-        // porque indica dónde irá el dígito más significativo del número.
-        const suppressChar = template[0];
-        const suppressDisplay = digitChar; // siempre mostramos digitChar en pos 0
-
-        // Posiciones 1..N: espacio → dígito, & → espacio literal, resto → literal
-        let result = suppressDisplay;
-        for (let i = 1; i < template.length; i++) {
-            const ch = template[i];
-            if (ch === ' ') {
-                result += digitChar;  // posición de dígito
-            } else if (ch === '&') {
-                result += ' ';        // espacio forzado literal
-            } else {
-                result += ch;         // carácter literal (separator)
-            }
-        }
-        return result;
-    }
-
-    // EDTMSK: máscara de edición IBM i.
-    // Estructura de la máscara (después de quitar comillas):
-    //   - ' ' (espacio) → posición de dígito (→ digitChar)
-    //   - '&' → espacio literal forzado (→ ' ')
-    //   - cualquier otro carácter → literal fijo (se muestra tal cual)
-    function applyEdtmskFormatting(digitChar) {
-        const rawMask = field.edtmsk && typeof field.edtmsk === 'object'
-            ? (field.edtmsk.value || '')
-            : (field.edtmsk || '');
-
-        const mask = String(rawMask).replace(/^'(.*)'$/, '$1');
-
-        if (!mask) {
-            return null;
-        }
-
-        let result = '';
-        for (let i = 0; i < mask.length; i++) {
-            const ch = mask[i];
-            if (ch === ' ') {
-                result += digitChar;  // posición de dígito
-            } else if (ch === '&') {
-                result += ' ';        // espacio literal forzado
-            } else {
-                result += ch;         // literal fijo (-, /, etc.)
-            }
-        }
-        return result;
-    }
-
-    function applyEdtcdeDisplayReplacement(baseText, digitChar) {
-        const edtcdeCode = field.edtcde && field.edtcde.value
-            ? String(field.edtcde.value).trim().toUpperCase()
-            : '';
-
-        if (edtcdeCode === 'Z') {
-            return baseText;
-        }
-
-        const replacement = field.edtcde && field.edtcde.replaceLeadingZerosWith
-            ? String(field.edtcde.replaceLeadingZerosWith).trim()
-            : '';
-
-        if (!replacement || (replacement !== '*' && replacement !== '$')) {
-            return baseText;
-        }
-
-        const firstDigitIndex = baseText.indexOf(digitChar);
-        if (firstDigitIndex === -1) {
-            return baseText;
-        }
-
-        return `${baseText.substring(0, firstDigitIndex)}${replacement}${baseText.substring(firstDigitIndex + 1)}`;
-    }
-
-    if (field.dataType === 'date') {
-        return 'yyyy-mm-dd';
-    }
-
-    if (field.dataType === 'time') {
-        return 'hh.mm.ss';
-    }
-
-    if (field.dataType === 'timestamp') {
-        return 'yyyy-mm-dd-hh.mm.ss.mmmmmm';
-    }
-
-    const length = fieldLength || field.length || 1;
-    const isNumeric = field.dataType === 'numeric' || field.dataType === 'zoned' || field.dataType === 'packed' || field.dataType === 'float' || field.dataType === 'binary';
-    if (isNumeric) {
-        const digitChar = getFieldCharForDisplay(field);
-
-        const edtcdeCode = field.edtcde && field.edtcde.value
-            ? String(field.edtcde.value).trim().toUpperCase()
-            : '';
-
-        const formatThousandsInDigitRuns = (baseText) => {
-            const escapedDigit = digitChar.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const digitRunRegex = new RegExp(`${escapedDigit}{4,}`, 'g');
-
-            return baseText.replace(digitRunRegex, (run) => run.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
-        };
-
-        const applyEdtcdeCodeFormatting = (baseText) => {
-            if (!edtcdeCode) {
-                return baseText;
-            }
-
-            let formattedText = baseText;
-
-            if (['1', '2', '3', 'A', 'B', 'J', 'K', 'N', 'O'].includes(edtcdeCode)) {
-                formattedText = formatThousandsInDigitRuns(formattedText);
-            }
-
-            if (['A', 'B', 'C', 'D'].includes(edtcdeCode) && !formattedText.endsWith('CR')) {
-                formattedText = `${formattedText}CR`;
-            }
-
-            if (['J', 'K', 'L', 'M'].includes(edtcdeCode) && !formattedText.endsWith('-')) {
-                formattedText = `${formattedText}-`;
-            }
-
-            if (['N', 'O', 'P', 'Q'].includes(edtcdeCode)) {
-                formattedText = formattedText.replace(/-$/, '');
-                if (!formattedText.startsWith('-')) {
-                    formattedText = `-${formattedText}`;
-                }
-            }
-
-            if (edtcdeCode === 'Z') {
-                formattedText = formattedText.replace(/\./g, '');
-                formattedText = formattedText.replace(/-/g, '');
-            }
-
-            // Y: fecha con separadores → MM-DD-YY (6 dígitos) o MM-DD-YYYY (8 dígitos)
-            // El separador de fecha IBM i por defecto es '-' (Mas adelante se debería leer del sysval QDATSEP).
-            if (edtcdeCode === 'Y') {
-                const len = baseText.length;
-                if (len === 6) {
-                    formattedText = `${digitChar.repeat(2)}-${digitChar.repeat(2)}-${digitChar.repeat(2)}`;
-                } else if (len === 8) {
-                    formattedText = `${digitChar.repeat(2)}-${digitChar.repeat(2)}-${digitChar.repeat(4)}`;
-                } else {
-                    // Insertar '-' cada 2 dígitos como mejor aproximación
-                    let r = '';
-                    for (let i = 0; i < len; i++) {
-                        if (i > 0 && i % 2 === 0 && i < len - 1) { r += '-'; }
-                        r += digitChar;
-                    }
-                    formattedText = r;
-                }
-            }
-
-            // W: fecha juliana → YY-DDD (5 dígitos) o YYYY-DDD (7 dígitos)
-            if (edtcdeCode === 'W') {
-                const len = baseText.length;
-                if (len === 5) {
-                    formattedText = `${digitChar.repeat(2)}-${digitChar.repeat(3)}`;
-                } else if (len === 7) {
-                    formattedText = `${digitChar.repeat(4)}-${digitChar.repeat(3)}`;
-                } else {
-                    formattedText = `${digitChar.repeat(Math.max(1, len - 3))}-${digitChar.repeat(3)}`;
-                }
-            }
-
-            return formattedText;
-        };
-
-        let baseNumericText;
-        const isSignedInputOrBoth = (field.usage === 'I' || field.usage === 'B') && field.shift === 'S';
-        const hasEdtcdePriorityOnBoth = field.usage === 'B' && Boolean(edtcdeCode);
-
-        if (field.dataType === 'float') {
-            const decimals = Number.isInteger(field.decimals) ? field.decimals : 0;
-            const integerDigits = Math.max(1, length - decimals);
-            const mantissa = decimals > 0
-                ? `${digitChar.repeat(integerDigits)},${digitChar.repeat(decimals)}`
-                : digitChar.repeat(length);
-            const precisionChar = field.precision === 'DOUBLE' ? 'D' : 'E';
-            baseNumericText = `-${mantissa}${precisionChar}-${digitChar.repeat(3)}`;
-        } else if (isSignedInputOrBoth && !hasEdtcdePriorityOnBoth) {
-            baseNumericText = length >= 1 ? digitChar.repeat(length) + '-' : digitChar;
-        } else {
-            baseNumericText = digitChar.repeat(length);
-        }
-
-        // Prioridad de keywords de edición (en IBM i son mutuamente excluyentes,
-        // pero si coexisten en el DDS, EDTCDE tiene precedencia sobre EDTMSK/EDTWRD):
-        // 1. EDTWRD (si existe y no hay EDTCDE)
-        // 2. EDTMSK (si existe y no hay EDTCDE ni EDTWRD)
-        // 3. EDTCDE (siempre que exista, gana sobre los anteriores)
-        if (edtcdeCode) {
-            const edtcdeFormatted = applyEdtcdeCodeFormatting(baseNumericText);
-            return applyEdtcdeDisplayReplacement(edtcdeFormatted, digitChar);
-        }
-
-        const edtwrdResult = applyEdtwrdFormatting(digitChar);
-        if (edtwrdResult !== null) {
-            return edtwrdResult;
-        }
-
-        const edtmskResult = applyEdtmskFormatting(digitChar);
-        if (edtmskResult !== null) {
-            return edtmskResult;
-        }
-
-        const edtcdeFormatted = applyEdtcdeCodeFormatting(baseNumericText);
-        return applyEdtcdeDisplayReplacement(edtcdeFormatted, digitChar);
-    }
-    const fieldChar = getFieldCharForDisplay(field);
-    return fieldChar.repeat(length);
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/getKeywordDisplay.js":
-/*!***********************************************!*\
-  !*** ./media/modules/ui/getKeywordDisplay.js ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getKeywordDisplay: () => (/* binding */ getKeywordDisplay)
-/* harmony export */ });
-function getKeywordDisplay(options) {
-    const { keywordName } = options;
-
-    const displays = {
-        'DATE': 'MM/DD/YYYY',
-        'TIME': 'HH:MM:SS',
-        'SYSNAME': 'SSSSSSSS',
-        'USER': 'UUUUUUUUUU'
-    };
-    return displays[keywordName] || keywordName;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/getRecordType.js":
-/*!*******************************************!*\
-  !*** ./media/modules/ui/getRecordType.js ***!
-  \*******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getRecordType: () => (/* binding */ getRecordType)
-/* harmony export */ });
-// Get the type of the current record (SFLCTL, SFL, or SCREEN)
-function getRecordType({ recordName, currentDocument }) {
-    const lines = currentDocument.split('\n');
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        if (line.includes(`R ${recordName}`) || line.includes(`R  ${recordName}`)) {
-            // Check keywords on the same line first
-            if (line.includes('SFLCTL')) {return 'SFLCTL';}
-            if (line.includes('SFL')) {return 'SFL';}
-            if (line.includes('WINDOW(')) {return 'WINDOW';}
-
-            // If not found on same line, check following lines within this record
-            for (let j = i + 1; j < lines.length; j++) {
-                const nextLine = lines[j];
-                // Stop if we hit another record declaration
-                if (nextLine.match(/^\s{5}A\s+R\s+\w+/)) {
-                    break;
-                }
-                // Check for keywords in continuation lines (any keyword that determines record type)
-                if (nextLine.includes('SFLCTL')) {return 'SFLCTL';}
-                if (nextLine.includes('SFL') && !nextLine.includes('SFLCTL')) {return 'SFL';}
-                if (nextLine.includes('WINDOW(')) {return 'WINDOW';}
-            }
-
-            return 'SCREEN';
-        }
-    }
-    return 'SCREEN';
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/gridLines.js":
-/*!***************************************!*\
-  !*** ./media/modules/ui/gridLines.js ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setupGridLines: () => (/* binding */ setupGridLines)
-/* harmony export */ });
-function setupGridLines({ Logger, setupRulers }) {
-    const screenGrid = document.getElementById('screen-grid');
-    if (screenGrid) {
-        Logger.success('Grid lines setup complete');
-    }
-    setupRulers();
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/indicatorButtons.js":
-/*!**********************************************!*\
-  !*** ./media/modules/ui/indicatorButtons.js ***!
-  \**********************************************/
+/* 28 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -8781,2078 +7737,7 @@ function setupIndicatorButtons({ Logger, openIndicatorModal }) {
 
 
 /***/ }),
-
-/***/ "./media/modules/ui/moveField.js":
-/*!***************************************!*\
-  !*** ./media/modules/ui/moveField.js ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   moveField: () => (/* binding */ moveField)
-/* harmony export */ });
-function moveField(options) {
-    const {
-        fieldId,
-        newRow,
-        newCol,
-        Logger,
-        fields,
-        getCurrentRecord,
-        setCurrentRecord,
-        getCurrentDisplaySize,
-        getWindowDimensions,
-        renderField,
-        renderWindowField,
-        getSubfileRelationship,
-        getSflpagValue,
-        selectField,
-        updateFieldInDds
-    } = options;
-
-    const field = fields.find(f => f.id === fieldId);
-    if (!field) {
-        Logger.error('Field not found for moving:', fieldId);
-        return;
-    }
-
-    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
-    const oldRow = field.row;
-    const oldCol = field.col;
-
-    Logger.debug(`Moving field ${field.name} from (${oldRow},${oldCol}) to (${newRow},${newCol}) in record: ${currentRecord || 'ALL'}`);
-
-    field.row = newRow;
-    field.col = newCol;
-
-    const oldElement = document.querySelector(`[data-field-id="${fieldId}"]`);
-    if (oldElement) {
-        oldElement.remove();
-    }
-
-    const copyPattern = `${fieldId}_repeat`;
-    const allElements = document.querySelectorAll('[data-field-id]');
-    let removedCopies = 0;
-
-    allElements.forEach(el => {
-        const elFieldId = el.getAttribute('data-field-id');
-        if (elFieldId && elFieldId.includes(copyPattern)) {
-            el.remove();
-            removedCopies++;
-        }
-    });
-
-    if (removedCopies > 0) {
-        Logger.dds(`Removed ${removedCopies} visual copies during move`);
-    }
-
-    const winDimsForMove = currentRecord ? getWindowDimensions(currentRecord) : null;
-    if (winDimsForMove && winDimsForMove.hasWindow) {
-        const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : null;
-        const winDim = currentDisplaySize === 'DS3' ? winDimsForMove.ds3 : winDimsForMove.ds4;
-        if (winDim) {
-            renderWindowField(field, winDim);
-        } else {
-            renderField(field);
-        }
-    } else {
-        renderField(field);
-    }
-
-    const subfileRel = currentRecord ? getSubfileRelationship(currentRecord) : null;
-    if (subfileRel && subfileRel.sflRecord === currentRecord) {
-        const sflpagValue = getSflpagValue(subfileRel.sflctlRecord);
-        if (sflpagValue > 1) {
-            Logger.dds(`Regenerating ${sflpagValue - 1} visual copies for field ${field.name} after move in SFL record`);
-            for (let repeat = 1; repeat < sflpagValue; repeat++) {
-                const visualCopy = {
-                    ...field,
-                    row: field.row + repeat,
-                    isVisualCopy: true,
-                    id: `${fieldId}_repeat${repeat}`
-                };
-
-                if (winDimsForMove && winDimsForMove.hasWindow) {
-                    const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : null;
-                    const winDim = currentDisplaySize === 'DS3' ? winDimsForMove.ds3 : winDimsForMove.ds4;
-                    if (winDim) {
-                        renderWindowField(visualCopy, winDim);
-                    } else {
-                        renderField(visualCopy);
-                    }
-                } else {
-                    renderField(visualCopy);
-                }
-            }
-        }
-    }
-
-    selectField(field);
-
-    const preservedRecord = currentRecord;
-    updateFieldInDds(field, { ...field, row: oldRow, col: oldCol });
-
-    if (preservedRecord && setCurrentRecord) {
-        const currentRecordAfter = getCurrentRecord ? getCurrentRecord() : null;
-        if (currentRecordAfter && preservedRecord !== currentRecordAfter) {
-            Logger.debug('Restoring record context after move:', preservedRecord);
-            setCurrentRecord(preservedRecord);
-        }
-    }
-
-    Logger.success('Field moved and DDS updated, maintaining record filter:', getCurrentRecord ? getCurrentRecord() : currentRecord);
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/navigation.js":
-/*!****************************************!*\
-  !*** ./media/modules/ui/navigation.js ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   updateNavigationButtons: () => (/* binding */ updateNavigationButtons),
-/* harmony export */   updateRecordTitle: () => (/* binding */ updateRecordTitle)
-/* harmony export */ });
-function updateRecordTitle({ Logger, getCurrentRecord }) {
-    const titleElement = document.querySelector('.toolbar-left h2');
-    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
-    if (titleElement && currentRecord) {
-        titleElement.textContent = `DSPF Designer - ${currentRecord}`;
-        Logger.debug(`Updated title to: DSPF Designer - ${currentRecord}`);
-    }
-}
-
-function updateNavigationButtons({ getCurrentRecord, getAllRecords }) {
-    const prevBtn = document.getElementById('prevRecordBtn');
-    const nextBtn = document.getElementById('nextRecordBtn');
-    const allRecords = getAllRecords ? getAllRecords() : null;
-    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
-
-    if (!prevBtn || !nextBtn || !allRecords || allRecords.length === 0) {
-        return;
-    }
-
-    const currentIndex = allRecords.findIndex(r => r.name === currentRecord);
-    prevBtn.disabled = (currentIndex <= 0);
-    nextBtn.disabled = (currentIndex >= allRecords.length - 1);
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/parseDdsTypeSpecification.js":
-/*!*******************************************************!*\
-  !*** ./media/modules/ui/parseDdsTypeSpecification.js ***!
-  \*******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   parseDdsTypeSpecification: () => (/* binding */ parseDdsTypeSpecification)
-/* harmony export */ });
-// Parse DDS type specification (e.g., "10A", "15S", "7P", "3Y", "2F")
-// Returns: { length, typeChar, dataType } or null if invalid
-function parseDdsTypeSpecification({ typeSpec, hasDecimals = false }) {
-    const normalized = (typeSpec || '').trim().toUpperCase();
-    if (normalized === 'L') {
-        return {
-            length: 10,
-            typeChar: 'L',
-            dataType: 'date'
-        };
-    }
-    if (normalized === 'T') {
-        return {
-            length: 8,
-            typeChar: 'T',
-            dataType: 'time'
-        };
-    }
-    if (normalized === 'Z') {
-        return {
-            length: 26,
-            typeChar: 'Z',
-            dataType: 'timestamp'
-        };
-    }
-
-    const typeMatch = normalized.match(/(\d+)([A-Z])?/);
-    if (!typeMatch) {
-        return null;
-    }
-
-    const length = parseInt(typeMatch[1]);
-    const typeChar = typeMatch[2]; // May be undefined
-    let dataType = 'character'; // Default
-
-    // Map DDS type to internal type
-    if (!typeChar) {
-        // No type letter specified
-        if (hasDecimals) {
-            dataType = 'zoned';
-        } else {
-            dataType = 'character';
-        }
-    } else if (typeChar === 'A') {
-        dataType = 'character';
-    } else if (typeChar === 'F') {
-        dataType = 'float';
-    } else if (typeChar === 'P') {
-        dataType = 'packed';
-    } else if (typeChar === 'S' || typeChar === 'Y' || typeChar === 'N' || typeChar === 'D' || typeChar === 'I') {
-        // These are shift codes for Zoned type
-        dataType = 'zoned';
-    } else if (typeChar === 'J' || typeChar === 'E' || typeChar === 'O' || typeChar === 'G') {
-        // These are shift codes for Double Byte type
-        dataType = 'double';
-    }
-
-    return {
-        length: length,
-        typeChar: typeChar,
-        dataType: dataType
-    };
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/parseUsageAndDecimals.js":
-/*!***************************************************!*\
-  !*** ./media/modules/ui/parseUsageAndDecimals.js ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   parseUsageAndDecimals: () => (/* binding */ parseUsageAndDecimals)
-/* harmony export */ });
-// Parse usage and decimals from parts
-// Returns: { decimals, usage, hasDecimals, nextIndex }
-function parseUsageAndDecimals({ parts, startIndex }) {
-    let decimals = 0;
-    let usage = 'O';
-    let hasDecimals = false;
-    let currentIndex = startIndex;
-
-    if (currentIndex >= parts.length) {
-        return { decimals, usage, hasDecimals, nextIndex: currentIndex };
-    }
-
-    const nextPart = parts[currentIndex];
-
-    // Check for decimals (and possibly usage attached to decimals)
-    const decimalMatch = nextPart.match(/^(\d+)([OIBHMP]?)$/);
-    if (decimalMatch) {
-        hasDecimals = true;
-        decimals = parseInt(decimalMatch[1]);
-        // Check if usage is attached to decimals (e.g., "2I", "0O")
-        if (decimalMatch[2]) {
-            usage = decimalMatch[2];
-            currentIndex++; // Move to next part (should be row)
-        } else {
-            // Decimals alone, check next part for usage or row
-            currentIndex++;
-            if (currentIndex < parts.length) {
-                const afterDecimal = parts[currentIndex];
-                // Check if it's a single letter usage
-                if (afterDecimal.length === 1 && /[OIBHMP]/.test(afterDecimal)) {
-                    usage = afterDecimal;
-                    currentIndex++;
-                }
-                // Otherwise it's the row number
-            }
-        }
-    } else if (nextPart.length === 1 && /[OIBHMP]/.test(nextPart)) {
-        // It's just a usage letter (no decimals)
-        usage = nextPart;
-        currentIndex++;
-    }
-    // Otherwise it's the row number (no decimals, no usage)
-
-    return {
-        decimals: decimals,
-        usage: usage,
-        hasDecimals: hasDecimals,
-        nextIndex: currentIndex
-    };
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/parseWindowDimensionsFromLine.js":
-/*!***********************************************************!*\
-  !*** ./media/modules/ui/parseWindowDimensionsFromLine.js ***!
-  \***********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   parseWindowDimensionsFromLine: () => (/* binding */ parseWindowDimensionsFromLine)
-/* harmony export */ });
-function parseWindowDimensionsFromLine(options) {
-    const {
-        trimmedLine,
-        currentRecordName,
-        currentWindowDimensions,
-        currentDisplaySize,
-        DisplaySizeUtils,
-        currentDocument,
-        getWindowDimensions,
-        Logger
-    } = options;
-
-    if (currentWindowDimensions) {
-        return currentWindowDimensions;
-    }
-
-    if (!trimmedLine.includes('WINDOW(')) {
-        return null;
-    }
-
-    const displayMarker = currentDisplaySize === 'DS3' ? '*DS3' : '*DS4';
-
-    const windowRefMatch = trimmedLine.match(/WINDOW\(([A-Z0-9_]+)\)/);
-    if (windowRefMatch && !/\d+\s+\d+/.test(windowRefMatch[0])) {
-        const referencedRecord = windowRefMatch[1];
-        Logger.parse(`Found WINDOW reference to ${referencedRecord} in record ${currentRecordName}`);
-        const refDimensions = getWindowDimensions(referencedRecord);
-        if (refDimensions.hasWindow) {
-            const dimensions = currentDisplaySize === 'DS3' ? refDimensions.ds3 : refDimensions.ds4;
-            if (dimensions) {
-                Logger.parse(`Resolved window dimensions from ${referencedRecord}:`, dimensions);
-                return dimensions;
-            }
-        }
-        return null;
-    }
-
-    const windowMatch = trimmedLine.match(/WINDOW\((\d+)\s+(\d+)\s+(\d+)\s+(\d+)\)/);
-    if (windowMatch) {
-        const displayConfig = DisplaySizeUtils.getAvailableDisplaySizes(currentDocument);
-
-        let appliesTo = false;
-        if (trimmedLine.includes(displayMarker)) {
-            appliesTo = true;
-        } else if (displayConfig.singleSize) {
-            appliesTo = true;
-        }
-
-        if (appliesTo) {
-            const dimensions = {
-                row: parseInt(windowMatch[1], 10),
-                col: parseInt(windowMatch[2], 10),
-                height: parseInt(windowMatch[3], 10),
-                width: parseInt(windowMatch[4], 10)
-            };
-            const marker = trimmedLine.includes(displayMarker) ? displayMarker : '(single size)';
-            Logger.parse(`Found ${marker} window dimensions for ${currentRecordName}:`, dimensions);
-            return dimensions;
-        }
-    }
-
-    return null;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/previewDisplaySizeListeners.js":
-/*!*********************************************************!*\
-  !*** ./media/modules/ui/previewDisplaySizeListeners.js ***!
-  \*********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setupPreviewDisplaySizeListeners: () => (/* binding */ setupPreviewDisplaySizeListeners)
-/* harmony export */ });
-function setupPreviewDisplaySizeListeners({
-    Logger,
-    getCurrentDisplaySize,
-    setCurrentDisplaySize,
-    updateCanvasSize,
-    setupRulers,
-    parseDspfFields,
-    getCurrentDocument,
-    applyDefaultZoomForDisplaySize,
-    updatePreviewView
-}) {
-    const previewRadioButtons = document.querySelectorAll('input[name="preview-display-size"]');
-    previewRadioButtons.forEach(radio => {
-        radio.addEventListener('change', function() {
-            const nextDisplaySize = this.value;
-            setCurrentDisplaySize(nextDisplaySize);
-            Logger.debug(`Preview display size changed to: ${nextDisplaySize}`);
-
-            if (applyDefaultZoomForDisplaySize) {
-                applyDefaultZoomForDisplaySize(nextDisplaySize);
-            }
-
-            const designerRadios = document.querySelectorAll('input[name="displaySize"]');
-            designerRadios.forEach(dr => {
-                dr.checked = dr.value === nextDisplaySize;
-            });
-
-            updateCanvasSize(nextDisplaySize);
-            setupRulers();
-
-            parseDspfFields(getCurrentDocument());
-            updatePreviewView();
-        });
-    });
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/previewView.js":
-/*!*****************************************!*\
-  !*** ./media/modules/ui/previewView.js ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   updatePreviewView: () => (/* binding */ updatePreviewView)
-/* harmony export */ });
-function updatePreviewView(options) {
-    const {
-        Logger,
-        ScreenCoordinates,
-        parseDspfForPreview,
-        generateWindowFieldHtml,
-        generateFieldHtml,
-        setupPreviewDisplaySizeListeners,
-        updateCanvasSize,
-        setupRulers,
-        parseDspfFields,
-        getCurrentDocument,
-        getCurrentRecord,
-        getCurrentDisplaySize,
-        setCurrentDisplaySize,
-        applyDefaultZoomForDisplaySize,
-        updatePreviewView: updatePreviewViewHandler
-    } = options;
-
-    const previewContainer = document.getElementById('preview-container');
-    if (!previewContainer) {return;}
-
-    const currentDocument = getCurrentDocument();
-    const currentRecord = getCurrentRecord();
-    const currentDisplaySize = getCurrentDisplaySize();
-
-    const parsedScreen = parseDspfForPreview(currentDocument, currentRecord);
-
-    const rows = currentDisplaySize === 'DS3' ? 24 : 27;
-    const cols = currentDisplaySize === 'DS3' ? 80 : 132;
-
-    let html = `
-        <div class="header">
-            <h2>DSPF Preview - ${currentRecord || parsedScreen.recordName || 'DISPLAY'} (${currentDisplaySize})</h2>
-            <!-- Display Size Selection for Preview -->
-            <div style="display: flex; align-items: center; gap: 15px; border: 1px solid #555; padding: 5px 10px; border-radius: 3px; margin: 10px auto; width: fit-content; background-color: #1e1e1e;">
-                <label style="margin: 0; color: #cccccc; cursor: pointer;">
-                    <input type="radio" name="preview-display-size" value="DS3" ${currentDisplaySize === 'DS3' ? 'checked' : ''}>
-                    <span style="margin-left: 5px;">24 x 80 (*DS3)</span>
-                </label>
-                <label style="margin: 0; color: #cccccc; cursor: pointer;">
-                    <input type="radio" name="preview-display-size" value="DS4" ${currentDisplaySize === 'DS4' ? 'checked' : ''}>
-                    <span style="margin-left: 5px;">27 x 132 (*DS4)</span>
-                </label>
-            </div>
-        </div>
-        <div class="screen" style="width: ${ScreenCoordinates.getWidthInPixels(cols)}px; height: ${ScreenCoordinates.getHeightInPixels(rows)}px;">
-    `;
-
-    for (let line = 1; line <= rows; line++) {
-        const lineContent = ''.padEnd(cols, ' ');
-        const lineTop = ScreenCoordinates.toPixels(line, 1).top;
-        html += `<div class="screen-line" style="top: ${lineTop}px; width: ${ScreenCoordinates.getWidthInPixels(cols)}px;">${lineContent}</div>\n`;
-    }
-
-    if (parsedScreen.windowDimensions) {
-        const win = parsedScreen.windowDimensions;
-        const winPos = ScreenCoordinates.toPixels(win.row, win.col);
-        const winTop = winPos.top;
-        const winLeft = winPos.left;
-        const winHeight = ScreenCoordinates.getHeightInPixels(win.height);
-        const winWidth = ScreenCoordinates.getWidthInPixels(win.width + 4);
-
-        html += `<div class="window-frame" style="
-            position: absolute;
-            top: ${winTop}px;
-            left: ${winLeft}px;
-            width: ${winWidth}px;
-            height: ${winHeight}px;
-            border: 2px dotted #00FF00;
-            pointer-events: none;
-            z-index: 5;
-        "></div>`;
-
-        Logger.window(`Adding window frame at ${win.row},${win.col} size ${win.height}x${win.width}`);
-    }
-
-    parsedScreen.fields.forEach(field => {
-        if (parsedScreen.windowDimensions) {
-            html += generateWindowFieldHtml(field, parsedScreen.windowDimensions);
-        } else {
-            html += generateFieldHtml(field);
-        }
-    });
-
-    html += `</div>`;
-
-    previewContainer.innerHTML = html;
-
-    setupPreviewDisplaySizeListeners({
-        Logger,
-        getCurrentDisplaySize,
-        setCurrentDisplaySize,
-        updateCanvasSize,
-        setupRulers,
-        parseDspfFields,
-        getCurrentDocument,
-        applyDefaultZoomForDisplaySize,
-        updatePreviewView: updatePreviewViewHandler
-    });
-
-    previewContainer.querySelectorAll('.input-field').forEach(field => {
-        field.addEventListener('click', function() {
-            this.contentEditable = true;
-            this.focus();
-        });
-
-        field.addEventListener('blur', function() {
-            this.contentEditable = false;
-        });
-    });
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/processMultiLineContinuation.js":
-/*!**********************************************************!*\
-  !*** ./media/modules/ui/processMultiLineContinuation.js ***!
-  \**********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   processMultiLineContinuation: () => (/* binding */ processMultiLineContinuation)
-/* harmony export */ });
-/**
- * Process multi-line DDS constant continuation lines.
- * Handles continuation indicators (trailing dashes) and properly concatenates lines.
- * 
- * @param {Object} options - Configuration object
- * @param {string} options.initialLine - The first line containing opening quote and dash
- * @param {Function} options.getNextLine - Function(index) that returns next line or null
- * @param {number} options.startIndex - Starting index for continuation lines
- * @param {string} options.context - Context for logging ('PREVIEW' or 'DESIGNER')
- * @param {Object} options.Logger - Logger instance
- * @returns {Object} Result object: { fullLine: string, linesConsumed: number }
- */
-function processMultiLineContinuation({ initialLine, getNextLine, startIndex, context, Logger }) {
-    let fullLine = initialLine;
-    let linesConsumed = 0;
-    let currentIndex = startIndex;
-    const isStringContinuation = initialLine.includes("'");
-
-    // Process continuation lines
-    while (true) {
-        const nextLine = getNextLine(currentIndex);
-        if (!nextLine) {break;}
-
-        // Check if next line is a continuation
-        // A continuation line starts with 'A' at position 5, has spaces/empty where row/col would be,
-        // and the trimmed content starts with content (not another row/col position)
-        const fullAfterA = nextLine.length > 6 ? nextLine.substring(6) : '';
-        const afterA = fullAfterA.trim();
-        const contentAfter18 = nextLine.length > 18 ? nextLine.substring(18).trim() : '';
-        const indicatorAreaContent = nextLine.length > 6 ? nextLine.substring(6, 18).trim() : '';
-        const isIndicatorOnlyLine = indicatorAreaContent.length > 0 &&
-                                    /^O?\s*[N\d\s]+$/.test(indicatorAreaContent) &&
-                                    contentAfter18 === '';
-        const isContinuation = nextLine.length > 6 &&
-                             nextLine[5] === 'A' &&
-                             !isIndicatorOnlyLine &&
-                             !/^\d+\s+\d+/.test(afterA) &&
-                             (afterA.length > 0 || (isStringContinuation && fullAfterA.length > 0)); // Allow blank continuation lines in string constants
-
-        if (!isContinuation) {break;}
-
-        Logger.parse(`Continuation found at index ${currentIndex}: ${nextLine}`);
-
-        // For continuation lines, skip position 0-5 (DDS format)
-        // In DDS, string constant continuations start at a fixed column (typically 45)
-        // We must preserve ALL characters including leading spaces in the constant
-        // For string constants, content typically starts at column 45 (index 38 after substring(6))
-        // But we need to handle cases where it might be at different positions
-        // The key is: if this is a continuation of a string constant, preserve ALL spaces
-
-        // Check if this looks like a string constant continuation
-        // (has a quote somewhere in the line)
-        const hasQuote = fullAfterA.includes("'");
-
-        let continuationContent;
-        let contentStart;
-
-        if (isStringContinuation || hasQuote) {
-            // This is a string constant continuation
-            // Take content from column 45 (index 38 after substring(6)) to preserve spacing
-            // This is the standard DDS position for constant continuation
-            const ddsConstantColumn = 38; // Column 45 in original line
-
-            // If the line is long enough, take from the standard column
-            // Otherwise take from the beginning (in case of non-standard formatting)
-            if (fullAfterA.length > ddsConstantColumn) {
-                continuationContent = fullAfterA.substring(ddsConstantColumn);
-                contentStart = ddsConstantColumn;
-            } else {
-                // Line is shorter, take everything
-                continuationContent = fullAfterA;
-                contentStart = 0;
-            }
-        } else {
-            // Not a string constant, skip leading spaces as before
-            contentStart = fullAfterA.search(/\S/);
-            continuationContent = contentStart >= 0 ? fullAfterA.substring(contentStart) : '';
-        }
-
-        // Determine if continuation line has leading spaces (indentation)
-        // substring(6) removes columns 1-6, so remaining index maps to: contentStart + 7 = real column
-        // Column 45 → contentStart 38, Column 46 → contentStart 39
-        // If contentStart > 38, content is beyond column 45, so needs space
-        const hasLeadingSpaces = contentStart > 38;
-        Logger.parse(`[${context}] contentStart: ${contentStart}, column: ${contentStart + 7}, hasLeadingSpaces: ${hasLeadingSpaces}`);
-
-        // Check if this is the last line (has closing quote)
-        const isLastLine = continuationContent.includes("'");
-
-        // If it's the last line, also remove the trailing continuation char ('-' or '+') from continuationContent
-        // before the closing quote (it's also a continuation indicator). Allow spaces after '-'/'+'.
-        if (isLastLine && continuationContent.length > 1) {
-            const beforeQuote = continuationContent.substring(0, continuationContent.length - 1);
-            const lastContMatch = beforeQuote.match(/[-+]\s*$/);
-            if (lastContMatch) {
-                const trimmedBefore = beforeQuote.substring(0, beforeQuote.length - lastContMatch[0].length);
-                continuationContent = trimmedBefore + "'";
-                Logger.parse(`[${context}] Removed trailing continuation sequence from last continuation line: "${continuationContent}"`);
-            }
-        }
-
-        // Before concatenating, check if fullLine's constant value ends with a continuation char ('-' or '+')
-        // Extract the content between quotes from fullLine to check
-        const constantMatch = fullLine.match(/'([^']*)$/);
-        if (constantMatch) {
-            const currentConstantValue = constantMatch[1];
-            const contMatch = currentConstantValue.match(/[-+]\s*$/);
-            const hasContinuation = !!contMatch;
-            Logger.parse(`[${context}] Before concat: constant value ends with: "${currentConstantValue.slice(-10)}", hasContinuation: ${hasContinuation}, isLastLine: ${isLastLine}`);
-
-            // Always remove trailing continuation sequence (including trailing spaces) from current line
-            if (hasContinuation) {
-                const removeLen = contMatch[0].length;
-                if (hasLeadingSpaces) {
-                    Logger.parse(`[${context}] Removing trailing continuation sequence and replacing with space (has indentation)`);
-                    fullLine = fullLine.substring(0, fullLine.length - removeLen) + ' ';
-                } else {
-                    Logger.parse(`[${context}] Removing trailing continuation sequence without space (no indentation)`);
-                    fullLine = fullLine.substring(0, fullLine.length - removeLen);
-                }
-            }
-        }
-
-        fullLine = fullLine + continuationContent;
-        Logger.parse(`[${context}] After concat: fullLine length: ${fullLine.length}, last 10 chars: "${fullLine.slice(-10)}"`);
-
-        currentIndex++;
-        linesConsumed++;
-
-        // If this continuation line has the closing quote, we're done
-        if (isLastLine) {
-            break;
-        }
-    }
-
-    Logger.parse(`Completed multi-line constant, full line length: ${fullLine.length}`);
-    Logger.parse(`Complete constant last 40 chars: "${fullLine.slice(-40)}"`);
-
-    return {
-        fullLine: fullLine,
-        linesConsumed: linesConsumed
-    };
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/propertiesTabs.js":
-/*!********************************************!*\
-  !*** ./media/modules/ui/propertiesTabs.js ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setupPropertiesTabs: () => (/* binding */ setupPropertiesTabs)
-/* harmony export */ });
-function setupPropertiesTabs() {
-    const tabs = document.querySelectorAll('.properties-tab');
-    const panels = document.querySelectorAll('.tab-panel');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            const tabName = this.getAttribute('data-tab');
-
-            // Remove active class from all tabs and panels
-            tabs.forEach(t => t.classList.remove('active'));
-            panels.forEach(p => p.classList.remove('active'));
-
-            // Add active class to clicked tab and corresponding panel
-            this.classList.add('active');
-            const panel = document.getElementById(`tab-${tabName}`);
-            if (panel) {
-                panel.classList.add('active');
-            }
-        });
-    });
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/recordNavigation.js":
-/*!**********************************************!*\
-  !*** ./media/modules/ui/recordNavigation.js ***!
-  \**********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   navigateToNextRecord: () => (/* binding */ navigateToNextRecord),
-/* harmony export */   navigateToPreviousRecord: () => (/* binding */ navigateToPreviousRecord)
-/* harmony export */ });
-function navigateToPreviousRecord({
-    Logger,
-    vscode,
-    getAllRecords,
-    getCurrentRecord,
-    getCurrentView
-}) {
-    const allRecords = getAllRecords ? getAllRecords() : [];
-    if (!allRecords || allRecords.length === 0) {
-        Logger.warn('No records available for navigation');
-        return;
-    }
-
-    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
-    const currentIndex = allRecords.findIndex(r => r.name === currentRecord);
-    if (currentIndex > 0) {
-        const prevRecord = allRecords[currentIndex - 1];
-        Logger.ui('Navigating to previous record:', prevRecord.name, 'preserving view:', getCurrentView ? getCurrentView() : undefined);
-        vscode.postMessage({
-            type: 'navigateToRecord',
-            recordName: prevRecord.name,
-            preserveView: getCurrentView ? getCurrentView() : undefined
-        });
-    } else {
-        Logger.info('Already at first record');
-    }
-}
-
-function navigateToNextRecord({
-    Logger,
-    vscode,
-    getAllRecords,
-    getCurrentRecord,
-    getCurrentView
-}) {
-    const allRecords = getAllRecords ? getAllRecords() : [];
-    if (!allRecords || allRecords.length === 0) {
-        Logger.warn('No records available for navigation');
-        return;
-    }
-
-    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
-    const currentIndex = allRecords.findIndex(r => r.name === currentRecord);
-    if (currentIndex < allRecords.length - 1) {
-        const nextRecord = allRecords[currentIndex + 1];
-        Logger.ui('Navigating to next record:', nextRecord.name, 'preserving view:', getCurrentView ? getCurrentView() : undefined);
-        vscode.postMessage({
-            type: 'navigateToRecord',
-            recordName: nextRecord.name,
-            preserveView: getCurrentView ? getCurrentView() : undefined
-        });
-    } else {
-        Logger.info('Already at last record');
-    }
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/renderAttributeRows.js":
-/*!*************************************************!*\
-  !*** ./media/modules/ui/renderAttributeRows.js ***!
-  \*************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   renderAttributeRows: () => (/* binding */ renderAttributeRows)
-/* harmony export */ });
-// Arma el HTML de las filas de atributos en el panel de propiedades.
-function renderAttributeRows(options) {
-    const { allowedKeys = null, fieldType = 'variable', attributeUiDefs } = options;
-    const allowSet = allowedKeys ? new Set(allowedKeys) : null;
-
-    // Determine label based on field type
-    let indicatorLabel = 'Variable Indicators';
-
-    // First row: field-level indicators (WITHOUT checkbox, only label and button)
-    const fieldIndicatorRow = `
-        <div class="property-group" style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color, #3c3c3c); padding-bottom: 8px; margin-bottom: 8px;">
-            <label style="flex: 1;">
-                ${indicatorLabel}
-            </label>
-            <button class="indicator-config-btn" data-field-indicators="true" title="Configure field indicators"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
-        </div>
-    `;
-
-    // Rest of attribute rows
-    const attributeRows = attributeUiDefs
-        .filter(def => !allowSet || allowSet.has(def.key))
-        .map(def => `
-            <div class="property-group ${def.extraClass}" style="display: flex; align-items: center; gap: 8px;">
-                <label style="flex: 1;">
-                    <input type="checkbox" id="${def.checkboxId}" />
-                    ${def.label}
-                </label>
-                <button class="indicator-config-btn" data-attr="${def.dataAttr}" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
-            </div>
-        `)
-        .join('');
-
-    return fieldIndicatorRow + attributeRows;
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/renderField.js":
-/*!*****************************************!*\
-  !*** ./media/modules/ui/renderField.js ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   renderField: () => (/* binding */ renderField)
-/* harmony export */ });
-function renderField(options) {
-    const {
-        field,
-        Logger,
-        ScreenCoordinates,
-        getCurrentDisplaySize,
-        setupFieldElement,
-        getFieldDisplayText
-    } = options;
-
-    const canvas = document.getElementById('fields-container');
-    if (!canvas) {
-        Logger.error('Fields container not found');
-        return;
-    }
-
-    // Calculate line wrapping for character fields that exceed screen width
-    const segments = ScreenCoordinates.calculateFieldWrapping(field, getCurrentDisplaySize());
-
-    if (segments.length === 1) {
-        // Single line field - render normally
-        const fieldElement = document.createElement('div');
-        setupFieldElement(fieldElement, field);
-
-        // Position fields to match ruler marks exactly
-        const { left, top } = ScreenCoordinates.toPixels(field.row, field.col);
-        fieldElement.style.left = `${left}px`;
-        fieldElement.style.top = `${top}px`;
-
-        canvas.appendChild(fieldElement);
-        Logger.success(`Rendered field: ${field.name} at (${field.row}, ${field.col}) -> (${top}px, ${left}px)`);
-    } else {
-        // Multi-line field - render each segment
-        segments.forEach((segment, index) => {
-            const fieldElement = document.createElement('div');
-            setupFieldElement(fieldElement, field);
-
-            // Mark as segment and store segment info
-            fieldElement.dataset.fieldSegment = index;
-            fieldElement.dataset.segmentLength = segment.length;
-
-            const { left, top } = ScreenCoordinates.toPixels(segment.row, segment.col);
-            fieldElement.style.left = `${left}px`;
-            fieldElement.style.top = `${top}px`;
-
-            // Override width for this segment
-            fieldElement.style.width = `${segment.length * 8}px`;
-
-            // Update content to show only this segment
-            const fieldLength = field.length || 10;
-            const fullDisplayValue = getFieldDisplayText(field, fieldLength);
-            const startOffset = segments.slice(0, index).reduce((sum, seg) => sum + seg.length, 0);
-            const segmentValue = fullDisplayValue.substring(startOffset, startOffset + segment.length);
-            fieldElement.textContent = segmentValue;
-
-            canvas.appendChild(fieldElement);
-            Logger.success(`Rendered field segment ${index + 1}/${segments.length}: ${field.name} at (${segment.row}, ${segment.col})`);
-        });
-    }
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/renderWindowField.js":
-/*!***********************************************!*\
-  !*** ./media/modules/ui/renderWindowField.js ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   renderWindowField: () => (/* binding */ renderWindowField)
-/* harmony export */ });
-function renderWindowField(options) {
-    const {
-        field,
-        windowDimensions,
-        Logger,
-        ScreenCoordinates,
-        getCurrentDisplaySize,
-        setupFieldElement,
-        getFieldDisplayText
-    } = options;
-
-    const canvas = document.getElementById('fields-container');
-    if (!canvas) {
-        Logger.error('Fields container not found');
-        return;
-    }
-
-    Logger.window(`RENDER START: ${field.name} has field.length=${field.length}`);
-
-    // Calculate line wrapping for character fields that exceed screen width
-    const segments = ScreenCoordinates.calculateFieldWrapping(field, getCurrentDisplaySize());
-
-    if (segments.length === 1) {
-        // Single line field - render normally
-        const fieldElement = document.createElement('div');
-        setupFieldElement(fieldElement, field);
-
-        // Calculate absolute screen position from WINDOW + field coordinates
-        const absoluteRow = windowDimensions.row + field.row - 1;
-        const absoluteCol = windowDimensions.col + field.col + 1;
-        const { top: relativeTop, left: relativeLeft } = ScreenCoordinates.toPixels(absoluteRow, absoluteCol);
-
-        // Ensure fields don't go outside reasonable bounds
-        const maxTop = relativeTop + 500;
-        const maxLeft = relativeLeft + 800;
-
-        fieldElement.style.left = `${Math.min(relativeLeft, maxLeft)}px`;
-        fieldElement.style.top = `${Math.min(relativeTop, maxTop)}px`;
-
-        canvas.appendChild(fieldElement);
-        Logger.window(`Rendered window field: ${field.name} at window-relative (${field.row},${field.col}) -> absolute (${relativeTop},${relativeLeft});`);
-    } else {
-        // Multi-line field - render each segment with window offset
-        segments.forEach((segment, index) => {
-            const fieldElement = document.createElement('div');
-            setupFieldElement(fieldElement, field);
-
-            // Mark as segment
-            fieldElement.dataset.fieldSegment = index;
-            fieldElement.dataset.segmentLength = segment.length;
-
-            const absoluteRow = windowDimensions.row + segment.row - 1;
-            const absoluteCol = windowDimensions.col + segment.col + 1;
-            const { top: relativeTop, left: relativeLeft } = ScreenCoordinates.toPixels(absoluteRow, absoluteCol);
-
-            fieldElement.style.left = `${relativeLeft}px`;
-            fieldElement.style.top = `${relativeTop}px`;
-            fieldElement.style.width = `${segment.length * 8}px`;
-
-            // Update content to show only this segment
-            const fieldLength = field.length || 10;
-            const fullDisplayValue = getFieldDisplayText(field, fieldLength);
-            const startOffset = segments.slice(0, index).reduce((sum, seg) => sum + seg.length, 0);
-            const segmentValue = fullDisplayValue.substring(startOffset, startOffset + segment.length);
-            fieldElement.textContent = segmentValue;
-
-            canvas.appendChild(fieldElement);
-            Logger.window(`Rendered window field segment ${index + 1}/${segments.length}: ${field.name} at (${segment.row}, ${segment.col})`);
-        });
-    }
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/rulers.js":
-/*!************************************!*\
-  !*** ./media/modules/ui/rulers.js ***!
-  \************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setupRulers: () => (/* binding */ setupRulers)
-/* harmony export */ });
-function setupRulers(currentDisplaySize, screenCoordinates, logger) {
-    const horizontalRuler = document.getElementById('horizontal-ruler');
-    const verticalRuler = document.getElementById('vertical-ruler');
-
-    if (!horizontalRuler || !verticalRuler) {
-        if (logger && typeof logger.warn === 'function') {
-            logger.warn('Rulers not found, retrying in 100ms...');
-        }
-        setTimeout(() => setupRulers(currentDisplaySize, screenCoordinates, logger), 100);
-        return;
-    }
-
-    if (logger && typeof logger.ui === 'function') {
-        logger.ui(`Setting up rulers for ${currentDisplaySize}...`);
-    }
-
-    horizontalRuler.innerHTML = '';
-    verticalRuler.innerHTML = '';
-
-    const maxCols = currentDisplaySize === 'DS3' ? 80 : 132;
-    const maxRows = currentDisplaySize === 'DS3' ? 24 : 27;
-
-    for (let col = 1; col <= maxCols; col++) {
-        const leftPos = screenCoordinates.toPixels(1, col).left;
-
-        const tick = document.createElement('div');
-        tick.className = 'ruler-tick';
-        tick.style.left = leftPos + 'px';
-        horizontalRuler.appendChild(tick);
-
-        if (col % 5 === 0 || col === 1) {
-            const marker = document.createElement('div');
-            marker.className = 'ruler-marker';
-            marker.textContent = col.toString();
-            marker.style.left = leftPos + 'px';
-            horizontalRuler.appendChild(marker);
-        }
-    }
-
-    for (let row = 1; row <= maxRows; row++) {
-        const { top: topPos } = screenCoordinates.toPixels(row, 1);
-
-        const tick = document.createElement('div');
-        tick.className = 'ruler-tick';
-        tick.style.top = topPos + 'px';
-        verticalRuler.appendChild(tick);
-
-        if (row % 5 === 0 || row === 1) {
-            const marker = document.createElement('div');
-            marker.className = 'ruler-marker';
-            marker.textContent = row.toString();
-            marker.style.top = topPos + 'px';
-            verticalRuler.appendChild(marker);
-        }
-    }
-
-    if (logger && typeof logger.success === 'function') {
-        logger.success(`Rulers setup complete for ${currentDisplaySize}!`);
-    }
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/saveDocument.js":
-/*!******************************************!*\
-  !*** ./media/modules/ui/saveDocument.js ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   saveDocument: () => (/* binding */ saveDocument)
-/* harmony export */ });
-function saveDocument(options) {
-    const {
-        Logger,
-        vscode,
-        getCurrentDocument,
-        getCurrentRecord,
-        showNotification
-    } = options;
-
-    const currentDocument = getCurrentDocument ? getCurrentDocument() : '';
-    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
-
-    Logger.debug('Save function called, currentDocument:', currentDocument ? currentDocument.substring(0, 100) : 'null');
-
-    vscode.postMessage({
-        type: 'update',
-        content: currentDocument,
-        currentRecord: currentRecord
-    });
-
-    showNotification('✅ Document saved successfully', 'success');
-    Logger.success('Document saved, preserving record context:', currentRecord);
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/scanAttributeLinesAfterField.js":
-/*!**********************************************************!*\
-  !*** ./media/modules/ui/scanAttributeLinesAfterField.js ***!
-  \**********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   scanAttributeLinesAfterField: () => (/* binding */ scanAttributeLinesAfterField)
-/* harmony export */ });
-// Shared attribute/color scanner to unify Designer and Preview parsing
-function scanAttributeLinesAfterField({
-    options,
-    Logger,
-    IndicatorUtils,
-    scanIndicatorsBackward,
-    extractAttributes,
-    attributeContentRegex
-}) {
-    const {
-        lines,
-        startIndex,
-        field,
-        contextLabel = 'PARSER',
-        includeChecks = false,
-        preserveOriginalSpacing = false,
-        stopOnFieldKeywordsRegex = null,
-        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(/,
-    } = options;
-
-    let lineOffset = 1;
-
-    while (startIndex + lineOffset < lines.length) {
-        const nextLine = lines[startIndex + lineOffset];
-        const nextTrimmed = nextLine.trim();
-
-        // IMPROVED: Better comment detection - check for A* at position 6-7 (DDS format)
-        // or at the start of trimmed line (could have leading spaces)
-        const isComment = (nextLine.length > 6 && nextLine[5] === 'A' && nextLine[6] === '*') ||
-                         nextTrimmed.startsWith('A*') ||
-                         nextTrimmed.startsWith('*') ||
-                         nextTrimmed.startsWith('-');
-
-        if (isComment) {
-            Logger.debug(`[${contextLabel}] Skipping comment line at offset ${lineOffset}: "${nextTrimmed}"`);
-            lineOffset++;
-            continue;
-        }
-
-        // Check if this is an indicator-only line (belongs to next field)
-        // Format: "A  11 42 54" or "AO 50" with NO field name after column 18
-        const contentAfterColumn18 = nextLine.length > 18 ? nextLine.substring(18).trim() : '';
-        const hasFieldNameAfter18 = /^[A-Z][A-Z0-9_]{0,9}\s+\d+/i.test(contentAfterColumn18);
-        const indicatorAreaContent = nextLine.length > 6 ? nextLine.substring(6, 18).trim() : '';
-        const hasIndicatorPattern = /^O?\s*[N\d\s]+$/.test(indicatorAreaContent);
-        const isIndicatorOnlyLine = nextLine.length > 6 &&
-                                    nextLine[5] === 'A' &&
-                                   !hasFieldNameAfter18 &&
-                                    hasIndicatorPattern &&
-                                    indicatorAreaContent.length > 0 &&
-                                    contentAfterColumn18 === '';
-
-        const hasFieldName = /\b[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(nextTrimmed);
-        const hasConstant = nextTrimmed.match(/\d+\s+\d+'/);
-        const isRecordDef = nextTrimmed.match(/^A\s+R\s+\w+/);
-        const isBlank = nextTrimmed === '' || nextTrimmed === 'A';
-        // Check for keywords (DATE, TIME, SYSNAME, USER) - must stop before processing another field's keyword
-        const hasKeyword = /\d{1,2}\s+\d{1,2}(DATE|TIME|SYSNAME|USER)/.test(nextTrimmed);
-        // Check if this is a const continuation line (value with quotes but no row/col)
-        // BUT: exclude lines with known keywords (COLOR, DSPATR, DFTVAL, etc.)
-        const isConstContinuation = nextTrimmed.startsWith('A') &&
-                                   nextTrimmed.includes("'") &&
-                                   !nextTrimmed.match(/\d+\s+\d+'/) &&
-                                   !attributeRegex.test(nextTrimmed);
-        const hasFieldKeyword = stopOnFieldKeywordsRegex ? stopOnFieldKeywordsRegex.test(nextTrimmed) : false;
-
-        // Stop scanning if we hit a field, constant, record, blank line, or field keyword
-        if (hasFieldName || hasConstant || isRecordDef || isBlank || hasKeyword || hasFieldKeyword) {
-            Logger.debug(`[${contextLabel}] Stopping scan - found ${hasFieldName ? 'field' : hasConstant ? 'constant' : isRecordDef ? 'record' : hasKeyword ? 'keyword' : hasFieldKeyword ? 'field keyword' : 'blank'}`);
-            break;
-        }
-
-        // If this is an indicator-only line, skip it and continue (indicators will be picked up by backward scan)
-        if (isIndicatorOnlyLine) {
-            Logger.debug(`[${contextLabel}] Skipping indicator-only line at offset ${lineOffset}, continuing...`);
-            lineOffset++;
-            continue;
-        }
-
-        if (isConstContinuation) {
-            lineOffset++;
-            continue;
-        }
-
-        const hasAttribute = attributeRegex.test(nextTrimmed);
-
-        // DEBUG: Log attribute detection
-        Logger.debug(`[${contextLabel}] Line ${startIndex + lineOffset + 1}: hasAttribute=${hasAttribute}, nextTrimmed="${nextTrimmed}"`);
-
-        // Check if this line has only indicators (no keyword yet)
-        // Format: "A  01 02 03" or "AO 50" or "A N10 12"
-        // If columns 19-80 (indices 18-79) are empty, it's only indicators
-        const contentAfter18 = nextLine.substring(18).trim();
-        Logger.debug(`[${contextLabel}] Line ${startIndex + lineOffset + 1}: contentAfter18="${contentAfter18}"`);
-        const hasOnlyIndicators = !hasAttribute &&
-                                 nextTrimmed.match(/^A[O\s]\s*[N\d\s]+$/) &&
-                                 contentAfter18 === '' &&
-                                 !hasFieldName;
-        Logger.debug(`[${contextLabel}] Line ${startIndex + lineOffset + 1}: hasOnlyIndicators=${hasOnlyIndicators}`);
-
-        if (!hasAttribute && !hasOnlyIndicators) {
-            // IMPROVED: Check if this looks like an unknown keyword starting at column 44 (index 43)
-            // Unknown keywords can have or not have parentheses: OVERLAY, KEEP, FLTPCN(...), etc.
-            // If content starts at column 44+ and doesn't match known attributes, ignore it
-            const contentAfter43 = nextLine.length > 43 ? nextLine.substring(43).trim() : '';
-            const looksLikeUnknownKeyword = nextTrimmed.startsWith('A') && contentAfter43.length > 0 && !hasFieldName;
-
-            if (looksLikeUnknownKeyword) {
-                Logger.debug(`[${contextLabel}] Skipping unknown keyword at column 44+: "${contentAfter43}"`);
-                lineOffset++;
-                continue;
-            }
-            Logger.debug(`[${contextLabel}] Stopping - unknown line type at offset ${lineOffset}`);
-            break;
-        }
-
-        // If line has only indicators, skip it and continue to find the keyword line
-        if (hasOnlyIndicators) {
-            Logger.debug(`[${contextLabel}] Found indicator-only line at offset ${lineOffset}, continuing...`);
-            lineOffset++;
-            continue;
-        }
-
-        // ============================================================================
-        // UNIFIED INDICATOR PROCESSING FOR ALL KEYWORDS
-        // Process COLOR, DSPATR, EDTCDE, CHECK, DFTVAL, etc. with same logic
-        // ============================================================================
-
-        // Check if this is an OR line (position 6 = 'O')
-        const isOrLine = nextLine.length > 6 && nextLine[6] === 'O';
-
-        // Extract indicators from current line
-        const currentLineIndicators = IndicatorUtils.extractFromDdsLine(nextLine, `${contextLabel}-CURRENT`);
-
-        // Scan backwards to find all indicator-only lines
-        const backwardScan = scanIndicatorsBackward(lines, startIndex, lineOffset, `${contextLabel}-BACKWARD`);
-        const scannedLines = backwardScan.scannedLines;
-        let hasOrLines = backwardScan.hasOrLines;
-
-        // Add current line indicators if any
-        // The current line with keyword (COLOR/DSPATR) can also have indicators
-        if (currentLineIndicators && currentLineIndicators.length > 0) {
-            if (isOrLine) {
-                // This line starts a NEW OR group
-                scannedLines.push({ indicators: currentLineIndicators, isOr: true });
-                hasOrLines = true;
-            } else {
-                // This line is not OR, so add to last group (continuation)
-                if (scannedLines.length > 0) {
-                    // Add to the last group
-                    scannedLines[scannedLines.length - 1].indicators.push(...currentLineIndicators);
-                } else {
-                    // First group (no previous groups from backward scan)
-                    scannedLines.push({ indicators: currentLineIndicators, isOr: false });
-                }
-            }
-        }
-
-        // Build indicator groups structure
-        const buildIndicatorGroups = () => {
-            if (scannedLines.length === 0) {return null;}
-
-            if (hasOrLines) {
-                // OR format: scannedLines already contains properly grouped data
-                // Each element with isOr:true starts a new group
-                // Lines with isOr:false after isOr:true are continuations (AND within OR)
-                const groups = [];
-
-                scannedLines.forEach(line => {
-                    if (line.isOr) {
-                        // Start new OR group
-                        groups.push({ indicators: [...line.indicators] });
-                    } else {
-                        // Continuation of previous group (AND within OR)
-                        if (groups.length > 0) {
-                            groups[groups.length - 1].indicators.push(...line.indicators);
-                        } else {
-                            // First group is not OR (should not happen, but handle it)
-                            groups.push({ indicators: [...line.indicators] });
-                        }
-                    }
-                });
-
-                return {
-                    groups: groups,
-                    isOr: true
-                };
-            }
-
-            // AND format: combine all indicators into single group
-            const allIndicators = [];
-            scannedLines.forEach(line => {
-                allIndicators.push(...line.indicators);
-            });
-            return {
-                groups: [{ indicators: allIndicators }],
-                isOr: false
-            };
-        };
-
-        // Extract COLOR with indicators (with OR support)
-        const colorMatch = nextLine.match(/COLOR\((\w+)\)/);
-        if (colorMatch) {
-            const color = colorMatch[1];
-
-            if (!field.color) {
-                field.color = color;
-                Logger.parse(`Found color ${field.color} for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
-            }
-
-            if (!field.colors) {
-                field.colors = [];
-            }
-            if (!field.colors.includes(color)) {
-                field.colors.push(color);
-            }
-
-            if (preserveOriginalSpacing) {
-                field.originalColorLines = field.originalColorLines || {};
-                // Store all lines for this color (for regeneration)
-                if (!field.originalColorLines[color]) {
-                    field.originalColorLines[color] = [];
-                }
-                field.originalColorLines[color].push(nextLine);
-            }
-
-            // Store indicators using unified structure
-            const indicatorData = buildIndicatorGroups();
-            if (indicatorData) {
-                if (!field.colorIndicators) {
-                    field.colorIndicators = {};
-                }
-
-                // If color already exists AND we're not in a modification state, accumulate groups
-                // Otherwise replace (to avoid duplicating lines after user modifications)
-                const shouldAccumulate = field.colorIndicators[color] && !field.colorIndicatorsModified;
-
-                if (shouldAccumulate) {
-                    field.colorIndicators[color].groups.push(...indicatorData.groups);
-                    // Update isOr flag if any group is OR
-                    field.colorIndicators[color].isOr = field.colorIndicators[color].isOr || indicatorData.isOr;
-                    Logger.debug(`[${contextLabel}] COLOR ${color}: Accumulated ${indicatorData.groups.length} more group(s), total=${field.colorIndicators[color].groups.length}`);
-                } else {
-                    field.colorIndicators[color] = indicatorData;
-                    Logger.debug(`[${contextLabel}] COLOR ${color}: Stored ${indicatorData.groups.length} group(s), isOr=${indicatorData.isOr}`);
-                }
-
-                indicatorData.groups.forEach((g, i) => {
-                    Logger.debug(`[${contextLabel}]   Group ${i}: ${g.indicators.length} indicators:`, g.indicators.map(ind => ind.number + (ind.not ? 'N' : '')).join(', '));
-                });
-            }
-        }
-
-        // Extract DSPATR attributes with indicators (with OR support)
-        const attrResult = extractAttributes(nextLine, nextLine);
-        if (attrResult.attrs && Object.keys(attrResult.attrs).length > 0) {
-            field.attributes = { ...field.attributes, ...attrResult.attrs };
-
-            if (preserveOriginalSpacing) {
-                field.originalAttrLines = field.originalAttrLines || {};
-            }
-
-            if (attrResult.isGroupedFormat) {
-                field.hasGroupedDspatr = true;
-                if (preserveOriginalSpacing) {
-                    field.groupedDspatrLine = nextLine;
-                }
-            }
-
-            for (const [attrName, attrValue] of Object.entries(attrResult.attrs)) {
-                if (attrValue && preserveOriginalSpacing) {
-                    // Store all lines for this attribute
-                    if (!field.originalAttrLines[attrName]) {
-                        field.originalAttrLines[attrName] = [];
-                    }
-                    field.originalAttrLines[attrName].push(nextLine);
-                }
-            }
-
-            // Store indicators using unified structure
-            const indicatorData = buildIndicatorGroups();
-            if (indicatorData) {
-                for (const [attrName, attrValue] of Object.entries(attrResult.attrs)) {
-                    if (attrValue) {
-                        if (!field.attributeIndicators) {
-                            field.attributeIndicators = {};
-                        }
-
-                        // If attribute already exists AND we're not in a modification state, accumulate groups
-                        // Otherwise replace (to avoid duplicating lines after user modifications)
-                        const shouldAccumulate = field.attributeIndicators[attrName] && !field.attributeIndicatorsModified;
-
-                        if (shouldAccumulate) {
-                            field.attributeIndicators[attrName].groups.push(...indicatorData.groups);
-                            // Update isOr flag if any group is OR
-                            field.attributeIndicators[attrName].isOr = field.attributeIndicators[attrName].isOr || indicatorData.isOr;
-                            Logger.debug(`[${contextLabel}] DSPATR ${attrName}: Accumulated ${indicatorData.groups.length} more group(s), total=${field.attributeIndicators[attrName].groups.length}`);
-                        } else {
-                            field.attributeIndicators[attrName] = indicatorData;
-                            Logger.debug(`[${contextLabel}] DSPATR ${attrName}: Stored ${indicatorData.groups.length} group(s), isOr=${indicatorData.isOr}`);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Extract DFTVAL with indicators (same pattern as COLOR/DSPATR)
-        const dftvalMatch = nextLine.match(/DFTVAL\('([^']*)'\)/);
-        Logger.debug(`[${contextLabel}] Checking line ${startIndex + lineOffset + 1} for DFTVAL: ${nextTrimmed.substring(0, 50)}`);
-        Logger.debug(`[${contextLabel}] DFTVAL match result:`, dftvalMatch ? `YES (value='${dftvalMatch[1]}')` : 'NO');
-        if (dftvalMatch) {
-            const value = dftvalMatch[1];
-            field.dftval = { value: value };
-
-            Logger.parse(`Found DFTVAL='${value}' for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
-
-            Logger.debug(`[${contextLabel}] DFTVAL processing - scannedLines count: ${scannedLines.length}`);
-            Logger.debug(`[${contextLabel}] DFTVAL processing - currentLineIndicators:`, currentLineIndicators);
-            scannedLines.forEach((sl, idx) => {
-                Logger.debug(`[${contextLabel}]   DFTVAL scannedLine ${idx}: ${sl.indicators.length} indicators, isOr=${sl.isOr}`, sl.indicators.map(i => i.number).join(','));
-            });
-
-            // Store indicators using unified structure (same as COLOR/DSPATR)
-            const indicatorData = buildIndicatorGroups();
-            if (indicatorData && indicatorData.groups && indicatorData.groups.length > 0) {
-                field.dftvalIndicators = indicatorData;
-                Logger.debug(`[${contextLabel}] DFTVAL: Stored ${indicatorData.groups.length} group(s), isOr=${indicatorData.isOr}`);
-                indicatorData.groups.forEach((g, i) => {
-                    Logger.debug(`[${contextLabel}]   DFTVAL Group ${i}: ${g.indicators.length} indicators:`, g.indicators.map(ind => ind.number + (ind.not ? 'N' : '')).join(', '));
-                });
-            } else {
-                Logger.debug(`[${contextLabel}] DFTVAL: No indicator groups built (no indicators present)`);
-            }
-        }
-
-        const parseKeywordTextArg = (keywordName, lineText) => {
-            const quotedRegex = new RegExp(`${keywordName}\\(\\s*'((?:''|[^'])*)'\\s*\\)`, 'i');
-            const quotedMatch = lineText.match(quotedRegex);
-            if (quotedMatch) {
-                return quotedMatch[1].replace(/''/g, "'");
-            }
-
-            const genericRegex = new RegExp(`${keywordName}\\(\\s*([^)]*?)\\s*\\)`, 'i');
-            const genericMatch = lineText.match(genericRegex);
-            if (!genericMatch) {
-                return '';
-            }
-
-            return genericMatch[1].trim();
-        };
-
-        const edtcdeMatch = nextLine.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);
-        if (edtcdeMatch) {
-            const edtcdeValue = edtcdeMatch[1].replace(/["']/g, '').trim().toUpperCase();
-            if (edtcdeValue) {
-                const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
-                field.edtcde = { value: edtcdeValue };
-                if ((replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') && edtcdeValue !== 'Z') {
-                    field.edtcde.replaceLeadingZerosWith = replaceLeadingZerosWith;
-                }
-                Logger.parse(`Found EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
-            }
-        }
-
-        const edtwrdValue = parseKeywordTextArg('EDTWRD', nextLine);
-        if (edtwrdValue.length > 0) {
-            field.edtwrd = { value: edtwrdValue };
-            Logger.parse(`Found EDTWRD('${edtwrdValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
-        }
-
-        const edtmskValue = parseKeywordTextArg('EDTMSK', nextLine);
-        if (edtmskValue.length > 0) {
-            field.edtmsk = { value: edtmskValue };
-            Logger.parse(`Found EDTMSK('${edtmskValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
-        }
-
-        const dftValue = parseKeywordTextArg('DFT', nextLine);
-        if (dftValue.length > 0) {
-            field.dft = { value: dftValue };
-            Logger.parse(`Found DFT(${dftValue}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
-        }
-
-        if (includeChecks) {
-            const checkMatch = nextLine.match(/CHECK\(([^)]+)\)/);
-            if (checkMatch) {
-                Logger.debug(`[${contextLabel}] ===== FOUND CHECK LINE =====`);
-                Logger.debug(`[${contextLabel}] nextLine: "${nextLine}"`);
-                Logger.debug(`[${contextLabel}] lineOffset: ${lineOffset}`);
-                Logger.debug(`[${contextLabel}] scannedLines.length: ${scannedLines.length}`);
-                Logger.debug(`[${contextLabel}] hasOrLines: ${hasOrLines}`);
-                Logger.debug(`[${contextLabel}] scannedLines:`, JSON.stringify(scannedLines));
-
-                const codes = checkMatch[1].trim().split(/\s+/);
-                Logger.debug(`[${contextLabel}] CHECK codes found: ${codes.join(', ')}`);
-
-                // Store enabled check options
-                if (!field.checkOptions) { field.checkOptions = {}; }
-                codes.forEach(code => {
-                    field.checkOptions[code] = true;
-                });
-
-                if (preserveOriginalSpacing) {
-                    field.originalCheckLines = field.originalCheckLines || {};
-                    codes.forEach(code => {
-                        field.originalCheckLines[code] = nextLine;
-                    });
-                }
-
-                // For ME and ER codes, store indicators using unified structure (same as COLOR)
-                codes.forEach(code => {
-                    if (['ME', 'ER'].includes(code)) {
-                        Logger.debug(`[${contextLabel}] Processing CHECK(${code}) - calling buildIndicatorGroups()`);
-                        const indicatorData = buildIndicatorGroups();
-                        Logger.debug(`[${contextLabel}] CHECK(${code}): buildIndicatorGroups returned:`, JSON.stringify(indicatorData));
-                        if (indicatorData && indicatorData.groups && indicatorData.groups.length > 0) {
-                            if (!field.checkIndicators) { field.checkIndicators = {}; }
-                            field.checkIndicators[code] = indicatorData;
-                            Logger.debug(`[${contextLabel}] CHECK(${code}): Stored ${indicatorData.groups.length} group(s), isOr=${indicatorData.isOr}`);
-                            indicatorData.groups.forEach((g, idx) => {
-                                Logger.debug(`[${contextLabel}]   CHECK(${code}) Group ${idx}: ${g.indicators.length} indicators: ${g.indicators.map(i => (i.not ? 'N' : '') + i.number).join(', ')}`);
-                            });
-                        } else {
-                            Logger.debug(`[${contextLabel}] CHECK(${code}): No indicators stored (indicatorData is null or empty)`);
-                        }
-                    } else {
-                        Logger.debug(`[${contextLabel}] Skipping indicators for CHECK(${code}) - not ME/ER`);
-                    }
-                });
-
-                Logger.debug(`[${contextLabel}] Stored CHECK options for field ${field.name}`);
-                Logger.debug(`[${contextLabel}] field.checkIndicators:`, JSON.stringify(field.checkIndicators));
-            }
-        }
-
-        lineOffset++;
-    }
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/scanIndicatorsBackward.js":
-/*!****************************************************!*\
-  !*** ./media/modules/ui/scanIndicatorsBackward.js ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   scanIndicatorsBackward: () => (/* binding */ scanIndicatorsBackward)
-/* harmony export */ });
-// Helper: Scan backwards from keyword line to collect all indicator-only lines
-// Returns: { scannedLines: [{indicators: [...], isOr: boolean}], hasOrLines: boolean }
-function scanIndicatorsBackward({ lines, startIndex, lineOffset, contextLabel = '', IndicatorUtils, Logger }) {
-    const scannedLines = [];
-    let hasOrLines = false;
-    let backOffset = lineOffset - 1;
-    let currentGroup = null; // Track current group being built (scanning backwards)
-
-    while (backOffset > 0) {
-        const prevLine = lines[startIndex + backOffset];
-
-        // Check if previous line has only indicators
-        // A line has ONLY indicators if:
-        // 1. Starts with 'A' or 'AO' at position 5-6
-        // 2. Has indicators in columns 7-18 (positions after 'A'/'AO')
-        // 3. Does NOT have a field name after position 18
-
-        // Check if line starts with 'A' at position 5 (column 6)
-        if (prevLine.length < 6 || prevLine[5] !== 'A') {
-            break; // Not a DDS line starting with A
-        }
-
-        // Check for field name pattern after position 18 (field names start around column 19)
-        // Field names are typically followed by type spec like "10A" or "2F 0"
-        const prevContentAfter18 = prevLine.substring(18).trim();
-        const hasFieldName = /^[A-Z][A-Z0-9_]{2,}\s+\d+/i.test(prevContentAfter18);
-
-        // Check if line has a keyword (from column 44 onwards) - if so, stop scanning
-        // These indicators belong to a different attribute
-        const prevContentAfter44 = prevLine.length > 43 ? prevLine.substring(43).trim() : '';
-        const hasKeyword = prevContentAfter44.length > 0 && /^[A-Z]+\s*\(/.test(prevContentAfter44);
-        if (hasKeyword) {
-            Logger.debug(`[${contextLabel}] scanIndicatorsBackward stopping - found keyword at backOffset ${backOffset}`);
-            break;
-        }
-
-        // A line has ONLY indicators if:
-        // - No field name after position 18
-        // - Has indicator pattern (numbers with optional N prefix) in positions 6-18
-        const indicatorAreaContent = prevLine.substring(6, 18).trim();
-        const hasIndicatorPattern = /^O?\s*[N\d\s]+$/.test(indicatorAreaContent);
-
-        const prevHasOnlyIndicators = !hasFieldName && hasIndicatorPattern && indicatorAreaContent.length > 0;
-
-        if (!prevHasOnlyIndicators) {
-            break; // Stop if not an indicator-only line
-        }
-
-        // Check if this line starts a new OR group (has 'O' at position 6)
-        const startsOrGroup = prevLine.length > 6 && prevLine[6] === 'O';
-
-        // Extract indicators from this line
-        const prevIndicators = IndicatorUtils.extractFromDdsLine(prevLine, contextLabel);
-
-        if (prevIndicators && prevIndicators.length > 0) {
-            if (startsOrGroup) {
-                // When scanning BACKWARDS, finding 'AO' means:
-                // - Everything AFTER this (currentGroup) is a continuation of this OR group
-                // - Everything BEFORE this is a DIFFERENT group
-                hasOrLines = true;
-
-                if (currentGroup) {
-                    // currentGroup has indicators from lines AFTER this AO line
-                    // Those are continuations (A lines after AO), so they're part of this OR group
-                    // Prepend current line's indicators to currentGroup
-                    currentGroup.indicators.unshift(...prevIndicators);
-                    currentGroup.isOr = true; // Mark as OR group
-                } else {
-                    // No currentGroup yet - this AO line starts the group we'll build
-                    currentGroup = { indicators: [...prevIndicators], isOr: true };
-                }
-
-                // Save this complete OR group and reset for next group (scanning further back)
-                scannedLines.unshift({ indicators: currentGroup.indicators, isOr: currentGroup.isOr });
-                currentGroup = null;
-            } else {
-                // Line without 'O' - continuation of current group OR new AND group
-                if (currentGroup === null) {
-                    // Start new group (will be AND unless we find AO later)
-                    currentGroup = { indicators: [...prevIndicators], isOr: false };
-                } else {
-                    // Add to current group (prepend because scanning backwards)
-                    currentGroup.indicators.unshift(...prevIndicators);
-                }
-            }
-        }
-
-        backOffset--;
-    }
-
-    // Add remaining group if any (this is the first/topmost group)
-    if (currentGroup && currentGroup.indicators.length > 0) {
-        scannedLines.unshift({ indicators: currentGroup.indicators, isOr: currentGroup.isOr });
-    }
-
-    return { scannedLines, hasOrLines };
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/scrollToRecordInSource.js":
-/*!****************************************************!*\
-  !*** ./media/modules/ui/scrollToRecordInSource.js ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   scrollToRecordInSource: () => (/* binding */ scrollToRecordInSource)
-/* harmony export */ });
-function scrollToRecordInSource(options) {
-    const {
-        currentRecord,
-        currentDocument,
-        Logger
-    } = options;
-
-    if (!currentRecord) {
-        if (Logger) {
-            Logger.warn('No current record to scroll to');
-        }
-        return;
-    }
-
-    const sourceEditor = document.getElementById('source-editor');
-    if (!sourceEditor) {
-        if (Logger) {
-            Logger.error('Source editor not found');
-        }
-        return;
-    }
-
-    const lines = currentDocument.split('\n');
-    let recordLineIndex = -1;
-
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const recordMatch = line.match(/^\s*A\*?\s+R\s+(\w+)/i);
-        if (recordMatch && recordMatch[1].toUpperCase() === currentRecord.toUpperCase()) {
-            recordLineIndex = i;
-            break;
-        }
-    }
-
-    if (recordLineIndex === -1) {
-        if (Logger) {
-            Logger.warn(`Record ${currentRecord} not found in source`);
-        }
-        return;
-    }
-
-    if (Logger) {
-        Logger.debug(`Scrolling to record ${currentRecord} at line ${recordLineIndex + 1}`);
-    }
-
-    const lineHeight = 21;
-    const scrollPosition = recordLineIndex * lineHeight;
-    const offset = 100;
-    sourceEditor.scrollTop = Math.max(0, scrollPosition - offset);
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/selectField.js":
-/*!*****************************************!*\
-  !*** ./media/modules/ui/selectField.js ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getFreshFieldFromDds: () => (/* binding */ getFreshFieldFromDds),
-/* harmony export */   selectField: () => (/* binding */ selectField)
-/* harmony export */ });
-function getFreshFieldFromDds({
-    field,
-    Logger,
-    getCurrentDocument,
-    getCurrentRecord,
-    parseDspfForPreview,
-    getFields,
-    updateFieldAtIndex
-}) {
-    if (!field || !getCurrentDocument) {
-        return field;
-    }
-
-    const currentDocument = getCurrentDocument();
-    if (!currentDocument) {
-        return field;
-    }
-
-    Logger.debug(`Re-parsing field ${field.name} from DDS to get fresh indicator data`);
-
-    const parsedData = parseDspfForPreview(currentDocument, getCurrentRecord ? getCurrentRecord() : null);
-
-    const freshField = parsedData.fields.find(f =>
-        f.name === field.name &&
-        f.row === field.row &&
-        f.col === field.col &&
-        f.type === field.type
-    );
-
-    if (freshField) {
-        freshField.id = field.id;
-        const fields = getFields ? getFields() : [];
-        const fieldIndex = fields.findIndex(f => f.id === field.id);
-        if (fieldIndex >= 0 && updateFieldAtIndex) {
-            updateFieldAtIndex(fieldIndex, freshField);
-        }
-        Logger.debug(`Fresh field data obtained with ${Object.keys(freshField.colorIndicators || {}).length} color indicators, ${Object.keys(freshField.attributeIndicators || {}).length} attribute indicators`);
-        return freshField;
-    }
-
-    Logger.warn(`Could not find fresh data for field ${field.name}, using cached data`);
-    return field;
-}
-
-function selectField({
-    field,
-    Logger,
-    deselectAllFields,
-    getSelectedField,
-    setSelectedField,
-    indicatorConfigurations,
-    getFreshFieldFromDds,
-    showFieldProperties
-}) {
-    Logger.ui(`[SELECT] Attempting to select field: ${field.name} (id: ${field.id})`);
-    Logger.ui(`[SELECT] Field isVisualCopy: ${field.isVisualCopy || false}`);
-
-    if (deselectAllFields) {
-        deselectAllFields();
-    }
-
-    const previousSelectedField = getSelectedField ? getSelectedField() : null;
-    if (previousSelectedField && previousSelectedField.id !== field.id) {
-        Logger.debug('Clearing indicatorConfigurations when switching fields');
-        indicatorConfigurations.clear();
-    }
-
-    if (setSelectedField) {
-        setSelectedField(field);
-    }
-    Logger.ui(`[SELECT] selectedField set to: ${field.name}`);
-
-    const fieldElement = document.querySelector(`[data-field-id="${field.id}"]`);
-    Logger.ui(`[SELECT] Found element with selector [data-field-id="${field.id}"]: ${fieldElement ? 'YES' : 'NO'}`);
-
-    if (fieldElement) {
-        Logger.ui(`[SELECT] Element classes before: ${fieldElement.className}`);
-        fieldElement.classList.add('selected');
-        Logger.ui(`[SELECT] Element classes after: ${fieldElement.className}`);
-        Logger.ui(`[SELECT] Element display: ${window.getComputedStyle(fieldElement).display}`);
-        Logger.ui(`[SELECT] Element visibility: ${window.getComputedStyle(fieldElement).visibility}`);
-    } else {
-        Logger.error(`[SELECT] Could not find element with data-field-id="${field.id}"`);
-        const allFields = document.querySelectorAll('[data-field-id]');
-        Logger.ui(`[SELECT] Total fields in DOM: ${allFields.length}`);
-        allFields.forEach((el, idx) => {
-            if (idx < 5) {
-                Logger.ui(`[SELECT]   - ${el.dataset.fieldId} (${el.className})`);
-            }
-        });
-    }
-
-    const freshField = getFreshFieldFromDds ? getFreshFieldFromDds(field) : null;
-    if (showFieldProperties) {
-        showFieldProperties(freshField || field);
-    }
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/setFieldContent.js":
-/*!*********************************************!*\
-  !*** ./media/modules/ui/setFieldContent.js ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setFieldContent: () => (/* binding */ setFieldContent)
-/* harmony export */ });
-function setFieldContent(options) {
-    const { fieldElement, field, computeFieldDisplay } = options;
-
-    const { text, widthPx, color, classes } = computeFieldDisplay(field, 'designer');
-    fieldElement.textContent = text || '';
-    fieldElement.style.padding = '0';
-    fieldElement.style.minWidth = 'auto';
-    fieldElement.style.backgroundColor = 'transparent';
-    fieldElement.style.border = 'none';
-    fieldElement.style.whiteSpace = 'pre';
-    if (widthPx) { fieldElement.style.width = `${widthPx}px`; }
-    if (color) { fieldElement.style.color = color; }
-    classes.forEach(cls => fieldElement.classList.add(cls));
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/setIndicatorButtonState.js":
-/*!*****************************************************!*\
-  !*** ./media/modules/ui/setIndicatorButtonState.js ***!
-  \*****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setIndicatorButtonState: () => (/* binding */ setIndicatorButtonState)
-/* harmony export */ });
-// Actualiza el botón con el texto generado por formatIndicatorLabel
-function setIndicatorButtonState({ btn, indicators, formatIndicatorLabel }) {
-    if (!btn) {
-        return;
-    }
-
-    if (!formatIndicatorLabel) {
-        throw new Error('setIndicatorButtonState: formatIndicatorLabel is required');
-    }
-
-    // Support both old format (array) and new format (groups)
-    let flatIndicators = [];
-    if (Array.isArray(indicators)) {
-        flatIndicators = indicators;
-    } else if (indicators && indicators.groups) {
-        // Flatten all groups into single array
-        indicators.groups.forEach(group => {
-            flatIndicators.push(...group.indicators);
-        });
-    }
-
-    const has = flatIndicators.length > 0;
-    btn.classList.toggle('has-indicators', has);
-    const textEl = btn.querySelector('.indicator-text');
-    if (textEl) {
-        textEl.textContent = formatIndicatorLabel(flatIndicators);
-    }
-    btn.title = has ? formatIndicatorLabel(flatIndicators) : 'Configurar indicadores';
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/setViewZoom.js":
-/*!*****************************************!*\
-  !*** ./media/modules/ui/setViewZoom.js ***!
-  \*****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setViewZoom: () => (/* binding */ setViewZoom)
-/* harmony export */ });
-function setViewZoom(options) {
-    const {
-        zoomValue,
-        setCurrentZoom
-    } = options;
-
-    const clampedZoom = Math.max(0.5, Math.min(2, zoomValue));
-    if (setCurrentZoom) {
-        setCurrentZoom(clampedZoom);
-    }
-
-    const viewsContainer = document.getElementById('views-container');
-    if (viewsContainer) {
-        viewsContainer.style.setProperty('--view-zoom', clampedZoom.toString());
-    }
-
-    const zoomLabel = document.getElementById('zoomLabel');
-    if (zoomLabel) {
-        zoomLabel.textContent = `${Math.round(clampedZoom * 100)}%`;
-    }
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/setupFieldElement.js":
-/*!***********************************************!*\
-  !*** ./media/modules/ui/setupFieldElement.js ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setupFieldElement: () => (/* binding */ setupFieldElement)
-/* harmony export */ });
-function setupFieldElement(options) {
-    const {
-        fieldElement,
-        field,
-        Logger,
-        applyAttributeClasses,
-        setFieldContent,
-        selectField,
-        isReadOnly,
-        editField
-    } = options;
-
-    fieldElement.className = `dspf-field ${field.type}-field`;
-    fieldElement.dataset.fieldId = field.id;
-
-    if (field.isBackgroundRecord) {
-        fieldElement.classList.add('field-background');
-    }
-
-    if (field.isVisualCopy) {
-        fieldElement.classList.add('field-visual-copy');
-        fieldElement.style.pointerEvents = 'none';
-        fieldElement.style.zIndex = '1';
-        Logger.debug(`[VISUAL COPY] Created copy with id: ${field.id}, row: ${field.row}`);
-    } else {
-        Logger.debug(`[ORIGINAL] Created original field with id: ${field.id}, row: ${field.row}`);
-    }
-
-    applyAttributeClasses(fieldElement, field.attributes);
-
-    // Also apply attributes from attributeIndicators (when attributes have indicators)
-    if (field.attributeIndicators) {
-        if (field.attributeIndicators.underline) { fieldElement.classList.add('underline'); }
-        if (field.attributeIndicators.reverse) { fieldElement.classList.add('reverse'); }
-        if (field.attributeIndicators.blink) { fieldElement.classList.add('blink'); }
-        if (field.attributeIndicators.highlight) { fieldElement.classList.add('highlight'); }
-    }
-
-    setFieldContent(fieldElement, field);
-
-    fieldElement.draggable = true;
-    fieldElement.style.cursor = 'move';
-
-    fieldElement.addEventListener('click', function(e) {
-        Logger.ui(`[CLICK] Field clicked: ${field.name} (id: ${field.id}, isVisualCopy: ${field.isVisualCopy || false})`);
-        Logger.ui(`[CLICK] Element dataset.fieldId: ${fieldElement.dataset.fieldId}`);
-        Logger.ui(`[CLICK] Element classes: ${fieldElement.className}`);
-        Logger.ui(`[CLICK] Element zIndex: ${fieldElement.style.zIndex || 'default'}`);
-        Logger.ui(`[CLICK] Element pointerEvents: ${fieldElement.style.pointerEvents || 'auto'}`);
-        e.stopPropagation();
-        selectField(field);
-    });
-
-    fieldElement.addEventListener('dblclick', function() {
-        if (!isReadOnly) {
-            editField(field);
-        }
-    });
-
-    fieldElement.addEventListener('dragstart', function(e) {
-        e.dataTransfer.setData('text/plain', JSON.stringify({
-            type: 'existing-field',
-            fieldId: field.id
-        }));
-        fieldElement.style.opacity = '0.5';
-        Logger.debug('Started dragging field:', field.name);
-    });
-
-    fieldElement.addEventListener('dragend', function() {
-        fieldElement.style.opacity = '1';
-        Logger.debug('Ended dragging field:', field.name);
-    });
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/showFieldProperties.js":
-/*!*************************************************!*\
-  !*** ./media/modules/ui/showFieldProperties.js ***!
-  \*************************************************/
+/* 29 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -11134,6 +8019,7 @@ function showFieldProperties({
                 <button class="properties-tab" data-tab="attributes">Attributes</button>
                 <button class="properties-tab" data-tab="colors">Colors</button>
                 <button class="properties-tab" data-tab="keying-options">Keying options</button>
+                <button class="properties-tab" data-tab="validity-check">Validity check</button>
             </div>
             
             <div class="properties-content">
@@ -11359,6 +8245,19 @@ function showFieldProperties({
                     </div>
                 </div>
 
+                <div id="tab-validity-check" class="tab-panel">
+                    <div class="property-group values-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-values-enabled" />
+                            Values (VALUES)
+                        </label>
+                    </div>
+                    <div class="property-group values-value-group" style="display: none;">
+                        <label>Allowed values</label>
+                        <textarea id="prop-values-list" rows="4" placeholder="One value per line"></textarea>
+                    </div>
+                </div>
+
                 <div id="tab-general-keywords" class="tab-panel">
                     <div class="property-group dft-group" style="display: flex; align-items: center; gap: 8px;">
                         <label style="flex: 1;">
@@ -11488,6 +8387,8 @@ function showFieldProperties({
     const usageRestrictedGroups = Array.from(document.querySelectorAll('.usage-not-output-attr'));
     const keyingTabBtn = document.querySelector('.properties-tab[data-tab="keying-options"]');
     const keyingTabPanel = document.getElementById('tab-keying-options');
+    const validityCheckTabBtn = document.querySelector('.properties-tab[data-tab="validity-check"]');
+    const validityCheckTabPanel = document.getElementById('tab-validity-check');
     const generalKeywordsTabBtn = document.querySelector('.properties-tab[data-tab="general-keywords"]');
     const generalKeywordsTabPanel = document.getElementById('tab-general-keywords');
     const editingKeywordsTabBtn = document.querySelector('.properties-tab[data-tab="editing-keywords"]');
@@ -11496,6 +8397,8 @@ function showFieldProperties({
     const checkNumGroups = Array.from(document.querySelectorAll('.check-num'));
     const checkCharTitles = Array.from(document.querySelectorAll('.check-char-title'));
     const checkNumTitles = Array.from(document.querySelectorAll('.check-num-title'));
+    const valuesGroup = document.querySelector('.values-group');
+    const valuesValueGroup = document.querySelector('.values-value-group');
     const dftGroup = document.querySelector('.dft-group');
     const dftValueGroup = document.querySelector('.dft-value-group');
     const dftvalGroup = document.querySelector('.dftval-group');
@@ -11532,6 +8435,39 @@ function showFieldProperties({
             basicTab?.classList.add('active');
             basicPanel?.classList.add('active');
         }
+
+        const currentTypeSelect = document.getElementById('prop-type');
+        const selectedType = currentTypeSelect ? currentTypeSelect.value : field.dataType;
+        const isValuesCharType = ['character', 'double'].includes(selectedType);
+        const isValuesNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
+        const showValues = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && usageSelect
+            && usageSelect.value !== 'O'
+            && (isValuesCharType || isValuesNumericType);
+
+        if (valuesGroup) {
+            valuesGroup.style.display = showValues ? 'flex' : 'none';
+        }
+        if (valuesValueGroup) {
+            valuesValueGroup.style.display = showValues ? 'block' : 'none';
+        }
+        if (validityCheckTabBtn) {
+            validityCheckTabBtn.style.display = showValues ? 'inline-flex' : 'none';
+        }
+        if (validityCheckTabPanel) {
+            validityCheckTabPanel.style.display = showValues ? '' : 'none';
+        }
+        if (!showValues && validityCheckTabBtn && validityCheckTabBtn.classList.contains('active')) {
+            validityCheckTabBtn.classList.remove('active');
+            validityCheckTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
+        }
+
         const isVariableField = field.type !== 'constant' && field.type !== 'keyword' && !field.isKeyword;
         const showGeneralKeywords = isVariableField;
         const showDFT = isVariableField;
@@ -11555,8 +8491,6 @@ function showFieldProperties({
             generalKeywordsTabPanel.style.display = showGeneralKeywords ? '' : 'none';
         }
 
-        const currentTypeSelect = document.getElementById('prop-type');
-        const selectedType = currentTypeSelect ? currentTypeSelect.value : field.dataType;
         const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
         const showEditingKeywords = field.type !== 'constant' && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B') && isNumericType;
 
@@ -12045,6 +8979,40 @@ function showFieldProperties({
         }
     }
 
+    const valuesEnabledCheckbox = document.getElementById('prop-values-enabled');
+    const valuesListInput = document.getElementById('prop-values-list');
+        if ((Array.isArray(field.values) && field.values.length > 0) || (typeof field.values === 'string' && field.values.trim().length > 0)) {
+        if (valuesEnabledCheckbox) {
+            valuesEnabledCheckbox.checked = true;
+        }
+        if (valuesListInput) {
+                if (Array.isArray(field.values)) {
+                    valuesListInput.value = field.values.join('\n');
+                } else {
+                    const tokens = field.values.match(/'(?:''|[^'])*'/g) || [];
+                    if (tokens.length > 0) {
+                        valuesListInput.value = tokens
+                            .map(token => token.substring(1, token.length - 1).replace(/''/g, "'"))
+                            .join('\n');
+                    } else {
+                        valuesListInput.value = field.values;
+                    }
+                }
+            valuesListInput.parentElement.style.display = 'block';
+        }
+    }
+
+    if (valuesEnabledCheckbox) {
+        valuesEnabledCheckbox.addEventListener('change', function() {
+            if (valuesValueGroup) {
+                valuesValueGroup.style.display = this.checked ? 'block' : 'none';
+                if (this.checked && valuesListInput) {
+                    valuesListInput.focus();
+                }
+            }
+        });
+    }
+
     const dftEnabledCheckbox = document.getElementById('prop-dft-enabled');
     const dftValueInput = document.getElementById('prop-dft-value');
     if (field.dft) {
@@ -12383,723 +9351,691 @@ function showFieldProperties({
 
 
 /***/ }),
-
-/***/ "./media/modules/ui/showNotification.js":
-/*!**********************************************!*\
-  !*** ./media/modules/ui/showNotification.js ***!
-  \**********************************************/
+/* 30 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   showNotification: () => (/* binding */ showNotification)
+/* harmony export */   applyFieldProperties: () => (/* binding */ applyFieldProperties)
 /* harmony export */ });
-function showNotification(options) {
-    const { message, type = 'info' } = options;
+function applyFieldProperties({
+    field,
+    Logger,
+    getSelectedField,
+    setSelectedField,
+    getFields,
+    getCurrentRecord,
+    getCurrentDocument,
+    setCurrentDocument,
+    applyColorChanges,
+    getAttributeCheckboxMap,
+    transferIndicators,
+    KEYWORD_ATTRIBUTE_ALLOW_LIST,
+    updateFieldInDds,
+    parseDspfFields,
+    updateSourceViewUI,
+    vscode,
+    showFieldProperties,
+    selectField
+}) {
+    try {
+        const selectedField = getSelectedField ? getSelectedField() : null;
+        const fields = getFields ? getFields() : [];
+        const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
 
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    notification.textContent = message;
-
-    const styles = {
-        success: { background: '#4caf50', color: 'white' },
-        error: { background: '#f44336', color: 'white' },
-        info: { background: '#2196F3', color: 'white' }
-    };
-
-    const style = styles[type] || styles.info;
-    Object.assign(notification.style, {
-        position: 'fixed',
-        top: '70px',
-        right: '20px',
-        padding: '12px 20px',
-        borderRadius: '4px',
-        backgroundColor: style.background,
-        color: style.color,
-        fontSize: '14px',
-        fontWeight: '500',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-        zIndex: '10001',
-        animation: 'slideIn 0.3s ease-out'
-    });
-
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(() => {
-            if (notification.parentNode) {
-                document.body.removeChild(notification);
+        if (selectedField && selectedField.id === field.id) {
+            if (selectedField.indicators) {
+                field.indicators = selectedField.indicators;
             }
-        }, 300);
-    }, 3000);
-}
-
-
-/***/ }),
-
-/***/ "./media/modules/ui/showScreenProperties.js":
-/*!**************************************************!*\
-  !*** ./media/modules/ui/showScreenProperties.js ***!
-  \**************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   showScreenProperties: () => (/* binding */ showScreenProperties)
-/* harmony export */ });
-function showScreenProperties(options) {
-    const {
-        Logger,
-        vscode,
-        isReadOnly,
-        getCurrentDocument,
-        setCurrentDocument,
-        getCurrentRecord,
-        getRecordType,
-        IdGenerator,
-        getWindowDimensions,
-        setupPropertiesTabs,
-        loadSubfileControl,
-        applySubfileControl,
-        loadFunctionKeys,
-        createFunctionKeyRow,
-        saveFunctionKeys,
-        updateDocumentInEditor,
-        generateDdsLineWithIndicators,
-        indicatorConfigurations,
-        DisplaySizeUtils,
-        IndicatorUtils,
-        scanIndicatorsBackward,
-        setIndicatorButtonState,
-        openIBMiModal,
-        applyWindowDimensions,
-        showScreenProperties: refreshScreenProperties
-    } = options;
-
-    const propertiesPanel = document.getElementById('field-properties');
-    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
-
-    if (!currentRecord) {
-        propertiesPanel.innerHTML = '<p>No screen selected</p>';
-        return;
-    }
-
-    const recordType = getRecordType(currentRecord);
-    const windowDimensions = getWindowDimensions(currentRecord);
-
-    let windowDimensionsHtml = '';
-    if (windowDimensions.hasWindow) {
-        const isReference = windowDimensions.isReference || false;
-        const referenceName = windowDimensions.referenceName || '';
-
-        windowDimensionsHtml = `
-                <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
-                <h4 style="margin: 12px 0 8px 0; color: var(--text-color); font-size: 14px;">Window</h4>
-                
-                <div style="margin-bottom: 16px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-color);">Type</label>
-                    <div style="display: flex; gap: 16px; margin-bottom: 12px;">
-                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                            <input type="radio" name="window-type" id="window-type-coords" value="coordinates" ${!isReference ? 'checked' : ''} />
-                            <span>Coordinates</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                            <input type="radio" name="window-type" id="window-type-ref" value="reference" ${isReference ? 'checked' : ''} />
-                            <span>Reference</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div id="window-reference-section" style="display: ${isReference ? 'block' : 'none'}; margin-bottom: 16px;">
-                    <div class="property-group" style="margin: 0;">
-                        <label>Window Reference</label>
-                        <input type="text" id="window-reference-name" value="${referenceName}" placeholder="e.g. WIND1" maxlength="10" style="padding: 6px 8px; text-transform: uppercase;" />
-                    </div>
-                    ${isReference && windowDimensions.ds3 ? `
-                        <div style="margin-top: 8px; padding: 8px; background-color: rgba(0, 122, 204, 0.1); border-left: 3px solid #007ACC; font-size: 11px; color: var(--text-muted);">
-                            <strong>Note:</strong> Resolved coordinates from ${referenceName}:<br/>
-                            Row: ${windowDimensions.ds3.row}, Col: ${windowDimensions.ds3.col}, Height: ${windowDimensions.ds3.height}, Width: ${windowDimensions.ds3.width}
-                        </div>
-                    ` : ''}
-                </div>
-                
-                <div id="window-coordinates-section" style="display: ${!isReference ? 'block' : 'none'};">
-                    ${windowDimensions.ds3 ? `
-                    <div style="margin-bottom: 12px;">
-                        <label style="display: block; margin-bottom: 4px; font-weight: 600; color: #888;">*DS3 (24 x 80)</label>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                            <div class="property-group" style="margin: 0;">
-                                <label style="font-size: 11px;">Row</label>
-                                <input type="number" id="window-ds3-row" value="${windowDimensions.ds3.row}" min="1" max="24" style="padding: 4px 8px;" />
-                            </div>
-                            <div class="property-group" style="margin: 0;">
-                                <label style="font-size: 11px;">Column</label>
-                                <input type="number" id="window-ds3-col" value="${windowDimensions.ds3.col}" min="1" max="80" style="padding: 4px 8px;" />
-                            </div>
-                            <div class="property-group" style="margin: 0;">
-                                <label style="font-size: 11px;">Height</label>
-                                <input type="number" id="window-ds3-height" value="${windowDimensions.ds3.height}" min="1" max="24" style="padding: 4px 8px;" />
-                            </div>
-                            <div class="property-group" style="margin: 0;">
-                                <label style="font-size: 11px;">Width</label>
-                                <input type="number" id="window-ds3-width" value="${windowDimensions.ds3.width}" min="1" max="80" style="padding: 4px 8px;" />
-                            </div>
-                        </div>
-                    </div>
-                    ` : ''}
-                    
-                    ${windowDimensions.ds4 ? `
-                    <div style="margin-bottom: 12px;">
-                        <label style="display: block; margin-bottom: 4px; font-weight: 600; color: #888;">*DS4 (27 x 132)</label>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                            <div class="property-group" style="margin: 0;">
-                                <label style="font-size: 11px;">Row</label>
-                                <input type="number" id="window-ds4-row" value="${windowDimensions.ds4.row}" min="1" max="27" style="padding: 4px 8px;" />
-                            </div>
-                            <div class="property-group" style="margin: 0;">
-                                <label style="font-size: 11px;">Column</label>
-                                <input type="number" id="window-ds4-col" value="${windowDimensions.ds4.col}" min="1" max="132" style="padding: 4px 8px;" />
-                            </div>
-                            <div class="property-group" style="margin: 0;">
-                                <label style="font-size: 11px;">Height</label>
-                                <input type="number" id="window-ds4-height" value="${windowDimensions.ds4.height}" min="1" max="27" style="padding: 4px 8px;" />
-                            </div>
-                            <div class="property-group" style="margin: 0;">
-                                <label style="font-size: 11px;">Width</label>
-                                <input type="number" id="window-ds4-width" value="${windowDimensions.ds4.width}" min="1" max="132" style="padding: 4px 8px;" />
-                            </div>
-                        </div>
-                    </div>
-                    ` : ''}
-                </div>
-                
-                <button id="apply-window-dimensions-btn" style="width: 100%; padding: 8px; margin-top: 8px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
-                    Apply Changes
-                </button>
-            `;
-    }
-
-    propertiesPanel.innerHTML = `
-            <div class="properties-tabs">
-                <button class="properties-tab active" data-tab="basic">Basic</button>
-                ${recordType === 'SFLCTL' ? '<button class="properties-tab" data-tab="subfile-control">Subfile Control</button>' : ''}
-                ${recordType !== 'SFL' ? '<button class="properties-tab" data-tab="function-keys">Function Keys</button>' : ''}
-            </div>
-            
-            <div class="properties-content">
-                <div id="tab-basic" class="tab-panel active">
-                    <div class="property-group">
-                        <label>Name</label>
-                        <input type="text" id="screen-name" value="${currentRecord}" readonly style="background-color: #2d2d2d; cursor: not-allowed;" />
-                    </div>
-                    <div class="property-group">
-                        <label>Type</label>
-                        <input type="text" id="screen-type" value="${recordType}" readonly style="background-color: #2d2d2d; cursor: not-allowed;" />
-                    </div>
-                    ${windowDimensionsHtml}
-                </div>
-                
-                ${recordType === 'SFLCTL' ? `
-                <div id="tab-subfile-control" class="tab-panel">
-                    <div class="subfile-control-section">
-                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Size (SFLSIZ)</label>
-                        
-                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="sflsiz-ds3-enabled" style="width: 16px; height: 16px; cursor: pointer;">
-                                <label for="sflsiz-ds3-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS3 (24x80):</label>
-                            </div>
-                            <input type="number" id="sflsiz-ds3" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />
-                            
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="sflsiz-ds4-enabled" style="width: 16px; height: 16px; cursor: pointer;">
-                                <label for="sflsiz-ds4-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS4 (27x132):</label>
-                            </div>
-                            <input type="number" id="sflsiz-ds4" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />
-                        </div>
-                        
-                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
-                        
-                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Page (SFLPAG)</label>
-                        
-                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="sflpag-ds3-enabled" style="width: 16px; height: 16px; cursor: pointer;">
-                                <label for="sflpag-ds3-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS3 (24x80):</label>
-                            </div>
-                            <input type="number" id="sflpag-ds3" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />
-                            
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="sflpag-ds4-enabled" style="width: 16px; height: 16px; cursor: pointer;">
-                                <label for="sflpag-ds4-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS4 (27x132):</label>
-                            </div>
-                            <input type="number" id="sflpag-ds4" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />
-                        </div>
-                        
-                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
-                        
-                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Lines (SFLLIN)</label>
-                        <p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin-bottom: 12px;">Number of lines displayed (without indicators)</p>
-                        
-                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="sfllin-ds3-enabled" style="width: 16px; height: 16px; cursor: pointer;">
-                                <label for="sfllin-ds3-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS3 (24x80):</label>
-                            </div>
-                            <input type="number" id="sfllin-ds3" placeholder="0" min="0" max="99" style="padding: 6px 8px; width: 100px;" disabled />
-                            
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="sfllin-ds4-enabled" style="width: 16px; height: 16px; cursor: pointer;">
-                                <label for="sfllin-ds4-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS4 (27x132):</label>
-                            </div>
-                            <input type="number" id="sfllin-ds4" placeholder="0" min="0" max="99" style="padding: 6px 8px; width: 100px;" disabled />
-                            </div>
-                        </div>
-                        
-                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
-                        
-                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Display (SFLDSP)</label>
-                        
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
-                            <input type="checkbox" id="sfldsp-enabled" style="width: 18px; height: 18px; cursor: pointer;">
-                            <label for="sfldsp-enabled" style="margin: 0; cursor: pointer;">Include in code</label>
-                            <button id="sfldsp-indicators-btn" class="indicator-config-btn" disabled>
-                                <span class="indicator-icon">🔢</span>
-                                <span class="indicator-text">No ind.</span>
-                            </button>
-                        </div>
-                        
-                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
-                        
-                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Display Control (SFLDSPCTL)</label>
-                        
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
-                            <input type="checkbox" id="sfldspctl-enabled" style="width: 18px; height: 18px; cursor: pointer;">
-                            <label for="sfldspctl-enabled" style="margin: 0; cursor: pointer;">Include in code</label>
-                            <button id="sfldspctl-indicators-btn" class="indicator-config-btn" disabled>
-                                <span class="indicator-icon">🔢</span>
-                                <span class="indicator-text">No ind.</span>
-                            </button>
-                        </div>
-                        
-                        <button id="apply-subfile-control-btn" style="width: 100%; padding: 10px; margin-top: 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
-                            Apply Changes
-                        </button>
-                    </div>
-                </div>
-                ` : ''}
-                
-                ${recordType !== 'SFL' ? `
-                <div id="tab-function-keys" class="tab-panel">
-                    <div class="function-keys-header" style="margin-bottom: 10px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Function Keys</label>
-                        <!-- Column headers -->
-                        <div style="display: grid; grid-template-columns: 70px 240px 70px 1fr; gap: 8px; padding: 4px 8px; font-size: 11px; font-weight: 600; color: var(--vscode-descriptionForeground); border-bottom: 1px solid var(--border-color); margin-bottom: 8px;">
-                            <span>Key</span>
-                            <span>Type</span>
-                            <span>Indicator</span>
-                            <span>Description</span>
-                        </div>
-                    </div>
-                    
-                    <div id="function-keys-list" style="max-height: 400px; overflow-y: auto; overflow-x: auto;">
-                        <!-- Function keys will be populated here -->
-                    </div>
-                </div>
-                ` : ''}
-            </div>
-        `;
-
-    setupPropertiesTabs();
-
-    if (recordType === 'SFLCTL') {
-        const applySubfileControlHandler = () => applySubfileControl({
-            Logger,
-            vscode,
-            getCurrentDocument,
-            setCurrentDocument,
-            getCurrentRecord,
-            getCurrentView: options.getCurrentView,
-            updateDocumentInEditor,
-            generateDdsLineWithIndicators,
-            indicatorConfigurations,
-            showScreenProperties: refreshScreenProperties,
-            parseDspfFields: options.parseDspfFields,
-            updatePreviewView: options.updatePreviewView
-        });
-        loadSubfileControl({
-            Logger,
-            getCurrentDocument,
-            getCurrentRecord,
-            DisplaySizeUtils,
-            IndicatorUtils,
-            scanIndicatorsBackward,
-            indicatorConfigurations,
-            setIndicatorButtonState,
-            openIBMiModal,
-            applySubfileControl: applySubfileControlHandler
-        });
-    }
-
-    if (recordType !== 'SFL') {
-        const saveFunctionKeysHandler = () => saveFunctionKeys({
-            Logger,
-            isReadOnly,
-            getCurrentDocument,
-            setCurrentDocument,
-            getCurrentRecord,
-            updateDocumentInEditor
-        });
-        const createFunctionKeyRowHandler = (args) => createFunctionKeyRow({
-            ...args,
-            IdGenerator,
-            saveFunctionKeys: saveFunctionKeysHandler
-        });
-        loadFunctionKeys({
-            getCurrentDocument,
-            getCurrentRecord,
-            createFunctionKeyRow: createFunctionKeyRowHandler
-        });
-    }
-
-    const applyWindowBtn = document.getElementById('apply-window-dimensions-btn');
-    if (applyWindowBtn) {
-        applyWindowBtn.addEventListener('click', function() {
-            applyWindowDimensions();
-        });
-    }
-
-    const windowTypeCoords = document.getElementById('window-type-coords');
-    const windowTypeRef = document.getElementById('window-type-ref');
-    const coordsSection = document.getElementById('window-coordinates-section');
-    const refSection = document.getElementById('window-reference-section');
-
-    if (windowTypeCoords && windowTypeRef && coordsSection && refSection) {
-        windowTypeCoords.addEventListener('change', function() {
-            if (this.checked) {
-                coordsSection.style.display = 'block';
-                refSection.style.display = 'none';
+            if (selectedField.fieldIndicatorsModified) {
+                field.fieldIndicatorsModified = selectedField.fieldIndicatorsModified;
             }
-        });
-
-        windowTypeRef.addEventListener('change', function() {
-            if (this.checked) {
-                coordsSection.style.display = 'none';
-                refSection.style.display = 'block';
+            if (selectedField.colorIndicatorsModified) {
+                field.colorIndicatorsModified = selectedField.colorIndicatorsModified;
             }
-        });
-    }
-}
+            if (selectedField.attributeIndicatorsModified) {
+                field.attributeIndicatorsModified = selectedField.attributeIndicatorsModified;
+            }
+            if (selectedField.dftvalIndicatorsModified) {
+                field.dftvalIndicatorsModified = selectedField.dftvalIndicatorsModified;
+            }
+        }
 
+        const oldField = {
+            ...field,
+            attributes: field.attributes ? { ...field.attributes } : undefined,
+            colorIndicators: field.colorIndicators ? JSON.parse(JSON.stringify(field.colorIndicators)) : undefined,
+            attributeIndicators: field.attributeIndicators ? JSON.parse(JSON.stringify(field.attributeIndicators)) : undefined,
+            checkOptions: field.checkOptions ? { ...field.checkOptions } : undefined,
+            checkIndicators: field.checkIndicators ? JSON.parse(JSON.stringify(field.checkIndicators)) : undefined,
+            keywordIndicators: field.keywordIndicators ? JSON.parse(JSON.stringify(field.keywordIndicators)) : undefined,
+            edtcde: field.edtcde ? { ...field.edtcde } : undefined,
+            edtwrd: field.edtwrd ? { ...field.edtwrd } : undefined,
+            edtmsk: field.edtmsk ? { ...field.edtmsk } : undefined,
+            dft: field.dft ? { ...field.dft } : undefined,
+                values: field.values,
+            dftval: field.dftval ? { ...field.dftval } : undefined,
+            dftvalIndicators: field.dftvalIndicators ? JSON.parse(JSON.stringify(field.dftvalIndicators)) : undefined
+        };
 
-/***/ }),
+        Logger.debug('Applying properties to field:', oldField.name);
 
-/***/ "./media/modules/ui/sourceSearch.js":
-/*!******************************************!*\
-  !*** ./media/modules/ui/sourceSearch.js ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+        if (field.type === 'keyword' || field.isKeyword) {
+            field.row = parseInt(document.getElementById('prop-row').value);
+            field.col = parseInt(document.getElementById('prop-col').value);
 
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setupSourceSearch: () => (/* binding */ setupSourceSearch)
-/* harmony export */ });
-let searchMatches = [];
-let currentMatchIndex = -1;
-let searchSetupDone = false;
-let hotkeySetupDone = false;
+            applyColorChanges(field);
 
-function setupSourceSearchHotkey() {
-    if (hotkeySetupDone) {
-        return;
-    }
-    hotkeySetupDone = true;
+            const attributeMap = getAttributeCheckboxMap(KEYWORD_ATTRIBUTE_ALLOW_LIST);
 
-    document.addEventListener('keydown', function(e) {
-        const isFindKey = e.key && e.key.toLowerCase() === 'f';
-        if ((e.ctrlKey || e.metaKey) && (isFindKey || e.code === 'KeyF')) {
-            const sourceView = document.getElementById('source-view');
-            const searchBox = document.getElementById('source-search-box');
-            if (sourceView && searchBox && sourceView.classList.contains('active')) {
-                e.preventDefault();
-                e.stopPropagation();
-                searchBox.classList.add('visible');
-                const searchInput = document.getElementById('source-search-input');
-                if (searchInput) {
-                    searchInput.focus();
-                    searchInput.select();
+            if (!field.attributes) {
+                field.attributes = {};
+            }
+
+            const selectedKeywordAttrs = [];
+            for (const [attrName, checkboxId] of Object.entries(attributeMap)) {
+                const checkbox = document.getElementById(checkboxId);
+                if (checkbox && checkbox.checked) {
+                    field.attributes[attrName] = true;
+                    selectedKeywordAttrs.push(attrName);
+                } else {
+                    delete field.attributes[attrName];
+                    Logger.debug(`Attribute ${attrName} removed from keyword ${field.name}`);
+                }
+            }
+
+            transferIndicators({
+                kind: 'attr',
+                keys: selectedKeywordAttrs,
+                field: field,
+                fieldType: 'keyword',
+                attrFormat: 'individual'
+            });
+
+            if (Object.keys(field.attributes).length === 0) {
+                delete field.attributes;
+            }
+
+            transferIndicators({
+                kind: 'keyword',
+                keys: [field.name],
+                field: field,
+                fieldType: 'keyword'
+            });
+
+            Logger.debug('Old keyword:', oldField);
+            Logger.debug('New keyword:', field);
+
+            updateFieldInDds(field, oldField);
+
+            const latestDocument = getCurrentDocument ? getCurrentDocument() : '';
+            parseDspfFields(latestDocument);
+
+            const updatedField = fields.find(f => f.name === field.name && f.record === currentRecord);
+            if (updatedField) {
+                if (setSelectedField) {
+                    setSelectedField(updatedField);
+                }
+                selectField(updatedField);
+                showFieldProperties(updatedField);
+                Logger.debug('Re-selected keyword after re-parse:', updatedField.name);
+            }
+
+            updateSourceViewUI({
+                Logger,
+                vscode,
+                getCurrentDocument,
+                setCurrentDocument,
+                getCurrentRecord,
+                parseDspfFields
+            });
+            Logger.debug('Source view synchronized after keyword update');
+
+            vscode.postMessage({
+                type: 'applyChangesSuccess',
+                message: `Keyword "${field.name}" updated successfully`
+            });
+
+            showFieldProperties(field);
+
+            Logger.success('Keyword properties applied and DDS updated');
+            return;
+        }
+
+        if (field.type !== 'constant') {
+            const nameInput = document.getElementById('prop-name');
+            if (nameInput) {
+                const newName = nameInput.value.trim().toUpperCase();
+
+                Logger.debug('Name validation - Field ID:', field.id, 'Old name:', oldField.name, 'New name:', newName, 'Current record:', currentRecord);
+
+                if (!newName) {
+                    alert('Field name cannot be empty.');
+                    return;
+                }
+
+                if (newName !== oldField.name) {
+                    Logger.debug('Name changed, checking for duplicates...');
+                    Logger.debug('Current record:', currentRecord);
+                    Logger.debug('All fields:', fields.map(f => `${f.name} (record: ${f.record || 'undefined'})`));
+
+                    const fieldsInCurrentRecord = fields.filter(f => {
+                        return f.record === currentRecord || (!f.record && currentRecord);
+                    });
+
+                    const duplicateField = fieldsInCurrentRecord.find(f =>
+                        f.id !== field.id &&
+                        f.name === newName
+                    );
+
+                    Logger.debug('Duplicate field found:', duplicateField);
+
+                    if (duplicateField) {
+                        vscode.postMessage({
+                            type: 'error',
+                            message: `A field with the name "${newName}" already exists in record "${currentRecord}".`
+                        });
+
+                        nameInput.value = oldField.name;
+                        return;
+                    }
+                }
+
+                field.name = newName;
+            }
+        }
+
+        field.row = parseInt(document.getElementById('prop-row').value);
+        field.col = parseInt(document.getElementById('prop-col').value);
+        field.length = parseInt(document.getElementById('prop-length').value) || null;
+
+        if (field.type !== 'constant') {
+            const decimalsInput = document.getElementById('prop-decimals');
+            if (decimalsInput) {
+                field.decimals = (field.dataType === 'double') ? 0 : (parseInt(decimalsInput.value) || 0);
+            }
+        }
+
+        if (field.type !== 'constant') {
+            const usageSelect = document.getElementById('prop-usage');
+            if (usageSelect) {
+                field.usage = usageSelect.value;
+                Logger.debug('Usage updated to:', field.usage);
+            }
+
+            const typeSelect = document.getElementById('prop-type');
+            if (typeSelect) {
+                field.dataType = typeSelect.value;
+                Logger.debug('Data type updated to:', field.dataType);
+                if (field.dataType === 'date') {
+                    field.length = 10;
+                    field.decimals = 0;
+                    delete field.shift;
+                    delete field.precision;
+                } else if (field.dataType === 'time') {
+                    field.length = 8;
+                    field.decimals = 0;
+                    delete field.shift;
+                    delete field.precision;
+                } else if (field.dataType === 'timestamp') {
+                    field.length = 26;
+                    field.decimals = 0;
+                    delete field.shift;
+                    delete field.precision;
+                }
+            }
+
+            const shiftSelect = document.getElementById('prop-shift');
+            const isShiftReadOnlyForZonedOutputOnly = field.dataType === 'zoned' && field.usage === 'O';
+
+            if (shiftSelect) {
+                if (field.dataType === 'float') {
+                    field.precision = shiftSelect.value;
+                    Logger.debug('Precision updated to:', field.precision);
+                } else if (field.dataType === 'zoned' || field.dataType === 'double') {
+                    if (isShiftReadOnlyForZonedOutputOnly) {
+                        Logger.debug('Shift not updated from UI because it is controlled by EDTCDE for zoned Output fields');
+                    } else {
+                        const selectedShift = shiftSelect.value ? shiftSelect.value.trim() : '';
+                        if (selectedShift) {
+                            field.shift = selectedShift;
+                        } else {
+                            delete field.shift;
+                        }
+                        Logger.debug('Shift updated to:', field.shift || '(none)');
+                    }
                 }
             }
         }
-    }, true);
-}
 
-function setupSourceSearch({ Logger }) {
-    setupSourceSearchHotkey();
-
-    if (searchSetupDone) {
-        return;
-    }
-    searchSetupDone = true;
-
-    const sourceEditor = document.getElementById('source-editor');
-    const searchBox = document.getElementById('source-search-box');
-    const searchInput = document.getElementById('source-search-input');
-    const searchPrevBtn = document.getElementById('search-prev-btn');
-    const searchNextBtn = document.getElementById('search-next-btn');
-    const searchCloseBtn = document.getElementById('search-close-btn');
-    const searchInfo = document.getElementById('search-info');
-    const highlightsContent = document.getElementById('search-highlights-content');
-
-    if (!sourceEditor || !searchBox || !searchInput || !searchPrevBtn || !searchNextBtn || !searchCloseBtn || !searchInfo || !highlightsContent) {
-        Logger.warn('Source search elements not found, skipping setup');
-        return;
-    }
-
-    sourceEditor.addEventListener('scroll', function() {
-        highlightsContent.style.transform = `translate(${-sourceEditor.scrollLeft}px, ${-sourceEditor.scrollTop}px)`;
-    });
-
-    function renderHighlights() {
-        const query = searchInput.value;
-        if (!query || searchMatches.length === 0) {
-            highlightsContent.innerHTML = '';
-            return;
+        if (field.type === 'constant') {
+            field.value = document.getElementById('prop-value').value;
         }
 
-        const text = sourceEditor.value;
-        let html = '';
-        let lastIndex = 0;
+        applyColorChanges(field);
 
-        searchMatches.forEach((matchIndex, i) => {
-            html += escapeHtml(text.substring(lastIndex, matchIndex));
+        if (field.type === 'constant' || field.type !== 'keyword') {
+            const attributeMap = getAttributeCheckboxMap();
 
-            const isCurrent = i === currentMatchIndex;
-            const className = isCurrent ? 'search-highlight-current' : 'search-highlight';
-            html += `<span class="${className}">${escapeHtml(text.substr(matchIndex, query.length))}</span>`;
-
-            lastIndex = matchIndex + query.length;
-        });
-
-        html += escapeHtml(text.substring(lastIndex));
-        highlightsContent.innerHTML = html;
-        highlightsContent.style.transform = `translate(${-sourceEditor.scrollLeft}px, ${-sourceEditor.scrollTop}px)`;
-    }
-
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    function performSearch() {
-        const query = searchInput.value;
-        if (!query) {
-            searchMatches = [];
-            currentMatchIndex = -1;
-            searchInfo.textContent = '';
-            renderHighlights();
-            return;
-        }
-
-        const text = sourceEditor.value;
-        searchMatches = [];
-        const lowerQuery = query.toLowerCase();
-        const lowerText = text.toLowerCase();
-        let index = lowerText.indexOf(lowerQuery);
-
-        while (index !== -1) {
-            searchMatches.push(index);
-            index = lowerText.indexOf(lowerQuery, index + 1);
-        }
-
-        if (searchMatches.length > 0) {
-            currentMatchIndex = 0;
-            highlightMatch();
-            searchInfo.textContent = `${currentMatchIndex + 1} of ${searchMatches.length}`;
-        } else {
-            searchInfo.textContent = 'No results';
-            currentMatchIndex = -1;
-        }
-
-        renderHighlights();
-    }
-
-    function highlightMatch() {
-        if (currentMatchIndex >= 0 && currentMatchIndex < searchMatches.length) {
-            const matchPos = searchMatches[currentMatchIndex];
-            sourceEditor.focus();
-            sourceEditor.setSelectionRange(matchPos, matchPos + searchInput.value.length);
-            sourceEditor.scrollTop = Math.max(0, (matchPos / sourceEditor.value.length) * sourceEditor.scrollHeight - 200);
-            searchInfo.textContent = `${currentMatchIndex + 1} of ${searchMatches.length}`;
-            renderHighlights();
-            setTimeout(() => searchInput.focus(), 0);
-        }
-    }
-
-    searchInput.addEventListener('input', performSearch);
-    searchInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            if (e.shiftKey) {
-                searchPrevBtn.click();
-            } else {
-                searchNextBtn.click();
+            if (!field.attributes) {
+                field.attributes = {};
             }
-        } else if (e.key === 'Escape') {
-            searchCloseBtn.click();
+
+            const selectedAttrs = [];
+            for (const [attrName, checkboxId] of Object.entries(attributeMap)) {
+                const checkbox = document.getElementById(checkboxId);
+                if (checkbox && checkbox.checked) {
+                    field.attributes[attrName] = true;
+                    selectedAttrs.push(attrName);
+                } else {
+                    delete field.attributes[attrName];
+                    Logger.debug(`Attribute ${attrName} removed from field ${field.name}`);
+                }
+            }
+
+            const attrFormat = field.hasGroupedDspatr ? 'grouped' : 'individual';
+            const attrIndicatorsModified = transferIndicators({
+                kind: 'attr',
+                keys: selectedAttrs,
+                field: field,
+                fieldType: 'field',
+                attrFormat: attrFormat
+            });
+
+            if (Object.keys(field.attributes).length === 0) {
+                delete field.attributes;
+            }
+
+            if (field.hasGroupedDspatr && !attrIndicatorsModified) {
+                const oldAttrSet = new Set(Object.keys(oldField.attributes || {}).filter(k => oldField.attributes[k]));
+                const newAttrSet = new Set(Object.keys(field.attributes || {}).filter(k => field.attributes[k]));
+
+                const setsAreDifferent = oldAttrSet.size !== newAttrSet.size ||
+                    [...oldAttrSet].some(attr => !newAttrSet.has(attr));
+
+                if (setsAreDifferent) {
+                    field.attributeIndicatorsModified = true;
+                    Logger.debug('Grouped DSPATR format detected attribute changes, will regenerate line');
+                }
+            }
         }
-    });
 
-    searchPrevBtn.addEventListener('click', function() {
-        if (searchMatches.length > 0) {
-            currentMatchIndex = (currentMatchIndex - 1 + searchMatches.length) % searchMatches.length;
-            highlightMatch();
+        if (field.type !== 'constant' && field.usage !== 'O') {
+            const dataTypeForChecks = field.dataType;
+            const isCharCheck = dataTypeForChecks === 'character' || dataTypeForChecks === 'double';
+            const isNumericCheck = ['packed', 'zoned', 'float'].includes(dataTypeForChecks);
+            const newCheckOptions = {};
+            const applyCheckValue = (id, code) => {
+                const el = document.getElementById(id);
+                if (el && el.checked) {newCheckOptions[code] = true;}
+            };
+            if (isCharCheck) {
+                applyCheckValue('check-me', 'ME');
+                applyCheckValue('check-er', 'ER');
+                applyCheckValue('check-mf', 'MF');
+                applyCheckValue('check-fe', 'FE');
+                applyCheckValue('check-rb', 'RB');
+                applyCheckValue('check-rz', 'RZ');
+                applyCheckValue('check-rl', 'RL');
+                applyCheckValue('check-lc', 'LC');
+            }
+            if (isNumericCheck) {
+                applyCheckValue('check-num-me', 'ME');
+                applyCheckValue('check-num-er', 'ER');
+                applyCheckValue('check-num-mf', 'MF');
+                applyCheckValue('check-num-fe', 'FE');
+                applyCheckValue('check-num-rb', 'RB');
+                applyCheckValue('check-num-rz', 'RZ');
+                applyCheckValue('check-num-rl', 'RL');
+            }
+
+            if (Object.keys(newCheckOptions).length > 0) {
+                field.checkOptions = newCheckOptions;
+            } else {
+                delete field.checkOptions;
+            }
+
+            const allowedIndicatorCodes = ['ME', 'ER'];
+            let checkIndicatorsModified = false;
+            if (!field.checkIndicators) {field.checkIndicators = {};}
+            allowedIndicatorCodes.forEach(code => {
+                if (selectedField && selectedField.checkIndicators && selectedField.checkIndicators[code]) {
+                    field.checkIndicators[code] = selectedField.checkIndicators[code];
+                    checkIndicatorsModified = true;
+                    Logger.debug(`Transferred CHECK(${code}) indicators from selectedField:`, field.checkIndicators[code]);
+                } else if (field.checkIndicators[code] && !(newCheckOptions && newCheckOptions[code])) {
+                    delete field.checkIndicators[code];
+                    checkIndicatorsModified = true;
+                }
+            });
+            Object.keys(field.checkIndicators).forEach(code => {
+                if (!newCheckOptions[code]) {delete field.checkIndicators[code];}
+            });
+            if (Object.keys(field.checkIndicators).length === 0) {
+                delete field.checkIndicators;
+            }
+            if (checkIndicatorsModified) {
+                field.checkIndicatorsModified = true;
+            }
+        } else {
+            delete field.checkOptions;
+            delete field.checkIndicators;
         }
-    });
 
-    searchNextBtn.addEventListener('click', function() {
-        if (searchMatches.length > 0) {
-            currentMatchIndex = (currentMatchIndex + 1) % searchMatches.length;
-            highlightMatch();
+        const valuesEnabledCheckbox = document.getElementById('prop-values-enabled');
+        const valuesListInput = document.getElementById('prop-values-list');
+        const valuesIsCharType = ['character', 'double'].includes(field.dataType);
+        const valuesIsNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(field.dataType);
+        const canUseValues = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && (field.usage === 'I' || field.usage === 'B')
+            && (valuesIsCharType || valuesIsNumericType);
+
+        if (canUseValues && valuesEnabledCheckbox && valuesEnabledCheckbox.checked && valuesListInput) {
+            const rawInput = valuesListInput.value.trim();
+            if (rawInput) {
+                const hasQuotedTokens = /'(?:''|[^'])*'/.test(rawInput);
+                if (hasQuotedTokens) {
+                    const quotedTokens = rawInput.match(/'(?:''|[^'])*'/g) || [];
+                    field.values = quotedTokens.join(' ');
+                } else {
+                    const lines = rawInput
+                        .split(/\r?\n/)
+                        .map(value => value.trim())
+                        .filter(value => value.length > 0)
+                        .map(value => `'${value.replace(/'/g, "''")}'`);
+
+                    if (lines.length > 0) {
+                        field.values = lines.join(' ');
+                    } else {
+                        delete field.values;
+                    }
+                }
+            } else {
+                delete field.values;
+            }
+        } else {
+            delete field.values;
         }
-    });
 
-    searchCloseBtn.addEventListener('click', function() {
-        searchBox.classList.remove('visible');
-        searchInput.value = '';
-        searchMatches = [];
-        currentMatchIndex = -1;
-        searchInfo.textContent = '';
-        renderHighlights();
-        sourceEditor.focus();
-    });
+        if (field.type !== 'constant') {
+            const dftCheckbox = document.getElementById('prop-dft-enabled');
+            const dftValueInput = document.getElementById('prop-dft-value');
 
-    Logger.debug('Source search setup complete');
+            if (dftCheckbox && dftCheckbox.checked && dftValueInput) {
+                const dftValue = dftValueInput.value.trim();
+                if (dftValue) {
+                    field.dft = { value: dftValue };
+                    Logger.debug(`DFT set to '${dftValue}' for field ${field.name}`);
+                } else {
+                    delete field.dft;
+                }
+            } else {
+                delete field.dft;
+            }
+        } else {
+            delete field.dft;
+        }
+
+        if (field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B')) {
+            const dftvalCheckbox = document.getElementById('prop-dftval-enabled');
+            const dftvalValueInput = document.getElementById('prop-dftval-value');
+
+            if (dftvalCheckbox && dftvalCheckbox.checked && dftvalValueInput) {
+                const dftvalValue = dftvalValueInput.value.trim();
+                if (dftvalValue) {
+                    field.dftval = { value: dftvalValue };
+                    Logger.debug(`DFTVAL set to '${dftvalValue}' for field ${field.name}`);
+
+                    if (selectedField && selectedField.dftvalIndicators) {
+                        field.dftvalIndicators = selectedField.dftvalIndicators;
+                        Logger.debug('Transferred DFTVAL indicators from selectedField:', field.dftvalIndicators);
+                    }
+                } else {
+                    delete field.dftval;
+                    delete field.dftvalIndicators;
+                }
+            } else {
+                delete field.dftval;
+                delete field.dftvalIndicators;
+            }
+        } else {
+            delete field.dftval;
+            delete field.dftvalIndicators;
+        }
+
+        const edtcdeEnabledCheckbox = document.getElementById('prop-edtcde-enabled');
+        const edtcdeValueSelect = document.getElementById('prop-edtcde-value');
+        const edtcdeReplaceSelect = document.getElementById('prop-edtcde-replace-leading-zeros-with');
+        const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(field.dataType);
+        const canUseEdtcde = field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B') && isNumericType;
+
+        if (canUseEdtcde && edtcdeEnabledCheckbox && edtcdeEnabledCheckbox.checked && edtcdeValueSelect) {
+            const selectedEdtcde = edtcdeValueSelect.value.trim().toUpperCase();
+            if (selectedEdtcde) {
+                const replacement = edtcdeReplaceSelect ? edtcdeReplaceSelect.value.trim() : '';
+                field.edtcde = { value: selectedEdtcde };
+                if ((replacement === '*' || replacement === '$') && selectedEdtcde !== 'Z') {
+                    field.edtcde.replaceLeadingZerosWith = replacement;
+                } else {
+                    delete field.edtcde.replaceLeadingZerosWith;
+                }
+            } else {
+                delete field.edtcde;
+            }
+        } else {
+            delete field.edtcde;
+        }
+
+        const edtwrdEnabledCheckbox = document.getElementById('prop-edtwrd-enabled');
+        const edtwrdValueInput = document.getElementById('prop-edtwrd-value');
+        const edtmskEnabledCheckbox = document.getElementById('prop-edtmsk-enabled');
+        const edtmskValueInput = document.getElementById('prop-edtmsk-value');
+
+        const canUseEditKeywords = field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B') && isNumericType;
+
+        if (canUseEditKeywords && edtwrdEnabledCheckbox && edtwrdEnabledCheckbox.checked && edtwrdValueInput) {
+            const edtwrdValue = edtwrdValueInput.value;
+            if (edtwrdValue.length > 0) {
+                field.edtwrd = { value: edtwrdValue };
+            } else {
+                delete field.edtwrd;
+            }
+        } else {
+            delete field.edtwrd;
+        }
+
+        if (canUseEditKeywords && edtmskEnabledCheckbox && edtmskEnabledCheckbox.checked && edtmskValueInput) {
+            const edtmskValue = edtmskValueInput.value;
+            if (edtmskValue.length > 0) {
+                field.edtmsk = { value: edtmskValue };
+            } else {
+                delete field.edtmsk;
+            }
+        } else {
+            delete field.edtmsk;
+        }
+
+        const edtcdeForShift = field.edtcde && field.edtcde.value
+            ? String(field.edtcde.value).trim().toUpperCase()
+            : '';
+        const edtcdeCodesThatForceYShift = ['1', '2', '3', 'A', 'B', 'C', 'D', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q'];
+        const appliesAutoShiftRule = field.type !== 'constant'
+            && field.dataType === 'zoned'
+            && (field.usage === 'O' || field.usage === 'B');
+
+        if (appliesAutoShiftRule) {
+            if (edtcdeForShift === 'Z') {
+                delete field.shift;
+                Logger.debug('Shift cleared for EDTCDE(Z) on zoned Output/Both field');
+            } else if (edtcdeCodesThatForceYShift.includes(edtcdeForShift)) {
+                field.shift = 'Y';
+                Logger.debug(`Shift forced to Y for EDTCDE(${edtcdeForShift}) on zoned Output/Both field`);
+            } else if (field.usage === 'B' && !field.shift) {
+                field.shift = 'S';
+                Logger.debug('Shift defaulted to S for zoned Both field without EDTCDE override');
+            } else if (field.usage === 'O') {
+                delete field.shift;
+                Logger.debug('Shift cleared by default for zoned Output field without EDTCDE override');
+            }
+        }
+
+        Logger.debug('Old field:', oldField);
+        Logger.debug('New field:', field);
+
+        const positionChanged = oldField.row !== field.row || oldField.col !== field.col;
+        const nameChanged = oldField.name !== field.name;
+        const indicatorsModified = Boolean(
+            field.colorIndicatorsModified ||
+            field.attributeIndicatorsModified ||
+            field.keywordIndicatorsModified ||
+            field.fieldIndicatorsModified ||
+            field.dftvalIndicatorsModified
+        );
+
+        const oldColors = JSON.stringify(oldField.colors || [oldField.color].filter(Boolean));
+        const newColors = JSON.stringify(field.colors || [field.color].filter(Boolean));
+        const colorChanged = oldColors !== newColors;
+
+        const oldAttrs = JSON.stringify(oldField.attributes || {});
+        const newAttrs = JSON.stringify(field.attributes || {});
+        const attributesChanged = oldAttrs !== newAttrs;
+
+        const usageChanged = oldField.usage !== field.usage;
+
+        const dataTypeChanged = oldField.dataType !== field.dataType;
+        const lengthChanged = oldField.length !== field.length;
+        const decimalsChanged = oldField.decimals !== field.decimals;
+        const shiftChanged = (field.dataType === 'zoned' || field.dataType === 'double') && oldField.shift !== field.shift;
+        const precisionChanged = field.dataType === 'float' && oldField.precision !== field.precision;
+        const checkOptionsChanged = JSON.stringify(oldField.checkOptions || {}) !== JSON.stringify(field.checkOptions || {});
+        const checkIndicatorsModified = Boolean(field.checkIndicatorsModified);
+        const dftChanged = JSON.stringify(oldField.dft || null) !== JSON.stringify(field.dft || null);
+        const valuesChanged = JSON.stringify(oldField.values || null) !== JSON.stringify(field.values || null);
+        const dftvalChanged = JSON.stringify(oldField.dftval || null) !== JSON.stringify(field.dftval || null);
+        const dftvalIndicatorsChanged = JSON.stringify(oldField.dftvalIndicators || null) !== JSON.stringify(field.dftvalIndicators || null);
+        const edtcdeChanged = JSON.stringify(oldField.edtcde || null) !== JSON.stringify(field.edtcde || null);
+        const edtwrdChanged = JSON.stringify(oldField.edtwrd || null) !== JSON.stringify(field.edtwrd || null);
+        const edtmskChanged = JSON.stringify(oldField.edtmsk || null) !== JSON.stringify(field.edtmsk || null);
+
+        const valueChanged = field.type === 'constant' && oldField.value !== field.value;
+
+        const shouldUpdateDds = Boolean(
+            indicatorsModified ||
+            positionChanged ||
+            nameChanged ||
+            colorChanged ||
+            attributesChanged ||
+            usageChanged ||
+            dataTypeChanged ||
+            lengthChanged ||
+            decimalsChanged ||
+            shiftChanged ||
+            precisionChanged ||
+            valueChanged ||
+            checkOptionsChanged ||
+            checkIndicatorsModified ||
+            dftChanged ||
+            valuesChanged ||
+            dftvalChanged ||
+            dftvalIndicatorsChanged ||
+            edtcdeChanged ||
+            edtwrdChanged ||
+            edtmskChanged
+        );
+
+        if (shouldUpdateDds) {
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            updateFieldInDds(field, oldField);
+            delete field.colorIndicatorsModified;
+            delete field.attributeIndicatorsModified;
+            delete field.checkIndicatorsModified;
+            delete field.keywordIndicatorsModified;
+            delete field.dftvalIndicatorsModified;
+
+            const latestDocument = getCurrentDocument ? getCurrentDocument() : '';
+            parseDspfFields(latestDocument);
+
+            const updatedField = fields.find(f => f.name === field.name && f.record === currentRecord);
+            if (updatedField) {
+                if (setSelectedField) {
+                    setSelectedField(updatedField);
+                }
+                selectField(updatedField);
+                showFieldProperties(updatedField);
+                Logger.debug('Re-selected field after re-parse:', updatedField.name);
+            }
+
+            updateSourceViewUI({
+                Logger,
+                vscode,
+                getCurrentDocument,
+                setCurrentDocument,
+                getCurrentRecord,
+                parseDspfFields
+            });
+            Logger.debug('Source view synchronized after field update');
+
+            vscode.postMessage({
+                type: 'applyChangesSuccess',
+                message: `Changes applied to field "${field.name}"`
+            });
+        } else {
+            Logger.debug('Skipping DDS update - no relevant changes detected');
+
+            vscode.postMessage({
+                type: 'applyChangesSuccess',
+                message: `No changes detected for field "${field.name}"`
+            });
+        }
+
+        showFieldProperties(field);
+
+        Logger.success('Field properties applied');
+    } catch (error) {
+        Logger.error('Error applying field properties:', error);
+        vscode.postMessage({
+            type: 'applyChangesError',
+            message: `Error applying changes: ${error.message}`
+        });
+    }
 }
 
 
 /***/ }),
-
-/***/ "./media/modules/ui/sourceView.js":
-/*!****************************************!*\
-  !*** ./media/modules/ui/sourceView.js ***!
-  \****************************************/
+/* 31 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   updateSourceView: () => (/* binding */ updateSourceView)
+/* harmony export */   setupPropertiesTabs: () => (/* binding */ setupPropertiesTabs)
 /* harmony export */ });
-let currentDeps = null;
+function setupPropertiesTabs() {
+    const tabs = document.querySelectorAll('.properties-tab');
+    const panels = document.querySelectorAll('.tab-panel');
 
-function generateColumnRuler() {
-    const rulerMain = document.querySelector('.ruler-main');
-    if (!rulerMain) {
-        return;
-    }
-    const rulerText = '        .....AAN01N02N03..Name++++++RLen++TDpBLinPosFunctions+++++++++++++++++++++++++++Comments+++++++++++';
-    rulerMain.textContent = rulerText;
-}
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
 
-function updateLineNumbers(sourceEditor) {
-    const lineNumbers = document.getElementById('source-line-numbers');
-    if (!sourceEditor || !lineNumbers) {
-        return;
-    }
+            // Remove active class from all tabs and panels
+            tabs.forEach(t => t.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active'));
 
-    const lines = sourceEditor.value.split('\n');
-    const lineCount = lines.length;
-
-    let numbersHTML = '';
-    for (let i = 1; i <= lineCount; i++) {
-        numbersHTML += i + '\n';
-    }
-
-    lineNumbers.textContent = numbersHTML;
-}
-
-function syncLineNumbersScroll(event) {
-    const sourceEditor = event.target;
-    const lineNumbers = document.getElementById('source-line-numbers');
-    const rulerContent = document.querySelector('.ruler-content');
-
-    if (!sourceEditor || !lineNumbers) {
-        return;
-    }
-
-    lineNumbers.scrollTop = sourceEditor.scrollTop;
-
-    if (rulerContent) {
-        rulerContent.scrollLeft = sourceEditor.scrollLeft;
-    }
-}
-
-function handleSourceChange(event) {
-    if (!currentDeps) {
-        return;
-    }
-
-    const { Logger, vscode, setCurrentDocument, getCurrentRecord, parseDspfFields } = currentDeps;
-    const updatedDocument = event.target.value;
-    setCurrentDocument(updatedDocument);
-
-    updateLineNumbers(event.target);
-
-    vscode.postMessage({
-        type: 'update',
-        content: updatedDocument,
-        currentRecord: getCurrentRecord()
+            // Add active class to clicked tab and corresponding panel
+            this.classList.add('active');
+            const panel = document.getElementById(`tab-${tabName}`);
+            if (panel) {
+                panel.classList.add('active');
+            }
+        });
     });
-
-    parseDspfFields(updatedDocument);
-    Logger.debug('Source editor changed, designer view updated');
-}
-
-function updateSourceView({ Logger, vscode, getCurrentDocument, setCurrentDocument, getCurrentRecord, parseDspfFields }) {
-    const sourceEditor = document.getElementById('source-editor');
-    if (!sourceEditor) {
-        return;
-    }
-
-    currentDeps = {
-        Logger,
-        vscode,
-        setCurrentDocument,
-        getCurrentRecord,
-        parseDspfFields
-    };
-
-    const currentDocument = getCurrentDocument();
-    if (sourceEditor.value !== currentDocument) {
-        const cursorStart = sourceEditor.selectionStart;
-        const cursorEnd = sourceEditor.selectionEnd;
-        const scrollTop = sourceEditor.scrollTop;
-
-        sourceEditor.value = currentDocument;
-
-        sourceEditor.setSelectionRange(cursorStart, cursorEnd);
-        sourceEditor.scrollTop = scrollTop;
-    }
-
-    updateLineNumbers(sourceEditor);
-    generateColumnRuler();
-
-    sourceEditor.removeEventListener('input', handleSourceChange);
-    sourceEditor.addEventListener('input', handleSourceChange);
-
-    sourceEditor.removeEventListener('scroll', syncLineNumbersScroll);
-    sourceEditor.addEventListener('scroll', syncLineNumbersScroll);
 }
 
 
 /***/ }),
-
-/***/ "./media/modules/ui/subfileControl.js":
-/*!********************************************!*\
-  !*** ./media/modules/ui/subfileControl.js ***!
-  \********************************************/
+/* 32 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -14104,314 +11040,545 @@ function getSubfileRelationship(options) {
 
 
 /***/ }),
-
-/***/ "./media/modules/ui/switchToView.js":
-/*!******************************************!*\
-  !*** ./media/modules/ui/switchToView.js ***!
-  \******************************************/
+/* 33 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   switchToView: () => (/* binding */ switchToView)
+/* harmony export */   createFunctionKeyRow: () => (/* binding */ createFunctionKeyRow),
+/* harmony export */   loadFunctionKeys: () => (/* binding */ loadFunctionKeys),
+/* harmony export */   saveFunctionKeys: () => (/* binding */ saveFunctionKeys)
 /* harmony export */ });
-function switchToView({
-    viewName,
-    Logger,
-    setCurrentView,
-    getSelectedField,
-    setSelectedField,
-    getFields,
-    getCurrentDocument,
-    parseDspfFields,
-    showFieldProperties,
-    updatePreviewView,
-    updateSourceViewUI,
-    vscode,
-    setCurrentDocument,
-    getCurrentRecord,
-    setupSourceSearchUI,
-    scrollToRecordInSource
-}) {
-    Logger.ui('Switching to view:', viewName);
+function loadFunctionKeys(options) {
+    const { getCurrentDocument, getCurrentRecord, createFunctionKeyRow } = options;
+    const container = document.getElementById('function-keys-list');
+    if (!container) {return;}
 
-    if (setCurrentView) {
-        setCurrentView(viewName);
-    }
+    const currentDocument = getCurrentDocument();
+    const currentRecord = getCurrentRecord();
 
-    document.querySelectorAll('.view').forEach(view => {
-        view.classList.remove('active');
-        view.style.display = 'none';
-        Logger.debug('Hidden view:', view.id);
-    });
+    const lines = currentDocument.split('\n');
+    let inTargetRecord = false;
+    const functionKeysMap = {};
 
-    document.querySelectorAll('.tab-button').forEach(tab => {
-        tab.classList.remove('active');
-    });
+    for (let line of lines) {
+        if (line.includes(`R ${currentRecord}`) || line.includes(`R  ${currentRecord}`)) {
+            inTargetRecord = true;
+            continue;
+        }
 
-    const propertiesPanel = document.getElementById('properties-panel');
-
-    switch (viewName) {
-        case 'designer': {
-            const designerView = document.getElementById('designer-view');
-            const designerTab = document.getElementById('designerTab');
-            if (designerView && designerTab) {
-                designerView.style.display = 'flex';
-                designerView.classList.add('active');
-                designerTab.classList.add('active');
-                if (propertiesPanel) {
-                    propertiesPanel.classList.remove('hidden');
-                }
-
-                const previouslySelectedField = getSelectedField ? getSelectedField() : null;
-                const previouslySelectedFieldName = previouslySelectedField ? previouslySelectedField.name : null;
-                const currentDocument = getCurrentDocument ? getCurrentDocument() : '';
-
-                parseDspfFields(currentDocument);
-
-                if (previouslySelectedFieldName) {
-                    const currentFields = getFields ? getFields() : [];
-                    const updatedField = currentFields.find(field => field.name === previouslySelectedFieldName);
-                    if (updatedField) {
-                        if (setSelectedField) {
-                            setSelectedField(updatedField);
-                        }
-                        showFieldProperties(updatedField);
-
-                        const fieldElement = document.querySelector(`[data-field-name="${updatedField.name}"]`);
-                        if (fieldElement) {
-                            fieldElement.classList.add('field-updated');
-                            setTimeout(() => {
-                                fieldElement.classList.remove('field-updated');
-                            }, 800);
-                        }
-                        Logger.debug('Auto-updated properties for field:', updatedField.name);
-                    } else {
-                        if (setSelectedField) {
-                            setSelectedField(null);
-                        }
-                        showFieldProperties(null);
-                        Logger.warn('Previously selected field no longer exists, resetting properties');
-                    }
-                } else {
-                    if (setSelectedField) {
-                        setSelectedField(null);
-                    }
-                    showFieldProperties(null);
-                }
-
-                Logger.debug('Designer view activated and visible');
-            } else {
-                Logger.error('Designer elements not found');
-            }
+        if (inTargetRecord && line.match(/^\s*A\s+R\s+\w+/)) {
             break;
         }
-        case 'preview': {
-            const previewView = document.getElementById('preview-view');
-            const previewTab = document.getElementById('previewTab');
-            if (previewView && previewTab) {
-                previewView.style.display = 'flex';
-                previewView.classList.add('active');
-                previewTab.classList.add('active');
-                if (propertiesPanel) {
-                    propertiesPanel.classList.add('hidden');
-                }
-                updatePreviewView();
-                Logger.debug('Preview view activated and visible');
-            } else {
-                Logger.error('Preview elements not found');
+
+        if (inTargetRecord) {
+            const cfMatch = line.match(/CF(\d+)\((\d+)(?:\s+'([^']*)')?\)/i);
+            const caMatch = line.match(/CA(\d+)\((\d+)(?:\s+'([^']*)')?\)/i);
+
+            if (cfMatch) {
+                functionKeysMap[`F${parseInt(cfMatch[1])}`] = {
+                    type: 'CF',
+                    indicator: cfMatch[2],
+                    description: cfMatch[3] || ''
+                };
+            } else if (caMatch) {
+                functionKeysMap[`F${parseInt(caMatch[1])}`] = {
+                    type: 'CA',
+                    indicator: caMatch[2],
+                    description: caMatch[3] || ''
+                };
             }
-            break;
-        }
-        case 'source': {
-            const sourceView = document.getElementById('source-view');
-            const sourceTab = document.getElementById('sourceTab');
-            if (sourceView && sourceTab) {
-                sourceView.style.display = 'flex';
-                sourceView.classList.add('active');
-                sourceTab.classList.add('active');
-                if (propertiesPanel) {
-                    propertiesPanel.classList.add('hidden');
-                }
-                updateSourceViewUI({
-                    Logger,
-                    vscode,
-                    getCurrentDocument,
-                    setCurrentDocument,
-                    getCurrentRecord,
-                    parseDspfFields
-                });
-                setupSourceSearchUI({ Logger });
-                scrollToRecordInSource();
-                Logger.debug('Source view activated and visible');
-            } else {
-                Logger.error('Source elements not found');
-            }
-            break;
         }
     }
 
-    document.querySelectorAll('.view').forEach(view => {
-        const isActive = view.classList.contains('active');
-        const displayStyle = window.getComputedStyle(view).display;
-        Logger.debug(`${view.id}: active=${isActive}, display=${displayStyle}`);
-    });
+    container.innerHTML = '';
+
+    for (let i = 1; i <= 24; i++) {
+        const key = `F${i}`;
+        const fkData = functionKeysMap[key] || { type: '', indicator: '', description: '' };
+        container.appendChild(createFunctionKeyRow({ fk: { key, ...fkData } }));
+    }
 }
 
+function createFunctionKeyRow(options) {
+    const { fk = null, key, type, indicator, description, index = null, IdGenerator, saveFunctionKeys } = options;
+    const row = document.createElement('div');
+    row.className = 'function-key-row';
+    const rowId = IdGenerator.generateUniqueId('fk-row');
+    row.dataset.rowId = rowId;
+    row.style.cssText = 'display: grid; grid-template-columns: 70px 240px 70px 1fr; gap: 8px; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 8px; align-items: center; min-width: 600px;';
 
-/***/ }),
+    const resolvedFk = fk || { key, type, indicator, description };
+    const resolvedKey = resolvedFk && resolvedFk.key ? resolvedFk.key : 'F1';
+    const resolvedType = resolvedFk && resolvedFk.type ? resolvedFk.type : '';
+    const resolvedIndicator = resolvedFk && resolvedFk.indicator ? resolvedFk.indicator : '';
+    const resolvedDescription = resolvedFk && resolvedFk.description ? resolvedFk.description : '';
 
-/***/ "./media/modules/ui/toolbarSetup.js":
-/*!******************************************!*\
-  !*** ./media/modules/ui/toolbarSetup.js ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+    row.innerHTML = `
+        <select class="fk-key" style="width: 100%; padding: 4px;">
+            ${generateFunctionKeyOptions(resolvedKey)}
+        </select>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">
+                <input type="radio" name="type-${rowId}" value="" ${resolvedType === '' ? 'checked' : ''} />
+                <span style="font-size: 12px;">Unspecified</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">
+                <input type="radio" name="type-${rowId}" value="CA" ${resolvedType === 'CA' ? 'checked' : ''} />
+                <span style="font-size: 12px;">Attention</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">
+                <input type="radio" name="type-${rowId}" value="CF" ${resolvedType === 'CF' ? 'checked' : ''} />
+                <span style="font-size: 12px;">Function</span>
+            </label>
+        </div>
+        <input type="number" class="fk-indicator" value="${resolvedIndicator}" placeholder="Ind" min="1" max="99" style="width: 100%; padding: 4px; text-align: center;" />
+        <input type="text" class="fk-description" value="${resolvedDescription}" placeholder="Description" style="width: 100%; padding: 4px; min-width: 150px;" />
+    `;
 
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setupToolbarButtons: () => (/* binding */ setupToolbarButtons)
-/* harmony export */ });
-function setupToolbarButtons({
-    Logger,
-    vscode,
-    saveDocument,
-    navigateToPreviousRecord,
-    navigateToNextRecord,
-    setViewZoom,
-    getCurrentZoom,
-    switchToView
-}) {
-    document.getElementById('saveBtn').addEventListener('click', function() {
-        Logger.ui('Save button clicked!');
-        saveDocument();
+    row.querySelectorAll('select, input').forEach(el => {
+        el.addEventListener('change', saveFunctionKeys);
+        el.addEventListener('blur', saveFunctionKeys);
     });
 
-    // Setup back button (if it exists, for multi-record files)
-    const backBtn = document.getElementById('backBtn');
-    if (backBtn) {
-        backBtn.addEventListener('click', function() {
-            Logger.ui('Back button clicked');
-            vscode.postMessage({ type: 'backToRecordList' });
-        });
-    }
-
-    // Setup navigation buttons
-    const prevRecordBtn = document.getElementById('prevRecordBtn');
-    const nextRecordBtn = document.getElementById('nextRecordBtn');
-
-    if (prevRecordBtn) {
-        prevRecordBtn.addEventListener('click', function() {
-            Logger.ui('Previous Record button clicked');
-            navigateToPreviousRecord();
-        });
-    }
-
-    if (nextRecordBtn) {
-        nextRecordBtn.addEventListener('click', function() {
-            Logger.ui('Next Record button clicked');
-            navigateToNextRecord();
-        });
-    }
-
-    const zoomOutBtn = document.getElementById('zoomOutBtn');
-    const zoomInBtn = document.getElementById('zoomInBtn');
-    const zoomResetBtn = document.getElementById('zoomResetBtn');
-
-    if (zoomOutBtn) {
-        zoomOutBtn.addEventListener('click', function() {
-            setViewZoom(getCurrentZoom() - 0.05);
-        });
-    }
-
-    if (zoomInBtn) {
-        zoomInBtn.addEventListener('click', function() {
-            setViewZoom(getCurrentZoom() + 0.05);
-        });
-    }
-
-    if (zoomResetBtn) {
-        zoomResetBtn.addEventListener('click', function() {
-            setViewZoom(1);
-        });
-    }
-
-    // Setup tab buttons
-    const designerTab = document.getElementById('designerTab');
-    const previewTab = document.getElementById('previewTab');
-    const sourceTab = document.getElementById('sourceTab');
-
-    if (designerTab) {
-        designerTab.addEventListener('click', function(e) {
-            e.preventDefault();
-            Logger.ui('Designer tab clicked');
-            switchToView('designer');
-        });
-    } else {
-        Logger.error('Designer tab not found');
-    }
-
-    if (previewTab) {
-        previewTab.addEventListener('click', function(e) {
-            e.preventDefault();
-            Logger.ui('Preview tab clicked');
-            switchToView('preview');
-        });
-    } else {
-        Logger.error('Preview tab not found');
-    }
-
-    if (sourceTab) {
-        sourceTab.addEventListener('click', function(e) {
-            e.preventDefault();
-            Logger.ui('Source tab clicked');
-            switchToView('source');
-        });
-    } else {
-        Logger.error('Source tab not found');
-    }
-
-    Logger.success('Toolbar buttons setup complete');
+    return row;
 }
 
-
-/***/ }),
-
-/***/ "./media/modules/ui/updateDocumentInEditor.js":
-/*!****************************************************!*\
-  !*** ./media/modules/ui/updateDocumentInEditor.js ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   updateDocumentInEditor: () => (/* binding */ updateDocumentInEditor)
-/* harmony export */ });
-function updateDocumentInEditor(options) {
+function saveFunctionKeys(options) {
     const {
-        currentRecord,
-        currentDocument,
-        Logger
+        Logger,
+        isReadOnly,
+        getCurrentDocument,
+        setCurrentDocument,
+        getCurrentRecord,
+        updateDocumentInEditor
     } = options;
 
-    const preservedRecord = currentRecord;
-
-    const sourceTextarea = document.getElementById('source-content');
-    if (sourceTextarea) {
-        sourceTextarea.value = currentDocument;
+    if (isReadOnly) {
+        Logger.warn('Cannot save function keys in read-only mode');
+        return;
     }
 
-    if (Logger) {
-        Logger.dds('Document updated internally, waiting for Save. Record context:', preservedRecord);
+    Logger.ui('Saving function keys...');
+
+    const container = document.getElementById('function-keys-list');
+    if (!container) {return;}
+
+    const configuredKeys = [];
+    const rows = container.querySelectorAll('.function-key-row');
+
+    rows.forEach(row => {
+        const keySelect = row.querySelector('.fk-key');
+        const typeRadios = row.querySelectorAll('input[type="radio"]');
+        const indicatorInput = row.querySelector('.fk-indicator');
+        const descriptionInput = row.querySelector('.fk-description');
+
+        const key = keySelect.value;
+        let type = '';
+        typeRadios.forEach(radio => {
+            if (radio.checked) {
+                type = radio.value;
+            }
+        });
+        const indicator = indicatorInput.value.trim();
+        const description = descriptionInput.value.trim();
+
+        if (type && indicator) {
+            configuredKeys.push({ key, type, indicator, description });
+        }
+    });
+
+    const currentDocument = getCurrentDocument();
+    const currentRecord = getCurrentRecord();
+    const lines = currentDocument.split('\n');
+    let inTargetRecord = false;
+    let recordLineIndex = -1;
+    let insertIndex = -1;
+    let recordStartIndex = -1;
+    const linesToRemove = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        if (line.includes(`R ${currentRecord}`) || line.includes(`R  ${currentRecord}`)) {
+            inTargetRecord = true;
+            recordStartIndex = i;
+            recordLineIndex = i;
+            continue;
+        }
+
+        if (inTargetRecord && line.match(/^\s*A\s+R\s+\w+/)) {
+            insertIndex = i;
+            break;
+        }
+
+        if (inTargetRecord) {
+            if (line.match(/CF\d+\(/) || line.match(/CA\d+\(/) ||
+                line.includes('PAGEDOWN(') || line.includes('PAGEUP(')) {
+                linesToRemove.push(i);
+            }
+        }
     }
+
+    if (recordLineIndex !== -1) {
+        insertIndex = recordLineIndex + 1;
+    } else if (insertIndex === -1) {
+        insertIndex = lines.length;
+    }
+
+    for (let i = linesToRemove.length - 1; i >= 0; i--) {
+        const removedIndex = linesToRemove[i];
+        lines.splice(removedIndex, 1);
+
+        if (removedIndex < insertIndex) {
+            insertIndex--;
+        }
+    }
+
+    const newLines = [];
+    configuredKeys.forEach(fk => {
+        let keyword = '';
+
+        if (fk.key === 'PAGEDOWN' || fk.key === 'PAGEUP') {
+            keyword = fk.key;
+        } else {
+            const fNum = fk.key.substring(1).padStart(2, '0');
+            keyword = `${fk.type}${fNum}`;
+        }
+
+        const indicator = fk.indicator.padStart(2, '0');
+        const desc = fk.description ? ` '${fk.description}'` : '';
+        const line = `     A                                      ${keyword}(${indicator}${desc})`;
+        newLines.push(line);
+    });
+
+    lines.splice(insertIndex, 0, ...newLines);
+
+    const nextDocument = lines.join('\n');
+    setCurrentDocument(nextDocument);
+    updateDocumentInEditor();
+
+    Logger.success(`Saved ${configuredKeys.length} function keys to DDS`);
+}
+
+function generateFunctionKeyOptions(selectedKey) {
+    const keys = [];
+    for (let i = 1; i <= 24; i++) {
+        keys.push(`F${i}`);
+    }
+
+    return keys.map(k => `<option value="${k}" ${k === selectedKey ? 'selected' : ''}>${k}</option>`).join('');
 }
 
 
 /***/ }),
+/* 34 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-/***/ "./media/modules/ui/updateReadOnlyMode.js":
-/*!************************************************!*\
-  !*** ./media/modules/ui/updateReadOnlyMode.js ***!
-  \************************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   executeDeleteField: () => (/* binding */ executeDeleteField),
+/* harmony export */   showDeleteConfirmation: () => (/* binding */ showDeleteConfirmation)
+/* harmony export */ });
+function showDeleteConfirmation(options) {
+    const { field, Logger, onConfirm } = options;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'confirmation-modal-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    `;
+
+    const modal = document.createElement('div');
+    modal.className = 'confirmation-modal';
+    modal.style.cssText = `
+        background: #2d2d30;
+        border: 1px solid #454545;
+        border-radius: 6px;
+        padding: 20px;
+        min-width: 400px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        color: #cccccc;
+    `;
+
+    let fieldTypeLabel = 'Field';
+    if (field.type === 'keyword') {
+        fieldTypeLabel = 'Keyword';
+    } else if (field.type === 'constant') {
+        fieldTypeLabel = 'Constant';
+    }
+
+    modal.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <span style="font-size: 20px; color: #f48771;">⚠</span>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #f48771;">Delete ${fieldTypeLabel}</h3>
+        </div>
+        <p style="margin: 0 0 8px 0; font-size: 13px; line-height: 1.5; color: #cccccc;">
+            Are you sure you want to delete the ${fieldTypeLabel.toLowerCase()} <strong>"${field.name}"</strong>?
+        </p>
+        <p style="margin: 0 0 20px 0; font-size: 12px; font-style: italic; color: #999999;">
+            This action cannot be undone.
+        </p>
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button id="confirm-delete-no" style="
+                padding: 6px 14px;
+                background-color: #3c3c3c;
+                color: #cccccc;
+                border: 1px solid #555555;
+                border-radius: 2px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 400;
+                min-width: 70px;
+                transition: background-color 0.15s;
+            ">No</button>
+            <button id="confirm-delete-yes" style="
+                padding: 6px 14px;
+                background-color: #c74e39;
+                color: white;
+                border: none;
+                border-radius: 2px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 400;
+                min-width: 70px;
+                transition: background-color 0.15s;
+            ">Yes</button>
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    const noButton = document.getElementById('confirm-delete-no');
+    const yesButton = document.getElementById('confirm-delete-yes');
+
+    setTimeout(() => {
+        noButton.focus();
+    }, 100);
+
+    noButton.addEventListener('mouseenter', function() {
+        this.style.backgroundColor = '#505050';
+    });
+    noButton.addEventListener('mouseleave', function() {
+        this.style.backgroundColor = '#3c3c3c';
+    });
+
+    yesButton.addEventListener('mouseenter', function() {
+        this.style.backgroundColor = '#a84233';
+    });
+    yesButton.addEventListener('mouseleave', function() {
+        this.style.backgroundColor = '#c74e39';
+    });
+
+    const cleanup = () => {
+        overlay.remove();
+        document.removeEventListener('keydown', handleKeyDown);
+    };
+
+    noButton.addEventListener('click', function() {
+        cleanup();
+        Logger.debug('Delete cancelled by user');
+    });
+
+    yesButton.addEventListener('click', function() {
+        cleanup();
+        onConfirm();
+    });
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+            cleanup();
+        } else if (e.key === 'Enter') {
+            cleanup();
+            onConfirm();
+        }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            cleanup();
+        }
+    });
+}
+
+function executeDeleteField(options) {
+    const { field, Logger, fields, deselectAllFields, removeFieldFromDds } = options;
+
+    const originalElement = document.querySelector(`[data-field-id="${field.id}"]`);
+    if (originalElement) {
+        originalElement.remove();
+        Logger.debug('Removed original field element from DOM');
+    }
+
+    const copyPattern = `${field.id}_repeat`;
+    const allElements = document.querySelectorAll('[data-field-id]');
+    let removedCopies = 0;
+
+    allElements.forEach(el => {
+        if (el.dataset.fieldId.startsWith(copyPattern)) {
+            el.remove();
+            removedCopies++;
+            Logger.debug(`Removed visual copy: ${el.dataset.fieldId}`);
+        }
+    });
+
+    Logger.success(`Removed field from DOM: 1 original + ${removedCopies} visual copies`);
+
+    const index = fields.findIndex(f => f.id === field.id);
+    Logger.debug('Finding field in array, index:', index);
+    if (index > -1) {
+        fields.splice(index, 1);
+        Logger.success('Field removed from fields array, remaining:', fields.length);
+    } else {
+        Logger.error('Field not found in fields array with id:', field.id);
+        Logger.debug('All fields in array:', fields.map(f => ({ id: f.id, name: f.name, type: f.type })));
+    }
+
+    deselectAllFields();
+
+    removeFieldFromDds(field);
+
+    Logger.success('Field deletion process completed');
+}
+
+
+/***/ }),
+/* 35 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updatePreviewView: () => (/* binding */ updatePreviewView)
+/* harmony export */ });
+function updatePreviewView(options) {
+    const {
+        Logger,
+        ScreenCoordinates,
+        parseDspfForPreview,
+        generateWindowFieldHtml,
+        generateFieldHtml,
+        setupPreviewDisplaySizeListeners,
+        updateCanvasSize,
+        setupRulers,
+        parseDspfFields,
+        getCurrentDocument,
+        getCurrentRecord,
+        getCurrentDisplaySize,
+        setCurrentDisplaySize,
+        applyDefaultZoomForDisplaySize,
+        updatePreviewView: updatePreviewViewHandler
+    } = options;
+
+    const previewContainer = document.getElementById('preview-container');
+    if (!previewContainer) {return;}
+
+    const currentDocument = getCurrentDocument();
+    const currentRecord = getCurrentRecord();
+    const currentDisplaySize = getCurrentDisplaySize();
+
+    const parsedScreen = parseDspfForPreview(currentDocument, currentRecord);
+
+    const rows = currentDisplaySize === 'DS3' ? 24 : 27;
+    const cols = currentDisplaySize === 'DS3' ? 80 : 132;
+
+    let html = `
+        <div class="header">
+            <h2>DSPF Preview - ${currentRecord || parsedScreen.recordName || 'DISPLAY'} (${currentDisplaySize})</h2>
+            <!-- Display Size Selection for Preview -->
+            <div style="display: flex; align-items: center; gap: 15px; border: 1px solid #555; padding: 5px 10px; border-radius: 3px; margin: 10px auto; width: fit-content; background-color: #1e1e1e;">
+                <label style="margin: 0; color: #cccccc; cursor: pointer;">
+                    <input type="radio" name="preview-display-size" value="DS3" ${currentDisplaySize === 'DS3' ? 'checked' : ''}>
+                    <span style="margin-left: 5px;">24 x 80 (*DS3)</span>
+                </label>
+                <label style="margin: 0; color: #cccccc; cursor: pointer;">
+                    <input type="radio" name="preview-display-size" value="DS4" ${currentDisplaySize === 'DS4' ? 'checked' : ''}>
+                    <span style="margin-left: 5px;">27 x 132 (*DS4)</span>
+                </label>
+            </div>
+        </div>
+        <div class="screen" style="width: ${ScreenCoordinates.getWidthInPixels(cols)}px; height: ${ScreenCoordinates.getHeightInPixels(rows)}px;">
+    `;
+
+    for (let line = 1; line <= rows; line++) {
+        const lineContent = ''.padEnd(cols, ' ');
+        const lineTop = ScreenCoordinates.toPixels(line, 1).top;
+        html += `<div class="screen-line" style="top: ${lineTop}px; width: ${ScreenCoordinates.getWidthInPixels(cols)}px;">${lineContent}</div>\n`;
+    }
+
+    if (parsedScreen.windowDimensions) {
+        const win = parsedScreen.windowDimensions;
+        const winPos = ScreenCoordinates.toPixels(win.row, win.col);
+        const winTop = winPos.top;
+        const winLeft = winPos.left;
+        const winHeight = ScreenCoordinates.getHeightInPixels(win.height);
+        const winWidth = ScreenCoordinates.getWidthInPixels(win.width + 4);
+
+        html += `<div class="window-frame" style="
+            position: absolute;
+            top: ${winTop}px;
+            left: ${winLeft}px;
+            width: ${winWidth}px;
+            height: ${winHeight}px;
+            border: 2px dotted #00FF00;
+            pointer-events: none;
+            z-index: 5;
+        "></div>`;
+
+        Logger.window(`Adding window frame at ${win.row},${win.col} size ${win.height}x${win.width}`);
+    }
+
+    parsedScreen.fields.forEach(field => {
+        if (parsedScreen.windowDimensions) {
+            html += generateWindowFieldHtml(field, parsedScreen.windowDimensions);
+        } else {
+            html += generateFieldHtml(field);
+        }
+    });
+
+    html += `</div>`;
+
+    previewContainer.innerHTML = html;
+
+    setupPreviewDisplaySizeListeners({
+        Logger,
+        getCurrentDisplaySize,
+        setCurrentDisplaySize,
+        updateCanvasSize,
+        setupRulers,
+        parseDspfFields,
+        getCurrentDocument,
+        applyDefaultZoomForDisplaySize,
+        updatePreviewView: updatePreviewViewHandler
+    });
+
+    previewContainer.querySelectorAll('.input-field').forEach(field => {
+        field.addEventListener('click', function() {
+            this.contentEditable = true;
+            this.focus();
+        });
+
+        field.addEventListener('blur', function() {
+            this.contentEditable = false;
+        });
+    });
+}
+
+
+/***/ }),
+/* 36 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -14513,805 +11680,3580 @@ function updateReadOnlyMode({
 
 
 /***/ }),
-
-/***/ "./media/modules/ui/windowResize.js":
-/*!******************************************!*\
-  !*** ./media/modules/ui/windowResize.js ***!
-  \******************************************/
+/* 37 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setupWindowResize: () => (/* binding */ setupWindowResize)
+/* harmony export */   getFreshFieldFromDds: () => (/* binding */ getFreshFieldFromDds),
+/* harmony export */   selectField: () => (/* binding */ selectField)
 /* harmony export */ });
-function setupWindowResize({
-    windowFrame,
-    originalDimensions,
+function getFreshFieldFromDds({
+    field,
     Logger,
-    ScreenCoordinates,
-    getCurrentDisplaySize,
-    getCurrentZoom,
-    updateWindowDimensions
+    getCurrentDocument,
+    getCurrentRecord,
+    parseDspfForPreview,
+    getFields,
+    updateFieldAtIndex
 }) {
-    const handles = windowFrame.querySelectorAll('.window-resize-handle');
+    if (!field || !getCurrentDocument) {
+        return field;
+    }
 
-    handles.forEach(handle => {
-        handle.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
+    const currentDocument = getCurrentDocument();
+    if (!currentDocument) {
+        return field;
+    }
 
-            const corner = this.className.split(' ')[1];
-            const startX = e.clientX;
-            const startY = e.clientY;
-            const startWidth = windowFrame.offsetWidth;
-            const startHeight = windowFrame.offsetHeight;
-            const startLeft = windowFrame.offsetLeft;
-            const startTop = windowFrame.offsetTop;
+    Logger.debug(`Re-parsing field ${field.name} from DDS to get fresh indicator data`);
 
-            function onMouseMove(e) {
-                const currentZoom = getCurrentZoom ? getCurrentZoom() : 1;
-                const deltaX = (e.clientX - startX) / currentZoom;
-                const deltaY = (e.clientY - startY) / currentZoom;
+    const parsedData = parseDspfForPreview(currentDocument, getCurrentRecord ? getCurrentRecord() : null);
 
-                let newWidth = startWidth;
-                let newHeight = startHeight;
-                let newLeft = startLeft;
-                let newTop = startTop;
+    const freshField = parsedData.fields.find(f =>
+        f.name === field.name &&
+        f.row === field.row &&
+        f.col === field.col &&
+        f.type === field.type
+    );
 
-                if (corner.includes('e')) {
-                    newWidth = Math.max(80, startWidth + deltaX);
-                }
-                if (corner.includes('w')) {
-                    const widthChange = -deltaX;
-                    newWidth = Math.max(80, startWidth + widthChange);
-                    newLeft = startLeft - (newWidth - startWidth);
-                }
-                if (corner.includes('s')) {
-                    newHeight = Math.max(40, startHeight + deltaY);
-                }
-                if (corner.includes('n')) {
-                    const heightChange = -deltaY;
-                    newHeight = Math.max(40, startHeight + heightChange);
-                    newTop = startTop - (newHeight - startHeight);
-                }
+    if (freshField) {
+        freshField.id = field.id;
+        const fields = getFields ? getFields() : [];
+        const fieldIndex = fields.findIndex(f => f.id === field.id);
+        if (fieldIndex >= 0 && updateFieldAtIndex) {
+            updateFieldAtIndex(fieldIndex, freshField);
+        }
+        Logger.debug(`Fresh field data obtained with ${Object.keys(freshField.colorIndicators || {}).length} color indicators, ${Object.keys(freshField.attributeIndicators || {}).length} attribute indicators`);
+        return freshField;
+    }
 
-                windowFrame.style.width = `${newWidth}px`;
-                windowFrame.style.height = `${newHeight}px`;
-                windowFrame.style.left = `${newLeft}px`;
-                windowFrame.style.top = `${newTop}px`;
+    Logger.warn(`Could not find fresh data for field ${field.name}, using cached data`);
+    return field;
+}
+
+function selectField({
+    field,
+    Logger,
+    deselectAllFields,
+    getSelectedField,
+    setSelectedField,
+    indicatorConfigurations,
+    getFreshFieldFromDds,
+    showFieldProperties
+}) {
+    Logger.ui(`[SELECT] Attempting to select field: ${field.name} (id: ${field.id})`);
+    Logger.ui(`[SELECT] Field isVisualCopy: ${field.isVisualCopy || false}`);
+
+    if (deselectAllFields) {
+        deselectAllFields();
+    }
+
+    const previousSelectedField = getSelectedField ? getSelectedField() : null;
+    if (previousSelectedField && previousSelectedField.id !== field.id) {
+        Logger.debug('Clearing indicatorConfigurations when switching fields');
+        indicatorConfigurations.clear();
+    }
+
+    if (setSelectedField) {
+        setSelectedField(field);
+    }
+    Logger.ui(`[SELECT] selectedField set to: ${field.name}`);
+
+    const fieldElement = document.querySelector(`[data-field-id="${field.id}"]`);
+    Logger.ui(`[SELECT] Found element with selector [data-field-id="${field.id}"]: ${fieldElement ? 'YES' : 'NO'}`);
+
+    if (fieldElement) {
+        Logger.ui(`[SELECT] Element classes before: ${fieldElement.className}`);
+        fieldElement.classList.add('selected');
+        Logger.ui(`[SELECT] Element classes after: ${fieldElement.className}`);
+        Logger.ui(`[SELECT] Element display: ${window.getComputedStyle(fieldElement).display}`);
+        Logger.ui(`[SELECT] Element visibility: ${window.getComputedStyle(fieldElement).visibility}`);
+    } else {
+        Logger.error(`[SELECT] Could not find element with data-field-id="${field.id}"`);
+        const allFields = document.querySelectorAll('[data-field-id]');
+        Logger.ui(`[SELECT] Total fields in DOM: ${allFields.length}`);
+        allFields.forEach((el, idx) => {
+            if (idx < 5) {
+                Logger.ui(`[SELECT]   - ${el.dataset.fieldId} (${el.className})`);
             }
-
-            function onMouseUp() {
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
-
-                const currentZoom = getCurrentZoom ? getCurrentZoom() : 1;
-                const gridPosition = ScreenCoordinates
-                    ? ScreenCoordinates.fromPixels(windowFrame.offsetTop, windowFrame.offsetLeft)
-                    : {
-                        row: Math.round(windowFrame.offsetTop / 20) + 1,
-                        col: Math.round(windowFrame.offsetLeft / 8) + 1
-                    };
-                const gridSize = ScreenCoordinates
-                    ? ScreenCoordinates.sizeFromPixels(windowFrame.offsetHeight, windowFrame.offsetWidth, 1)
-                    : {
-                        rows: Math.round(windowFrame.offsetHeight / 20),
-                        cols: Math.round(windowFrame.offsetWidth / 8)
-                    };
-
-                let newRow = gridPosition.row;
-                let newCol = gridPosition.col;
-                let newHeight = gridSize.rows;
-                let newWidth = gridSize.cols - 4;
-
-                const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : 'DS3';
-                const maxRows = currentDisplaySize === 'DS3' ? 24 : 27;
-                const maxCols = currentDisplaySize === 'DS3' ? 80 : 132;
-
-                newRow = Math.max(1, Math.min(newRow, maxRows));
-                newCol = Math.max(1, Math.min(newCol, maxCols));
-                newHeight = Math.max(1, Math.min(newHeight, maxRows - newRow + 1));
-                newWidth = Math.max(1, Math.min(newWidth, maxCols - newCol + 1));
-
-                Logger.window(`Window resized to: row=${newRow}, col=${newCol}, height=${newHeight}, width=${newWidth}, zoom=${currentZoom}`);
-                Logger.debug(`Validation check - Display: ${currentDisplaySize}, Max rows: ${maxRows}, Max cols: ${maxCols}`);
-
-                updateWindowDimensions(originalDimensions, newRow, newCol, newHeight, newWidth);
-            }
-
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
         });
+    }
+
+    const freshField = getFreshFieldFromDds ? getFreshFieldFromDds(field) : null;
+    if (showFieldProperties) {
+        showFieldProperties(freshField || field);
+    }
+}
+
+
+/***/ }),
+/* 38 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   deselectAllFields: () => (/* binding */ deselectAllFields)
+/* harmony export */ });
+function deselectAllFields({
+    Logger,
+    indicatorConfigurations,
+    setSelectedField,
+    showFieldProperties
+}) {
+    document.querySelectorAll('.dspf-field.selected').forEach(el => {
+        el.classList.remove('selected');
+    });
+
+    Logger.debug('Clearing indicatorConfigurations when deselecting all fields');
+    indicatorConfigurations.clear();
+
+    if (setSelectedField) {
+        setSelectedField(null);
+    }
+    if (showFieldProperties) {
+        showFieldProperties(null);
+    }
+}
+
+
+/***/ }),
+/* 39 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   editField: () => (/* binding */ editField)
+/* harmony export */ });
+function editField({
+    field,
+    Logger,
+    isReadOnly,
+    selectField
+}) {
+    if (isReadOnly) {
+        Logger.warn('Cannot edit field in read-only mode');
+        return;
+    }
+
+    if (selectField) {
+        selectField(field);
+    }
+
+    if (field.type !== 'constant') {
+        const nameInput = document.getElementById('prop-name');
+        if (nameInput) {
+            setTimeout(() => {
+                nameInput.focus();
+                nameInput.select();
+            }, 100);
+        }
+    }
+
+    Logger.debug('Field selected for editing in properties panel');
+}
+
+
+/***/ }),
+/* 40 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   scrollToRecordInSource: () => (/* binding */ scrollToRecordInSource)
+/* harmony export */ });
+function scrollToRecordInSource(options) {
+    const {
+        currentRecord,
+        currentDocument,
+        Logger
+    } = options;
+
+    if (!currentRecord) {
+        if (Logger) {
+            Logger.warn('No current record to scroll to');
+        }
+        return;
+    }
+
+    const sourceEditor = document.getElementById('source-editor');
+    if (!sourceEditor) {
+        if (Logger) {
+            Logger.error('Source editor not found');
+        }
+        return;
+    }
+
+    const lines = currentDocument.split('\n');
+    let recordLineIndex = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const recordMatch = line.match(/^\s*A\*?\s+R\s+(\w+)/i);
+        if (recordMatch && recordMatch[1].toUpperCase() === currentRecord.toUpperCase()) {
+            recordLineIndex = i;
+            break;
+        }
+    }
+
+    if (recordLineIndex === -1) {
+        if (Logger) {
+            Logger.warn(`Record ${currentRecord} not found in source`);
+        }
+        return;
+    }
+
+    if (Logger) {
+        Logger.debug(`Scrolling to record ${currentRecord} at line ${recordLineIndex + 1}`);
+    }
+
+    const lineHeight = 21;
+    const scrollPosition = recordLineIndex * lineHeight;
+    const offset = 100;
+    sourceEditor.scrollTop = Math.max(0, scrollPosition - offset);
+}
+
+
+/***/ }),
+/* 41 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   navigateToNextRecord: () => (/* binding */ navigateToNextRecord),
+/* harmony export */   navigateToPreviousRecord: () => (/* binding */ navigateToPreviousRecord)
+/* harmony export */ });
+function navigateToPreviousRecord({
+    Logger,
+    vscode,
+    getAllRecords,
+    getCurrentRecord,
+    getCurrentView
+}) {
+    const allRecords = getAllRecords ? getAllRecords() : [];
+    if (!allRecords || allRecords.length === 0) {
+        Logger.warn('No records available for navigation');
+        return;
+    }
+
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+    const currentIndex = allRecords.findIndex(r => r.name === currentRecord);
+    if (currentIndex > 0) {
+        const prevRecord = allRecords[currentIndex - 1];
+        Logger.ui('Navigating to previous record:', prevRecord.name, 'preserving view:', getCurrentView ? getCurrentView() : undefined);
+        vscode.postMessage({
+            type: 'navigateToRecord',
+            recordName: prevRecord.name,
+            preserveView: getCurrentView ? getCurrentView() : undefined
+        });
+    } else {
+        Logger.info('Already at first record');
+    }
+}
+
+function navigateToNextRecord({
+    Logger,
+    vscode,
+    getAllRecords,
+    getCurrentRecord,
+    getCurrentView
+}) {
+    const allRecords = getAllRecords ? getAllRecords() : [];
+    if (!allRecords || allRecords.length === 0) {
+        Logger.warn('No records available for navigation');
+        return;
+    }
+
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+    const currentIndex = allRecords.findIndex(r => r.name === currentRecord);
+    if (currentIndex < allRecords.length - 1) {
+        const nextRecord = allRecords[currentIndex + 1];
+        Logger.ui('Navigating to next record:', nextRecord.name, 'preserving view:', getCurrentView ? getCurrentView() : undefined);
+        vscode.postMessage({
+            type: 'navigateToRecord',
+            recordName: nextRecord.name,
+            preserveView: getCurrentView ? getCurrentView() : undefined
+        });
+    } else {
+        Logger.info('Already at last record');
+    }
+}
+
+
+/***/ }),
+/* 42 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createField: () => (/* binding */ createField)
+/* harmony export */ });
+// Función para crear los campos desde el toolbox
+function createField({
+    type,
+    row,
+    col,
+    Logger,
+    fields,
+    generateUniqueFieldName,
+    generateId,
+    getDefaultLength,
+    getWindowDimensions,
+    getCurrentRecord,
+    getCurrentDisplaySize,
+    renderField,
+    renderWindowField,
+    getSubfileRelationship,
+    getSflpagValue,
+    selectField,
+    addFieldToDds,
+    showFieldProperties
+}) {
+    let fieldName;
+    let ddsType;
+    let usage;
+    let dataType;
+    let decimals;
+    let shift;
+    let isKeyword = false;
+
+    if (type === 'text') {
+        fieldName = generateUniqueFieldName('TXT_');
+        ddsType = 'A';
+        usage = 'O';
+        dataType = 'character';
+        decimals = 0;
+    } else if (type === 'number') {
+        fieldName = generateUniqueFieldName('NUM_');
+        ddsType = 'Y';
+        usage = 'I';
+        dataType = 'zoned';
+        decimals = 0;
+        shift = 'S';
+    } else if (type === 'keyword-date') {
+        fieldName = 'DATE';
+        ddsType = '';
+        usage = '';
+        dataType = 'keyword';
+        decimals = 0;
+        isKeyword = true;
+    } else if (type === 'keyword-time') {
+        fieldName = 'TIME';
+        ddsType = '';
+        usage = '';
+        dataType = 'keyword';
+        decimals = 0;
+        isKeyword = true;
+    } else if (type === 'keyword-sysname') {
+        fieldName = 'SYSNAME';
+        ddsType = '';
+        usage = '';
+        dataType = 'keyword';
+        decimals = 0;
+        isKeyword = true;
+    } else if (type === 'keyword-user') {
+        fieldName = 'USER';
+        ddsType = '';
+        usage = '';
+        dataType = 'keyword';
+        decimals = 0;
+        isKeyword = true;
+    } else if (type === 'field-date') {
+        fieldName = generateUniqueFieldName('DATE_');
+        ddsType = 'L';
+        usage = 'O';
+        dataType = 'date';
+        decimals = 0;
+    } else if (type === 'field-time') {
+        fieldName = generateUniqueFieldName('TIME_');
+        ddsType = 'T';
+        usage = 'O';
+        dataType = 'time';
+        decimals = 0;
+    } else if (type === 'field-timestamp') {
+        fieldName = generateUniqueFieldName('TS_');
+        ddsType = 'Z';
+        usage = 'O';
+        dataType = 'timestamp';
+        decimals = 0;
+    } else {
+        fieldName = generateUniqueFieldName(type === 'constant' ? 'CONST_' : `${type.toUpperCase()}_`);
+        ddsType = type === 'constant' ? '' : 'A';
+        usage = 'O';
+        dataType = type === 'constant' ? 'constant' : 'character';
+        decimals = 0;
+    }
+
+    const field = {
+        id: generateId(),
+        name: fieldName,
+        type: type === 'number' ? 'input' : (isKeyword ? 'keyword' : (type === 'field-date' || type === 'field-time' || type === 'field-timestamp' ? 'output' : type)),
+        ddsType: ddsType,
+        usage: usage,
+        dataType: dataType,
+        row: row,
+        col: col,
+        length: isKeyword ? null : getDefaultLength(type),
+        decimals: decimals,
+        value: type === 'constant' ? 'TEXT' : '',
+        isKeyword: isKeyword
+    };
+
+    if (shift) {
+        field.shift = shift;
+    }
+
+    fields.push(field);
+
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+    const winDimsForCreate = getWindowDimensions ? getWindowDimensions(currentRecord) : null;
+    const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : null;
+    if (winDimsForCreate && winDimsForCreate.hasWindow) {
+        const winDim = currentDisplaySize === 'DS3' ? winDimsForCreate.ds3 : winDimsForCreate.ds4;
+        if (winDim) {
+            renderWindowField(field, winDim);
+        } else {
+            renderField(field);
+        }
+    } else {
+        renderField(field);
+    }
+
+    Logger.ui(`[CREATE] Field created: ${field.name} (id: ${field.id}) at row ${field.row}, col ${field.col}`);
+    Logger.ui(`[CREATE] Field pushed to array, total fields: ${fields.length}`);
+
+    const subfileRelationship = getSubfileRelationship ? getSubfileRelationship(currentRecord) : null;
+    const sflpagRepeat = subfileRelationship ? getSflpagValue(subfileRelationship.sflctlRecord) : 1;
+
+    Logger.ui(`[CREATE] Checking SFLPAG: subfileRelationship=${!!subfileRelationship}, sflpagRepeat=${sflpagRepeat}`);
+
+    if (sflpagRepeat > 1) {
+        const shouldRepeat = (
+            (currentRecord === subfileRelationship.sflRecord && !field.isBackgroundRecord) ||
+            (currentRecord === subfileRelationship.sflctlRecord && field.isBackgroundRecord)
+        );
+
+        if (shouldRepeat) {
+            Logger.debug(`Creating ${sflpagRepeat - 1} visual copies for new field in SFL`);
+            for (let repeat = 1; repeat < sflpagRepeat; repeat++) {
+                const visualCopy = {
+                    ...field,
+                    id: field.id + '_repeat' + repeat,
+                    row: field.row + repeat,
+                    isVisualCopy: true
+                };
+                if (winDimsForCreate && winDimsForCreate.hasWindow) {
+                    const winDim = currentDisplaySize === 'DS3' ? winDimsForCreate.ds3 : winDimsForCreate.ds4;
+                    if (winDim) {
+                        renderWindowField(visualCopy, winDim);
+                    } else {
+                        renderField(visualCopy);
+                    }
+                } else {
+                    renderField(visualCopy);
+                }
+            }
+        }
+    }
+
+    if (selectField) {
+        selectField(field);
+    }
+
+    if (addFieldToDds) {
+        addFieldToDds(field);
+    }
+
+    Logger.success('New field created:', fieldName, 'at', { row, col });
+
+    if (showFieldProperties) {
+        showFieldProperties(field);
+    }
+}
+
+
+/***/ }),
+/* 43 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateUniqueFieldName: () => (/* binding */ generateUniqueFieldName)
+/* harmony export */ });
+function generateUniqueFieldName(options) {
+    const { prefix, fields, IdGenerator } = options;
+
+    const existingNames = fields.map(field => field.name);
+    return IdGenerator.generateUniqueName(prefix, existingNames);
+}
+
+
+/***/ }),
+/* 44 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   applyAttributeClasses: () => (/* binding */ applyAttributeClasses)
+/* harmony export */ });
+function applyAttributeClasses(options) {
+    const { fieldElement, attributes } = options;
+
+    if (!attributes) {
+        return;
+    }
+
+    if (attributes.underline) {
+        fieldElement.classList.add('underline');
+    }
+    if (attributes.blink) {
+        fieldElement.classList.add('blink');
+    }
+    if (attributes.reverse) {
+        fieldElement.classList.add('reverse');
+    }
+}
+
+
+/***/ }),
+/* 45 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   computeFieldDisplay: () => (/* binding */ computeFieldDisplay)
+/* harmony export */ });
+function computeFieldDisplay(options) {
+    const {
+        field,
+        mode = 'designer',
+        ColorUtils,
+        ScreenCoordinates,
+        getKeywordDisplay,
+        getFieldDisplayText
+    } = options;
+
+    const isPreview = mode === 'preview';
+    let text = '';
+    let color = '';
+    let classes = [];
+
+    // Constants
+    if (field.type === 'constant') {
+        text = field.value || '';
+        classes.push('constant');
+        let effectiveColorCode = field.color;
+        if (!effectiveColorCode && field.colors && field.colors.length > 0) {
+            effectiveColorCode = field.colors[0];
+        }
+        if (effectiveColorCode && ColorUtils.isValidColorCode(effectiveColorCode)) {
+            color = ColorUtils.IBM_COLORS[effectiveColorCode];
+        }
+    }
+    // Keywords shown like constants
+    else if (field.type === 'keyword' || field.isKeyword) {
+        text = getKeywordDisplay(field.name);
+        classes.push('constant');
+        let effectiveColorCode = field.color;
+        if (!effectiveColorCode && field.colors && field.colors.length > 0) {
+            effectiveColorCode = field.colors[0];
+        }
+        // If a color code exists, use it; otherwise let CSS default (green) apply
+        if (effectiveColorCode && ColorUtils.isValidColorCode(effectiveColorCode)) {
+            color = ColorUtils.IBM_COLORS[effectiveColorCode];
+        }
+    }
+    // Variables
+    else {
+        const fieldLength = field.length || 1;
+        text = getFieldDisplayText(field, fieldLength);
+
+        // Type class
+        if (field.type === 'input') {classes.push('input-field');}
+        else if (field.type === 'output') {classes.push('output-field');}
+        else {classes.push(`${field.type}-field`);} // fallback
+
+        // Color
+        color = ColorUtils.getColorStyle(field, '#00ffff').replace('color: ', '').replace(';', '') || '#00ffff';
+    }
+
+    // Attributes -> classes
+    if (field.attributes) {
+        if (field.attributes.underline) {classes.push('underline');}
+        if (field.attributes.reverse) {classes.push('reverse');}
+        if (isPreview && field.attributes.blink) {classes.push('blink');}
+        if (isPreview && field.attributes.nonDisplay) {classes.push('non-display');}
+    }
+
+    // Also check attributeIndicators (when attributes have indicators with OR groups)
+    if (field.attributeIndicators) {
+        if (field.attributeIndicators.underline) {classes.push('underline');}
+        if (field.attributeIndicators.reverse) {classes.push('reverse');}
+        if (isPreview && field.attributeIndicators.blink) {classes.push('blink');}
+        if (isPreview && field.attributeIndicators.nonDisplay) {classes.push('non-display');}
+        if (field.attributeIndicators.highlight) {classes.push('highlight');}
+    }
+
+    // Width in pixels
+    const widthPx = ScreenCoordinates.getWidthInPixels(text.length || field.length || 1);
+
+    return { text, widthPx, color, classes };
+}
+
+
+/***/ }),
+/* 46 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setFieldContent: () => (/* binding */ setFieldContent)
+/* harmony export */ });
+function setFieldContent(options) {
+    const { fieldElement, field, computeFieldDisplay } = options;
+
+    const { text, widthPx, color, classes } = computeFieldDisplay(field, 'designer');
+    fieldElement.textContent = text || '';
+    fieldElement.style.padding = '0';
+    fieldElement.style.minWidth = 'auto';
+    fieldElement.style.backgroundColor = 'transparent';
+    fieldElement.style.border = 'none';
+    fieldElement.style.whiteSpace = 'pre';
+    if (widthPx) { fieldElement.style.width = `${widthPx}px`; }
+    if (color) { fieldElement.style.color = color; }
+    classes.forEach(cls => fieldElement.classList.add(cls));
+}
+
+
+/***/ }),
+/* 47 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupFieldElement: () => (/* binding */ setupFieldElement)
+/* harmony export */ });
+function setupFieldElement(options) {
+    const {
+        fieldElement,
+        field,
+        Logger,
+        applyAttributeClasses,
+        setFieldContent,
+        selectField,
+        isReadOnly,
+        editField
+    } = options;
+
+    fieldElement.className = `dspf-field ${field.type}-field`;
+    fieldElement.dataset.fieldId = field.id;
+
+    if (field.isBackgroundRecord) {
+        fieldElement.classList.add('field-background');
+    }
+
+    if (field.isVisualCopy) {
+        fieldElement.classList.add('field-visual-copy');
+        fieldElement.style.pointerEvents = 'none';
+        fieldElement.style.zIndex = '1';
+        Logger.debug(`[VISUAL COPY] Created copy with id: ${field.id}, row: ${field.row}`);
+    } else {
+        Logger.debug(`[ORIGINAL] Created original field with id: ${field.id}, row: ${field.row}`);
+    }
+
+    applyAttributeClasses(fieldElement, field.attributes);
+
+    // Also apply attributes from attributeIndicators (when attributes have indicators)
+    if (field.attributeIndicators) {
+        if (field.attributeIndicators.underline) { fieldElement.classList.add('underline'); }
+        if (field.attributeIndicators.reverse) { fieldElement.classList.add('reverse'); }
+        if (field.attributeIndicators.blink) { fieldElement.classList.add('blink'); }
+        if (field.attributeIndicators.highlight) { fieldElement.classList.add('highlight'); }
+    }
+
+    setFieldContent(fieldElement, field);
+
+    fieldElement.draggable = true;
+    fieldElement.style.cursor = 'move';
+
+    fieldElement.addEventListener('click', function(e) {
+        Logger.ui(`[CLICK] Field clicked: ${field.name} (id: ${field.id}, isVisualCopy: ${field.isVisualCopy || false})`);
+        Logger.ui(`[CLICK] Element dataset.fieldId: ${fieldElement.dataset.fieldId}`);
+        Logger.ui(`[CLICK] Element classes: ${fieldElement.className}`);
+        Logger.ui(`[CLICK] Element zIndex: ${fieldElement.style.zIndex || 'default'}`);
+        Logger.ui(`[CLICK] Element pointerEvents: ${fieldElement.style.pointerEvents || 'auto'}`);
+        e.stopPropagation();
+        selectField(field);
+    });
+
+    fieldElement.addEventListener('dblclick', function() {
+        if (!isReadOnly) {
+            editField(field);
+        }
+    });
+
+    fieldElement.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('text/plain', JSON.stringify({
+            type: 'existing-field',
+            fieldId: field.id
+        }));
+        fieldElement.style.opacity = '0.5';
+        Logger.debug('Started dragging field:', field.name);
+    });
+
+    fieldElement.addEventListener('dragend', function() {
+        fieldElement.style.opacity = '1';
+        Logger.debug('Ended dragging field:', field.name);
     });
 }
 
 
 /***/ }),
-
-/***/ "./media/modules/utils/charMetrics.js":
-/*!********************************************!*\
-  !*** ./media/modules/utils/charMetrics.js ***!
-  \********************************************/
+/* 48 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   calibrateCharMetrics: () => (/* binding */ calibrateCharMetrics)
+/* harmony export */   renderField: () => (/* binding */ renderField)
 /* harmony export */ });
-async function calibrateCharMetrics(screenCoordinates, logger) {
-    try {
-        if (document.fonts && document.fonts.ready) {
-            await document.fonts.ready;
+function renderField(options) {
+    const {
+        field,
+        Logger,
+        ScreenCoordinates,
+        getCurrentDisplaySize,
+        setupFieldElement,
+        getFieldDisplayText
+    } = options;
+
+    const canvas = document.getElementById('fields-container');
+    if (!canvas) {
+        Logger.error('Fields container not found');
+        return;
+    }
+
+    // Calculate line wrapping for character fields that exceed screen width
+    const segments = ScreenCoordinates.calculateFieldWrapping(field, getCurrentDisplaySize());
+
+    if (segments.length === 1) {
+        // Single line field - render normally
+        const fieldElement = document.createElement('div');
+        setupFieldElement(fieldElement, field);
+
+        // Position fields to match ruler marks exactly
+        const { left, top } = ScreenCoordinates.toPixels(field.row, field.col);
+        fieldElement.style.left = `${left}px`;
+        fieldElement.style.top = `${top}px`;
+
+        canvas.appendChild(fieldElement);
+        Logger.success(`Rendered field: ${field.name} at (${field.row}, ${field.col}) -> (${top}px, ${left}px)`);
+    } else {
+        // Multi-line field - render each segment
+        segments.forEach((segment, index) => {
+            const fieldElement = document.createElement('div');
+            setupFieldElement(fieldElement, field);
+
+            // Mark as segment and store segment info
+            fieldElement.dataset.fieldSegment = index;
+            fieldElement.dataset.segmentLength = segment.length;
+
+            const { left, top } = ScreenCoordinates.toPixels(segment.row, segment.col);
+            fieldElement.style.left = `${left}px`;
+            fieldElement.style.top = `${top}px`;
+
+            // Override width for this segment
+            fieldElement.style.width = `${segment.length * 8}px`;
+
+            // Update content to show only this segment
+            const fieldLength = field.length || 10;
+            const fullDisplayValue = getFieldDisplayText(field, fieldLength);
+            const startOffset = segments.slice(0, index).reduce((sum, seg) => sum + seg.length, 0);
+            const segmentValue = fullDisplayValue.substring(startOffset, startOffset + segment.length);
+            fieldElement.textContent = segmentValue;
+
+            canvas.appendChild(fieldElement);
+            Logger.success(`Rendered field segment ${index + 1}/${segments.length}: ${field.name} at (${segment.row}, ${segment.col})`);
+        });
+    }
+}
+
+
+/***/ }),
+/* 49 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   renderWindowField: () => (/* binding */ renderWindowField)
+/* harmony export */ });
+function renderWindowField(options) {
+    const {
+        field,
+        windowDimensions,
+        Logger,
+        ScreenCoordinates,
+        getCurrentDisplaySize,
+        setupFieldElement,
+        getFieldDisplayText
+    } = options;
+
+    const canvas = document.getElementById('fields-container');
+    if (!canvas) {
+        Logger.error('Fields container not found');
+        return;
+    }
+
+    Logger.window(`RENDER START: ${field.name} has field.length=${field.length}`);
+
+    // Calculate line wrapping for character fields that exceed screen width
+    const segments = ScreenCoordinates.calculateFieldWrapping(field, getCurrentDisplaySize());
+
+    if (segments.length === 1) {
+        // Single line field - render normally
+        const fieldElement = document.createElement('div');
+        setupFieldElement(fieldElement, field);
+
+        // Calculate absolute screen position from WINDOW + field coordinates
+        const absoluteRow = windowDimensions.row + field.row - 1;
+        const absoluteCol = windowDimensions.col + field.col + 1;
+        const { top: relativeTop, left: relativeLeft } = ScreenCoordinates.toPixels(absoluteRow, absoluteCol);
+
+        // Ensure fields don't go outside reasonable bounds
+        const maxTop = relativeTop + 500;
+        const maxLeft = relativeLeft + 800;
+
+        fieldElement.style.left = `${Math.min(relativeLeft, maxLeft)}px`;
+        fieldElement.style.top = `${Math.min(relativeTop, maxTop)}px`;
+
+        canvas.appendChild(fieldElement);
+        Logger.window(`Rendered window field: ${field.name} at window-relative (${field.row},${field.col}) -> absolute (${relativeTop},${relativeLeft});`);
+    } else {
+        // Multi-line field - render each segment with window offset
+        segments.forEach((segment, index) => {
+            const fieldElement = document.createElement('div');
+            setupFieldElement(fieldElement, field);
+
+            // Mark as segment
+            fieldElement.dataset.fieldSegment = index;
+            fieldElement.dataset.segmentLength = segment.length;
+
+            const absoluteRow = windowDimensions.row + segment.row - 1;
+            const absoluteCol = windowDimensions.col + segment.col + 1;
+            const { top: relativeTop, left: relativeLeft } = ScreenCoordinates.toPixels(absoluteRow, absoluteCol);
+
+            fieldElement.style.left = `${relativeLeft}px`;
+            fieldElement.style.top = `${relativeTop}px`;
+            fieldElement.style.width = `${segment.length * 8}px`;
+
+            // Update content to show only this segment
+            const fieldLength = field.length || 10;
+            const fullDisplayValue = getFieldDisplayText(field, fieldLength);
+            const startOffset = segments.slice(0, index).reduce((sum, seg) => sum + seg.length, 0);
+            const segmentValue = fullDisplayValue.substring(startOffset, startOffset + segment.length);
+            fieldElement.textContent = segmentValue;
+
+            canvas.appendChild(fieldElement);
+            Logger.window(`Rendered window field segment ${index + 1}/${segments.length}: ${field.name} at (${segment.row}, ${segment.col})`);
+        });
+    }
+}
+
+
+/***/ }),
+/* 50 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getFieldCharForDisplay: () => (/* binding */ getFieldCharForDisplay)
+/* harmony export */ });
+// Function to get display character for a field
+function getFieldCharForDisplay(options) {
+    const { field } = options;
+
+    let fieldChar = '_';
+
+    if (field.dataType === 'numeric' || field.dataType === 'zoned' || field.dataType === 'packed' || field.dataType === 'float' || field.dataType === 'binary') {
+        if (field.usage === 'O') {
+            fieldChar = '6';
+        } else if (field.usage === 'I') {
+            fieldChar = '3';
+        } else if (field.usage === 'B') {
+            fieldChar = '9';
+        } else {
+            fieldChar = '6';
         }
-    } catch (err) {
-        if (logger && typeof logger.warn === 'function') {
-            logger.warn('Font readiness check failed, using immediate metrics', err);
+    } else {
+        if (field.usage === 'I') {
+            fieldChar = 'I';
+        } else if (field.usage === 'B') {
+            fieldChar = 'B';
+        } else if (field.usage === 'O') {
+            fieldChar = 'O';
+        } else {
+            fieldChar = 'O';
         }
     }
 
-    await new Promise(requestAnimationFrame);
-    const probe = document.createElement('span');
-    const sampleText = 'WWWWWWWWWW';
-    probe.textContent = sampleText;
-    probe.style.position = 'absolute';
-    probe.style.visibility = 'hidden';
-    probe.style.whiteSpace = 'pre';
-    probe.style.fontFamily = "'3270', 'IBM Plex Mono', 'Consolas', 'Courier New', monospace";
-    probe.style.fontSize = '15px';
-    probe.style.lineHeight = '20px';
-    document.body.appendChild(probe);
-    const rect = probe.getBoundingClientRect();
-    document.body.removeChild(probe);
+    return fieldChar;
+}
 
-    const width = rect.width / sampleText.length;
-    const height = rect.height;
-    if (width && height) {
-        screenCoordinates.CHAR_WIDTH = width;
-        screenCoordinates.CHAR_HEIGHT = height;
-        if (logger && typeof logger.ui === 'function') {
-            logger.ui(`Calibrated char metrics -> width: ${width.toFixed(2)}px, height: ${height.toFixed(2)}px`);
+
+/***/ }),
+/* 51 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getFieldDisplayText: () => (/* binding */ getFieldDisplayText)
+/* harmony export */ });
+// Muestra como se debe mostrar un campo en la interfaz de usuario, dependiendo de su tipo y longitud. 
+// Para campos numéricos, se muestra una representación con caracteres específicos para indicar la longitud 
+// y el formato del número. Para otros tipos de campos, se muestra una repetición del carácter correspondiente 
+// a la longitud del campo.
+function getFieldDisplayText(options) {
+    const { field, fieldLength, getFieldCharForDisplay } = options;
+
+    // EDTWRD: plantilla IBM i de edición de palabra.
+    // Estructura de la plantilla (después de quitar comillas externas):
+    //   - Posición 1 (índice 0): carácter de supresión/relleno de ceros.
+    //       Si es '0' → suprimir ceros a la izquierda (reemplazar por espacios).
+    //       Si es otro char → usarlo como relleno. En el Designer lo mostramos
+    //       como digitChar para indicar que ahí va un dígito.
+    //   - Posiciones 2..N: cada ' ' (espacio) = posición de dígito (→ digitChar).
+    //       '&' = espacio literal forzado (→ ' ').
+    //       Cualquier otro carácter = literal fijo (se muestra tal cual).
+    function applyEdtwrdFormatting(digitChar) {
+        const rawTemplate = field.edtwrd && typeof field.edtwrd === 'object'
+            ? (field.edtwrd.value || '')
+            : (field.edtwrd || '');
+
+        // Quitar comillas externas: '0(   )   -    ' → 0(   )   -
+        const template = String(rawTemplate).replace(/^'(.*)'$/, '$1');
+
+        if (!template) {
+            return null;
         }
-        return { width, height };
+
+        // Posición 0: carácter de supresión. En el Designer lo mostramos como digitChar
+        // porque indica dónde irá el dígito más significativo del número.
+        const suppressChar = template[0];
+        const suppressDisplay = digitChar; // siempre mostramos digitChar en pos 0
+
+        // Posiciones 1..N: espacio → dígito, & → espacio literal, resto → literal
+        let result = suppressDisplay;
+        for (let i = 1; i < template.length; i++) {
+            const ch = template[i];
+            if (ch === ' ') {
+                result += digitChar;  // posición de dígito
+            } else if (ch === '&') {
+                result += ' ';        // espacio forzado literal
+            } else {
+                result += ch;         // carácter literal (separator)
+            }
+        }
+        return result;
     }
 
-    if (logger && typeof logger.warn === 'function') {
-        logger.warn('Could not calibrate char metrics, using defaults');
+    // EDTMSK: máscara de edición IBM i.
+    // Estructura de la máscara (después de quitar comillas):
+    //   - ' ' (espacio) → posición de dígito (→ digitChar)
+    //   - '&' → espacio literal forzado (→ ' ')
+    //   - cualquier otro carácter → literal fijo (se muestra tal cual)
+    function applyEdtmskFormatting(digitChar) {
+        const rawMask = field.edtmsk && typeof field.edtmsk === 'object'
+            ? (field.edtmsk.value || '')
+            : (field.edtmsk || '');
+
+        const mask = String(rawMask).replace(/^'(.*)'$/, '$1');
+
+        if (!mask) {
+            return null;
+        }
+
+        let result = '';
+        for (let i = 0; i < mask.length; i++) {
+            const ch = mask[i];
+            if (ch === ' ') {
+                result += digitChar;  // posición de dígito
+            } else if (ch === '&') {
+                result += ' ';        // espacio literal forzado
+            } else {
+                result += ch;         // literal fijo (-, /, etc.)
+            }
+        }
+        return result;
     }
+
+    function applyEdtcdeDisplayReplacement(baseText, digitChar) {
+        const edtcdeCode = field.edtcde && field.edtcde.value
+            ? String(field.edtcde.value).trim().toUpperCase()
+            : '';
+
+        if (edtcdeCode === 'Z') {
+            return baseText;
+        }
+
+        const replacement = field.edtcde && field.edtcde.replaceLeadingZerosWith
+            ? String(field.edtcde.replaceLeadingZerosWith).trim()
+            : '';
+
+        if (!replacement || (replacement !== '*' && replacement !== '$')) {
+            return baseText;
+        }
+
+        const firstDigitIndex = baseText.indexOf(digitChar);
+        if (firstDigitIndex === -1) {
+            return baseText;
+        }
+
+        return `${baseText.substring(0, firstDigitIndex)}${replacement}${baseText.substring(firstDigitIndex + 1)}`;
+    }
+
+    if (field.dataType === 'date') {
+        return 'yyyy-mm-dd';
+    }
+
+    if (field.dataType === 'time') {
+        return 'hh.mm.ss';
+    }
+
+    if (field.dataType === 'timestamp') {
+        return 'yyyy-mm-dd-hh.mm.ss.mmmmmm';
+    }
+
+    const length = fieldLength || field.length || 1;
+    const isNumeric = field.dataType === 'numeric' || field.dataType === 'zoned' || field.dataType === 'packed' || field.dataType === 'float' || field.dataType === 'binary';
+    if (isNumeric) {
+        const digitChar = getFieldCharForDisplay(field);
+
+        const edtcdeCode = field.edtcde && field.edtcde.value
+            ? String(field.edtcde.value).trim().toUpperCase()
+            : '';
+
+        const formatThousandsInDigitRuns = (baseText) => {
+            const escapedDigit = digitChar.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const digitRunRegex = new RegExp(`${escapedDigit}{4,}`, 'g');
+
+            return baseText.replace(digitRunRegex, (run) => run.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+        };
+
+        const applyEdtcdeCodeFormatting = (baseText) => {
+            if (!edtcdeCode) {
+                return baseText;
+            }
+
+            let formattedText = baseText;
+
+            if (['1', '2', '3', 'A', 'B', 'J', 'K', 'N', 'O'].includes(edtcdeCode)) {
+                formattedText = formatThousandsInDigitRuns(formattedText);
+            }
+
+            if (['A', 'B', 'C', 'D'].includes(edtcdeCode) && !formattedText.endsWith('CR')) {
+                formattedText = `${formattedText}CR`;
+            }
+
+            if (['J', 'K', 'L', 'M'].includes(edtcdeCode) && !formattedText.endsWith('-')) {
+                formattedText = `${formattedText}-`;
+            }
+
+            if (['N', 'O', 'P', 'Q'].includes(edtcdeCode)) {
+                formattedText = formattedText.replace(/-$/, '');
+                if (!formattedText.startsWith('-')) {
+                    formattedText = `-${formattedText}`;
+                }
+            }
+
+            if (edtcdeCode === 'Z') {
+                formattedText = formattedText.replace(/\./g, '');
+                formattedText = formattedText.replace(/-/g, '');
+            }
+
+            // Y: fecha con separadores → MM-DD-YY (6 dígitos) o MM-DD-YYYY (8 dígitos)
+            // El separador de fecha IBM i por defecto es '-' (Mas adelante se debería leer del sysval QDATSEP).
+            if (edtcdeCode === 'Y') {
+                const len = baseText.length;
+                if (len === 6) {
+                    formattedText = `${digitChar.repeat(2)}-${digitChar.repeat(2)}-${digitChar.repeat(2)}`;
+                } else if (len === 8) {
+                    formattedText = `${digitChar.repeat(2)}-${digitChar.repeat(2)}-${digitChar.repeat(4)}`;
+                } else {
+                    // Insertar '-' cada 2 dígitos como mejor aproximación
+                    let r = '';
+                    for (let i = 0; i < len; i++) {
+                        if (i > 0 && i % 2 === 0 && i < len - 1) { r += '-'; }
+                        r += digitChar;
+                    }
+                    formattedText = r;
+                }
+            }
+
+            // W: fecha juliana → YY-DDD (5 dígitos) o YYYY-DDD (7 dígitos)
+            if (edtcdeCode === 'W') {
+                const len = baseText.length;
+                if (len === 5) {
+                    formattedText = `${digitChar.repeat(2)}-${digitChar.repeat(3)}`;
+                } else if (len === 7) {
+                    formattedText = `${digitChar.repeat(4)}-${digitChar.repeat(3)}`;
+                } else {
+                    formattedText = `${digitChar.repeat(Math.max(1, len - 3))}-${digitChar.repeat(3)}`;
+                }
+            }
+
+            return formattedText;
+        };
+
+        let baseNumericText;
+        const isSignedInputOrBoth = (field.usage === 'I' || field.usage === 'B') && field.shift === 'S';
+        const hasEdtcdePriorityOnBoth = field.usage === 'B' && Boolean(edtcdeCode);
+
+        if (field.dataType === 'float') {
+            const decimals = Number.isInteger(field.decimals) ? field.decimals : 0;
+            const integerDigits = Math.max(1, length - decimals);
+            const mantissa = decimals > 0
+                ? `${digitChar.repeat(integerDigits)},${digitChar.repeat(decimals)}`
+                : digitChar.repeat(length);
+            const precisionChar = field.precision === 'DOUBLE' ? 'D' : 'E';
+            baseNumericText = `-${mantissa}${precisionChar}-${digitChar.repeat(3)}`;
+        } else if (isSignedInputOrBoth && !hasEdtcdePriorityOnBoth) {
+            baseNumericText = length >= 1 ? digitChar.repeat(length) + '-' : digitChar;
+        } else {
+            baseNumericText = digitChar.repeat(length);
+        }
+
+        // Prioridad de keywords de edición (en IBM i son mutuamente excluyentes,
+        // pero si coexisten en el DDS, EDTCDE tiene precedencia sobre EDTMSK/EDTWRD):
+        // 1. EDTWRD (si existe y no hay EDTCDE)
+        // 2. EDTMSK (si existe y no hay EDTCDE ni EDTWRD)
+        // 3. EDTCDE (siempre que exista, gana sobre los anteriores)
+        if (edtcdeCode) {
+            const edtcdeFormatted = applyEdtcdeCodeFormatting(baseNumericText);
+            return applyEdtcdeDisplayReplacement(edtcdeFormatted, digitChar);
+        }
+
+        const edtwrdResult = applyEdtwrdFormatting(digitChar);
+        if (edtwrdResult !== null) {
+            return edtwrdResult;
+        }
+
+        const edtmskResult = applyEdtmskFormatting(digitChar);
+        if (edtmskResult !== null) {
+            return edtmskResult;
+        }
+
+        const edtcdeFormatted = applyEdtcdeCodeFormatting(baseNumericText);
+        return applyEdtcdeDisplayReplacement(edtcdeFormatted, digitChar);
+    }
+    const fieldChar = getFieldCharForDisplay(field);
+    return fieldChar.repeat(length);
+}
+
+
+/***/ }),
+/* 52 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateWindowFieldHtml: () => (/* binding */ generateWindowFieldHtml)
+/* harmony export */ });
+function generateWindowFieldHtml(options) {
+    const { field, windowDimensions, generateFieldHtml } = options;
+
+    return generateFieldHtml(field, { row: windowDimensions.row, col: windowDimensions.col });
+}
+
+
+/***/ }),
+/* 53 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateId: () => (/* binding */ generateId)
+/* harmony export */ });
+function generateId(IdGenerator) {
+    return IdGenerator.generateFieldId();
+}
+
+
+/***/ }),
+/* 54 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getDefaultLength: () => (/* binding */ getDefaultLength)
+/* harmony export */ });
+function getDefaultLength(type) {
+    switch (type) {
+        case 'text':
+            return 10;
+        case 'number':
+            return 6;
+        case 'constant':
+            return null;
+        case 'field-date':
+            return 10;
+        case 'field-time':
+            return 8;
+        case 'field-timestamp':
+            return 26;
+        default:
+            return 10;
+    }
+}
+
+
+/***/ }),
+/* 55 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getKeywordDisplay: () => (/* binding */ getKeywordDisplay)
+/* harmony export */ });
+function getKeywordDisplay(options) {
+    const { keywordName } = options;
+
+    const displays = {
+        'DATE': 'MM/DD/YYYY',
+        'TIME': 'HH:MM:SS',
+        'SYSNAME': 'SSSSSSSS',
+        'USER': 'UUUUUUUUUU'
+    };
+    return displays[keywordName] || keywordName;
+}
+
+
+/***/ }),
+/* 56 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   extractAttributes: () => (/* binding */ extractAttributes)
+/* harmony export */ });
+// Extract display attributes with indicators
+// Returns: { attrs: {...}, indicators: [], isGroupedFormat: boolean }
+function extractAttributes({ content, fullLine = null, IndicatorUtils, Logger }) {
+    const attrs = {};
+    const result = { attrs: attrs, indicators: [], isGroupedFormat: false };
+
+    // Extract ALL indicators from DDS line
+    // Format: "A  41 43                                  DSPATR(BL)"
+    if (fullLine) {
+        result.indicators = IndicatorUtils.extractFromDdsLine(fullLine, 'extractAttributes');
+    }
+
+    // Check for grouped format: DSPATR(HI RI UL)
+    const groupedMatch = content.match(/DSPATR\(([A-Z]{2}(?:\s+[A-Z]{2})+)\)/);
+    if (groupedMatch) {
+        result.isGroupedFormat = true;
+        // Split the grouped attributes by spaces
+        const attrCodes = groupedMatch[1].split(/\s+/);
+        Logger.parse(`Found grouped DSPATR format with codes:`, attrCodes);
+
+        attrCodes.forEach(code => {
+            switch (code) {
+                case 'UL': attrs.underline = true; break;
+                case 'BL': attrs.blink = true; break;
+                case 'HI': attrs.highlight = true; break;
+                case 'RI': attrs.reverse = true; break;
+                case 'PC': attrs.cursorPosition = true; break;
+                case 'CS': attrs.columnSeparator = true; break;
+                case 'ND': attrs.nonDisplay = true; break;
+                case 'MDT': attrs.modifiedDataTag = true; break;
+                case 'PR': attrs.protect = true; break;
+                case 'OID': attrs.operatorId = true; break;
+                case 'SP': attrs.selectLightPen = true; break;
+            }
+        });
+    } else {
+        // Individual format: DSPATR(UL) or DSPATR(BL) etc.
+        if (content.includes('DSPATR(UL)')) {attrs.underline = true;}
+        if (content.includes('DSPATR(BL)')) {attrs.blink = true;}
+        if (content.includes('DSPATR(HI)')) {attrs.highlight = true;}
+        if (content.includes('DSPATR(RI)')) {attrs.reverse = true;}
+        if (content.includes('DSPATR(PC)')) {attrs.cursorPosition = true;}
+        if (content.includes('DSPATR(CS)')) {attrs.columnSeparator = true;}
+        if (content.includes('DSPATR(ND)')) {attrs.nonDisplay = true;}
+        if (content.includes('DSPATR(MDT)')) {attrs.modifiedDataTag = true;}
+        if (content.includes('DSPATR(PR)')) {attrs.protect = true;}
+        if (content.includes('DSPATR(OID)')) {attrs.operatorId = true;}
+        if (content.includes('DSPATR(SP)')) {attrs.selectLightPen = true;}
+    }
+
+    return result;
+}
+
+
+/***/ }),
+/* 57 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   renderAttributeRows: () => (/* binding */ renderAttributeRows)
+/* harmony export */ });
+// Arma el HTML de las filas de atributos en el panel de propiedades.
+function renderAttributeRows(options) {
+    const { allowedKeys = null, fieldType = 'variable', attributeUiDefs } = options;
+    const allowSet = allowedKeys ? new Set(allowedKeys) : null;
+
+    // Determine label based on field type
+    let indicatorLabel = 'Variable Indicators';
+
+    // First row: field-level indicators (WITHOUT checkbox, only label and button)
+    const fieldIndicatorRow = `
+        <div class="property-group" style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color, #3c3c3c); padding-bottom: 8px; margin-bottom: 8px;">
+            <label style="flex: 1;">
+                ${indicatorLabel}
+            </label>
+            <button class="indicator-config-btn" data-field-indicators="true" title="Configure field indicators"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+        </div>
+    `;
+
+    // Rest of attribute rows
+    const attributeRows = attributeUiDefs
+        .filter(def => !allowSet || allowSet.has(def.key))
+        .map(def => `
+            <div class="property-group ${def.extraClass}" style="display: flex; align-items: center; gap: 8px;">
+                <label style="flex: 1;">
+                    <input type="checkbox" id="${def.checkboxId}" />
+                    ${def.label}
+                </label>
+                <button class="indicator-config-btn" data-attr="${def.dataAttr}" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+            </div>
+        `)
+        .join('');
+
+    return fieldIndicatorRow + attributeRows;
+}
+
+
+/***/ }),
+/* 58 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getAttributeCheckboxMap: () => (/* binding */ getAttributeCheckboxMap)
+/* harmony export */ });
+// construye un objeto que mapea cada atributo (por ejemplo underline, blink, etc.) 
+// al id del checkbox correspondiente en el panel de propiedades.
+// Si se pasa allowedKeys, filtra el mapa para incluir solo esos atributos permitidos.
+function getAttributeCheckboxMap(options) {
+    const { allowedKeys = null, attributeUiDefs } = options;
+    const allowSet = allowedKeys ? new Set(allowedKeys) : null;
+    const map = {};
+
+    attributeUiDefs.forEach(def => {
+        if (!allowSet || allowSet.has(def.key)) {
+            map[def.key] = def.checkboxId;
+        }
+    });
+
+    return map;
+}
+
+
+/***/ }),
+/* 59 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   formatIndicatorLabel: () => (/* binding */ formatIndicatorLabel)
+/* harmony export */ });
+// Convierte un array de indicadores en texto como "02 43 11" o "N03 51"
+function formatIndicatorLabel(list) {
+    if (!Array.isArray(list) || list.length === 0) {
+        return 'No ind.';
+    }
+
+    return list
+        .map(ind => (ind.not ? `N${ind.number.padStart(2, '0')}` : ind.number.padStart(2, '0')))
+        .join(' ');
+}
+
+
+/***/ }),
+/* 60 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setIndicatorButtonState: () => (/* binding */ setIndicatorButtonState)
+/* harmony export */ });
+// Actualiza el botón con el texto generado por formatIndicatorLabel
+function setIndicatorButtonState({ btn, indicators, formatIndicatorLabel }) {
+    if (!btn) {
+        return;
+    }
+
+    if (!formatIndicatorLabel) {
+        throw new Error('setIndicatorButtonState: formatIndicatorLabel is required');
+    }
+
+    // Support both old format (array) and new format (groups)
+    let flatIndicators = [];
+    if (Array.isArray(indicators)) {
+        flatIndicators = indicators;
+    } else if (indicators && indicators.groups) {
+        // Flatten all groups into single array
+        indicators.groups.forEach(group => {
+            flatIndicators.push(...group.indicators);
+        });
+    }
+
+    const has = flatIndicators.length > 0;
+    btn.classList.toggle('has-indicators', has);
+    const textEl = btn.querySelector('.indicator-text');
+    if (textEl) {
+        textEl.textContent = formatIndicatorLabel(flatIndicators);
+    }
+    btn.title = has ? formatIndicatorLabel(flatIndicators) : 'Configurar indicadores';
+}
+
+
+/***/ }),
+/* 61 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   applyColorChanges: () => (/* binding */ applyColorChanges)
+/* harmony export */ });
+// Shared function to apply color changes from checkboxes to field object
+function applyColorChanges({ field, Logger, transferIndicators }) {
+    const colorMap = {
+        'color-green': 'GRN',
+        'color-white': 'WHT',
+        'color-red': 'RED',
+        'color-turquoise': 'TRQ',
+        'color-yellow': 'YLW',
+        'color-pink': 'PNK',
+        'color-blue': 'BLU'
+    };
+
+    // Collect all selected colors
+    const selectedColors = [];
+    for (const [checkboxId, colorCode] of Object.entries(colorMap)) {
+        const checkbox = document.getElementById(checkboxId);
+        if (checkbox && checkbox.checked) {
+            selectedColors.push(colorCode);
+        }
+    }
+
+    // Update field colors
+    if (selectedColors.length > 0) {
+        // Set the first color as the primary color (for backward compatibility)
+        field.color = selectedColors[0];
+        // Store all colors in the colors array
+        field.colors = selectedColors;
+        Logger.debug(`Colors set to [${selectedColors.join(', ')}] for field ${field.name}`);
+
+        // Initialize colorIndicators if needed
+        if (!field.colorIndicators) {
+            field.colorIndicators = {};
+        }
+
+        // Use unified indicator transfer helper
+        transferIndicators({
+            kind: 'color',
+            keys: selectedColors,
+            field: field,
+            fieldType: 'field'
+        });
+    } else {
+        // Remove colors if no checkbox is selected
+        delete field.color;
+        delete field.colors;
+        delete field.colorIndicators;
+        Logger.debug(`Colors removed for field ${field.name}`);
+    }
+}
+
+
+/***/ }),
+/* 62 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getRecordType: () => (/* binding */ getRecordType)
+/* harmony export */ });
+// Get the type of the current record (SFLCTL, SFL, or SCREEN)
+function getRecordType({ recordName, currentDocument }) {
+    const lines = currentDocument.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.includes(`R ${recordName}`) || line.includes(`R  ${recordName}`)) {
+            // Check keywords on the same line first
+            if (line.includes('SFLCTL')) {return 'SFLCTL';}
+            if (line.includes('SFL')) {return 'SFL';}
+            if (line.includes('WINDOW(')) {return 'WINDOW';}
+
+            // If not found on same line, check following lines within this record
+            for (let j = i + 1; j < lines.length; j++) {
+                const nextLine = lines[j];
+                // Stop if we hit another record declaration
+                if (nextLine.match(/^\s{5}A\s+R\s+\w+/)) {
+                    break;
+                }
+                // Check for keywords in continuation lines (any keyword that determines record type)
+                if (nextLine.includes('SFLCTL')) {return 'SFLCTL';}
+                if (nextLine.includes('SFL') && !nextLine.includes('SFLCTL')) {return 'SFL';}
+                if (nextLine.includes('WINDOW(')) {return 'WINDOW';}
+            }
+
+            return 'SCREEN';
+        }
+    }
+    return 'SCREEN';
+}
+
+
+/***/ }),
+/* 63 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   extractRowColFromParts: () => (/* binding */ extractRowColFromParts)
+/* harmony export */ });
+// Extract row and column from parts array
+// Returns: { row, col, nextIndex } or null if invalid
+function extractRowColFromParts({ parts, startIndex }) {
+    if (startIndex >= parts.length) {
+        return null;
+    }
+
+    const rowStr = parts[startIndex];
+    const row = parseInt(rowStr);
+
+    if (isNaN(row)) {
+        return null;
+    }
+
+    // Check for col
+    if (startIndex + 1 < parts.length) {
+        const colStr = parts[startIndex + 1];
+        const col = parseInt(colStr);
+
+        if (!isNaN(col)) {
+            return {
+                row: row,
+                col: col,
+                nextIndex: startIndex + 2
+            };
+        }
+    }
+
+    // Compact fixed format support when col has 3 digits and no separator exists,
+    // e.g. "6118" => row=6, col=118 or "20118" => row=20, col=118
+    const compactMatch = rowStr.match(/^(\d{1,2})(\d{3})$/);
+    if (!compactMatch) {
+        return null;
+    }
+
+    const compactRow = parseInt(compactMatch[1], 10);
+    const compactCol = parseInt(compactMatch[2], 10);
+    if (isNaN(compactRow) || isNaN(compactCol)) {
+        return null;
+    }
+
+    return {
+        row: compactRow,
+        col: compactCol,
+        nextIndex: startIndex + 1
+    };
+}
+
+
+/***/ }),
+/* 64 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   parseDdsTypeSpecification: () => (/* binding */ parseDdsTypeSpecification)
+/* harmony export */ });
+// Parse DDS type specification (e.g., "10A", "15S", "7P", "3Y", "2F")
+// Returns: { length, typeChar, dataType } or null if invalid
+function parseDdsTypeSpecification({ typeSpec, hasDecimals = false }) {
+    const normalized = (typeSpec || '').trim().toUpperCase();
+    if (normalized === 'L') {
+        return {
+            length: 10,
+            typeChar: 'L',
+            dataType: 'date'
+        };
+    }
+    if (normalized === 'T') {
+        return {
+            length: 8,
+            typeChar: 'T',
+            dataType: 'time'
+        };
+    }
+    if (normalized === 'Z') {
+        return {
+            length: 26,
+            typeChar: 'Z',
+            dataType: 'timestamp'
+        };
+    }
+
+    const typeMatch = normalized.match(/(\d+)([A-Z])?/);
+    if (!typeMatch) {
+        return null;
+    }
+
+    const length = parseInt(typeMatch[1]);
+    const typeChar = typeMatch[2]; // May be undefined
+    let dataType = 'character'; // Default
+
+    // Map DDS type to internal type
+    if (!typeChar) {
+        // No type letter specified
+        if (hasDecimals) {
+            dataType = 'zoned';
+        } else {
+            dataType = 'character';
+        }
+    } else if (typeChar === 'A') {
+        dataType = 'character';
+    } else if (typeChar === 'F') {
+        dataType = 'float';
+    } else if (typeChar === 'P') {
+        dataType = 'packed';
+    } else if (typeChar === 'S' || typeChar === 'Y' || typeChar === 'N' || typeChar === 'D' || typeChar === 'I') {
+        // These are shift codes for Zoned type
+        dataType = 'zoned';
+    } else if (typeChar === 'J' || typeChar === 'E' || typeChar === 'O' || typeChar === 'G') {
+        // These are shift codes for Double Byte type
+        dataType = 'double';
+    }
+
+    return {
+        length: length,
+        typeChar: typeChar,
+        dataType: dataType
+    };
+}
+
+
+/***/ }),
+/* 65 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   parseUsageAndDecimals: () => (/* binding */ parseUsageAndDecimals)
+/* harmony export */ });
+// Parse usage and decimals from parts
+// Returns: { decimals, usage, hasDecimals, nextIndex }
+function parseUsageAndDecimals({ parts, startIndex }) {
+    let decimals = 0;
+    let usage = 'O';
+    let hasDecimals = false;
+    let currentIndex = startIndex;
+
+    if (currentIndex >= parts.length) {
+        return { decimals, usage, hasDecimals, nextIndex: currentIndex };
+    }
+
+    const nextPart = parts[currentIndex];
+
+    // Check for decimals (and possibly usage attached to decimals)
+    const decimalMatch = nextPart.match(/^(\d+)([OIBHMP]?)$/);
+    if (decimalMatch) {
+        hasDecimals = true;
+        decimals = parseInt(decimalMatch[1]);
+        // Check if usage is attached to decimals (e.g., "2I", "0O")
+        if (decimalMatch[2]) {
+            usage = decimalMatch[2];
+            currentIndex++; // Move to next part (should be row)
+        } else {
+            // Decimals alone, check next part for usage or row
+            currentIndex++;
+            if (currentIndex < parts.length) {
+                const afterDecimal = parts[currentIndex];
+                // Check if it's a single letter usage
+                if (afterDecimal.length === 1 && /[OIBHMP]/.test(afterDecimal)) {
+                    usage = afterDecimal;
+                    currentIndex++;
+                }
+                // Otherwise it's the row number
+            }
+        }
+    } else if (nextPart.length === 1 && /[OIBHMP]/.test(nextPart)) {
+        // It's just a usage letter (no decimals)
+        usage = nextPart;
+        currentIndex++;
+    }
+    // Otherwise it's the row number (no decimals, no usage)
+
+    return {
+        decimals: decimals,
+        usage: usage,
+        hasDecimals: hasDecimals,
+        nextIndex: currentIndex
+    };
+}
+
+
+/***/ }),
+/* 66 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   extractFloatPrecision: () => (/* binding */ extractFloatPrecision)
+/* harmony export */ });
+// Extract FLTPCN precision from line
+// Returns: 'SINGLE', 'DOUBLE', or null
+function extractFloatPrecision({ line, dataType }) {
+    if (dataType !== 'float') {
+        return null;
+    }
+
+    if (line.includes('FLTPCN')) {
+        if (line.includes('*SINGLE')) {
+            return 'SINGLE';
+        } else if (line.includes('*DOUBLE')) {
+            return 'DOUBLE';
+        }
+    }
+
     return null;
 }
 
 
 /***/ }),
-
-/***/ "./media/modules/utils/colorUtils.js":
-/*!*******************************************!*\
-  !*** ./media/modules/utils/colorUtils.js ***!
-  \*******************************************/
+/* 67 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ColorUtils: () => (/* binding */ ColorUtils)
+/* harmony export */   extractShiftCode: () => (/* binding */ extractShiftCode)
 /* harmony export */ });
-const ColorUtils = {
-    IBM_COLORS: {
-        'WHT': '#FFFFFF',
-        'BLU': '#3B78FF',
-        'RED': '#FF3B3B',
-        'TRQ': '#00FFFF',
-        'YLW': '#FFFF00',
-        'GRN': '#00FF00',
-        'PNK': '#FF00FF'
-    },
-
-    getColor(field, defaultColor = '#00ff00') {
-        if (field && field.color && this.IBM_COLORS[field.color]) {
-            return this.IBM_COLORS[field.color];
+// Extract shift code from type spec for zoned/double types
+// Returns: shift code (S/Y/N/D/I for zoned, J/E/O/G for double) or null
+function extractShiftCode({ typeSpec, dataType }) {
+    if (dataType === 'zoned') {
+        // Extract shift from typeChar (S/Y/N/D/I)
+        const typeMatch = typeSpec.match(/\d+([SYNDI])/);
+        if (typeMatch) {
+            return typeMatch[1];
         }
-
-        if (field && field.colorIndicators) {
-            const colorCodes = Object.keys(field.colorIndicators);
-            if (colorCodes.length > 0) {
-                const firstColorCode = colorCodes[0];
-                if (this.IBM_COLORS[firstColorCode]) {
-                    return this.IBM_COLORS[firstColorCode];
-                }
-            }
+        return null;
+    } else if (dataType === 'double') {
+        // Extract shift from typeChar (J/E/O/G)
+        const typeMatch = typeSpec.match(/\d+([JEOG])/);
+        if (typeMatch) {
+            return typeMatch[1];
         }
-
-        return defaultColor;
-    },
-
-    getColorStyle(field, defaultColor = '#00ff00') {
-        const color = this.getColor(field, defaultColor);
-        return `color: ${color};`;
-    },
-
-    getDefaultForFieldType(fieldType) {
-        const defaults = {
-            'constant': '#00ff00',
-            'input': '#ffff00',
-            'output': '#00ff00',
-            'keyword': '#00ffff',
-            'text': '#00ff00',
-            'number': '#ffff00'
-        };
-        return defaults[fieldType] || '#00ff00';
-    },
-
-    isValidColorCode(colorCode) {
-        return colorCode && this.IBM_COLORS.hasOwnProperty(colorCode);
-    },
-
-    getAllColorCodes() {
-        return Object.keys(this.IBM_COLORS);
-    },
-
-    getColorName(colorCode) {
-        const names = {
-            'WHT': 'White',
-            'BLU': 'Blue',
-            'RED': 'Red',
-            'TRQ': 'Turquoise',
-            'YLW': 'Yellow',
-            'GRN': 'Green',
-            'PNK': 'Pink'
-        };
-        return names[colorCode] || colorCode;
+        return 'J';
     }
-};
+
+    return null;
+}
 
 
 /***/ }),
-
-/***/ "./media/modules/utils/displaySizeUtils.js":
-/*!*************************************************!*\
-  !*** ./media/modules/utils/displaySizeUtils.js ***!
-  \*************************************************/
+/* 68 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   DisplaySizeUtils: () => (/* binding */ DisplaySizeUtils)
+/* harmony export */   parseWindowDimensionsFromLine: () => (/* binding */ parseWindowDimensionsFromLine)
 /* harmony export */ });
-const DisplaySizeUtils = {
-    getAvailableDisplaySizes(documentContent) {
-        const lines = documentContent.split('\n');
-        let hasDS3 = false;
-        let hasDS4 = false;
-        let inDspsizBlock = false;
-        let currentBlock = '';
+function parseWindowDimensionsFromLine(options) {
+    const {
+        trimmedLine,
+        currentRecordName,
+        currentWindowDimensions,
+        currentDisplaySize,
+        DisplaySizeUtils,
+        currentDocument,
+        getWindowDimensions,
+        Logger
+    } = options;
 
-        const processDspsizBlock = (blockText) => {
-            const normalizedBlock = (blockText || '').toUpperCase();
-            const blockHasDS3 = normalizedBlock.includes('*DS3');
-            const blockHasDS4 = normalizedBlock.includes('*DS4');
+    if (currentWindowDimensions) {
+        return currentWindowDimensions;
+    }
 
-            if (blockHasDS3) {
-                hasDS3 = true;
+    if (!trimmedLine.includes('WINDOW(')) {
+        return null;
+    }
+
+    const displayMarker = currentDisplaySize === 'DS3' ? '*DS3' : '*DS4';
+
+    const windowRefMatch = trimmedLine.match(/WINDOW\(([A-Z0-9_]+)\)/);
+    if (windowRefMatch && !/\d+\s+\d+/.test(windowRefMatch[0])) {
+        const referencedRecord = windowRefMatch[1];
+        Logger.parse(`Found WINDOW reference to ${referencedRecord} in record ${currentRecordName}`);
+        const refDimensions = getWindowDimensions(referencedRecord);
+        if (refDimensions.hasWindow) {
+            const dimensions = currentDisplaySize === 'DS3' ? refDimensions.ds3 : refDimensions.ds4;
+            if (dimensions) {
+                Logger.parse(`Resolved window dimensions from ${referencedRecord}:`, dimensions);
+                return dimensions;
             }
-            if (blockHasDS4) {
-                hasDS4 = true;
+        }
+        return null;
+    }
+
+    const windowMatch = trimmedLine.match(/WINDOW\((\d+)\s+(\d+)\s+(\d+)\s+(\d+)\)/);
+    if (windowMatch) {
+        const displayConfig = DisplaySizeUtils.getAvailableDisplaySizes(currentDocument);
+
+        let appliesTo = false;
+        if (trimmedLine.includes(displayMarker)) {
+            appliesTo = true;
+        } else if (displayConfig.singleSize) {
+            appliesTo = true;
+        }
+
+        if (appliesTo) {
+            const dimensions = {
+                row: parseInt(windowMatch[1], 10),
+                col: parseInt(windowMatch[2], 10),
+                height: parseInt(windowMatch[3], 10),
+                width: parseInt(windowMatch[4], 10)
+            };
+            const marker = trimmedLine.includes(displayMarker) ? displayMarker : '(single size)';
+            Logger.parse(`Found ${marker} window dimensions for ${currentRecordName}:`, dimensions);
+            return dimensions;
+        }
+    }
+
+    return null;
+}
+
+
+/***/ }),
+/* 69 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   processMultiLineContinuation: () => (/* binding */ processMultiLineContinuation)
+/* harmony export */ });
+/**
+ * Process multi-line DDS constant continuation lines.
+ * Handles continuation indicators (trailing dashes) and properly concatenates lines.
+ * 
+ * @param {Object} options - Configuration object
+ * @param {string} options.initialLine - The first line containing opening quote and dash
+ * @param {Function} options.getNextLine - Function(index) that returns next line or null
+ * @param {number} options.startIndex - Starting index for continuation lines
+ * @param {string} options.context - Context for logging ('PREVIEW' or 'DESIGNER')
+ * @param {Object} options.Logger - Logger instance
+ * @returns {Object} Result object: { fullLine: string, linesConsumed: number }
+ */
+function processMultiLineContinuation({ initialLine, getNextLine, startIndex, context, Logger }) {
+    let fullLine = initialLine;
+    let linesConsumed = 0;
+    let currentIndex = startIndex;
+    const isStringContinuation = initialLine.includes("'");
+
+    // Process continuation lines
+    while (true) {
+        const nextLine = getNextLine(currentIndex);
+        if (!nextLine) {break;}
+
+        // Check if next line is a continuation
+        // A continuation line starts with 'A' at position 5, has spaces/empty where row/col would be,
+        // and the trimmed content starts with content (not another row/col position)
+        const fullAfterA = nextLine.length > 6 ? nextLine.substring(6) : '';
+        const afterA = fullAfterA.trim();
+        const contentAfter18 = nextLine.length > 18 ? nextLine.substring(18).trim() : '';
+        const indicatorAreaContent = nextLine.length > 6 ? nextLine.substring(6, 18).trim() : '';
+        const isIndicatorOnlyLine = indicatorAreaContent.length > 0 &&
+                                    /^O?\s*[N\d\s]+$/.test(indicatorAreaContent) &&
+                                    contentAfter18 === '';
+        const isContinuation = nextLine.length > 6 &&
+                             nextLine[5] === 'A' &&
+                             !isIndicatorOnlyLine &&
+                             !/^\d+\s+\d+/.test(afterA) &&
+                             (afterA.length > 0 || (isStringContinuation && fullAfterA.length > 0)); // Allow blank continuation lines in string constants
+
+        if (!isContinuation) {break;}
+
+        Logger.parse(`Continuation found at index ${currentIndex}: ${nextLine}`);
+
+        // For continuation lines, skip position 0-5 (DDS format)
+        // In DDS, string constant continuations start at a fixed column (typically 45)
+        // We must preserve ALL characters including leading spaces in the constant
+        // For string constants, content typically starts at column 45 (index 38 after substring(6))
+        // But we need to handle cases where it might be at different positions
+        // The key is: if this is a continuation of a string constant, preserve ALL spaces
+
+        // Check if this looks like a string constant continuation
+        // (has a quote somewhere in the line)
+        const hasQuote = fullAfterA.includes("'");
+
+        let continuationContent;
+        let contentStart;
+
+        if (isStringContinuation || hasQuote) {
+            // This is a string constant continuation
+            // Take content from column 45 (index 38 after substring(6)) to preserve spacing
+            // This is the standard DDS position for constant continuation
+            const ddsConstantColumn = 38; // Column 45 in original line
+
+            // If the line is long enough, take from the standard column
+            // Otherwise take from the beginning (in case of non-standard formatting)
+            if (fullAfterA.length > ddsConstantColumn) {
+                continuationContent = fullAfterA.substring(ddsConstantColumn);
+                contentStart = ddsConstantColumn;
+            } else {
+                // Line is shorter, take everything
+                continuationContent = fullAfterA;
+                contentStart = 0;
             }
+        } else {
+            // Not a string constant, skip leading spaces as before
+            contentStart = fullAfterA.search(/\S/);
+            continuationContent = contentStart >= 0 ? fullAfterA.substring(contentStart) : '';
+        }
 
-            if (!blockHasDS3 && !blockHasDS4) {
-                hasDS3 = true;
+        // Determine if continuation line has leading spaces (indentation)
+        // substring(6) removes columns 1-6, so remaining index maps to: contentStart + 7 = real column
+        // Column 45 → contentStart 38, Column 46 → contentStart 39
+        // If contentStart > 38, content is beyond column 45, so needs space
+        const hasLeadingSpaces = contentStart > 38;
+        Logger.parse(`[${context}] contentStart: ${contentStart}, column: ${contentStart + 7}, hasLeadingSpaces: ${hasLeadingSpaces}`);
+
+        // Check if this is the last line (has closing quote)
+        const isLastLine = continuationContent.includes("'");
+
+        // If it's the last line, also remove the trailing continuation char ('-' or '+') from continuationContent
+        // before the closing quote (it's also a continuation indicator). Allow spaces after '-'/'+'.
+        if (isLastLine && continuationContent.length > 1) {
+            const beforeQuote = continuationContent.substring(0, continuationContent.length - 1);
+            const lastContMatch = beforeQuote.match(/[-+]\s*$/);
+            if (lastContMatch) {
+                const trimmedBefore = beforeQuote.substring(0, beforeQuote.length - lastContMatch[0].length);
+                continuationContent = trimmedBefore + "'";
+                Logger.parse(`[${context}] Removed trailing continuation sequence from last continuation line: "${continuationContent}"`);
             }
-        };
+        }
 
-        for (let line of lines) {
-            const trimmed = line.trim();
+        // Before concatenating, check if fullLine's constant value ends with a continuation char ('-' or '+')
+        // Extract the content between quotes from fullLine to check
+        const constantMatch = fullLine.match(/'([^']*)$/);
+        if (constantMatch) {
+            const currentConstantValue = constantMatch[1];
+            const contMatch = currentConstantValue.match(/[-+]\s*$/);
+            const hasContinuation = !!contMatch;
+            Logger.parse(`[${context}] Before concat: constant value ends with: "${currentConstantValue.slice(-10)}", hasContinuation: ${hasContinuation}, isLastLine: ${isLastLine}`);
 
-            if (!inDspsizBlock && trimmed.includes('DSPSIZ(')) {
-                inDspsizBlock = true;
-                currentBlock = trimmed.substring(trimmed.indexOf('DSPSIZ('));
+            // Always remove trailing continuation sequence (including trailing spaces) from current line
+            if (hasContinuation) {
+                const removeLen = contMatch[0].length;
+                if (hasLeadingSpaces) {
+                    Logger.parse(`[${context}] Removing trailing continuation sequence and replacing with space (has indentation)`);
+                    fullLine = fullLine.substring(0, fullLine.length - removeLen) + ' ';
+                } else {
+                    Logger.parse(`[${context}] Removing trailing continuation sequence without space (no indentation)`);
+                    fullLine = fullLine.substring(0, fullLine.length - removeLen);
+                }
+            }
+        }
 
-                if (trimmed.includes(')')) {
-                    processDspsizBlock(currentBlock);
-                    inDspsizBlock = false;
-                    currentBlock = '';
+        fullLine = fullLine + continuationContent;
+        Logger.parse(`[${context}] After concat: fullLine length: ${fullLine.length}, last 10 chars: "${fullLine.slice(-10)}"`);
+
+        currentIndex++;
+        linesConsumed++;
+
+        // If this continuation line has the closing quote, we're done
+        if (isLastLine) {
+            break;
+        }
+    }
+
+    Logger.parse(`Completed multi-line constant, full line length: ${fullLine.length}`);
+    Logger.parse(`Complete constant last 40 chars: "${fullLine.slice(-40)}"`);
+
+    return {
+        fullLine: fullLine,
+        linesConsumed: linesConsumed
+    };
+}
+
+
+/***/ }),
+/* 70 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   scanIndicatorsBackward: () => (/* binding */ scanIndicatorsBackward)
+/* harmony export */ });
+// Helper: Scan backwards from keyword line to collect all indicator-only lines
+// Returns: { scannedLines: [{indicators: [...], isOr: boolean}], hasOrLines: boolean }
+function scanIndicatorsBackward({ lines, startIndex, lineOffset, contextLabel = '', IndicatorUtils, Logger }) {
+    const scannedLines = [];
+    let hasOrLines = false;
+    let backOffset = lineOffset - 1;
+    let currentGroup = null; // Track current group being built (scanning backwards)
+
+    while (backOffset > 0) {
+        const prevLine = lines[startIndex + backOffset];
+
+        // Check if previous line has only indicators
+        // A line has ONLY indicators if:
+        // 1. Starts with 'A' or 'AO' at position 5-6
+        // 2. Has indicators in columns 7-18 (positions after 'A'/'AO')
+        // 3. Does NOT have a field name after position 18
+
+        // Check if line starts with 'A' at position 5 (column 6)
+        if (prevLine.length < 6 || prevLine[5] !== 'A') {
+            break; // Not a DDS line starting with A
+        }
+
+        // Check for field name pattern after position 18 (field names start around column 19)
+        // Field names are typically followed by type spec like "10A" or "2F 0"
+        const prevContentAfter18 = prevLine.substring(18).trim();
+        const hasFieldName = /^[A-Z][A-Z0-9_]{2,}\s+\d+/i.test(prevContentAfter18);
+
+        // Check if line has a keyword (from column 44 onwards) - if so, stop scanning
+        // These indicators belong to a different attribute
+        const prevContentAfter44 = prevLine.length > 43 ? prevLine.substring(43).trim() : '';
+        const hasKeyword = prevContentAfter44.length > 0 && /^[A-Z]+\s*\(/.test(prevContentAfter44);
+        if (hasKeyword) {
+            Logger.debug(`[${contextLabel}] scanIndicatorsBackward stopping - found keyword at backOffset ${backOffset}`);
+            break;
+        }
+
+        // A line has ONLY indicators if:
+        // - No field name after position 18
+        // - Has indicator pattern (numbers with optional N prefix) in positions 6-18
+        const indicatorAreaContent = prevLine.substring(6, 18).trim();
+        const hasIndicatorPattern = /^O?\s*[N\d\s]+$/.test(indicatorAreaContent);
+
+        const prevHasOnlyIndicators = !hasFieldName && hasIndicatorPattern && indicatorAreaContent.length > 0;
+
+        if (!prevHasOnlyIndicators) {
+            break; // Stop if not an indicator-only line
+        }
+
+        // Check if this line starts a new OR group (has 'O' at position 6)
+        const startsOrGroup = prevLine.length > 6 && prevLine[6] === 'O';
+
+        // Extract indicators from this line
+        const prevIndicators = IndicatorUtils.extractFromDdsLine(prevLine, contextLabel);
+
+        if (prevIndicators && prevIndicators.length > 0) {
+            if (startsOrGroup) {
+                // When scanning BACKWARDS, finding 'AO' means:
+                // - Everything AFTER this (currentGroup) is a continuation of this OR group
+                // - Everything BEFORE this is a DIFFERENT group
+                hasOrLines = true;
+
+                if (currentGroup) {
+                    // currentGroup has indicators from lines AFTER this AO line
+                    // Those are continuations (A lines after AO), so they're part of this OR group
+                    // Prepend current line's indicators to currentGroup
+                    currentGroup.indicators.unshift(...prevIndicators);
+                    currentGroup.isOr = true; // Mark as OR group
+                } else {
+                    // No currentGroup yet - this AO line starts the group we'll build
+                    currentGroup = { indicators: [...prevIndicators], isOr: true };
                 }
 
+                // Save this complete OR group and reset for next group (scanning further back)
+                scannedLines.unshift({ indicators: currentGroup.indicators, isOr: currentGroup.isOr });
+                currentGroup = null;
+            } else {
+                // Line without 'O' - continuation of current group OR new AND group
+                if (currentGroup === null) {
+                    // Start new group (will be AND unless we find AO later)
+                    currentGroup = { indicators: [...prevIndicators], isOr: false };
+                } else {
+                    // Add to current group (prepend because scanning backwards)
+                    currentGroup.indicators.unshift(...prevIndicators);
+                }
+            }
+        }
+
+        backOffset--;
+    }
+
+    // Add remaining group if any (this is the first/topmost group)
+    if (currentGroup && currentGroup.indicators.length > 0) {
+        scannedLines.unshift({ indicators: currentGroup.indicators, isOr: currentGroup.isOr });
+    }
+
+    return { scannedLines, hasOrLines };
+}
+
+
+/***/ }),
+/* 71 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   scanAttributeLinesAfterField: () => (/* binding */ scanAttributeLinesAfterField)
+/* harmony export */ });
+// Shared attribute/color scanner to unify Designer and Preview parsing
+function scanAttributeLinesAfterField({
+    options,
+    Logger,
+    IndicatorUtils,
+    scanIndicatorsBackward,
+    extractAttributes,
+    attributeContentRegex
+}) {
+    const {
+        lines,
+        startIndex,
+        field,
+        contextLabel = 'PARSER',
+        includeChecks = false,
+        preserveOriginalSpacing = false,
+        stopOnFieldKeywordsRegex = null,
+        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(/,
+    } = options;
+
+    let lineOffset = 1;
+
+    while (startIndex + lineOffset < lines.length) {
+        const nextLine = lines[startIndex + lineOffset];
+        const nextTrimmed = nextLine.trim();
+
+        // IMPROVED: Better comment detection - check for A* at position 6-7 (DDS format)
+        // or at the start of trimmed line (could have leading spaces)
+        const isComment = (nextLine.length > 6 && nextLine[5] === 'A' && nextLine[6] === '*') ||
+                         nextTrimmed.startsWith('A*') ||
+                         nextTrimmed.startsWith('*') ||
+                         nextTrimmed.startsWith('-');
+
+        if (isComment) {
+            Logger.debug(`[${contextLabel}] Skipping comment line at offset ${lineOffset}: "${nextTrimmed}"`);
+            lineOffset++;
+            continue;
+        }
+
+        // Check if this is an indicator-only line (belongs to next field)
+        // Format: "A  11 42 54" or "AO 50" with NO field name after column 18
+        const contentAfterColumn18 = nextLine.length > 18 ? nextLine.substring(18).trim() : '';
+        const hasFieldNameAfter18 = /^[A-Z][A-Z0-9_]{0,9}\s+\d+/i.test(contentAfterColumn18);
+        const indicatorAreaContent = nextLine.length > 6 ? nextLine.substring(6, 18).trim() : '';
+        const hasIndicatorPattern = /^O?\s*[N\d\s]+$/.test(indicatorAreaContent);
+        const isIndicatorOnlyLine = nextLine.length > 6 &&
+                                    nextLine[5] === 'A' &&
+                                   !hasFieldNameAfter18 &&
+                                    hasIndicatorPattern &&
+                                    indicatorAreaContent.length > 0 &&
+                                    contentAfterColumn18 === '';
+
+        const hasFieldName = /\b[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(nextTrimmed);
+        const hasConstant = nextTrimmed.match(/\d+\s+\d+'/);
+        const isRecordDef = nextTrimmed.match(/^A\s+R\s+\w+/);
+        const isBlank = nextTrimmed === '' || nextTrimmed === 'A';
+        // Check for keywords (DATE, TIME, SYSNAME, USER) - must stop before processing another field's keyword
+        const hasKeyword = /\d{1,2}\s+\d{1,2}(DATE|TIME|SYSNAME|USER)/.test(nextTrimmed);
+        // Check if this is a const continuation line (value with quotes but no row/col)
+        // BUT: exclude lines with known keywords (COLOR, DSPATR, DFTVAL, etc.)
+        const isConstContinuation = nextTrimmed.startsWith('A') &&
+                                   nextTrimmed.includes("'") &&
+                                   !nextTrimmed.match(/\d+\s+\d+'/) &&
+                                   !attributeRegex.test(nextTrimmed);
+        const hasFieldKeyword = stopOnFieldKeywordsRegex ? stopOnFieldKeywordsRegex.test(nextTrimmed) : false;
+
+        // Stop scanning if we hit a field, constant, record, blank line, or field keyword
+        if (hasFieldName || hasConstant || isRecordDef || isBlank || hasKeyword || hasFieldKeyword) {
+            Logger.debug(`[${contextLabel}] Stopping scan - found ${hasFieldName ? 'field' : hasConstant ? 'constant' : isRecordDef ? 'record' : hasKeyword ? 'keyword' : hasFieldKeyword ? 'field keyword' : 'blank'}`);
+            break;
+        }
+
+        // If this is an indicator-only line, skip it and continue (indicators will be picked up by backward scan)
+        if (isIndicatorOnlyLine) {
+            Logger.debug(`[${contextLabel}] Skipping indicator-only line at offset ${lineOffset}, continuing...`);
+            lineOffset++;
+            continue;
+        }
+
+        if (isConstContinuation) {
+            lineOffset++;
+            continue;
+        }
+
+        const hasAttribute = attributeRegex.test(nextTrimmed);
+
+        // DEBUG: Log attribute detection
+        Logger.debug(`[${contextLabel}] Line ${startIndex + lineOffset + 1}: hasAttribute=${hasAttribute}, nextTrimmed="${nextTrimmed}"`);
+
+        // Check if this line has only indicators (no keyword yet)
+        // Format: "A  01 02 03" or "AO 50" or "A N10 12"
+        // If columns 19-80 (indices 18-79) are empty, it's only indicators
+        const contentAfter18 = nextLine.substring(18).trim();
+        Logger.debug(`[${contextLabel}] Line ${startIndex + lineOffset + 1}: contentAfter18="${contentAfter18}"`);
+        const hasOnlyIndicators = !hasAttribute &&
+                                 nextTrimmed.match(/^A[O\s]\s*[N\d\s]+$/) &&
+                                 contentAfter18 === '' &&
+                                 !hasFieldName;
+        Logger.debug(`[${contextLabel}] Line ${startIndex + lineOffset + 1}: hasOnlyIndicators=${hasOnlyIndicators}`);
+
+        if (!hasAttribute && !hasOnlyIndicators) {
+            // IMPROVED: Check if this looks like an unknown keyword starting at column 44 (index 43)
+            // Unknown keywords can have or not have parentheses: OVERLAY, KEEP, FLTPCN(...), etc.
+            // If content starts at column 44+ and doesn't match known attributes, ignore it
+            const contentAfter43 = nextLine.length > 43 ? nextLine.substring(43).trim() : '';
+            const looksLikeUnknownKeyword = nextTrimmed.startsWith('A') && contentAfter43.length > 0 && !hasFieldName;
+
+            if (looksLikeUnknownKeyword) {
+                Logger.debug(`[${contextLabel}] Skipping unknown keyword at column 44+: "${contentAfter43}"`);
+                lineOffset++;
                 continue;
             }
+            Logger.debug(`[${contextLabel}] Stopping - unknown line type at offset ${lineOffset}`);
+            break;
+        }
 
-            if (inDspsizBlock) {
-                currentBlock += ` ${trimmed}`;
+        // If line has only indicators, skip it and continue to find the keyword line
+        if (hasOnlyIndicators) {
+            Logger.debug(`[${contextLabel}] Found indicator-only line at offset ${lineOffset}, continuing...`);
+            lineOffset++;
+            continue;
+        }
 
-                if (trimmed.includes(')')) {
-                    processDspsizBlock(currentBlock);
-                    inDspsizBlock = false;
-                    currentBlock = '';
+        // ============================================================================
+        // UNIFIED INDICATOR PROCESSING FOR ALL KEYWORDS
+        // Process COLOR, DSPATR, EDTCDE, CHECK, DFTVAL, etc. with same logic
+        // ============================================================================
+
+        // Check if this is an OR line (position 6 = 'O')
+        const isOrLine = nextLine.length > 6 && nextLine[6] === 'O';
+
+        // Extract indicators from current line
+        const currentLineIndicators = IndicatorUtils.extractFromDdsLine(nextLine, `${contextLabel}-CURRENT`);
+
+        // Scan backwards to find all indicator-only lines
+        const backwardScan = scanIndicatorsBackward(lines, startIndex, lineOffset, `${contextLabel}-BACKWARD`);
+        const scannedLines = backwardScan.scannedLines;
+        let hasOrLines = backwardScan.hasOrLines;
+
+        // Add current line indicators if any
+        // The current line with keyword (COLOR/DSPATR) can also have indicators
+        if (currentLineIndicators && currentLineIndicators.length > 0) {
+            if (isOrLine) {
+                // This line starts a NEW OR group
+                scannedLines.push({ indicators: currentLineIndicators, isOr: true });
+                hasOrLines = true;
+            } else {
+                // This line is not OR, so add to last group (continuation)
+                if (scannedLines.length > 0) {
+                    // Add to the last group
+                    scannedLines[scannedLines.length - 1].indicators.push(...currentLineIndicators);
+                } else {
+                    // First group (no previous groups from backward scan)
+                    scannedLines.push({ indicators: currentLineIndicators, isOr: false });
                 }
             }
         }
 
-        if (inDspsizBlock && currentBlock) {
-            processDspsizBlock(currentBlock);
-        }
+        // Build indicator groups structure
+        const buildIndicatorGroups = () => {
+            if (scannedLines.length === 0) {return null;}
 
-        let singleSize = null;
-        if (hasDS3 && !hasDS4) {
-            singleSize = 'DS3';
-        } else if (hasDS4 && !hasDS3) {
-            singleSize = 'DS4';
-        }
+            if (hasOrLines) {
+                // OR format: scannedLines already contains properly grouped data
+                // Each element with isOr:true starts a new group
+                // Lines with isOr:false after isOr:true are continuations (AND within OR)
+                const groups = [];
 
-        return { hasDS3, hasDS4, singleSize };
-    }
-};
+                scannedLines.forEach(line => {
+                    if (line.isOr) {
+                        // Start new OR group
+                        groups.push({ indicators: [...line.indicators] });
+                    } else {
+                        // Continuation of previous group (AND within OR)
+                        if (groups.length > 0) {
+                            groups[groups.length - 1].indicators.push(...line.indicators);
+                        } else {
+                            // First group is not OR (should not happen, but handle it)
+                            groups.push({ indicators: [...line.indicators] });
+                        }
+                    }
+                });
 
-
-/***/ }),
-
-/***/ "./media/modules/utils/fieldNameValidator.js":
-/*!***************************************************!*\
-  !*** ./media/modules/utils/fieldNameValidator.js ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FieldNameValidator: () => (/* binding */ FieldNameValidator)
-/* harmony export */ });
-const FieldNameValidator = {
-    MAX_LENGTH: 10,
-
-    isValid(name, options = {}) {
-        const {
-            allowEmpty = false,
-            mustStartWithLetter = true,
-            maxLength = this.MAX_LENGTH
-        } = options;
-
-        if (!name || name.length === 0) {
-            return allowEmpty;
-        }
-
-        if (name.length > maxLength) {
-            return false;
-        }
-
-        if (mustStartWithLetter) {
-            return /^[A-Z][A-Z0-9_]*$/i.test(name);
-        } else {
-            return /^[A-Z0-9_]+$/i.test(name);
-        }
-    },
-
-    validate(name, options = {}) {
-        if (!this.isValid(name, options)) {
-            const { mustStartWithLetter = true, maxLength = this.MAX_LENGTH } = options;
-
-            if (!name || name.length === 0) {
-                throw new Error('Field name cannot be empty');
+                return {
+                    groups: groups,
+                    isOr: true
+                };
             }
 
-            if (name.length > maxLength) {
-                throw new Error(`Field name cannot exceed ${maxLength} characters`);
+            // AND format: combine all indicators into single group
+            const allIndicators = [];
+            scannedLines.forEach(line => {
+                allIndicators.push(...line.indicators);
+            });
+            return {
+                groups: [{ indicators: allIndicators }],
+                isOr: false
+            };
+        };
+
+        // Extract COLOR with indicators (with OR support)
+        const colorMatch = nextLine.match(/COLOR\((\w+)\)/);
+        if (colorMatch) {
+            const color = colorMatch[1];
+
+            if (!field.color) {
+                field.color = color;
+                Logger.parse(`Found color ${field.color} for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
             }
 
-            if (mustStartWithLetter) {
-                throw new Error('Field name must start with a letter and contain only letters, numbers, and underscores');
-            } else {
-                throw new Error('Field name must contain only letters, numbers, and underscores');
+            if (!field.colors) {
+                field.colors = [];
             }
-        }
-
-        return name;
-    },
-
-    sanitize(name, fallback = 'FIELD') {
-        if (!name || name.length === 0) {
-            return fallback;
-        }
-
-        let sanitized = name.toUpperCase();
-        sanitized = sanitized.replace(/[^A-Z0-9_]/g, '');
-
-        if (!/^[A-Z]/.test(sanitized)) {
-            sanitized = 'F' + sanitized;
-        }
-
-        if (sanitized.length > this.MAX_LENGTH) {
-            sanitized = sanitized.substring(0, this.MAX_LENGTH);
-        }
-
-        if (!this.isValid(sanitized)) {
-            return fallback;
-        }
-
-        return sanitized;
-    },
-
-    isReservedKeyword(name) {
-        const reserved = ['DATE', 'TIME', 'SYSNAME', 'USER', 'PAGE'];
-        return reserved.includes(name.toUpperCase());
-    }
-};
-
-
-/***/ }),
-
-/***/ "./media/modules/utils/idGenerator.js":
-/*!********************************************!*\
-  !*** ./media/modules/utils/idGenerator.js ***!
-  \********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   IdGenerator: () => (/* binding */ IdGenerator)
-/* harmony export */ });
-const IdGenerator = {
-    _counters: {},
-
-    generateFieldId() {
-        const timestamp = Date.now();
-        const random = Math.random().toString(36).substr(2, 9);
-        return `field_${timestamp}_${random}`;
-    },
-
-    generateUniqueName(prefix, existingNames = []) {
-        if (!this._counters[prefix]) {
-            this._counters[prefix] = 1;
-        }
-
-        let name;
-        let attempts = 0;
-        const maxAttempts = 1000;
-
-        do {
-            name = prefix + this._counters[prefix];
-            this._counters[prefix]++;
-            attempts++;
-
-            if (attempts > maxAttempts) {
-                name = prefix + Date.now();
-                break;
+            if (!field.colors.includes(color)) {
+                field.colors.push(color);
             }
-        } while (existingNames.includes(name));
 
-        return name;
-    },
+            if (preserveOriginalSpacing) {
+                field.originalColorLines = field.originalColorLines || {};
+                // Store all lines for this color (for regeneration)
+                if (!field.originalColorLines[color]) {
+                    field.originalColorLines[color] = [];
+                }
+                field.originalColorLines[color].push(nextLine);
+            }
 
-    resetCounter(prefix) {
-        if (this._counters[prefix]) {
-            this._counters[prefix] = 1;
-        }
-    },
+            // Store indicators using unified structure
+            const indicatorData = buildIndicatorGroups();
+            if (indicatorData) {
+                if (!field.colorIndicators) {
+                    field.colorIndicators = {};
+                }
 
-    resetAllCounters() {
-        this._counters = {};
-    },
+                // If color already exists AND we're not in a modification state, accumulate groups
+                // Otherwise replace (to avoid duplicating lines after user modifications)
+                const shouldAccumulate = field.colorIndicators[color] && !field.colorIndicatorsModified;
 
-    getCounter(prefix) {
-        return this._counters[prefix] || 0;
-    },
+                if (shouldAccumulate) {
+                    field.colorIndicators[color].groups.push(...indicatorData.groups);
+                    // Update isOr flag if any group is OR
+                    field.colorIndicators[color].isOr = field.colorIndicators[color].isOr || indicatorData.isOr;
+                    Logger.debug(`[${contextLabel}] COLOR ${color}: Accumulated ${indicatorData.groups.length} more group(s), total=${field.colorIndicators[color].groups.length}`);
+                } else {
+                    field.colorIndicators[color] = indicatorData;
+                    Logger.debug(`[${contextLabel}] COLOR ${color}: Stored ${indicatorData.groups.length} group(s), isOr=${indicatorData.isOr}`);
+                }
 
-    generateUniqueRecordName(prefix = 'REC', existingNames = []) {
-        return this.generateUniqueName(prefix, existingNames);
-    },
-
-    generateUniqueId(prefix = 'id') {
-        const timestamp = Date.now();
-        const random = Math.random().toString(36).substr(2, 9);
-        return `${prefix}-${timestamp}-${random}`;
-    }
-};
-
-
-/***/ }),
-
-/***/ "./media/modules/utils/indicatorUtils.js":
-/*!***********************************************!*\
-  !*** ./media/modules/utils/indicatorUtils.js ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   IndicatorUtils: () => (/* binding */ IndicatorUtils)
-/* harmony export */ });
-const IndicatorUtils = {
-    _logParse(message, ...args) {
-        const logger = globalThis.Logger;
-        if (logger && typeof logger.parse === 'function') {
-            logger.parse(message, ...args);
-        }
-    },
-
-    parse(indicatorStr) {
-        if (!indicatorStr || typeof indicatorStr !== 'string') {
-            return [];
-        }
-
-        const tokens = indicatorStr.trim().split(/\s+/);
-        const indicators = [];
-
-        tokens.forEach(token => {
-            const matches = token.match(/N?\d{1,2}/g);
-            if (matches) {
-                matches.forEach(ind => {
-                    const isNegated = ind.startsWith('N');
-                    const number = isNegated ? ind.substring(1) : ind;
-                    indicators.push({
-                        number: number.padStart(2, '0'),
-                        not: isNegated
-                    });
+                indicatorData.groups.forEach((g, i) => {
+                    Logger.debug(`[${contextLabel}]   Group ${i}: ${g.indicators.length} indicators:`, g.indicators.map(ind => ind.number + (ind.not ? 'N' : '')).join(', '));
                 });
             }
-        });
-
-        return indicators;
-    },
-
-    formatForDds(indicators) {
-        if (!indicators || indicators.length === 0) {
-            return '';
         }
 
-        const tokens = indicators.map(ind => ind.not ? ('N' + String(ind.number).padStart(2, '0')) : String(ind.number).padStart(2, '0'));
-        let result = '';
-        tokens.forEach(token => {
-            if (result === '') {
-                result = token;
+        // Extract DSPATR attributes with indicators (with OR support)
+        const attrResult = extractAttributes(nextLine, nextLine);
+        if (attrResult.attrs && Object.keys(attrResult.attrs).length > 0) {
+            field.attributes = { ...field.attributes, ...attrResult.attrs };
+
+            if (preserveOriginalSpacing) {
+                field.originalAttrLines = field.originalAttrLines || {};
+            }
+
+            if (attrResult.isGroupedFormat) {
+                field.hasGroupedDspatr = true;
+                if (preserveOriginalSpacing) {
+                    field.groupedDspatrLine = nextLine;
+                }
+            }
+
+            for (const [attrName, attrValue] of Object.entries(attrResult.attrs)) {
+                if (attrValue && preserveOriginalSpacing) {
+                    // Store all lines for this attribute
+                    if (!field.originalAttrLines[attrName]) {
+                        field.originalAttrLines[attrName] = [];
+                    }
+                    field.originalAttrLines[attrName].push(nextLine);
+                }
+            }
+
+            // Store indicators using unified structure
+            const indicatorData = buildIndicatorGroups();
+            if (indicatorData) {
+                for (const [attrName, attrValue] of Object.entries(attrResult.attrs)) {
+                    if (attrValue) {
+                        if (!field.attributeIndicators) {
+                            field.attributeIndicators = {};
+                        }
+
+                        // If attribute already exists AND we're not in a modification state, accumulate groups
+                        // Otherwise replace (to avoid duplicating lines after user modifications)
+                        const shouldAccumulate = field.attributeIndicators[attrName] && !field.attributeIndicatorsModified;
+
+                        if (shouldAccumulate) {
+                            field.attributeIndicators[attrName].groups.push(...indicatorData.groups);
+                            // Update isOr flag if any group is OR
+                            field.attributeIndicators[attrName].isOr = field.attributeIndicators[attrName].isOr || indicatorData.isOr;
+                            Logger.debug(`[${contextLabel}] DSPATR ${attrName}: Accumulated ${indicatorData.groups.length} more group(s), total=${field.attributeIndicators[attrName].groups.length}`);
+                        } else {
+                            field.attributeIndicators[attrName] = indicatorData;
+                            Logger.debug(`[${contextLabel}] DSPATR ${attrName}: Stored ${indicatorData.groups.length} group(s), isOr=${indicatorData.isOr}`);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Extract DFTVAL with indicators (same pattern as COLOR/DSPATR)
+        const dftvalMatch = nextLine.match(/DFTVAL\('([^']*)'\)/);
+        Logger.debug(`[${contextLabel}] Checking line ${startIndex + lineOffset + 1} for DFTVAL: ${nextTrimmed.substring(0, 50)}`);
+        Logger.debug(`[${contextLabel}] DFTVAL match result:`, dftvalMatch ? `YES (value='${dftvalMatch[1]}')` : 'NO');
+        if (dftvalMatch) {
+            const value = dftvalMatch[1];
+            field.dftval = { value: value };
+
+            Logger.parse(`Found DFTVAL='${value}' for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+
+            Logger.debug(`[${contextLabel}] DFTVAL processing - scannedLines count: ${scannedLines.length}`);
+            Logger.debug(`[${contextLabel}] DFTVAL processing - currentLineIndicators:`, currentLineIndicators);
+            scannedLines.forEach((sl, idx) => {
+                Logger.debug(`[${contextLabel}]   DFTVAL scannedLine ${idx}: ${sl.indicators.length} indicators, isOr=${sl.isOr}`, sl.indicators.map(i => i.number).join(','));
+            });
+
+            // Store indicators using unified structure (same as COLOR/DSPATR)
+            const indicatorData = buildIndicatorGroups();
+            if (indicatorData && indicatorData.groups && indicatorData.groups.length > 0) {
+                field.dftvalIndicators = indicatorData;
+                Logger.debug(`[${contextLabel}] DFTVAL: Stored ${indicatorData.groups.length} group(s), isOr=${indicatorData.isOr}`);
+                indicatorData.groups.forEach((g, i) => {
+                    Logger.debug(`[${contextLabel}]   DFTVAL Group ${i}: ${g.indicators.length} indicators:`, g.indicators.map(ind => ind.number + (ind.not ? 'N' : '')).join(', '));
+                });
             } else {
-                result += token.startsWith('N') ? token : ' ' + token;
+                Logger.debug(`[${contextLabel}] DFTVAL: No indicator groups built (no indicators present)`);
             }
-        });
-        return result;
-    },
-
-    formatForDisplay(indicators) {
-        if (!indicators || indicators.length === 0) {
-            return '';
         }
 
-        return indicators.map(ind =>
-            ind.not ? `NOT ${ind.number}` : ind.number
-        ).join(', ');
-    },
+        const parseKeywordTextArg = (keywordName, lineText) => {
+            const quotedRegex = new RegExp(`${keywordName}\\(\\s*'((?:''|[^'])*)'\\s*\\)`, 'i');
+            const quotedMatch = lineText.match(quotedRegex);
+            if (quotedMatch) {
+                return quotedMatch[1].replace(/''/g, "'");
+            }
 
-    isValid(indicatorStr) {
-        if (!indicatorStr) {
-            return true;
-        }
-        return /^(N?\d{1,2}(\s+N?\d{1,2})*)$/.test(indicatorStr.trim());
-    },
+            const genericRegex = new RegExp(`${keywordName}\\(\\s*([^)]*?)\\s*\\)`, 'i');
+            const genericMatch = lineText.match(genericRegex);
+            if (!genericMatch) {
+                return '';
+            }
 
-    create(number, not = false) {
-        return {
-            number: String(number).padStart(2, '0'),
-            not: Boolean(not)
-        };
-    },
-
-    extractFromDdsLine(fullLine, debugContext = '') {
-        if (!fullLine || fullLine.length <= 6 || fullLine[5] !== 'A') {
-            return [];
-        }
-
-        const indicatorArea = fullLine.substring(6, 44);
-        const indicatorStr = indicatorArea.trim();
-
-        if (debugContext && indicatorStr) {
-            this._logParse(`${debugContext} indicator area: "${indicatorArea}" from line: "${fullLine}"`);
-        }
-
-        if (!indicatorStr) {
-            return [];
-        }
-
-        const indicators = this.parse(indicatorStr);
-
-        if (debugContext && indicators.length > 0) {
-            this._logParse(`${debugContext} found indicators:`, indicators);
-        }
-
-        return indicators;
-    },
-
-    extractWithOrSupport(lines, startIndex, keyword, debugContext = '') {
-        const result = {
-            groups: [],
-            isOr: false
+            return genericMatch[1].trim();
         };
 
-        let currentIndex = startIndex;
-        let foundKeyword = false;
-
-        while (currentIndex < lines.length && !foundKeyword) {
-            const line = lines[currentIndex];
-
-            if (!line || line.length <= 6 || line[5] !== 'A') {
-                break;
+        const edtcdeMatch = nextLine.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);
+        if (edtcdeMatch) {
+            const edtcdeValue = edtcdeMatch[1].replace(/["']/g, '').trim().toUpperCase();
+            if (edtcdeValue) {
+                const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
+                field.edtcde = { value: edtcdeValue };
+                if ((replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') && edtcdeValue !== 'Z') {
+                    field.edtcde.replaceLeadingZerosWith = replaceLeadingZerosWith;
+                }
+                Logger.parse(`Found EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
             }
+        }
 
-            const isOrLine = line[6] === 'O';
-            const hasKeyword = keyword ? line.includes(keyword) : false;
+        const edtwrdValue = parseKeywordTextArg('EDTWRD', nextLine);
+        if (edtwrdValue.length > 0) {
+            field.edtwrd = { value: edtwrdValue };
+            Logger.parse(`Found EDTWRD('${edtwrdValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
 
-            const indicators = this.extractFromDdsLine(line, debugContext);
+        const edtmskValue = parseKeywordTextArg('EDTMSK', nextLine);
+        if (edtmskValue.length > 0) {
+            field.edtmsk = { value: edtmskValue };
+            Logger.parse(`Found EDTMSK('${edtmskValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
 
-            if (indicators.length > 0) {
-                result.groups.push({ indicators: indicators });
-                if (isOrLine) {
-                    result.isOr = true;
+        const dftValue = parseKeywordTextArg('DFT', nextLine);
+        if (dftValue.length > 0) {
+            field.dft = { value: dftValue };
+            Logger.parse(`Found DFT(${dftValue}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
+
+            // Parse VALUES('A' 'B' ...), including DDS continuation lines
+            if (/VALUES\(/i.test(nextLine)) {
+                let valuesText = nextLine;
+                let lookaheadOffset = lineOffset;
+
+                // Keep appending continuation lines until closing ')' is found
+                while (!/\)/.test(valuesText) && (startIndex + lookaheadOffset + 1) < lines.length) {
+                    const continuationLine = lines[startIndex + lookaheadOffset + 1];
+                    const continuationTrimmed = continuationLine.trim();
+
+                    // Stop if we reached a probable new field/record/comment boundary
+                    const continuationIsComment = (continuationLine.length > 6 && continuationLine[5] === 'A' && continuationLine[6] === '*') ||
+                        continuationTrimmed.startsWith('A*') ||
+                        continuationTrimmed.startsWith('*');
+                    const continuationHasFieldName = /\b[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(continuationTrimmed);
+                    const continuationIsRecordDef = continuationTrimmed.match(/^A\s+R\s+\w+/);
+
+                    if (continuationIsComment || continuationHasFieldName || continuationIsRecordDef) {
+                        break;
+                    }
+
+                    valuesText += ' ' + continuationTrimmed;
+                    lookaheadOffset++;
                 }
 
-                if (debugContext) {
-                    this._logParse(`${debugContext} line ${currentIndex + 1} (${isOrLine ? 'OR' : 'AND'}): found ${indicators.length} indicators`);
+                const valuesMatch = valuesText.match(/VALUES\(([^)]*)\)/i);
+                if (valuesMatch) {
+                    const rawValues = valuesMatch[1]
+                        // Remove DDS line-continuation chars (- or +) that appear between tokens
+                        // when continuation lines are joined, e.g.: 'G' -  'H' → 'G' 'H'
+                        .replace(/\s*[+-]\s*/g, ' ')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+
+                    if (rawValues.length > 0) {
+                        field.values = rawValues;
+                        Logger.parse(`Found VALUES(${rawValues}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+                    }
+
+                    // Advance scanner to the last consumed continuation line
+                    if (lookaheadOffset > lineOffset) {
+                        lineOffset = lookaheadOffset;
+                    }
                 }
             }
 
-            if (hasKeyword) {
-                foundKeyword = true;
+        if (includeChecks) {
+            const checkMatch = nextLine.match(/CHECK\(([^)]+)\)/);
+            if (checkMatch) {
+                Logger.debug(`[${contextLabel}] ===== FOUND CHECK LINE =====`);
+                Logger.debug(`[${contextLabel}] nextLine: "${nextLine}"`);
+                Logger.debug(`[${contextLabel}] lineOffset: ${lineOffset}`);
+                Logger.debug(`[${contextLabel}] scannedLines.length: ${scannedLines.length}`);
+                Logger.debug(`[${contextLabel}] hasOrLines: ${hasOrLines}`);
+                Logger.debug(`[${contextLabel}] scannedLines:`, JSON.stringify(scannedLines));
+
+                const codes = checkMatch[1].trim().split(/\s+/);
+                Logger.debug(`[${contextLabel}] CHECK codes found: ${codes.join(', ')}`);
+
+                // Store enabled check options
+                if (!field.checkOptions) { field.checkOptions = {}; }
+                codes.forEach(code => {
+                    field.checkOptions[code] = true;
+                });
+
+                if (preserveOriginalSpacing) {
+                    field.originalCheckLines = field.originalCheckLines || {};
+                    codes.forEach(code => {
+                        field.originalCheckLines[code] = nextLine;
+                    });
+                }
+
+                // For ME and ER codes, store indicators using unified structure (same as COLOR)
+                codes.forEach(code => {
+                    if (['ME', 'ER'].includes(code)) {
+                        Logger.debug(`[${contextLabel}] Processing CHECK(${code}) - calling buildIndicatorGroups()`);
+                        const indicatorData = buildIndicatorGroups();
+                        Logger.debug(`[${contextLabel}] CHECK(${code}): buildIndicatorGroups returned:`, JSON.stringify(indicatorData));
+                        if (indicatorData && indicatorData.groups && indicatorData.groups.length > 0) {
+                            if (!field.checkIndicators) { field.checkIndicators = {}; }
+                            field.checkIndicators[code] = indicatorData;
+                            Logger.debug(`[${contextLabel}] CHECK(${code}): Stored ${indicatorData.groups.length} group(s), isOr=${indicatorData.isOr}`);
+                            indicatorData.groups.forEach((g, idx) => {
+                                Logger.debug(`[${contextLabel}]   CHECK(${code}) Group ${idx}: ${g.indicators.length} indicators: ${g.indicators.map(i => (i.not ? 'N' : '') + i.number).join(', ')}`);
+                            });
+                        } else {
+                            Logger.debug(`[${contextLabel}] CHECK(${code}): No indicators stored (indicatorData is null or empty)`);
+                        }
+                    } else {
+                        Logger.debug(`[${contextLabel}] Skipping indicators for CHECK(${code}) - not ME/ER`);
+                    }
+                });
+
+                Logger.debug(`[${contextLabel}] Stored CHECK options for field ${field.name}`);
+                Logger.debug(`[${contextLabel}] field.checkIndicators:`, JSON.stringify(field.checkIndicators));
             }
-
-            currentIndex++;
         }
 
-        if (result.groups.length === 1 && !result.isOr) {
-            return { groups: result.groups, isOr: false };
-        }
-
-        return result;
-    },
-
-    formatGroupsForDds(groups) {
-        if (!groups || groups.length === 0) {
-            return [''];
-        }
-
-        const lines = [];
-        groups.forEach((group, index) => {
-            const formatted = this.formatForDds(group.indicators);
-            const prefix = index === 0 ? '' : 'O';
-            lines.push(prefix + formatted);
-        });
-
-        return lines;
-    },
-
-    flattenGroups(groups) {
-        if (!groups || groups.length === 0) {
-            return [];
-        }
-
-        const allIndicators = [];
-        groups.forEach(group => {
-            if (group.indicators) {
-                allIndicators.push(...group.indicators);
-            }
-        });
-        return allIndicators;
+        lineOffset++;
     }
-};
+}
 
 
 /***/ }),
-
-/***/ "./media/modules/utils/screenCoordinates.js":
-/*!**************************************************!*\
-  !*** ./media/modules/utils/screenCoordinates.js ***!
-  \**************************************************/
+/* 72 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ScreenCoordinates: () => (/* binding */ ScreenCoordinates)
+/* harmony export */   showNotification: () => (/* binding */ showNotification)
 /* harmony export */ });
-const ScreenCoordinates = {
-    CHAR_HEIGHT: 20,
-    CHAR_WIDTH: 8,
+function showNotification(options) {
+    const { message, type = 'info' } = options;
 
-    SCREEN_SIZES: {
-        'DS3': { rows: 24, cols: 80 },
-        'DS4': { rows: 27, cols: 132 }
-    },
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
 
-    toPixels(row, col, offset = { row: 0, col: 0 }) {
-        return {
-            top: (row - 1 - offset.row) * this.CHAR_HEIGHT,
-            left: (col - 1 - offset.col) * this.CHAR_WIDTH
-        };
-    },
+    const styles = {
+        success: { background: '#4caf50', color: 'white' },
+        error: { background: '#f44336', color: 'white' },
+        info: { background: '#2196F3', color: 'white' }
+    };
 
-    fromPixels(top, left, offset = { row: 0, col: 0 }) {
-        return {
-            row: Math.floor(top / this.CHAR_HEIGHT) + 1 + offset.row,
-            col: Math.floor(left / this.CHAR_WIDTH) + 1 + offset.col
-        };
-    },
+    const style = styles[type] || styles.info;
+    Object.assign(notification.style, {
+        position: 'fixed',
+        top: '70px',
+        right: '20px',
+        padding: '12px 20px',
+        borderRadius: '4px',
+        backgroundColor: style.background,
+        color: style.color,
+        fontSize: '14px',
+        fontWeight: '500',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+        zIndex: '10001',
+        animation: 'slideIn 0.3s ease-out'
+    });
 
-    fromClientPoint(clientX, clientY, rect, zoom = 1, offset = { row: 0, col: 0 }) {
-        const left = (clientX - rect.left) / zoom;
-        const top = (clientY - rect.top) / zoom;
-        return this.fromPixels(top, left, offset);
-    },
+    document.body.appendChild(notification);
 
-    sizeFromPixels(height, width, zoom = 1) {
-        return {
-            rows: Math.round((height / zoom) / this.CHAR_HEIGHT),
-            cols: Math.round((width / zoom) / this.CHAR_WIDTH)
-        };
-    },
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
 
-    getScreenDimensions(displaySize) {
-        return this.SCREEN_SIZES[displaySize] || this.SCREEN_SIZES.DS3;
-    },
 
-    isValidPosition(row, col, displaySize) {
-        const dims = this.getScreenDimensions(displaySize);
-        return row >= 1 && row <= dims.rows &&
-               col >= 1 && col <= dims.cols;
-    },
+/***/ }),
+/* 73 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-    getWidthInPixels(length) {
-        return length * this.CHAR_WIDTH;
-    },
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updateDocumentInEditor: () => (/* binding */ updateDocumentInEditor)
+/* harmony export */ });
+function updateDocumentInEditor(options) {
+    const {
+        currentRecord,
+        currentDocument,
+        Logger
+    } = options;
 
-    getHeightInPixels(rows) {
-        return rows * this.CHAR_HEIGHT;
-    },
+    const preservedRecord = currentRecord;
 
-    createWindowOffset(windowDimensions) {
-        if (!windowDimensions) {
-            return { row: 0, col: 0 };
+    const sourceTextarea = document.getElementById('source-content');
+    if (sourceTextarea) {
+        sourceTextarea.value = currentDocument;
+    }
+
+    if (Logger) {
+        Logger.dds('Document updated internally, waiting for Save. Record context:', preservedRecord);
+    }
+}
+
+
+/***/ }),
+/* 74 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   buildVariableTypeAndUsageUI: () => (/* binding */ buildVariableTypeAndUsageUI)
+/* harmony export */ });
+function buildVariableTypeAndUsageUI({
+    field
+}) {
+    const isDate = field.dataType === 'date';
+    const isTime = field.dataType === 'time';
+    const isTimestamp = field.dataType === 'timestamp';
+    const length = isDate ? 10 : (isTime ? 8 : (isTimestamp ? 26 : (field.length || 10)));
+    const decimals = field.decimals || 0;
+
+    // Map dataType to DDS type character
+    let typeChar = 'A';
+    if (field.dataType === 'character') {
+        typeChar = 'A';
+    } else if (field.dataType === 'zoned') {
+        const hasExplicitShift = typeof field.shift === 'string' && field.shift.trim() !== '';
+        if (hasExplicitShift) {
+            typeChar = field.shift.trim();
+        } else if (field.usage === 'I' || field.usage === 'B') {
+            typeChar = 'S';
+        } else {
+            typeChar = '';
         }
-        return {
-            row: windowDimensions.row - 1,
-            col: windowDimensions.col - 1
-        };
-    },
+    } else if (field.dataType === 'float') {
+        typeChar = 'F';
+    } else if (field.dataType === 'double') {
+        typeChar = field.shift || 'J';
+    } else if (field.dataType === 'date') {
+        typeChar = 'L';
+    } else if (field.dataType === 'time') {
+        typeChar = 'T';
+    } else if (field.dataType === 'timestamp') {
+        typeChar = 'Z';
+    }
 
-    calculateFieldWrapping(field, displaySize = 'DS3') {
-        const dims = this.getScreenDimensions(displaySize);
-        const maxCols = dims.cols;
+    const typeSpec = isDate ? 'L' : (isTime ? 'T' : (isTimestamp ? 'Z' : `${length}${typeChar}`));
+    const isNumeric = ['zoned', 'float', 'double'].includes(field.dataType);
 
-        if (field.type === 'constant' || field.type === 'keyword' || field.isKeyword) {
-            return [{ row: field.row, col: field.col, length: field.length }];
+    // Determine usage character
+    let usageChar = 'O';
+    if (field.usage === 'I') {
+        usageChar = 'I';
+    } else if (field.usage === 'O') {
+        usageChar = 'O';
+    } else if (field.usage === 'B') {
+        usageChar = 'B';
+    } else {
+        // Fallback to old field.type
+        if (field.type === 'input') {
+            usageChar = 'I';
+        } else if (field.type === 'output') {
+            usageChar = 'O';
+        } else {
+            usageChar = 'O';
         }
+    }
 
-        const isNumeric = ['numeric', 'zoned', 'packed', 'float', 'binary', 'double'].includes(field.dataType);
-        if (isNumeric) {
-            return [{ row: field.row, col: field.col, length: field.length }];
-        }
+    // Build type and usage string
+    let typeAndUsage = '';
+    if (field.dataType === 'double') {
+        typeAndUsage = `${typeSpec}  ${usageChar}`;
+    } else if (isNumeric && decimals > 0) {
+        typeAndUsage = `${typeSpec} ${decimals}${usageChar}`;
+    } else if (isNumeric) {
+        typeAndUsage = `${typeSpec} 0${usageChar}`;
+    } else {
+        typeAndUsage = `${typeSpec}  ${usageChar}`;
+    }
 
-        const startCol = field.col;
-        const fieldLength = field.length || 10;
-        const segments = [];
+    return typeAndUsage;
+}
 
-        let remainingLength = fieldLength;
-        let currentRow = field.row;
-        let currentCol = startCol;
 
-        while (remainingLength > 0) {
-            const availableSpace = maxCols - currentCol + 1;
-            const segmentLength = Math.min(remainingLength, availableSpace);
+/***/ }),
+/* 75 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-            segments.push({
-                row: currentRow,
-                col: currentCol,
-                length: segmentLength
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateConstantFieldLinesUI: () => (/* binding */ generateConstantFieldLinesUI)
+/* harmony export */ });
+// Generate constant field lines with continuation support AND indicators
+function generateConstantFieldLinesUI({
+    field,
+    IndicatorUtils
+}) {
+    const rowStr = field.row.toString().padStart(2, ' ');
+    const colStr = field.col.toString().padStart(2, ' ');
+    const constantValue = field.value || 'TEXT';
+
+    // DDS format: text starts at column 45
+    // Dash for continuation goes at column 79
+    // Closing quote goes at column 80
+    // So we have 34 characters (columns 45-78) for actual text per line
+    const maxCharsPerLine = 34;
+    const lines = [];
+
+    // Build indicator prefix for the main line and prepended indicator lines
+    let indicatorPrefix = '            '; // 12 spaces (default, no indicators)
+    const fieldIndicatorLines = []; // For lines BEFORE the constant line
+
+    if (field.indicators && field.indicators.groups && field.indicators.groups.length > 0) {
+        const groups = field.indicators.groups;
+        const isOr = field.indicators.isOr || false;
+
+        if (isOr && groups.length > 1) {
+            // OR FORMAT: Multiple groups
+            let allLinesBeforeConst = [];
+
+            groups.forEach((group, groupIndex) => {
+                const groupIndicators = group.indicators || [];
+                if (groupIndicators.length === 0) {return;}
+
+                const numChunks = Math.ceil(groupIndicators.length / 3);
+                for (let chunkIndex = 0; chunkIndex < numChunks; chunkIndex++) {
+                    const startIdx = chunkIndex * 3;
+                    const chunk = groupIndicators.slice(startIdx, startIdx + 3);
+                    const chunkIndPart = IndicatorUtils.formatForDds(chunk);
+                    const firstIsNegative = chunk[0]?.not;
+
+                    let prefix, prefixSpaces;
+                    if (chunkIndex === 0) {
+                        prefix = groupIndex === 0 ? 'A' : 'AO';
+                        prefixSpaces = firstIsNegative ? ' ' : '  ';
+                        if (prefix === 'AO') {
+                            prefixSpaces = firstIsNegative ? '' : ' ';
+                        }
+                    } else {
+                        prefix = 'A';
+                        prefixSpaces = firstIsNegative ? ' ' : '  ';
+                    }
+
+                    allLinesBeforeConst.push(`     ${prefix}${prefixSpaces}${chunkIndPart}`);
+                }
             });
 
-            remainingLength -= segmentLength;
+            // Last line goes to constant line, rest go before
+            if (allLinesBeforeConst.length > 1) {
+                fieldIndicatorLines.push(...allLinesBeforeConst.slice(0, -1));
+                const lastLine = allLinesBeforeConst[allLinesBeforeConst.length - 1];
+                const isAO = lastLine.startsWith('     AO');
 
-            if (remainingLength > 0) {
-                currentRow++;
-                currentCol = 1;
+                let indicatorPart;
+                if (isAO) {
+                    indicatorPart = lastLine.substring(7);
+                } else {
+                    indicatorPart = lastLine.substring(6);
+                }
+                indicatorPart = indicatorPart.trimEnd();
+
+                if (isAO) {
+                    indicatorPrefix = 'O' + indicatorPart;
+                } else {
+                    indicatorPrefix = indicatorPart;
+                }
+
+                const spacesNeeded = 12 - indicatorPrefix.length;
+                indicatorPrefix = indicatorPrefix + ' '.repeat(Math.max(0, spacesNeeded));
+            } else if (allLinesBeforeConst.length === 1) {
+                const lastLine = allLinesBeforeConst[0];
+                const isAO = lastLine.startsWith('     AO');
+
+                let indicatorPart;
+                if (isAO) {
+                    indicatorPart = lastLine.substring(7);
+                } else {
+                    indicatorPart = lastLine.substring(6);
+                }
+                indicatorPart = indicatorPart.trimEnd();
+
+                if (isAO) {
+                    indicatorPrefix = 'O' + indicatorPart;
+                } else {
+                    indicatorPrefix = indicatorPart;
+                }
+
+                const spacesNeeded = 12 - indicatorPrefix.length;
+                indicatorPrefix = indicatorPrefix + ' '.repeat(Math.max(0, spacesNeeded));
+            }
+        } else {
+            // AND FORMAT: Single group
+            const allIndicators = groups.length > 0 ? groups[0].indicators : [];
+
+            if (allIndicators.length > 3) {
+                const numChunks = Math.ceil(allIndicators.length / 3);
+
+                for (let chunkIndex = 0; chunkIndex < numChunks - 1; chunkIndex++) {
+                    const startIdx = chunkIndex * 3;
+                    const chunk = allIndicators.slice(startIdx, startIdx + 3);
+                    const chunkIndPart = IndicatorUtils.formatForDds(chunk);
+                    const chunkFirstIsNegative = chunk[0]?.not;
+                    const chunkPrefixSpaces = chunkFirstIsNegative ? ' ' : '  ';
+                    fieldIndicatorLines.push(`     A${chunkPrefixSpaces}${chunkIndPart}`);
+                }
+
+                const lastChunkStart = (numChunks - 1) * 3;
+                const lastChunk = allIndicators.slice(lastChunkStart);
+                const indPart = IndicatorUtils.formatForDds(lastChunk);
+                const firstIsNegative = lastChunk[0]?.not;
+                const prefixSpaces = firstIsNegative ? ' ' : '  ';
+                const spacesNeeded = 12 - prefixSpaces.length - indPart.length;
+                indicatorPrefix = prefixSpaces + indPart + ' '.repeat(Math.max(0, spacesNeeded));
+            } else if (allIndicators.length > 0) {
+                const indPart = IndicatorUtils.formatForDds(allIndicators);
+                const firstIsNegative = allIndicators[0]?.not;
+                const prefixSpaces = firstIsNegative ? ' ' : '  ';
+                const spacesNeeded = 12 - prefixSpaces.length - indPart.length;
+                indicatorPrefix = prefixSpaces + indPart + ' '.repeat(Math.max(0, spacesNeeded));
+            }
+        }
+    }
+
+    // Add field indicator lines BEFORE constant line
+    if (fieldIndicatorLines.length > 0) {
+        lines.push(...fieldIndicatorLines);
+    }
+
+    // Build constant line(s) with indicator prefix
+    // Format: "     A  03                           19 11'TEXT'"
+    const spacingAfterIndicators = ' '.repeat(21); // 21 spaces to reach column 38 (coordinates start at column 39)
+
+    if (constantValue.length <= maxCharsPerLine) {
+        // Short constant - single line with indicators
+        lines.push(`     A${indicatorPrefix}${spacingAfterIndicators}${rowStr} ${colStr}'${constantValue}'`);
+    } else {
+        // Long constant - split into multiple lines with dash continuation
+        let remainingText = constantValue;
+        let isFirstLine = true;
+
+        while (remainingText.length > 0) {
+            const chunk = remainingText.substring(0, maxCharsPerLine);
+            remainingText = remainingText.substring(maxCharsPerLine);
+            const hasContinuation = remainingText.length > 0;
+
+            if (isFirstLine) {
+                // First line: includes indicators, row, column, text from column 45
+                lines.push(`     A${indicatorPrefix}${spacingAfterIndicators}${rowStr} ${colStr}'${chunk}${hasContinuation ? '-' : '\''}`);
+                isFirstLine = false;
+            } else {
+                // Continuation lines: NO indicators, text starts at column 45, NO opening quote
+                lines.push(`     A                                      ${chunk}${hasContinuation ? '-' : '\''}`);
+            }
+        }
+    }
+
+    return lines;
+}
+
+
+/***/ }),
+/* 76 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldDspatrLinesUI: () => (/* binding */ generateFieldDspatrLinesUI)
+/* harmony export */ });
+//Generate DSPATR lines for a field
+function generateFieldDspatrLinesUI({
+    field,
+    DSPATR_ATTRIBUTE_MAP,
+    applyIndicatorChangesToField,
+    generateDdsLineWithIndicators,
+    Logger
+}) {
+    // Apply any pending indicator changes from the Map before generating DDS
+    applyIndicatorChangesToField(field);
+
+    const lines = [];
+
+    if (!field.attributes || Object.keys(field.attributes).length === 0) {
+        return lines;
+    }
+
+    // Check if this field originally had a grouped DSPATR format
+    if (field.hasGroupedDspatr) {
+        // Preserve grouped format: regenerate DSPATR(XX YY ZZ) with active attributes
+        const activeCodes = [];
+        for (const [attrName, ddsCode] of Object.entries(DSPATR_ATTRIBUTE_MAP)) {
+            if (field.attributes[attrName]) {
+                activeCodes.push(ddsCode);
             }
         }
 
-        return segments;
+        if (activeCodes.length > 0) {
+            // Get indicators from the first attribute (all share same indicators in grouped format)
+            const firstAttr = Object.keys(field.attributes).find(k => field.attributes[k]);
+            const indicatorData = field.attributeIndicators && firstAttr ?
+                (field.attributeIndicators[firstAttr] || []) : [];
+
+            const groupedDspatr = `DSPATR(${activeCodes.join(' ')})`;
+            const generated = generateDdsLineWithIndicators(groupedDspatr, indicatorData);
+            // Split by newline in case generateDdsLineWithIndicators returns multiple lines (OR groups)
+            const generatedLines = generated.split('\n');
+            lines.push(...generatedLines);
+            Logger.dds('Generated grouped DSPATR line with indicators');
+        }
+    } else {
+        // Individual format: one DSPATR per line
+        for (const [attrName, ddsCode] of Object.entries(DSPATR_ATTRIBUTE_MAP)) {
+            if (field.attributes[attrName]) {
+                // Preserve original line(s) if indicators haven't changed (now an array)
+                if (field.originalAttrLines && field.originalAttrLines[attrName] && !field.attributeIndicatorsModified && Array.isArray(field.originalAttrLines[attrName])) {
+                    Logger.dds(`Preserving ${field.originalAttrLines[attrName].length} original DSPATR line(s) for ${attrName}`);
+                    lines.push(...field.originalAttrLines[attrName]);
+                } else {
+                    Logger.dds(`Generating new DSPATR line(s) for ${attrName}`);
+                    const indicatorData = field.attributeIndicators && field.attributeIndicators[attrName] ? field.attributeIndicators[attrName] : [];
+                    const generated = generateDdsLineWithIndicators(`DSPATR(${ddsCode})`, indicatorData);
+                    // Split by newline in case generateDdsLineWithIndicators returns multiple lines (OR groups)
+                    const generatedLines = generated.split('\n');
+                    lines.push(...generatedLines);
+                }
+            }
+        }
     }
-};
+
+    return lines;
+}
+
+
+/***/ }),
+/* 77 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldColorLinesUI: () => (/* binding */ generateFieldColorLinesUI)
+/* harmony export */ });
+// Generate COLOR lines for a field
+function generateFieldColorLinesUI({
+    field,
+    applyIndicatorChangesToField,
+    generateDdsLineWithIndicators,
+    Logger
+}) {
+    // Apply any pending indicator changes from the Map before generating DDS
+    applyIndicatorChangesToField(field);
+
+    const lines = [];
+
+    if (field.colors && field.colors.length > 1) {
+        // Multiple colors - each on separate line with indicators
+        field.colors.forEach(color => {
+            const indicatorData = field.colorIndicators && field.colorIndicators[color] ? field.colorIndicators[color] : [];
+
+            // Check if we should preserve original lines (originalColorLines is now an array)
+            if (field.originalColorLines && field.originalColorLines[color] && !field.colorIndicatorsModified && Array.isArray(field.originalColorLines[color])) {
+                Logger.dds(`Preserving ${field.originalColorLines[color].length} original COLOR line(s) for ${color}`);
+                lines.push(...field.originalColorLines[color]);
+            } else {
+                // Generate new line(s) - may be multiple if OR groups exist
+                const generated = generateDdsLineWithIndicators(`COLOR(${color})`, indicatorData);
+                lines.push(generated);
+            }
+        });
+    } else if (field.color) {
+        // Single color - check if it has indicators
+        const indicatorData = field.colorIndicators && field.colorIndicators[field.color] ? field.colorIndicators[field.color] : [];
+
+        // Check if indicatorData has any groups with indicators
+        const hasIndicators = Array.isArray(indicatorData) ? indicatorData.length > 0 :
+                             (indicatorData.groups && indicatorData.groups.length > 0);
+
+        if (hasIndicators) {
+            // Has indicators - must be on separate line
+            if (field.originalColorLines && field.originalColorLines[field.color] && !field.colorIndicatorsModified && Array.isArray(field.originalColorLines[field.color])) {
+                lines.push(...field.originalColorLines[field.color]);
+            } else {
+                const generated = generateDdsLineWithIndicators(`COLOR(${field.color})`, indicatorData);
+                lines.push(generated);
+            }
+        }
+        // If no indicators, return empty array (will be added inline)
+    }
+
+    return lines;
+}
+
+
+/***/ }),
+/* 78 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldCheckLinesUI: () => (/* binding */ generateFieldCheckLinesUI)
+/* harmony export */ });
+// Generate CHECK keyword lines for a field
+function generateFieldCheckLinesUI({
+    field,
+    CHECK_CHAR_CODES,
+    CHECK_NUMERIC_CODES,
+    generateDdsLineWithIndicators,
+    Logger
+}) {
+    const lines = [];
+    if (!field.checkOptions) {return lines;}
+    const orderedCodes = [...CHECK_CHAR_CODES, ...CHECK_NUMERIC_CODES];
+    const seen = new Set();
+    orderedCodes.forEach(code => {
+        if (seen.has(code)) {return;}
+        seen.add(code);
+        if (!field.checkOptions[code]) {return;}
+        const keyword = `CHECK(${code})`;
+        if (['ME', 'ER'].includes(code)) {
+            // ME and ER support indicators with OR groups
+            const indicatorData = field.checkIndicators && field.checkIndicators[code] ? field.checkIndicators[code] : null;
+
+            Logger.debug(`[CHECK GEN ${code}] field.checkIndicators[${code}]:`, indicatorData);
+
+            const hasIndicators = indicatorData && indicatorData.groups && indicatorData.groups.length > 0;
+
+            Logger.debug(`[CHECK GEN ${code}] hasIndicators=${hasIndicators}`);
+
+            if (hasIndicators) {
+                Logger.debug(`[CHECK GEN ${code}] Calling generateDdsLineWithIndicators with keyword="${keyword}"`);
+                const generated = generateDdsLineWithIndicators(keyword, indicatorData);
+                Logger.debug(`[CHECK GEN ${code}] Generated result (type=${typeof generated}):`, generated);
+                Logger.debug(`[CHECK GEN ${code}] Generated length: ${generated.length} chars`);
+                lines.push(generated); // Push complete string (may contain \n for OR groups)
+            } else {
+                Logger.debug(`[CHECK GEN ${code}] No indicators, using default line`);
+                lines.push(`     A                                      ${keyword}`);
+            }
+
+            Logger.debug(`[CHECK GEN ${code}] Returning ${lines.length} line(s) for this code`);
+        } else {
+            lines.push(`     A                                      ${keyword}`);
+        }
+    });
+    return lines;
+}
+
+
+/***/ }),
+/* 79 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldEdtcdeLinesUI: () => (/* binding */ generateFieldEdtcdeLinesUI)
+/* harmony export */ });
+// Generate EDTCDE keyword lines for a field
+function generateFieldEdtcdeLinesUI({
+    field
+}) {
+    const lines = [];
+
+    if (!field.edtcde || !field.edtcde.value) {
+        return lines;
+    }
+
+    const edtcdeValue = String(field.edtcde.value).trim().toUpperCase();
+    const replaceLeadingZerosWith = field.edtcde.replaceLeadingZerosWith
+        ? String(field.edtcde.replaceLeadingZerosWith).trim()
+        : '';
+    const allowReplacement = edtcdeValue !== 'Z';
+
+    const keyword = (allowReplacement && replaceLeadingZerosWith)
+        ? `EDTCDE(${edtcdeValue} ${replaceLeadingZerosWith})`
+        : `EDTCDE(${edtcdeValue})`;
+
+    lines.push(`     A                                      ${keyword}`);
+    return lines;
+}
+
+
+/***/ }),
+/* 80 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldEditKeywordsLinesUI: () => (/* binding */ generateFieldEditKeywordsLinesUI)
+/* harmony export */ });
+// Generate EDTWRD/EDTMSK keyword lines for a field
+function generateFieldEditKeywordsLinesUI({
+    field
+}) {
+    const lines = [];
+
+    const escapeSingleQuotes = (text) => String(text).replace(/'/g, "''");
+    const resolveValue = (keywordData) => {
+        if (!keywordData) {
+            return '';
+        }
+        if (typeof keywordData === 'string') {
+            return keywordData;
+        }
+        if (typeof keywordData.value === 'string') {
+            return keywordData.value;
+        }
+        return '';
+    };
+
+    const edtwrdValue = resolveValue(field.edtwrd);
+    if (edtwrdValue.length > 0) {
+        lines.push(`     A                                      EDTWRD('${escapeSingleQuotes(edtwrdValue)}')`);
+    }
+
+    const edtmskValue = resolveValue(field.edtmsk);
+    if (edtmskValue.length > 0) {
+        lines.push(`     A                                      EDTMSK('${escapeSingleQuotes(edtmskValue)}')`);
+    }
+
+    return lines;
+}
+
+
+/***/ }),
+/* 81 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldValuesLinesUI: () => (/* binding */ generateFieldValuesLinesUI)
+/* harmony export */ });
+function generateFieldValuesLinesUI({ field }) {
+    const lines = [];
+    if (!field?.values) {
+        return lines;
+    }
+
+    const rawValues = (typeof field.values === 'string' ? field.values : '').trim();
+    if (!rawValues) {
+        return lines;
+    }
+
+    const prefix = '     A                                      ';
+    const keyword = `VALUES(${rawValues})`;
+    const maxLineLength = 80;
+
+    if ((prefix + keyword).length <= maxLineLength) {
+        lines.push(prefix + keyword);
+        return lines;
+    }
+
+    const tokens = [];
+    const tokenRegex = /'(?:''|[^'])*'/g;
+    let match;
+    while ((match = tokenRegex.exec(rawValues)) !== null) {
+        tokens.push(match[0]);
+    }
+
+    if (tokens.length === 0) {
+        lines.push((prefix + keyword).substring(0, maxLineLength));
+        return lines;
+    }
+
+    let current = 'VALUES(';
+    for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+        const isLast = i === tokens.length - 1;
+        const candidate = `${current}${current === 'VALUES(' ? '' : ' '}${token}${isLast ? ')' : ''}`;
+
+        if ((prefix + candidate).length <= maxLineLength) {
+            current = candidate;
+            if (isLast) {
+                lines.push(prefix + current);
+            }
+            continue;
+        }
+
+        lines.push(prefix + current + ' -');
+        current = token + (isLast ? ')' : '');
+
+        if (isLast) {
+            lines.push(prefix + current);
+        }
+    }
+
+    return lines;
+}
+
+
+/***/ }),
+/* 82 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldDftLinesUI: () => (/* binding */ generateFieldDftLinesUI)
+/* harmony export */ });
+// Generate DFT keyword lines for a field
+function generateFieldDftLinesUI({
+    field
+}) {
+    const lines = [];
+
+    if (!field.dft) {
+        return lines;
+    }
+
+    const dftValue = typeof field.dft === 'string'
+        ? field.dft.trim()
+        : (field.dft.value ? String(field.dft.value).trim() : '');
+
+    if (!dftValue) {
+        return lines;
+    }
+
+    const escapedValue = dftValue.replace(/'/g, "''");
+    const keyword = `DFT('${escapedValue}')`;
+    lines.push(`     A                                      ${keyword}`);
+
+    return lines;
+}
+
+
+/***/ }),
+/* 83 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldDftvalLinesUI: () => (/* binding */ generateFieldDftvalLinesUI)
+/* harmony export */ });
+// Generate DFTVAL keyword lines for a field
+function generateFieldDftvalLinesUI({
+    field,
+    generateDdsLineWithIndicators,
+    Logger
+}) {
+    const lines = [];
+    if (!field.dftval || !field.dftval.value) {return lines;}
+    const dftvalValue = field.dftval.value;
+    const keyword = `DFTVAL('${dftvalValue}')`;
+
+    // Support both old format (array) and new format (groups structure)
+    const indicatorData = field.dftvalIndicators;
+
+    Logger.debug(`[DFTVAL GEN] field.dftvalIndicators:`, indicatorData);
+
+    // Check if indicatorData has any groups with indicators
+    const hasIndicators = Array.isArray(indicatorData) ? indicatorData.length > 0 :
+                         (indicatorData && indicatorData.groups && indicatorData.groups.length > 0);
+
+    Logger.debug(`[DFTVAL GEN] hasIndicators=${hasIndicators}`);
+
+    if (hasIndicators) {
+        // Has indicators - must be on separate line(s)
+        // Generate line(s) - may be multiple if OR groups exist (SAME AS COLOR)
+        Logger.debug(`[DFTVAL GEN] Calling generateDdsLineWithIndicators with keyword="${keyword}"`);
+        const generated = generateDdsLineWithIndicators(keyword, indicatorData);
+        Logger.debug(`[DFTVAL GEN] Generated result (type=${typeof generated}):`, generated);
+        Logger.debug(`[DFTVAL GEN] Generated length: ${generated.length} chars`);
+        lines.push(generated); // Push the complete string (may contain \n for OR groups)
+    } else {
+        // No indicators - return empty array (will be added inline if needed)
+        // For DFTVAL, we always generate a separate line even without indicators
+        Logger.debug(`[DFTVAL GEN] No indicators, using default line`);
+        lines.push(`     A                                      ${keyword}`);
+    }
+
+    Logger.debug(`[DFTVAL GEN] Returning ${lines.length} line(s):`, lines);
+    return lines;
+}
+
+
+/***/ }),
+/* 84 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateDdsLineWithIndicatorsUI: () => (/* binding */ generateDdsLineWithIndicatorsUI)
+/* harmony export */ });
+// Generate a DDS line with optional indicators
+function generateDdsLineWithIndicatorsUI({
+    keyword,
+    indicatorsOrGroups,
+    IndicatorUtils
+}) {
+    // Support both old format (array) and new format (groups structure)
+    let indicators = [];
+    let groups = [];
+    let isOr = false;
+
+    if (Array.isArray(indicatorsOrGroups)) {
+        // Old format - backward compatibility
+        indicators = indicatorsOrGroups;
+    } else if (indicatorsOrGroups && indicatorsOrGroups.groups) {
+        // New format with OR support
+        groups = indicatorsOrGroups.groups;
+        isOr = indicatorsOrGroups.isOr;
+    }
+
+    // If we have groups with OR, generate multiple lines with AO prefix
+    if (groups.length > 1 && isOr) {
+        const lines = [];
+        groups.forEach((group, groupIndex) => {
+            // Check if this group has more than 3 indicators
+            if (group.indicators.length > 3) {
+                // Split this OR group into multiple lines (3 indicators per line)
+                const numChunks = Math.ceil(group.indicators.length / 3);
+
+                for (let chunkIndex = 0; chunkIndex < numChunks; chunkIndex++) {
+                    const startIdx = chunkIndex * 3;
+                    const chunk = group.indicators.slice(startIdx, startIdx + 3);
+                    const indPart = IndicatorUtils.formatForDds(chunk);
+
+                    // Determine prefix:
+                    // - First group, any chunk: 'A' (no O)
+                    // - Other groups, first chunk: 'AO' (marca inicio del grupo OR)
+                    // - Other groups, other chunks: 'A' (continuación AND dentro del grupo)
+                    const isFirstChunk = chunkIndex === 0;
+                    const isFirstGroup = groupIndex === 0;
+                    const prefix = (isFirstGroup || !isFirstChunk) ? 'A' : 'AO';
+
+                    const firstIsNegative = chunk[0]?.not;
+                    let prefixSpaces = firstIsNegative ? ' ' : '  ';
+
+                    // Adjust spaces for AO prefix
+                    if (prefix === 'AO') {
+                        prefixSpaces = firstIsNegative ? '' : ' ';
+                    }
+
+                    // targetWidth must be 36 for AO to compensate for the extra character
+                    const targetWidth = prefix === 'AO' ? 36 : 37;
+                    const spacesNeeded = Math.max(1, targetWidth - indPart.length);
+
+                    // Only add keyword on the LAST line of the LAST group
+                    const isLastChunkOfLastGroup = groupIndex === groups.length - 1 && chunkIndex === numChunks - 1;
+                    if (isLastChunkOfLastGroup) {
+                        lines.push(`     ${prefix}${prefixSpaces}${indPart}${' '.repeat(spacesNeeded)}${keyword}`);
+                    } else {
+                        lines.push(`     ${prefix}${prefixSpaces}${indPart}`);
+                    }
+                }
+            } else {
+                // This group has 3 or fewer indicators - single line
+                const indPart = IndicatorUtils.formatForDds(group.indicators);
+                const prefix = groupIndex === 0 ? 'A' : 'AO';
+                const firstIsNegative = group.indicators.length > 0 && group.indicators[0].not;
+                let prefixSpaces = firstIsNegative ? ' ' : '  ';
+
+                // Adjust spaces for AO prefix
+                if (prefix === 'AO') {
+                    prefixSpaces = firstIsNegative ? '' : ' ';
+                }
+
+                // targetWidth must be 36 for AO to compensate for the extra character
+                const targetWidth = prefix === 'AO' ? 36 : 37;
+                const spacesNeeded = Math.max(1, targetWidth - indPart.length);
+
+                // Only add keyword on the LAST group
+                if (groupIndex === groups.length - 1) {
+                    lines.push(`     ${prefix}${prefixSpaces}${indPart}${' '.repeat(spacesNeeded)}${keyword}`);
+                } else {
+                    lines.push(`     ${prefix}${prefixSpaces}${indPart}`);
+                }
+            }
+        });
+        return lines.join('\n');
+    }
+
+    // Single group or old format - get all indicators
+    const finalIndicators = groups.length > 0 ? groups[0].indicators : indicators;
+
+    if (finalIndicators && finalIndicators.length > 0) {
+        // If more than 3 indicators (AND format), split into multiple lines (3 per line max)
+        if (finalIndicators.length > 3 && !isOr) {
+            const lines = [];
+            // Split indicators into chunks of 3, process from end to start
+            const numChunks = Math.ceil(finalIndicators.length / 3);
+
+            for (let chunkIndex = 0; chunkIndex < numChunks; chunkIndex++) {
+                const startIdx = chunkIndex * 3;
+                const chunk = finalIndicators.slice(startIdx, startIdx + 3);
+                const indPart = IndicatorUtils.formatForDds(chunk);
+                const firstIsNegative = chunk[0]?.not;
+                const prefixSpaces = firstIsNegative ? ' ' : '  ';
+
+                // Check if this is the last chunk (will have the keyword)
+                const isLastChunk = chunkIndex === numChunks - 1;
+
+                if (isLastChunk) {
+                    // Last chunk - add keyword
+                    const targetWidth = firstIsNegative ? 37 : 36;
+                    const spacesNeeded = Math.max(1, targetWidth - indPart.length);
+                    lines.push(`     A${prefixSpaces}${indPart}${' '.repeat(spacesNeeded)}${keyword}`);
+                } else {
+                    // Not last chunk - just indicators
+                    lines.push(`     A${prefixSpaces}${indPart}`);
+                }
+            }
+            return lines.join('\n');
+        }
+
+        // 3 or fewer indicators - single line
+        const indPart = IndicatorUtils.formatForDds(finalIndicators);
+        const firstIsNegative = finalIndicators[0]?.not;
+        const prefixSpaces = firstIsNegative ? ' ' : '  ';
+        const targetWidth = firstIsNegative ? 37 : 36;
+        const spacesNeeded = Math.max(1, targetWidth - indPart.length);
+        return `     A${prefixSpaces}${indPart}${' '.repeat(spacesNeeded)}${keyword}`;
+    }
+
+    return `     A                                      ${keyword}`;
+}
+
+
+/***/ }),
+/* 85 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   applyIndicatorChangesToFieldUI: () => (/* binding */ applyIndicatorChangesToFieldUI)
+/* harmony export */ });
+function applyIndicatorChangesToFieldUI({
+    field,
+    indicatorConfigurations,
+    Logger
+}) {
+    if (!field) {return;}
+
+    Logger.dds(`Applying indicator changes from Map to field: ${field.name}`);
+
+    // Iterate through color indicators
+    if (field.colors && Array.isArray(field.colors)) {
+        field.colors.forEach(color => {
+            const key = `color:${color}`;
+            if (indicatorConfigurations.has(key)) {
+                const indicatorData = indicatorConfigurations.get(key);
+
+                if (!field.colorIndicators) {
+                    field.colorIndicators = {};
+                }
+
+                // Convert from Map format to field format
+                if (indicatorData.isOr && indicatorData.groups) {
+                    // OR format - preserve groups structure
+                    field.colorIndicators[color] = indicatorData;
+                    Logger.dds(`Applied OR indicators for color ${color}:`, indicatorData);
+                } else if (indicatorData instanceof Set) {
+                    // AND format - convert Set to array for DDS generation
+                    // The Set contains JSON strings, so we need to parse them back to objects
+                    const indicatorArray = Array.from(indicatorData).map(jsonStr => JSON.parse(jsonStr));
+                    field.colorIndicators[color] = indicatorArray;
+                    Logger.dds(`Applied AND indicators for color ${color}:`, indicatorArray);
+                }
+            }
+        });
+    }
+
+    // Iterate through attribute indicators
+    if (field.attributes) {
+        Object.keys(field.attributes).forEach(attrName => {
+            if (!field.attributes[attrName]) {return;} // Skip inactive attributes
+
+            const key = `attr:${attrName}`;
+            if (indicatorConfigurations.has(key)) {
+                const indicatorData = indicatorConfigurations.get(key);
+
+                if (!field.attributeIndicators) {
+                    field.attributeIndicators = {};
+                }
+
+                // Convert from Map format to field format
+                if (indicatorData.isOr && indicatorData.groups) {
+                    // OR format - preserve groups structure
+                    field.attributeIndicators[attrName] = indicatorData;
+                    Logger.dds(`Applied OR indicators for attribute ${attrName}:`, indicatorData);
+                } else if (indicatorData instanceof Set) {
+                    // AND format - convert Set to array for DDS generation
+                    // The Set contains JSON strings, so we need to parse them back to objects
+                    const indicatorArray = Array.from(indicatorData).map(jsonStr => JSON.parse(jsonStr));
+                    field.attributeIndicators[attrName] = indicatorArray;
+                    Logger.dds(`Applied AND indicators for attribute ${attrName}:`, indicatorArray);
+                }
+            }
+        });
+    }
+}
 
 
 /***/ })
-
-/******/ 	});
+/******/ 	]);
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
@@ -15389,7 +15331,7 @@ const ScreenCoordinates = {
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__("./media/dspfDesigner.js");
+/******/ 	var __webpack_exports__ = __webpack_require__(0);
 /******/ 	
 /******/ })()
 ;

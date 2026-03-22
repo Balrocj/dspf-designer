@@ -273,6 +273,7 @@ export function showFieldProperties({
                 <button class="properties-tab" data-tab="attributes">Attributes</button>
                 <button class="properties-tab" data-tab="colors">Colors</button>
                 <button class="properties-tab" data-tab="keying-options">Keying options</button>
+                <button class="properties-tab" data-tab="validity-check">Validity check</button>
             </div>
             
             <div class="properties-content">
@@ -498,6 +499,19 @@ export function showFieldProperties({
                     </div>
                 </div>
 
+                <div id="tab-validity-check" class="tab-panel">
+                    <div class="property-group values-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-values-enabled" />
+                            Values (VALUES)
+                        </label>
+                    </div>
+                    <div class="property-group values-value-group" style="display: none;">
+                        <label>Allowed values</label>
+                        <textarea id="prop-values-list" rows="4" placeholder="One value per line"></textarea>
+                    </div>
+                </div>
+
                 <div id="tab-general-keywords" class="tab-panel">
                     <div class="property-group dft-group" style="display: flex; align-items: center; gap: 8px;">
                         <label style="flex: 1;">
@@ -627,6 +641,8 @@ export function showFieldProperties({
     const usageRestrictedGroups = Array.from(document.querySelectorAll('.usage-not-output-attr'));
     const keyingTabBtn = document.querySelector('.properties-tab[data-tab="keying-options"]');
     const keyingTabPanel = document.getElementById('tab-keying-options');
+    const validityCheckTabBtn = document.querySelector('.properties-tab[data-tab="validity-check"]');
+    const validityCheckTabPanel = document.getElementById('tab-validity-check');
     const generalKeywordsTabBtn = document.querySelector('.properties-tab[data-tab="general-keywords"]');
     const generalKeywordsTabPanel = document.getElementById('tab-general-keywords');
     const editingKeywordsTabBtn = document.querySelector('.properties-tab[data-tab="editing-keywords"]');
@@ -635,6 +651,8 @@ export function showFieldProperties({
     const checkNumGroups = Array.from(document.querySelectorAll('.check-num'));
     const checkCharTitles = Array.from(document.querySelectorAll('.check-char-title'));
     const checkNumTitles = Array.from(document.querySelectorAll('.check-num-title'));
+    const valuesGroup = document.querySelector('.values-group');
+    const valuesValueGroup = document.querySelector('.values-value-group');
     const dftGroup = document.querySelector('.dft-group');
     const dftValueGroup = document.querySelector('.dft-value-group');
     const dftvalGroup = document.querySelector('.dftval-group');
@@ -671,6 +689,39 @@ export function showFieldProperties({
             basicTab?.classList.add('active');
             basicPanel?.classList.add('active');
         }
+
+        const currentTypeSelect = document.getElementById('prop-type');
+        const selectedType = currentTypeSelect ? currentTypeSelect.value : field.dataType;
+        const isValuesCharType = ['character', 'double'].includes(selectedType);
+        const isValuesNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
+        const showValues = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && usageSelect
+            && usageSelect.value !== 'O'
+            && (isValuesCharType || isValuesNumericType);
+
+        if (valuesGroup) {
+            valuesGroup.style.display = showValues ? 'flex' : 'none';
+        }
+        if (valuesValueGroup) {
+            valuesValueGroup.style.display = showValues ? 'block' : 'none';
+        }
+        if (validityCheckTabBtn) {
+            validityCheckTabBtn.style.display = showValues ? 'inline-flex' : 'none';
+        }
+        if (validityCheckTabPanel) {
+            validityCheckTabPanel.style.display = showValues ? '' : 'none';
+        }
+        if (!showValues && validityCheckTabBtn && validityCheckTabBtn.classList.contains('active')) {
+            validityCheckTabBtn.classList.remove('active');
+            validityCheckTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
+        }
+
         const isVariableField = field.type !== 'constant' && field.type !== 'keyword' && !field.isKeyword;
         const showGeneralKeywords = isVariableField;
         const showDFT = isVariableField;
@@ -694,8 +745,6 @@ export function showFieldProperties({
             generalKeywordsTabPanel.style.display = showGeneralKeywords ? '' : 'none';
         }
 
-        const currentTypeSelect = document.getElementById('prop-type');
-        const selectedType = currentTypeSelect ? currentTypeSelect.value : field.dataType;
         const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
         const showEditingKeywords = field.type !== 'constant' && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B') && isNumericType;
 
@@ -1182,6 +1231,40 @@ export function showFieldProperties({
                 }
             }
         }
+    }
+
+    const valuesEnabledCheckbox = document.getElementById('prop-values-enabled');
+    const valuesListInput = document.getElementById('prop-values-list');
+        if ((Array.isArray(field.values) && field.values.length > 0) || (typeof field.values === 'string' && field.values.trim().length > 0)) {
+        if (valuesEnabledCheckbox) {
+            valuesEnabledCheckbox.checked = true;
+        }
+        if (valuesListInput) {
+                if (Array.isArray(field.values)) {
+                    valuesListInput.value = field.values.join('\n');
+                } else {
+                    const tokens = field.values.match(/'(?:''|[^'])*'/g) || [];
+                    if (tokens.length > 0) {
+                        valuesListInput.value = tokens
+                            .map(token => token.substring(1, token.length - 1).replace(/''/g, "'"))
+                            .join('\n');
+                    } else {
+                        valuesListInput.value = field.values;
+                    }
+                }
+            valuesListInput.parentElement.style.display = 'block';
+        }
+    }
+
+    if (valuesEnabledCheckbox) {
+        valuesEnabledCheckbox.addEventListener('change', function() {
+            if (valuesValueGroup) {
+                valuesValueGroup.style.display = this.checked ? 'block' : 'none';
+                if (this.checked && valuesListInput) {
+                    valuesListInput.focus();
+                }
+            }
+        });
     }
 
     const dftEnabledCheckbox = document.getElementById('prop-dft-enabled');

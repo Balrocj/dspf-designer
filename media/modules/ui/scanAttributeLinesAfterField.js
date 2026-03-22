@@ -380,6 +380,52 @@ export function scanAttributeLinesAfterField({
             Logger.parse(`Found DFT(${dftValue}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
+            // Parse VALUES('A' 'B' ...), including DDS continuation lines
+            if (/VALUES\(/i.test(nextLine)) {
+                let valuesText = nextLine;
+                let lookaheadOffset = lineOffset;
+
+                // Keep appending continuation lines until closing ')' is found
+                while (!/\)/.test(valuesText) && (startIndex + lookaheadOffset + 1) < lines.length) {
+                    const continuationLine = lines[startIndex + lookaheadOffset + 1];
+                    const continuationTrimmed = continuationLine.trim();
+
+                    // Stop if we reached a probable new field/record/comment boundary
+                    const continuationIsComment = (continuationLine.length > 6 && continuationLine[5] === 'A' && continuationLine[6] === '*') ||
+                        continuationTrimmed.startsWith('A*') ||
+                        continuationTrimmed.startsWith('*');
+                    const continuationHasFieldName = /\b[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(continuationTrimmed);
+                    const continuationIsRecordDef = continuationTrimmed.match(/^A\s+R\s+\w+/);
+
+                    if (continuationIsComment || continuationHasFieldName || continuationIsRecordDef) {
+                        break;
+                    }
+
+                    valuesText += ' ' + continuationTrimmed;
+                    lookaheadOffset++;
+                }
+
+                const valuesMatch = valuesText.match(/VALUES\(([^)]*)\)/i);
+                if (valuesMatch) {
+                    const rawValues = valuesMatch[1]
+                        // Remove DDS line-continuation chars (- or +) that appear between tokens
+                        // when continuation lines are joined, e.g.: 'G' -  'H' → 'G' 'H'
+                        .replace(/\s*[+-]\s*/g, ' ')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+
+                    if (rawValues.length > 0) {
+                        field.values = rawValues;
+                        Logger.parse(`Found VALUES(${rawValues}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+                    }
+
+                    // Advance scanner to the last consumed continuation line
+                    if (lookaheadOffset > lineOffset) {
+                        lineOffset = lookaheadOffset;
+                    }
+                }
+            }
+
         if (includeChecks) {
             const checkMatch = nextLine.match(/CHECK\(([^)]+)\)/);
             if (checkMatch) {

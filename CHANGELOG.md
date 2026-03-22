@@ -9,7 +9,7 @@ All notable changes to the "dspf-designer" extension will be documented in this 
   - `EDTWRD(...)` parse from inline and continuation attribute lines.
   - `EDTMSK(...)` parse from inline and continuation attribute lines.
   - Save/apply support from the **Editing keywords** UI with DDS regeneration.
-  - Added support for keyword DFT
+  - Added support for keyword DFT and VALUES in the designer with proper parsing and saving.
 
 ### 🎨 Improved
 - Improved visual rendering for `EDTWRD` to better match IBM i output patterns (literal symbols + digit placeholders).

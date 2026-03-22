@@ -53,6 +53,7 @@ export function applyFieldProperties({
             edtwrd: field.edtwrd ? { ...field.edtwrd } : undefined,
             edtmsk: field.edtmsk ? { ...field.edtmsk } : undefined,
             dft: field.dft ? { ...field.dft } : undefined,
+                values: field.values,
             dftval: field.dftval ? { ...field.dftval } : undefined,
             dftvalIndicators: field.dftvalIndicators ? JSON.parse(JSON.stringify(field.dftvalIndicators)) : undefined
         };
@@ -361,6 +362,43 @@ export function applyFieldProperties({
             delete field.checkIndicators;
         }
 
+        const valuesEnabledCheckbox = document.getElementById('prop-values-enabled');
+        const valuesListInput = document.getElementById('prop-values-list');
+        const valuesIsCharType = ['character', 'double'].includes(field.dataType);
+        const valuesIsNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(field.dataType);
+        const canUseValues = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && (field.usage === 'I' || field.usage === 'B')
+            && (valuesIsCharType || valuesIsNumericType);
+
+        if (canUseValues && valuesEnabledCheckbox && valuesEnabledCheckbox.checked && valuesListInput) {
+            const rawInput = valuesListInput.value.trim();
+            if (rawInput) {
+                const hasQuotedTokens = /'(?:''|[^'])*'/.test(rawInput);
+                if (hasQuotedTokens) {
+                    const quotedTokens = rawInput.match(/'(?:''|[^'])*'/g) || [];
+                    field.values = quotedTokens.join(' ');
+                } else {
+                    const lines = rawInput
+                        .split(/\r?\n/)
+                        .map(value => value.trim())
+                        .filter(value => value.length > 0)
+                        .map(value => `'${value.replace(/'/g, "''")}'`);
+
+                    if (lines.length > 0) {
+                        field.values = lines.join(' ');
+                    } else {
+                        delete field.values;
+                    }
+                }
+            } else {
+                delete field.values;
+            }
+        } else {
+            delete field.values;
+        }
+
         if (field.type !== 'constant') {
             const dftCheckbox = document.getElementById('prop-dft-enabled');
             const dftValueInput = document.getElementById('prop-dft-value');
@@ -514,6 +552,7 @@ export function applyFieldProperties({
         const checkOptionsChanged = JSON.stringify(oldField.checkOptions || {}) !== JSON.stringify(field.checkOptions || {});
         const checkIndicatorsModified = Boolean(field.checkIndicatorsModified);
         const dftChanged = JSON.stringify(oldField.dft || null) !== JSON.stringify(field.dft || null);
+        const valuesChanged = JSON.stringify(oldField.values || null) !== JSON.stringify(field.values || null);
         const dftvalChanged = JSON.stringify(oldField.dftval || null) !== JSON.stringify(field.dftval || null);
         const dftvalIndicatorsChanged = JSON.stringify(oldField.dftvalIndicators || null) !== JSON.stringify(field.dftvalIndicators || null);
         const edtcdeChanged = JSON.stringify(oldField.edtcde || null) !== JSON.stringify(field.edtcde || null);
@@ -538,6 +577,7 @@ export function applyFieldProperties({
             checkOptionsChanged ||
             checkIndicatorsModified ||
             dftChanged ||
+            valuesChanged ||
             dftvalChanged ||
             dftvalIndicatorsChanged ||
             edtcdeChanged ||
@@ -546,7 +586,7 @@ export function applyFieldProperties({
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;
