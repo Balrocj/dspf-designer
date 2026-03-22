@@ -59,7 +59,7 @@ All notable changes to the "dspf-designer" extension will be documented in this 
   - Correct read-only decimals behavior
   - Consistent type/shift handling
 
-- Added support for keyword `EDTCDE` for numeric output/both fields:
+- Added support for keyword `EDTCDE`,`EDTWRD` and `EDTMSK` for numeric output/both fields:
   - New `Editing keywords` panel supports `EDTCDE(code)` and `EDTCDE(code *|$)`.
   - DDS parse/generation now preserves `*`/`$` replacement parameter.
   - Visual rendering now replaces the first `6`/`9` with `*` or `$` when configured.  
