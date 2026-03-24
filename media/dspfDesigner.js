@@ -5,7 +5,7 @@ import { DisplaySizeUtils } from './modules/utils/displaySizeUtils.js';
 import { IdGenerator } from './modules/utils/idGenerator.js';
 import { FieldNameValidator } from './modules/utils/fieldNameValidator.js';
 import { Logger } from './modules/core/logger.js';
-import { ATTRIBUTE_KEYWORDS_SET, attributeContentRegex, CHECK_CHAR_CODES, CHECK_NUMERIC_CODES } from './modules/core/ddsConstants.js';
+import { ATTRIBUTE_KEYWORDS_SET, attributeContentRegex, CHECK_CHAR_CODES, CHECK_NUMERIC_CODES, REGENERATED_KEYWORDS_SET } from './modules/core/ddsConstants.js';
 import { calibrateCharMetrics } from './modules/utils/charMetrics.js';
 import { setupRulers as setupRulersUI } from './modules/ui/rulers.js';
 import { setupCanvasInteraction } from './modules/ui/canvasSetup.js';
@@ -1899,7 +1899,10 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             const contentAfter43 = nextLine.length > 43 ? nextLine.substring(43).trim() : '';
             
             // Check for known attribute keywords (DSPATR, COLOR, CHECK, DFTVAL, etc.)
-            const hasKnownKeyword = /^(DSPATR|COLOR|CHECK|DFTVAL|EDTCDE|EDTWRD|EDTMSK|COMP|RANGE|VALUES|TEXT|COLHDG|CHGINPDFT|MSGID|SFLMSG|DFT|CMP|REFFLD)\s*\(/.test(contentAfter43);
+            const knownKeywordMatch = contentAfter43.match(/^([A-Z0-9_]+)\s*\(/i);
+            const hasKnownKeyword = knownKeywordMatch
+                ? ATTRIBUTE_KEYWORDS_SET.has(knownKeywordMatch[1].toUpperCase())
+                : false;
             
             if (contentAfter43.length > 0 || hasKnownKeyword) {
                 // This is an attribute or keyword line - include it in the block
@@ -2576,6 +2579,9 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
 
             // Track whether we are inside a multi-line VALUES continuation block
             let insideValuesContinuation = false;
+            // Keep indicator-only lines pending until we know whether they belong to
+            // a preserved (non-regenerated) keyword line that follows.
+            let pendingIndicatorLines = [];
 
             blockLines.forEach((line, idx) => {
                 // SKIP INDEX 0: that's the original field declaration that will be regenerated
@@ -2587,6 +2593,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 const globalIndex = fieldBlock.startLine + idx;
                 const trimmed = line.trim();
                 const contentAfter43 = line.length > 43 ? line.substring(43).trim() : '';
+                const contentAfter18 = line.length > 18 ? line.substring(18).trim() : '';
 
                 // For constants: do NOT preserve continuation lines
                 if (searchField.type === 'constant') {
@@ -2600,8 +2607,31 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 // Always keep comments
                 const isComment = trimmed.startsWith('A*') || trimmed.startsWith('*');
                 if (isComment) {
+                    if (pendingIndicatorLines.length > 0) {
+                        preservedExtras.push(...pendingIndicatorLines);
+                        pendingIndicatorLines = [];
+                    }
                     preservedExtras.push(line);
                     Logger.dds(`Preserving comment line ${globalIndex + 1}`);
+                    return;
+                }
+
+                // Indicator-only lines can belong to the following keyword line.
+                // Buffer them first and decide preservation when we inspect next lines.
+                const indicatorAreaContent = line.length > 6 ? line.substring(6, 18).trim() : '';
+                const hasIndicatorPattern = /^O?\s*[N\d\s]+$/.test(indicatorAreaContent);
+                const hasFieldNameAfter18 = /^[A-Z][A-Z0-9_]{0,9}\s+\d+/i.test(contentAfter18);
+                const isIndicatorOnlyLine =
+                    line.length > 6 &&
+                    line[5] === 'A' &&
+                    hasIndicatorPattern &&
+                    indicatorAreaContent.length > 0 &&
+                    !hasFieldNameAfter18 &&
+                    contentAfter18 === '';
+
+                if (isIndicatorOnlyLine) {
+                    pendingIndicatorLines.push(line);
+                    Logger.dds(`Buffering indicator-only line ${globalIndex + 1}`);
                     return;
                 }
 
@@ -2610,6 +2640,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 // When VALUES( is found on a line that ends with a continuation char, subsequent
                 // lines that are pure quoted-value continuations (no keyword word) must also be skipped.
                 if (/VALUES\(/i.test(contentAfter43)) {
+                    pendingIndicatorLines = [];
                     insideValuesContinuation = /[+-]\s*$/.test(contentAfter43);
                     Logger.dds(`Skipping known VALUES line ${globalIndex + 1}, continuation=${insideValuesContinuation}`);
                     return; // regenerated by generateFieldValuesLines
@@ -2620,6 +2651,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                     // A pure continuation line has only quoted tokens (and possibly a closing paren)
                     const isPureValuesContinuation = /^'/.test(contentAfter43) || /^\)/.test(contentAfter43);
                     if (isPureValuesContinuation) {
+                        pendingIndicatorLines = [];
                         // If this line does NOT end with a continuation char, the block is closed
                         insideValuesContinuation = /[+-]\s*$/.test(contentAfter43);
                         Logger.dds(`Skipping VALUES continuation line ${globalIndex + 1}, continuation=${insideValuesContinuation}`);
@@ -2631,13 +2663,43 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
 
                 // Unknown keywords: keep them. Known attributes (COLOR, DSPATR, EDTCDE, etc.) are regenerated
                 if (contentAfter43.length > 0) {
-                    const isKnown = attributeContentRegex ? attributeContentRegex.test(contentAfter43) : /^(DSPATR|COLOR|CHECK|DFTVAL|EDTCDE|EDTWRD|EDTMSK|COMP|RANGE|VALUES|TEXT|COLHDG|CHGINPDFT|MSGID|SFLMSG|DFT|CMP|REFFLD)\s*\(/.test(contentAfter43);
+                    const keywordMatch = contentAfter43.match(/^([A-Z0-9_]+)\b/i);
+                    const keywordName = keywordMatch ? keywordMatch[1].toUpperCase() : '';
+                    const isKnown = REGENERATED_KEYWORDS_SET.has(keywordName);
                     if (!isKnown) {
+                        if (pendingIndicatorLines.length > 0) {
+                            preservedExtras.push(...pendingIndicatorLines);
+                            pendingIndicatorLines = [];
+                        }
                         preservedExtras.push(line);
                         Logger.dds(`Preserving unknown keyword line ${globalIndex + 1}: "${contentAfter43}"`);
+                    } else {
+                        pendingIndicatorLines = [];
                     }
+                    return;
                 }
+
+                // Fallback safety: preserve non-empty trailing lines that are not regenerated
+                // attributes to avoid dropping field-associated content due format variations.
+                if (trimmed.startsWith('A') && contentAfter18.length > 0) {
+                    if (pendingIndicatorLines.length > 0) {
+                        preservedExtras.push(...pendingIndicatorLines);
+                        pendingIndicatorLines = [];
+                    }
+                    preservedExtras.push(line);
+                    Logger.dds(`Preserving trailing associated line ${globalIndex + 1}: "${trimmed}"`);
+                    return;
+                }
+
+                // If line is empty/unrecognized within the block, do not carry pending indicators.
+                pendingIndicatorLines = [];
             });
+
+            // Preserve dangling indicator-only lines if they reached end of block without
+            // a regenerated keyword to consume them.
+            if (pendingIndicatorLines.length > 0) {
+                preservedExtras.push(...pendingIndicatorLines);
+            }
 
             // New block: regenerated field lines + preserved extras
             const linesToInsert = newDdsLine.split('\n').filter(l => l.length > 0);
@@ -3275,17 +3337,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 // Field lines have a recognizable pattern: field name (at least 3 chars) followed by type spec
                 // The type spec can be: "10A", "10", "10Y 0", or with spaces "64   O"
                 const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{0,9}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
-                const hasAttributeKeyword = (
-                    trimmedLine.includes('DSPATR(') ||
-                    trimmedLine.includes('COLOR(') ||
-                    trimmedLine.includes('CHECK(') ||
-                    trimmedLine.includes('VALUES(') ||
-                    trimmedLine.includes('EDTCDE(') ||
-                    trimmedLine.includes('EDTWRD(') ||
-                    trimmedLine.includes('EDTMSK(') ||
-                    trimmedLine.includes('DFT(') ||
-                    trimmedLine.includes('DFTVAL(')
-                );
+                const hasAttributeKeyword = attributeContentRegex.test(trimmedLine);
                 const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
                 
                 const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
@@ -3458,17 +3510,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                     );
                     
                     const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{0,9}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
-                    const hasAttributeKeyword = (
-                        trimmedLine.includes('DSPATR(') ||
-                        trimmedLine.includes('COLOR(') ||
-                        trimmedLine.includes('CHECK(') ||
-                        trimmedLine.includes('VALUES(') ||
-                        trimmedLine.includes('EDTCDE(') ||
-                        trimmedLine.includes('EDTWRD(') ||
-                        trimmedLine.includes('EDTMSK(') ||
-                        trimmedLine.includes('DFT(') ||
-                        trimmedLine.includes('DFTVAL(')
-                    );
+                    const hasAttributeKeyword = attributeContentRegex.test(trimmedLine);
                     const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
                     
                     const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
@@ -5056,16 +5098,25 @@ function __setCurrentDocumentForTests(doc) {
 function __getCurrentDocumentForTests() {
     return currentDocument;
 }
+function __setCurrentRecordForTests(recordName) {
+    currentRecord = recordName;
+}
+function __getCurrentRecordForTests() {
+    return currentRecord;
+}
 
 try {
     if (typeof window !== 'undefined' && window) {
         window.__TESTS = window.__TESTS || {};
         if (typeof removeFieldFromDds !== 'undefined') {window.__TESTS.removeFieldFromDds = removeFieldFromDds;}
+        if (typeof updateFieldInDds !== 'undefined') {window.__TESTS.updateFieldInDds = updateFieldInDds;}
         if (typeof processMultiLineContinuation !== 'undefined') {window.__TESTS.processMultiLineContinuation = processMultiLineContinuation;}
         if (typeof attributeContentRegex !== 'undefined') {window.__TESTS.attributeContentRegex = attributeContentRegex;}
         if (typeof ATTRIBUTE_KEYWORDS_SET !== 'undefined') {window.__TESTS.ATTRIBUTE_KEYWORDS_SET = ATTRIBUTE_KEYWORDS_SET;}
         window.__TESTS.setCurrentDocument = __setCurrentDocumentForTests;
         window.__TESTS.getCurrentDocument = __getCurrentDocumentForTests;
+        window.__TESTS.setCurrentRecord = __setCurrentRecordForTests;
+        window.__TESTS.getCurrentRecord = __getCurrentRecordForTests;
     }
 } catch (err) {
     // ignore
@@ -5074,11 +5125,14 @@ try {
 if (typeof module !== 'undefined' && module.exports) {
     try {
         if (typeof removeFieldFromDds !== 'undefined') {module.exports.removeFieldFromDds = removeFieldFromDds;}
+        if (typeof updateFieldInDds !== 'undefined') {module.exports.updateFieldInDds = updateFieldInDds;}
         if (typeof processMultiLineContinuation !== 'undefined') {module.exports.processMultiLineContinuation = processMultiLineContinuation;}
         if (typeof attributeContentRegex !== 'undefined') {module.exports.attributeContentRegex = attributeContentRegex;}
         if (typeof ATTRIBUTE_KEYWORDS_SET !== 'undefined') {module.exports.ATTRIBUTE_KEYWORDS_SET = ATTRIBUTE_KEYWORDS_SET;}
         module.exports.setCurrentDocument = __setCurrentDocumentForTests;
         module.exports.getCurrentDocument = __getCurrentDocumentForTests;
+        module.exports.setCurrentRecord = __setCurrentRecordForTests;
+        module.exports.getCurrentRecord = __getCurrentRecordForTests;
     } catch (err) {
         // Ignore - test exports are best-effort
     }

@@ -2,6 +2,16 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [1.3.3] - 2026-03-23
+
+### 🎨 Improved
+- Unified DDS keyword classification using centralized constants:
+  - Added shared keyword sets in `ddsConstants` for attribute detection and end-to-end regeneration.
+  - Replaced duplicated hardcoded keyword checks in parser/update flows with shared sets/regex.
+
+### 🐛 Fixed
+- Improved preservation of unknown DDS keywords during field updates and drag-and-drop moves.
+
 ## [1.3.2] - 2026-03-23
 
 ### 🐛 Fixed
