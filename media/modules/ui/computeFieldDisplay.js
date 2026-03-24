@@ -27,7 +27,7 @@ export function computeFieldDisplay(options) {
     }
     // Keywords shown like constants
     else if (field.type === 'keyword' || field.isKeyword) {
-        text = getKeywordDisplay(field.name);
+        text = getKeywordDisplay(field.name, field.keywordArgs);
         classes.push('constant');
         let effectiveColorCode = field.color;
         if (!effectiveColorCode && field.colors && field.colors.length > 0) {

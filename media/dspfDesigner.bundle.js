@@ -438,9 +438,10 @@ __webpack_require__.r(__webpack_exports__);
     }
     
     // Helper: Get keyword display text
-    function getKeywordDisplay(keywordName) {
+    function getKeywordDisplay(keywordName, keywordArgs = null) {
         return (0,_modules_ui_getKeywordDisplay_js__WEBPACK_IMPORTED_MODULE_54__.getKeywordDisplay)({
-            keywordName
+            keywordName,
+            keywordArgs
         });
     }
     
@@ -1722,15 +1723,29 @@ __webpack_require__.r(__webpack_exports__);
     // This supports values like " 1 20DATE", "11 20DATE", " 1120DATE", " 2122TIME".
     function parseKeywordPosition(contentAfter18) {
         const fixedMatch = contentAfter18.match(/^\s*([ 0-9]{2})([ 0-9]{3})(DATE|TIME|SYSNAME|USER)\b/);
+
+        const extractDateArgs = (text, rowToken, colToken) => {
+            const escapedRow = rowToken.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const escapedCol = colToken.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const dateArgsRegex = new RegExp(`^\\s*${escapedRow}${escapedCol}DATE\\(\\s*([^)]*?)\\s*\\)`, 'i');
+            const dateArgsMatch = text.match(dateArgsRegex);
+            return dateArgsMatch ? dateArgsMatch[1].trim() : null;
+        };
+
         if (fixedMatch) {
             const row = parseInt(fixedMatch[1], 10);
             const col = parseInt(fixedMatch[2], 10);
+            const keyword = fixedMatch[3];
+            const keywordArgs = keyword === 'DATE'
+                ? extractDateArgs(contentAfter18, fixedMatch[1], fixedMatch[2])
+                : null;
 
             if (!Number.isNaN(row) && !Number.isNaN(col)) {
                 return {
                     row: String(row),
                     col: String(col),
-                    keyword: fixedMatch[3]
+                    keyword,
+                    keywordArgs
                 };
             }
         }
@@ -1741,10 +1756,19 @@ __webpack_require__.r(__webpack_exports__);
             return null;
         }
 
+        const fallbackKeyword = fallbackMatch[3];
+        const fallbackKeywordArgs = fallbackKeyword === 'DATE'
+            ? (() => {
+                const dateArgsMatch = contentAfter18.trim().match(/^\d{1,2}\s+\d{1,3}DATE\(\s*([^)]*?)\s*\)/i);
+                return dateArgsMatch ? dateArgsMatch[1].trim() : null;
+            })()
+            : null;
+
         return {
             row: String(parseInt(fallbackMatch[1], 10)),
             col: String(parseInt(fallbackMatch[2], 10)),
-            keyword: fallbackMatch[3]
+            keyword: fallbackKeyword,
+            keywordArgs: fallbackKeywordArgs
         };
     }
     
@@ -3018,7 +3042,10 @@ __webpack_require__.r(__webpack_exports__);
             // Build keyword line with indicators (34 spaces = 12 for indicators + 22 for spacing)
             // Format: "     A  03                            19 11DATE"
             const spacingAfterIndicators = ' '.repeat(22); // 22 spaces to reach column 39
-            const keywordLine = `     A${indicatorPrefix}${spacingAfterIndicators}${rowStr}${rowColSeparator}${colStr}${field.name}`;
+            const keywordToken = field.name === 'DATE' && field.keywordArgs
+                ? `DATE(${field.keywordArgs})`
+                : field.name;
+            const keywordLine = `     A${indicatorPrefix}${spacingAfterIndicators}${rowStr}${rowColSeparator}${colStr}${keywordToken}`;
             lines.push(keywordLine);
             
             // Special handling for DATE keyword - add EDTCDE(Y)
@@ -3860,6 +3887,7 @@ __webpack_require__.r(__webpack_exports__);
             const row = parseInt(parsedKeyword.row, 10);
             const col = parseInt(parsedKeyword.col, 10);
             const keywordName = parsedKeyword.keyword;
+            const keywordArgs = parsedKeyword.keywordArgs || null;
             
             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.key(`Found keyword: ${keywordName} at ${row},${col}`);
             
@@ -3886,6 +3914,7 @@ __webpack_require__.r(__webpack_exports__);
                 col: col,
                 dataType: 'keyword',
                 isKeyword: true,
+                keywordArgs,
                 length: null,
                 indicators: { groups: [], isOr: false } // Will be populated by backward scan + inline merge
             };
@@ -12252,7 +12281,7 @@ function computeFieldDisplay(options) {
     }
     // Keywords shown like constants
     else if (field.type === 'keyword' || field.isKeyword) {
-        text = getKeywordDisplay(field.name);
+        text = getKeywordDisplay(field.name, field.keywordArgs);
         classes.push('constant');
         let effectiveColorCode = field.color;
         if (!effectiveColorCode && field.colors && field.colors.length > 0) {
@@ -12914,10 +12943,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   getKeywordDisplay: () => (/* binding */ getKeywordDisplay)
 /* harmony export */ });
 function getKeywordDisplay(options) {
-    const { keywordName } = options;
+    const { keywordName, keywordArgs = null } = options;
+
+    if (keywordName === 'DATE') {
+        const normalizedArgs = String(keywordArgs || '')
+            .replace(/[()]/g, '')
+            .replace(/\s+/g, '')
+            .toUpperCase();
+
+        if (normalizedArgs === '*SYS*YY' || normalizedArgs === '*JOB*YY') {
+            return 'MM/DD/YYYY';
+        }
+
+        return 'MM/DD/YY';
+    }
 
     const displays = {
-        'DATE': 'MM/DD/YYYY',
         'TIME': 'HH:MM:SS',
         'SYSNAME': 'SSSSSSSS',
         'USER': 'UUUUUUUUUU'

@@ -345,9 +345,10 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     }
     
     // Helper: Get keyword display text
-    function getKeywordDisplay(keywordName) {
+    function getKeywordDisplay(keywordName, keywordArgs = null) {
         return getKeywordDisplayUI({
-            keywordName
+            keywordName,
+            keywordArgs
         });
     }
     
@@ -1629,15 +1630,29 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     // This supports values like " 1 20DATE", "11 20DATE", " 1120DATE", " 2122TIME".
     function parseKeywordPosition(contentAfter18) {
         const fixedMatch = contentAfter18.match(/^\s*([ 0-9]{2})([ 0-9]{3})(DATE|TIME|SYSNAME|USER)\b/);
+
+        const extractDateArgs = (text, rowToken, colToken) => {
+            const escapedRow = rowToken.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const escapedCol = colToken.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const dateArgsRegex = new RegExp(`^\\s*${escapedRow}${escapedCol}DATE\\(\\s*([^)]*?)\\s*\\)`, 'i');
+            const dateArgsMatch = text.match(dateArgsRegex);
+            return dateArgsMatch ? dateArgsMatch[1].trim() : null;
+        };
+
         if (fixedMatch) {
             const row = parseInt(fixedMatch[1], 10);
             const col = parseInt(fixedMatch[2], 10);
+            const keyword = fixedMatch[3];
+            const keywordArgs = keyword === 'DATE'
+                ? extractDateArgs(contentAfter18, fixedMatch[1], fixedMatch[2])
+                : null;
 
             if (!Number.isNaN(row) && !Number.isNaN(col)) {
                 return {
                     row: String(row),
                     col: String(col),
-                    keyword: fixedMatch[3]
+                    keyword,
+                    keywordArgs
                 };
             }
         }
@@ -1648,10 +1663,19 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             return null;
         }
 
+        const fallbackKeyword = fallbackMatch[3];
+        const fallbackKeywordArgs = fallbackKeyword === 'DATE'
+            ? (() => {
+                const dateArgsMatch = contentAfter18.trim().match(/^\d{1,2}\s+\d{1,3}DATE\(\s*([^)]*?)\s*\)/i);
+                return dateArgsMatch ? dateArgsMatch[1].trim() : null;
+            })()
+            : null;
+
         return {
             row: String(parseInt(fallbackMatch[1], 10)),
             col: String(parseInt(fallbackMatch[2], 10)),
-            keyword: fallbackMatch[3]
+            keyword: fallbackKeyword,
+            keywordArgs: fallbackKeywordArgs
         };
     }
     
@@ -2925,7 +2949,10 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             // Build keyword line with indicators (34 spaces = 12 for indicators + 22 for spacing)
             // Format: "     A  03                            19 11DATE"
             const spacingAfterIndicators = ' '.repeat(22); // 22 spaces to reach column 39
-            const keywordLine = `     A${indicatorPrefix}${spacingAfterIndicators}${rowStr}${rowColSeparator}${colStr}${field.name}`;
+            const keywordToken = field.name === 'DATE' && field.keywordArgs
+                ? `DATE(${field.keywordArgs})`
+                : field.name;
+            const keywordLine = `     A${indicatorPrefix}${spacingAfterIndicators}${rowStr}${rowColSeparator}${colStr}${keywordToken}`;
             lines.push(keywordLine);
             
             // Special handling for DATE keyword - add EDTCDE(Y)
@@ -3767,6 +3794,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             const row = parseInt(parsedKeyword.row, 10);
             const col = parseInt(parsedKeyword.col, 10);
             const keywordName = parsedKeyword.keyword;
+            const keywordArgs = parsedKeyword.keywordArgs || null;
             
             Logger.key(`Found keyword: ${keywordName} at ${row},${col}`);
             
@@ -3793,6 +3821,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 col: col,
                 dataType: 'keyword',
                 isKeyword: true,
+                keywordArgs,
                 length: null,
                 indicators: { groups: [], isOr: false } // Will be populated by backward scan + inline merge
             };
