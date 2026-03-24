@@ -522,6 +522,9 @@ import * as path from 'path';
 							</div>
 						</div>
 						<div id="source-line-numbers"></div>
+						<div id="source-syntax-highlights">
+							<div id="source-syntax-highlights-content"></div>
+						</div>
 						<div id="search-highlights">
 							<div id="search-highlights-content"></div>
 						</div>
