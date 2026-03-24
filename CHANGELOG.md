@@ -2,6 +2,18 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [1.3.1] - 2026-03-23
+
+### 🎨 Improved
+- Improved `DATE` keyword rendering in Designer/Preview:
+  - `DATE(*SYS *YY)` and `DATE(*JOB *YY)` now render as `MM/DD/YYYY`.
+  - Other `DATE` variants continue rendering as `MM/DD/YY`.
+
+### 🐛 Fixed
+- Fixed numeric preview formatting when `EDTCDE` applies thousand separators to decimal fields:
+  - Decimal and thousand separators are now handled independently.
+  - Avoids rendering decimal output as a fully grouped integer for fields with decimals (for example `11Y 2`, `15Y 2`).
+
 ## [1.3.0] - 2026-03-22
 
 ### ✨ Added
