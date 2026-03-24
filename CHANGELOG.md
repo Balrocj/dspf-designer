@@ -2,6 +2,11 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [1.3.2] - 2026-03-23
+
+### 🐛 Fixed
+- The scanning of attributes and indicators in variables and keywords has been corrected.
+
 ## [1.3.1] - 2026-03-23
 
 ### 🎨 Improved

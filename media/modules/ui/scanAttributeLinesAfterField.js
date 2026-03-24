@@ -50,7 +50,7 @@ export function scanAttributeLinesAfterField({
                                     indicatorAreaContent.length > 0 &&
                                     contentAfterColumn18 === '';
 
-        const hasFieldName = /\b[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(nextTrimmed);
+        const hasFieldName = /^[A-Z_][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(contentAfterColumn18);
         const hasConstant = nextTrimmed.match(/\d+\s+\d+'/);
         const isRecordDef = nextTrimmed.match(/^A\s+R\s+\w+/);
         const isBlank = nextTrimmed === '' || nextTrimmed === 'A';
