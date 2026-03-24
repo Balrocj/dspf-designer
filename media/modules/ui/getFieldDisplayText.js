@@ -197,9 +197,18 @@ export function getFieldDisplayText(options) {
         let baseNumericText;
         const isSignedInputOrBoth = (field.usage === 'I' || field.usage === 'B') && field.shift === 'S';
         const hasEdtcdePriorityOnBoth = field.usage === 'B' && Boolean(edtcdeCode);
+        const decimals = Number.isInteger(field.decimals) ? field.decimals : 0;
+
+        const buildDecimalDisplay = (totalDigits, decimalDigits) => {
+            if (decimalDigits <= 0) {
+                return digitChar.repeat(totalDigits);
+            }
+
+            const integerDigits = Math.max(1, totalDigits - decimalDigits);
+            return `${digitChar.repeat(integerDigits)},${digitChar.repeat(decimalDigits)}`;
+        };
 
         if (field.dataType === 'float') {
-            const decimals = Number.isInteger(field.decimals) ? field.decimals : 0;
             const integerDigits = Math.max(1, length - decimals);
             const mantissa = decimals > 0
                 ? `${digitChar.repeat(integerDigits)},${digitChar.repeat(decimals)}`
@@ -207,9 +216,9 @@ export function getFieldDisplayText(options) {
             const precisionChar = field.precision === 'DOUBLE' ? 'D' : 'E';
             baseNumericText = `-${mantissa}${precisionChar}-${digitChar.repeat(3)}`;
         } else if (isSignedInputOrBoth && !hasEdtcdePriorityOnBoth) {
-            baseNumericText = length >= 1 ? digitChar.repeat(length) + '-' : digitChar;
+            baseNumericText = `${buildDecimalDisplay(length, decimals)}-`;
         } else {
-            baseNumericText = digitChar.repeat(length);
+            baseNumericText = buildDecimalDisplay(length, decimals);
         }
 
         // Prioridad de keywords de edición (en IBM i son mutuamente excluyentes,
