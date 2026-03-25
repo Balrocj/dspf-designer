@@ -24,8 +24,8 @@ export function loadSubfileControl(options) {
         sflsiz: { ds3: '', ds4: '' },
         sflpag: { ds3: '', ds4: '' },
         sfllin: { ds3: '', ds4: '' },
-        sfldsp: { indicators: null },
-        sfldspctl: { indicators: null }
+        sfldsp: { indicators: null, present: false },
+        sfldspctl: { indicators: null, present: false }
     };
 
     const displayConfig = DisplaySizeUtils.getAvailableDisplaySizes(currentDocument);
@@ -104,6 +104,7 @@ export function loadSubfileControl(options) {
 
             if (trimmed.includes('SFLDSP') && !trimmed.includes('SFLDSPCTL')) {
                 Logger.debug(`[SFLDSP PARSE] Found SFLDSP at line ${index}`);
+                subfileControl.sfldsp.present = true;
 
                 const currentLineIndicators = IndicatorUtils.extractFromDdsLine(line, 'SFLDSP-PARSE');
                 const isOrLine = line.length > 6 && line[6] === 'O';
@@ -156,6 +157,7 @@ export function loadSubfileControl(options) {
 
             if (trimmed.includes('SFLDSPCTL')) {
                 Logger.debug(`[SFLDSPCTL PARSE] Found SFLDSPCTL at line ${index}`);
+                subfileControl.sfldspctl.present = true;
 
                 const currentLineIndicators = IndicatorUtils.extractFromDdsLine(line, 'SFLDSPCTL-PARSE');
                 const isOrLine = line.length > 6 && line[6] === 'O';
@@ -298,7 +300,7 @@ export function loadSubfileControl(options) {
                              subfileControl.sfldsp.indicators.groups &&
                              subfileControl.sfldsp.indicators.groups.length > 0;
 
-        sfldspEnabled.checked = hasIndicators;
+        sfldspEnabled.checked = subfileControl.sfldsp.present;
         sfldspBtn.disabled = !sfldspEnabled.checked;
 
         if (hasIndicators) {
@@ -328,7 +330,7 @@ export function loadSubfileControl(options) {
                              subfileControl.sfldspctl.indicators.groups &&
                              subfileControl.sfldspctl.indicators.groups.length > 0;
 
-        sfldspctlEnabled.checked = hasIndicators;
+        sfldspctlEnabled.checked = subfileControl.sfldspctl.present;
         sfldspctlBtn.disabled = !sfldspctlEnabled.checked;
 
         if (hasIndicators) {
@@ -671,6 +673,44 @@ export function applySubfileControl(options) {
                     recordEndIndex += newLines.length;
                     changesCount++;
                 }
+            } else {
+                const newLine = '     A                                      SFLDSP';
+
+                if (keywordPositions.sfldsp !== -1) {
+                    let linesToRemove = 1;
+                    let j = keywordPositions.sfldsp - 1;
+                    while (j >= recordStartIndex) {
+                        const prevLine = lines[j];
+                        const prevTrimmed = prevLine.trim();
+                        const isIndicatorOnly = /^A[O\s]\s*[N\d\s]+$/.test(prevTrimmed) && prevLine.substring(18).trim() === '';
+                        if (!isIndicatorOnly) { break; }
+                        linesToRemove++;
+                        j--;
+                    }
+
+                    const replaceStart = keywordPositions.sfldsp - (linesToRemove - 1);
+                    lines.splice(replaceStart, linesToRemove, newLine);
+                    Logger.dds(`Updated SFLDSP without indicators: removed ${linesToRemove} line(s), inserted 1 line`);
+                    lastInsertPosition = replaceStart;
+
+                    const delta = 1 - linesToRemove;
+                    Object.keys(keywordPositions).forEach(key => {
+                        if (keywordPositions[key] > keywordPositions.sfldsp) {keywordPositions[key] += delta;}
+                    });
+                    keywordPositions.sfldsp = replaceStart;
+                    recordEndIndex += delta;
+                    changesCount++;
+                } else {
+                    lastInsertPosition++;
+                    lines.splice(lastInsertPosition, 0, newLine);
+                    Logger.dds(`Inserted SFLDSP without indicators at line ${lastInsertPosition}`);
+                    Object.keys(keywordPositions).forEach(key => {
+                        if (keywordPositions[key] >= lastInsertPosition) {keywordPositions[key]++;}
+                    });
+                    keywordPositions.sfldsp = lastInsertPosition;
+                    recordEndIndex++;
+                    changesCount++;
+                }
             }
         } else if (keywordPositions.sfldsp !== -1) {
             let linesToRemove = 1;
@@ -726,6 +766,44 @@ export function applySubfileControl(options) {
                     lines.splice(lastInsertPosition, 0, ...newLines);
                     Logger.dds(`Inserted SFLDSPCTL: ${newLines.length} line(s)`);
                     recordEndIndex += newLines.length;
+                    changesCount++;
+                }
+            } else {
+                const newLine = '     A                                      SFLDSPCTL';
+
+                if (keywordPositions.sfldspctl !== -1) {
+                    let linesToRemove = 1;
+                    let j = keywordPositions.sfldspctl - 1;
+                    while (j >= recordStartIndex) {
+                        const prevLine = lines[j];
+                        const prevTrimmed = prevLine.trim();
+                        const isIndicatorOnly = /^A[O\s]\s*[N\d\s]+$/.test(prevTrimmed) && prevLine.substring(18).trim() === '';
+                        if (!isIndicatorOnly) { break; }
+                        linesToRemove++;
+                        j--;
+                    }
+
+                    const replaceStart = keywordPositions.sfldspctl - (linesToRemove - 1);
+                    lines.splice(replaceStart, linesToRemove, newLine);
+                    Logger.dds(`Updated SFLDSPCTL without indicators: removed ${linesToRemove} line(s), inserted 1 line`);
+                    lastInsertPosition = replaceStart;
+
+                    const delta = 1 - linesToRemove;
+                    Object.keys(keywordPositions).forEach(key => {
+                        if (keywordPositions[key] > keywordPositions.sfldspctl) {keywordPositions[key] += delta;}
+                    });
+                    keywordPositions.sfldspctl = replaceStart;
+                    recordEndIndex += delta;
+                    changesCount++;
+                } else {
+                    lastInsertPosition++;
+                    lines.splice(lastInsertPosition, 0, newLine);
+                    Logger.dds(`Inserted SFLDSPCTL without indicators at line ${lastInsertPosition}`);
+                    Object.keys(keywordPositions).forEach(key => {
+                        if (keywordPositions[key] >= lastInsertPosition) {keywordPositions[key]++;}
+                    });
+                    keywordPositions.sfldspctl = lastInsertPosition;
+                    recordEndIndex++;
                     changesCount++;
                 }
             }

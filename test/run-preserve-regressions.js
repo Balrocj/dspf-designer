@@ -4,7 +4,9 @@ const path = require('path');
 const tests = [
     'run-update-preserve-unknown.js',
     'run-delete-preserve-block.js',
-    'run-move-preserve-indicator-unknown.js'
+    'run-move-preserve-indicator-unknown.js',
+    'run-sfldspctl-indicator-isolation.js',
+    'run-sfldspctl-reinsert-on-enable.js'
 ];
 
 function runOne(scriptName) {

@@ -25,12 +25,14 @@ export function scanIndicatorsBackward({ lines, startIndex, lineOffset, contextL
         const prevContentAfter18 = prevLine.substring(18).trim();
         const hasFieldName = /^[A-Z][A-Z0-9_]{2,}\s+\d+/i.test(prevContentAfter18);
 
-        // Check if line has a keyword (from column 44 onwards) - if so, stop scanning
-        // These indicators belong to a different attribute
+        // Stop scanning if there is any trailing content from column 44 onwards.
+        // This covers both keyword forms with parentheses (e.g. COLOR(...)) and
+        // without parentheses (e.g. SFLDSP, SFLDSPCTL, OVERLAY), which belong to
+        // a different DDS line and must not be merged as indicator-only lines.
         const prevContentAfter44 = prevLine.length > 43 ? prevLine.substring(43).trim() : '';
-        const hasKeyword = prevContentAfter44.length > 0 && /^[A-Z]+\s*\(/.test(prevContentAfter44);
-        if (hasKeyword) {
-            Logger.debug(`[${contextLabel}] scanIndicatorsBackward stopping - found keyword at backOffset ${backOffset}`);
+        const hasTrailingContent = prevContentAfter44.length > 0;
+        if (hasTrailingContent) {
+            Logger.debug(`[${contextLabel}] scanIndicatorsBackward stopping - found trailing content at backOffset ${backOffset}: "${prevContentAfter44}"`);
             break;
         }
 

@@ -5104,6 +5104,32 @@ function __setCurrentRecordForTests(recordName) {
 function __getCurrentRecordForTests() {
     return currentRecord;
 }
+function __clearIndicatorConfigurationsForTests() {
+    if (indicatorConfigurations && typeof indicatorConfigurations.clear === 'function') {
+        indicatorConfigurations.clear();
+    }
+}
+function __setIndicatorConfigurationForTests(key, value) {
+    if (indicatorConfigurations && typeof indicatorConfigurations.set === 'function') {
+        indicatorConfigurations.set(key, value);
+    }
+}
+function __applySubfileControlForTests(overrides = {}) {
+    return applySubfileControlUI({
+        Logger: overrides.Logger || Logger,
+        vscode: overrides.vscode || { postMessage: () => {} },
+        getCurrentDocument: overrides.getCurrentDocument || (() => currentDocument),
+        setCurrentDocument: overrides.setCurrentDocument || ((value) => { currentDocument = value; }),
+        getCurrentRecord: overrides.getCurrentRecord || (() => currentRecord),
+        getCurrentView: overrides.getCurrentView || (() => 'preview'),
+        updateDocumentInEditor: overrides.updateDocumentInEditor || (() => {}),
+        generateDdsLineWithIndicators: overrides.generateDdsLineWithIndicators || generateDdsLineWithIndicators,
+        indicatorConfigurations: overrides.indicatorConfigurations || indicatorConfigurations,
+        showScreenProperties: overrides.showScreenProperties || (() => {}),
+        parseDspfFields: overrides.parseDspfFields || (() => {}),
+        updatePreviewView: overrides.updatePreviewView || (() => {})
+    });
+}
 
 try {
     if (typeof window !== 'undefined' && window) {
@@ -5113,10 +5139,14 @@ try {
         if (typeof processMultiLineContinuation !== 'undefined') {window.__TESTS.processMultiLineContinuation = processMultiLineContinuation;}
         if (typeof attributeContentRegex !== 'undefined') {window.__TESTS.attributeContentRegex = attributeContentRegex;}
         if (typeof ATTRIBUTE_KEYWORDS_SET !== 'undefined') {window.__TESTS.ATTRIBUTE_KEYWORDS_SET = ATTRIBUTE_KEYWORDS_SET;}
+        if (typeof scanIndicatorsBackward !== 'undefined') {window.__TESTS.scanIndicatorsBackward = scanIndicatorsBackward;}
         window.__TESTS.setCurrentDocument = __setCurrentDocumentForTests;
         window.__TESTS.getCurrentDocument = __getCurrentDocumentForTests;
         window.__TESTS.setCurrentRecord = __setCurrentRecordForTests;
         window.__TESTS.getCurrentRecord = __getCurrentRecordForTests;
+        window.__TESTS.applySubfileControl = __applySubfileControlForTests;
+        window.__TESTS.clearIndicatorConfigurations = __clearIndicatorConfigurationsForTests;
+        window.__TESTS.setIndicatorConfiguration = __setIndicatorConfigurationForTests;
     }
 } catch (err) {
     // ignore
@@ -5129,10 +5159,14 @@ if (typeof module !== 'undefined' && module.exports) {
         if (typeof processMultiLineContinuation !== 'undefined') {module.exports.processMultiLineContinuation = processMultiLineContinuation;}
         if (typeof attributeContentRegex !== 'undefined') {module.exports.attributeContentRegex = attributeContentRegex;}
         if (typeof ATTRIBUTE_KEYWORDS_SET !== 'undefined') {module.exports.ATTRIBUTE_KEYWORDS_SET = ATTRIBUTE_KEYWORDS_SET;}
+        if (typeof scanIndicatorsBackward !== 'undefined') {module.exports.scanIndicatorsBackward = scanIndicatorsBackward;}
         module.exports.setCurrentDocument = __setCurrentDocumentForTests;
         module.exports.getCurrentDocument = __getCurrentDocumentForTests;
         module.exports.setCurrentRecord = __setCurrentRecordForTests;
         module.exports.getCurrentRecord = __getCurrentRecordForTests;
+        module.exports.applySubfileControl = __applySubfileControlForTests;
+        module.exports.clearIndicatorConfigurations = __clearIndicatorConfigurationsForTests;
+        module.exports.setIndicatorConfiguration = __setIndicatorConfigurationForTests;
     } catch (err) {
         // Ignore - test exports are best-effort
     }

@@ -5197,6 +5197,32 @@ function __setCurrentRecordForTests(recordName) {
 function __getCurrentRecordForTests() {
     return currentRecord;
 }
+function __clearIndicatorConfigurationsForTests() {
+    if (indicatorConfigurations && typeof indicatorConfigurations.clear === 'function') {
+        indicatorConfigurations.clear();
+    }
+}
+function __setIndicatorConfigurationForTests(key, value) {
+    if (indicatorConfigurations && typeof indicatorConfigurations.set === 'function') {
+        indicatorConfigurations.set(key, value);
+    }
+}
+function __applySubfileControlForTests(overrides = {}) {
+    return (0,_modules_ui_subfileControl_js__WEBPACK_IMPORTED_MODULE_31__.applySubfileControl)({
+        Logger: overrides.Logger || _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+        vscode: overrides.vscode || { postMessage: () => {} },
+        getCurrentDocument: overrides.getCurrentDocument || (() => currentDocument),
+        setCurrentDocument: overrides.setCurrentDocument || ((value) => { currentDocument = value; }),
+        getCurrentRecord: overrides.getCurrentRecord || (() => currentRecord),
+        getCurrentView: overrides.getCurrentView || (() => 'preview'),
+        updateDocumentInEditor: overrides.updateDocumentInEditor || (() => {}),
+        generateDdsLineWithIndicators: overrides.generateDdsLineWithIndicators || generateDdsLineWithIndicators,
+        indicatorConfigurations: overrides.indicatorConfigurations || indicatorConfigurations,
+        showScreenProperties: overrides.showScreenProperties || (() => {}),
+        parseDspfFields: overrides.parseDspfFields || (() => {}),
+        updatePreviewView: overrides.updatePreviewView || (() => {})
+    });
+}
 
 try {
     if (typeof window !== 'undefined' && window) {
@@ -5206,10 +5232,14 @@ try {
         if (typeof processMultiLineContinuation !== 'undefined') {window.__TESTS.processMultiLineContinuation = processMultiLineContinuation;}
         if (typeof _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex !== 'undefined') {window.__TESTS.attributeContentRegex = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex;}
         if (typeof _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET !== 'undefined') {window.__TESTS.ATTRIBUTE_KEYWORDS_SET = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET;}
+        if (typeof scanIndicatorsBackward !== 'undefined') {window.__TESTS.scanIndicatorsBackward = scanIndicatorsBackward;}
         window.__TESTS.setCurrentDocument = __setCurrentDocumentForTests;
         window.__TESTS.getCurrentDocument = __getCurrentDocumentForTests;
         window.__TESTS.setCurrentRecord = __setCurrentRecordForTests;
         window.__TESTS.getCurrentRecord = __getCurrentRecordForTests;
+        window.__TESTS.applySubfileControl = __applySubfileControlForTests;
+        window.__TESTS.clearIndicatorConfigurations = __clearIndicatorConfigurationsForTests;
+        window.__TESTS.setIndicatorConfiguration = __setIndicatorConfigurationForTests;
     }
 } catch (err) {
     // ignore
@@ -5222,10 +5252,14 @@ if ( true && module.exports) {
         if (typeof processMultiLineContinuation !== 'undefined') {module.exports.processMultiLineContinuation = processMultiLineContinuation;}
         if (typeof _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex !== 'undefined') {module.exports.attributeContentRegex = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex;}
         if (typeof _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET !== 'undefined') {module.exports.ATTRIBUTE_KEYWORDS_SET = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET;}
+        if (typeof scanIndicatorsBackward !== 'undefined') {module.exports.scanIndicatorsBackward = scanIndicatorsBackward;}
         module.exports.setCurrentDocument = __setCurrentDocumentForTests;
         module.exports.getCurrentDocument = __getCurrentDocumentForTests;
         module.exports.setCurrentRecord = __setCurrentRecordForTests;
         module.exports.getCurrentRecord = __getCurrentRecordForTests;
+        module.exports.applySubfileControl = __applySubfileControlForTests;
+        module.exports.clearIndicatorConfigurations = __clearIndicatorConfigurationsForTests;
+        module.exports.setIndicatorConfiguration = __setIndicatorConfigurationForTests;
     } catch (err) {
         // Ignore - test exports are best-effort
     }
@@ -10265,8 +10299,8 @@ function loadSubfileControl(options) {
         sflsiz: { ds3: '', ds4: '' },
         sflpag: { ds3: '', ds4: '' },
         sfllin: { ds3: '', ds4: '' },
-        sfldsp: { indicators: null },
-        sfldspctl: { indicators: null }
+        sfldsp: { indicators: null, present: false },
+        sfldspctl: { indicators: null, present: false }
     };
 
     const displayConfig = DisplaySizeUtils.getAvailableDisplaySizes(currentDocument);
@@ -10345,6 +10379,7 @@ function loadSubfileControl(options) {
 
             if (trimmed.includes('SFLDSP') && !trimmed.includes('SFLDSPCTL')) {
                 Logger.debug(`[SFLDSP PARSE] Found SFLDSP at line ${index}`);
+                subfileControl.sfldsp.present = true;
 
                 const currentLineIndicators = IndicatorUtils.extractFromDdsLine(line, 'SFLDSP-PARSE');
                 const isOrLine = line.length > 6 && line[6] === 'O';
@@ -10397,6 +10432,7 @@ function loadSubfileControl(options) {
 
             if (trimmed.includes('SFLDSPCTL')) {
                 Logger.debug(`[SFLDSPCTL PARSE] Found SFLDSPCTL at line ${index}`);
+                subfileControl.sfldspctl.present = true;
 
                 const currentLineIndicators = IndicatorUtils.extractFromDdsLine(line, 'SFLDSPCTL-PARSE');
                 const isOrLine = line.length > 6 && line[6] === 'O';
@@ -10539,7 +10575,7 @@ function loadSubfileControl(options) {
                              subfileControl.sfldsp.indicators.groups &&
                              subfileControl.sfldsp.indicators.groups.length > 0;
 
-        sfldspEnabled.checked = hasIndicators;
+        sfldspEnabled.checked = subfileControl.sfldsp.present;
         sfldspBtn.disabled = !sfldspEnabled.checked;
 
         if (hasIndicators) {
@@ -10569,7 +10605,7 @@ function loadSubfileControl(options) {
                              subfileControl.sfldspctl.indicators.groups &&
                              subfileControl.sfldspctl.indicators.groups.length > 0;
 
-        sfldspctlEnabled.checked = hasIndicators;
+        sfldspctlEnabled.checked = subfileControl.sfldspctl.present;
         sfldspctlBtn.disabled = !sfldspctlEnabled.checked;
 
         if (hasIndicators) {
@@ -10912,6 +10948,44 @@ function applySubfileControl(options) {
                     recordEndIndex += newLines.length;
                     changesCount++;
                 }
+            } else {
+                const newLine = '     A                                      SFLDSP';
+
+                if (keywordPositions.sfldsp !== -1) {
+                    let linesToRemove = 1;
+                    let j = keywordPositions.sfldsp - 1;
+                    while (j >= recordStartIndex) {
+                        const prevLine = lines[j];
+                        const prevTrimmed = prevLine.trim();
+                        const isIndicatorOnly = /^A[O\s]\s*[N\d\s]+$/.test(prevTrimmed) && prevLine.substring(18).trim() === '';
+                        if (!isIndicatorOnly) { break; }
+                        linesToRemove++;
+                        j--;
+                    }
+
+                    const replaceStart = keywordPositions.sfldsp - (linesToRemove - 1);
+                    lines.splice(replaceStart, linesToRemove, newLine);
+                    Logger.dds(`Updated SFLDSP without indicators: removed ${linesToRemove} line(s), inserted 1 line`);
+                    lastInsertPosition = replaceStart;
+
+                    const delta = 1 - linesToRemove;
+                    Object.keys(keywordPositions).forEach(key => {
+                        if (keywordPositions[key] > keywordPositions.sfldsp) {keywordPositions[key] += delta;}
+                    });
+                    keywordPositions.sfldsp = replaceStart;
+                    recordEndIndex += delta;
+                    changesCount++;
+                } else {
+                    lastInsertPosition++;
+                    lines.splice(lastInsertPosition, 0, newLine);
+                    Logger.dds(`Inserted SFLDSP without indicators at line ${lastInsertPosition}`);
+                    Object.keys(keywordPositions).forEach(key => {
+                        if (keywordPositions[key] >= lastInsertPosition) {keywordPositions[key]++;}
+                    });
+                    keywordPositions.sfldsp = lastInsertPosition;
+                    recordEndIndex++;
+                    changesCount++;
+                }
             }
         } else if (keywordPositions.sfldsp !== -1) {
             let linesToRemove = 1;
@@ -10967,6 +11041,44 @@ function applySubfileControl(options) {
                     lines.splice(lastInsertPosition, 0, ...newLines);
                     Logger.dds(`Inserted SFLDSPCTL: ${newLines.length} line(s)`);
                     recordEndIndex += newLines.length;
+                    changesCount++;
+                }
+            } else {
+                const newLine = '     A                                      SFLDSPCTL';
+
+                if (keywordPositions.sfldspctl !== -1) {
+                    let linesToRemove = 1;
+                    let j = keywordPositions.sfldspctl - 1;
+                    while (j >= recordStartIndex) {
+                        const prevLine = lines[j];
+                        const prevTrimmed = prevLine.trim();
+                        const isIndicatorOnly = /^A[O\s]\s*[N\d\s]+$/.test(prevTrimmed) && prevLine.substring(18).trim() === '';
+                        if (!isIndicatorOnly) { break; }
+                        linesToRemove++;
+                        j--;
+                    }
+
+                    const replaceStart = keywordPositions.sfldspctl - (linesToRemove - 1);
+                    lines.splice(replaceStart, linesToRemove, newLine);
+                    Logger.dds(`Updated SFLDSPCTL without indicators: removed ${linesToRemove} line(s), inserted 1 line`);
+                    lastInsertPosition = replaceStart;
+
+                    const delta = 1 - linesToRemove;
+                    Object.keys(keywordPositions).forEach(key => {
+                        if (keywordPositions[key] > keywordPositions.sfldspctl) {keywordPositions[key] += delta;}
+                    });
+                    keywordPositions.sfldspctl = replaceStart;
+                    recordEndIndex += delta;
+                    changesCount++;
+                } else {
+                    lastInsertPosition++;
+                    lines.splice(lastInsertPosition, 0, newLine);
+                    Logger.dds(`Inserted SFLDSPCTL without indicators at line ${lastInsertPosition}`);
+                    Object.keys(keywordPositions).forEach(key => {
+                        if (keywordPositions[key] >= lastInsertPosition) {keywordPositions[key]++;}
+                    });
+                    keywordPositions.sfldspctl = lastInsertPosition;
+                    recordEndIndex++;
                     changesCount++;
                 }
             }
@@ -13938,12 +14050,14 @@ function scanIndicatorsBackward({ lines, startIndex, lineOffset, contextLabel = 
         const prevContentAfter18 = prevLine.substring(18).trim();
         const hasFieldName = /^[A-Z][A-Z0-9_]{2,}\s+\d+/i.test(prevContentAfter18);
 
-        // Check if line has a keyword (from column 44 onwards) - if so, stop scanning
-        // These indicators belong to a different attribute
+        // Stop scanning if there is any trailing content from column 44 onwards.
+        // This covers both keyword forms with parentheses (e.g. COLOR(...)) and
+        // without parentheses (e.g. SFLDSP, SFLDSPCTL, OVERLAY), which belong to
+        // a different DDS line and must not be merged as indicator-only lines.
         const prevContentAfter44 = prevLine.length > 43 ? prevLine.substring(43).trim() : '';
-        const hasKeyword = prevContentAfter44.length > 0 && /^[A-Z]+\s*\(/.test(prevContentAfter44);
-        if (hasKeyword) {
-            Logger.debug(`[${contextLabel}] scanIndicatorsBackward stopping - found keyword at backOffset ${backOffset}`);
+        const hasTrailingContent = prevContentAfter44.length > 0;
+        if (hasTrailingContent) {
+            Logger.debug(`[${contextLabel}] scanIndicatorsBackward stopping - found trailing content at backOffset ${backOffset}: "${prevContentAfter44}"`);
             break;
         }
 

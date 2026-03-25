@@ -4,6 +4,10 @@ All notable changes to the "dspf-designer" extension will be documented in this 
 
 ## [1.3.4] - 2026-03-24
 
+### 🐛 Fixed
+- The parsing of the keywords SFLDSP and SFLDSPCTL is adjusted.
+- The rendering of Windows-style registers is adjusted.
+- The rendering of the keyword EDTCDE(3) is adjusted.
 
 ## [1.3.3] - 2026-03-23
 
