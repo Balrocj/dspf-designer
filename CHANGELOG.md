@@ -2,6 +2,9 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [1.3.4] - 2026-03-24
+
+
 ## [1.3.3] - 2026-03-23
 
 ### 🎨 Improved

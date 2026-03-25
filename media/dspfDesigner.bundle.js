@@ -6376,12 +6376,14 @@ function setupDragAndDrop({
             const windowDim = currentDisplaySize === 'DS3' ? windowDimensions.ds3 : windowDimensions.ds4;
             if (windowDim) {
                 const relRow = row - (windowDim.row - 1);
-                const relCol = col - windowDim.col;
+                // Inverse of renderWindowField absolute col mapping:
+                // absoluteCol = window.col + field.col + 1
+                const relCol = col - (windowDim.col + 1);
 
                 if (relRow > 0 && relCol > 0) {
                     row = relRow;
                     col = relCol;
-                    Logger.window(`🪟 [WINDOW] Converted absolute screen (${row + (windowDim.row - 1)}, ${col + windowDim.col}) to WINDOW-relative (${row}, ${col})`);
+                    Logger.window(`🪟 [WINDOW] Converted absolute screen (${row + (windowDim.row - 1)}, ${col + windowDim.col + 1}) to WINDOW-relative (${row}, ${col})`);
                 }
             }
         }
