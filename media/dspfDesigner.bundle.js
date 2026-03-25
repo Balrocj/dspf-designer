@@ -1,1 +1,15550 @@
-(()=>{"use strict";var e={237:(e,t,n)=>{const i={IBM_COLORS:{WHT:"#FFFFFF",BLU:"#3B78FF",RED:"#FF3B3B",TRQ:"#00FFFF",YLW:"#FFFF00",GRN:"#00FF00",PNK:"#FF00FF"},getColor(e,t="#00ff00"){if(e&&e.color&&this.IBM_COLORS[e.color])return this.IBM_COLORS[e.color];if(e&&e.colorIndicators){const t=Object.keys(e.colorIndicators);if(t.length>0){const e=t[0];if(this.IBM_COLORS[e])return this.IBM_COLORS[e]}}return t},getColorStyle(e,t="#00ff00"){return`color: ${this.getColor(e,t)};`},getDefaultForFieldType:e=>({constant:"#00ff00",input:"#ffff00",output:"#00ff00",keyword:"#00ffff",text:"#00ff00",number:"#ffff00"}[e]||"#00ff00"),isValidColorCode(e){return e&&this.IBM_COLORS.hasOwnProperty(e)},getAllColorCodes(){return Object.keys(this.IBM_COLORS)},getColorName:e=>({WHT:"White",BLU:"Blue",RED:"Red",TRQ:"Turquoise",YLW:"Yellow",GRN:"Green",PNK:"Pink"}[e]||e)},o={CHAR_HEIGHT:20,CHAR_WIDTH:8,SCREEN_SIZES:{DS3:{rows:24,cols:80},DS4:{rows:27,cols:132}},toPixels(e,t,n={row:0,col:0}){return{top:(e-1-n.row)*this.CHAR_HEIGHT,left:(t-1-n.col)*this.CHAR_WIDTH}},fromPixels(e,t,n={row:0,col:0}){return{row:Math.floor(e/this.CHAR_HEIGHT)+1+n.row,col:Math.floor(t/this.CHAR_WIDTH)+1+n.col}},fromClientPoint(e,t,n,i=1,o={row:0,col:0}){const s=(e-n.left)/i,r=(t-n.top)/i;return this.fromPixels(r,s,o)},sizeFromPixels(e,t,n=1){return{rows:Math.round(e/n/this.CHAR_HEIGHT),cols:Math.round(t/n/this.CHAR_WIDTH)}},getScreenDimensions(e){return this.SCREEN_SIZES[e]||this.SCREEN_SIZES.DS3},isValidPosition(e,t,n){const i=this.getScreenDimensions(n);return e>=1&&e<=i.rows&&t>=1&&t<=i.cols},getWidthInPixels(e){return e*this.CHAR_WIDTH},getHeightInPixels(e){return e*this.CHAR_HEIGHT},createWindowOffset:e=>e?{row:e.row-1,col:e.col-1}:{row:0,col:0},calculateFieldWrapping(e,t="DS3"){const n=this.getScreenDimensions(t).cols;if("constant"===e.type||"keyword"===e.type||e.isKeyword)return[{row:e.row,col:e.col,length:e.length}];if(["numeric","zoned","packed","float","binary","double"].includes(e.dataType))return[{row:e.row,col:e.col,length:e.length}];const i=e.col,o=[];let s=e.length||10,r=e.row,d=i;for(;s>0;){const e=n-d+1,t=Math.min(s,e);o.push({row:r,col:d,length:t}),s-=t,s>0&&(r++,d=1)}return o}},s={_logParse(e,...t){const n=globalThis.Logger;n&&"function"==typeof n.parse&&n.parse(e,...t)},parse(e){if(!e||"string"!=typeof e)return[];const t=e.trim().split(/\s+/),n=[];return t.forEach(e=>{const t=e.match(/N?\d{1,2}/g);t&&t.forEach(e=>{const t=e.startsWith("N"),i=t?e.substring(1):e;n.push({number:i.padStart(2,"0"),not:t})})}),n},formatForDds(e){if(!e||0===e.length)return"";const t=e.map(e=>e.not?"N"+String(e.number).padStart(2,"0"):String(e.number).padStart(2,"0"));let n="";return t.forEach(e=>{""===n?n=e:n+=e.startsWith("N")?e:" "+e}),n},formatForDisplay:e=>e&&0!==e.length?e.map(e=>e.not?`NOT ${e.number}`:e.number).join(", "):"",isValid:e=>!e||/^(N?\d{1,2}(\s+N?\d{1,2})*)$/.test(e.trim()),create:(e,t=!1)=>({number:String(e).padStart(2,"0"),not:Boolean(t)}),extractFromDdsLine(e,t=""){if(!e||e.length<=6||"A"!==e[5])return[];const n=e.substring(6,44),i=n.trim();if(t&&i&&this._logParse(`${t} indicator area: "${n}" from line: "${e}"`),!i)return[];const o=this.parse(i);return t&&o.length>0&&this._logParse(`${t} found indicators:`,o),o},extractWithOrSupport(e,t,n,i=""){const o={groups:[],isOr:!1};let s=t,r=!1;for(;s<e.length&&!r;){const t=e[s];if(!t||t.length<=6||"A"!==t[5])break;const d="O"===t[6],a=!!n&&t.includes(n),l=this.extractFromDdsLine(t,i);l.length>0&&(o.groups.push({indicators:l}),d&&(o.isOr=!0),i&&this._logParse(`${i} line ${s+1} (${d?"OR":"AND"}): found ${l.length} indicators`)),a&&(r=!0),s++}return 1!==o.groups.length||o.isOr?o:{groups:o.groups,isOr:!1}},formatGroupsForDds(e){if(!e||0===e.length)return[""];const t=[];return e.forEach((e,n)=>{const i=this.formatForDds(e.indicators),o=0===n?"":"O";t.push(o+i)}),t},flattenGroups(e){if(!e||0===e.length)return[];const t=[];return e.forEach(e=>{e.indicators&&t.push(...e.indicators)}),t}},r={getAvailableDisplaySizes(e){const t=e.split("\n");let n=!1,i=!1,o=!1,s="";const r=e=>{const t=(e||"").toUpperCase(),o=t.includes("*DS3"),s=t.includes("*DS4");o&&(n=!0),s&&(i=!0),o||s||(n=!0)};for(let e of t){const t=e.trim();o||!t.includes("DSPSIZ(")?o&&(s+=` ${t}`,t.includes(")")&&(r(s),o=!1,s="")):(o=!0,s=t.substring(t.indexOf("DSPSIZ(")),t.includes(")")&&(r(s),o=!1,s=""))}o&&s&&r(s);let d=null;return n&&!i?d="DS3":i&&!n&&(d="DS4"),{hasDS3:n,hasDS4:i,singleSize:d}}},d={_counters:{},generateFieldId:()=>`field_${Date.now()}_${Math.random().toString(36).substr(2,9)}`,generateUniqueName(e,t=[]){let n;this._counters[e]||(this._counters[e]=1);let i=0;do{if(n=e+this._counters[e],this._counters[e]++,i++,i>1e3){n=e+Date.now();break}}while(t.includes(n));return n},resetCounter(e){this._counters[e]&&(this._counters[e]=1)},resetAllCounters(){this._counters={}},getCounter(e){return this._counters[e]||0},generateUniqueRecordName(e="REC",t=[]){return this.generateUniqueName(e,t)},generateUniqueId:(e="id")=>`${e}-${Date.now()}-${Math.random().toString(36).substr(2,9)}`},a={MAX_LENGTH:10,isValid(e,t={}){const{allowEmpty:n=!1,mustStartWithLetter:i=!0,maxLength:o=this.MAX_LENGTH}=t;return e&&0!==e.length?!(e.length>o)&&(i?/^[A-Z][A-Z0-9_]*$/i.test(e):/^[A-Z0-9_]+$/i.test(e)):n},validate(e,t={}){if(!this.isValid(e,t)){const{mustStartWithLetter:n=!0,maxLength:i=this.MAX_LENGTH}=t;if(!e||0===e.length)throw new Error("Field name cannot be empty");if(e.length>i)throw new Error(`Field name cannot exceed ${i} characters`);throw n?new Error("Field name must start with a letter and contain only letters, numbers, and underscores"):new Error("Field name must contain only letters, numbers, and underscores")}return e},sanitize(e,t="FIELD"){if(!e||0===e.length)return t;let n=e.toUpperCase();return n=n.replace(/[^A-Z0-9_]/g,""),/^[A-Z]/.test(n)||(n="F"+n),n.length>this.MAX_LENGTH&&(n=n.substring(0,this.MAX_LENGTH)),this.isValid(n)?n:t},isReservedKeyword:e=>["DATE","TIME","SYSNAME","USER","PAGE"].includes(e.toUpperCase())},l={_enabled:!0,parse(e,...t){this._enabled&&console.log("🔍",e,...t)},success(e,...t){this._enabled&&console.log("✅",e,...t)},error(e,...t){this._enabled&&console.error("❌",e,...t)},warn(e,...t){this._enabled&&console.warn("⚠️",e,...t)},stats(e,...t){this._enabled&&console.log("📊",e,...t)},ui(e,...t){this._enabled&&console.log("🎨",e,...t)},dds(e,...t){this._enabled&&console.log("📝",e,...t)},debug(e,...t){this._enabled&&console.log("🐛",e,...t)},key(e,...t){this._enabled&&console.log("🔑",e,...t)},window(e,...t){this._enabled&&console.log("🪟",e,...t)},enable(){this._enabled=!0,console.log("✅ Logging enabled")},disable(){console.log("⛔ Logging disabled"),this._enabled=!1},isEnabled(){return this._enabled},group(e,t){this._enabled&&(console.group("📦 "+e),t(),console.groupEnd())}};globalThis.Logger||(globalThis.Logger=l);const c=["COLOR","DSPATR","VALUES","CHECK","PSHBTNCHC","PSHBTNFLD","DFTVAL","DFT","EDTCDE","EDTWRD","EDTMSK","RANGE"],u=new Set(c),p=new RegExp(`\\b(?:${c.join("|")})\\(`),g=new Set(["COLOR","DSPATR","CHECK","DFTVAL","DFT","EDTCDE","EDTWRD","EDTMSK","VALUES"]),f=["ME","ER","MF","FE","RB","RZ","RL","LC"],h=["ME","ER","MF","FE","RB","RZ","RL"];function m(e,t,n){const i=document.getElementById("horizontal-ruler"),o=document.getElementById("vertical-ruler");if(!i||!o)return n&&"function"==typeof n.warn&&n.warn("Rulers not found, retrying in 100ms..."),void setTimeout(()=>m(e,t,n),100);n&&"function"==typeof n.ui&&n.ui(`Setting up rulers for ${e}...`),i.innerHTML="",o.innerHTML="";const s="DS3"===e?80:132,r="DS3"===e?24:27;for(let e=1;e<=s;e++){const n=t.toPixels(1,e).left,o=document.createElement("div");if(o.className="ruler-tick",o.style.left=n+"px",i.appendChild(o),e%5==0||1===e){const t=document.createElement("div");t.className="ruler-marker",t.textContent=e.toString(),t.style.left=n+"px",i.appendChild(t)}}for(let e=1;e<=r;e++){const{top:n}=t.toPixels(e,1),i=document.createElement("div");if(i.className="ruler-tick",i.style.top=n+"px",o.appendChild(i),e%5==0||1===e){const t=document.createElement("div");t.className="ruler-marker",t.textContent=e.toString(),t.style.top=n+"px",o.appendChild(t)}}n&&"function"==typeof n.success&&n.success(`Rulers setup complete for ${e}!`)}function y(e,t,n){const i=document.getElementById("fields-container"),o=document.getElementById("screen-with-rulers"),s=document.getElementById("horizontal-ruler"),r=document.getElementById("vertical-ruler");if(!i||!o)return;const d=t.getScreenDimensions(e),a=t.getWidthInPixels(d.cols),l=t.getHeightInPixels(d.rows);i&&(i.style.width=`${a}px`,i.style.height=`${l}px`),s&&(s.style.width=`${a+4}px`,s.style.backgroundSize=`${t.CHAR_WIDTH}px 100%`),r&&(r.style.height=`${l+4}px`,r.style.backgroundSize=`100% ${t.CHAR_HEIGHT}px`),o&&(o.style.width=`${a+42}px`,o.style.height=`${l+42}px`),n.ui(`Canvas resized for ${e}`)}function b({Logger:e,getCurrentDisplaySize:t,setCurrentDisplaySize:n,updateCanvasSize:i,setupRulers:o,parseDspfFields:s,getCurrentDocument:r,applyDefaultZoomForDisplaySize:d,updatePreviewView:a}){document.querySelectorAll('input[name="preview-display-size"]').forEach(t=>{t.addEventListener("change",function(){const t=this.value;n(t),e.debug(`Preview display size changed to: ${t}`),d&&d(t),document.querySelectorAll('input[name="displaySize"]').forEach(e=>{e.checked=e.value===t}),i(t),o(),s(r()),a()})})}let v=[],$=-1,S=!1,w=!1;function x({Logger:e}){if(w||(w=!0,document.addEventListener("keydown",function(e){const t=e.key&&"f"===e.key.toLowerCase();if((e.ctrlKey||e.metaKey)&&(t||"KeyF"===e.code)){const t=document.getElementById("source-view"),n=document.getElementById("source-search-box");if(t&&n&&t.classList.contains("active")){e.preventDefault(),e.stopPropagation(),n.classList.add("visible");const t=document.getElementById("source-search-input");t&&(t.focus(),t.select())}}},!0)),S)return;S=!0;const t=document.getElementById("source-editor"),n=document.getElementById("source-search-box"),i=document.getElementById("source-search-input"),o=document.getElementById("search-prev-btn"),s=document.getElementById("search-next-btn"),r=document.getElementById("search-close-btn"),d=document.getElementById("search-info"),a=document.getElementById("search-highlights-content");function l(){const e=i.value;if(!e||0===v.length)return void(a.innerHTML="");const n=t.value;let o="",s=0;v.forEach((t,i)=>{o+=c(n.substring(s,t)),o+=`<span class="${i===$?"search-highlight-current":"search-highlight"}">${c(n.substr(t,e.length))}</span>`,s=t+e.length}),o+=c(n.substring(s)),a.innerHTML=o,a.style.transform=`translate(${-t.scrollLeft}px, ${-t.scrollTop}px)`}function c(e){const t=document.createElement("div");return t.textContent=e,t.innerHTML}function u(){if($>=0&&$<v.length){const e=v[$];t.focus(),t.setSelectionRange(e,e+i.value.length),t.scrollTop=Math.max(0,e/t.value.length*t.scrollHeight-200),d.textContent=`${$+1} of ${v.length}`,l(),setTimeout(()=>i.focus(),0)}}t&&n&&i&&o&&s&&r&&d&&a?(t.addEventListener("scroll",function(){a.style.transform=`translate(${-t.scrollLeft}px, ${-t.scrollTop}px)`}),i.addEventListener("input",function(){const e=i.value;if(!e)return v=[],$=-1,d.textContent="",void l();const n=t.value;v=[];const o=e.toLowerCase(),s=n.toLowerCase();let r=s.indexOf(o);for(;-1!==r;)v.push(r),r=s.indexOf(o,r+1);v.length>0?($=0,u(),d.textContent=`${$+1} of ${v.length}`):(d.textContent="No results",$=-1),l()}),i.addEventListener("keydown",function(e){"Enter"===e.key?(e.preventDefault(),e.shiftKey?o.click():s.click()):"Escape"===e.key&&r.click()}),o.addEventListener("click",function(){v.length>0&&($=($-1+v.length)%v.length,u())}),s.addEventListener("click",function(){v.length>0&&($=($+1)%v.length,u())}),r.addEventListener("click",function(){n.classList.remove("visible"),i.value="",v=[],$=-1,d.textContent="",l(),t.focus()}),e.debug("Source search setup complete")):e.warn("Source search elements not found, skipping setup")}let k=null;const D=/'(?:''|[^'])*'|\b(?:WINDOW|DSPSIZ|INDARA|CSRINPONLY|VALUES|RANGE|CHECK|COLOR|DSPATR|EDTCDE|EDTWRD|EDTMSK|DFTVAL|DFT|FLTPCN|OVERLAY|RTNCSRLOC|CSRLOC|COMP|TEXT|COLHDG|REFFLD|SFL|SFLCTL|SFLSIZ|SFLPAG|SFLLIN|CA\d+|CF\d+)\b|\*(?:DS3|DS4|JOB|SYS|YY|YMD|MDY|DMY|JUL|ISO|USA|EUR|JIS)|\b\d+\b/gi;function E(e){const t=document.createElement("div");return t.textContent=e,t.innerHTML}function I(e,t){return e?`<span class="${t}">${E(e)}</span>`:""}function L(e){if(!e)return"";let t,n="",i=0;for(D.lastIndex=0;null!==(t=D.exec(e));){n+=E(e.slice(i,t.index));const o=t[0];let s="source-token-keyword";o.startsWith("'")?s="source-token-string":o.startsWith("*")?s="source-token-system":/^\d+$/.test(o)&&(s="source-token-number"),n+=I(o,s),i=t.index+o.length}return n+=E(e.slice(i)),n}function C(e){const t=e.trim();if(e.length>6&&"A"===e[5]&&"*"===e[6]||t.startsWith("A*")||t.startsWith("*")||t.startsWith("-"))return I(e,"source-token-comment");const n=e.slice(0,5),i=e.slice(5,6),o=e.slice(6,18),s=e.slice(18,28),r=e.slice(28,38),d=e.slice(38),a=/^[A-Z_][A-Z0-9_]{0,9}$/i.test(s.trim());let l="";return l+=E(n),l+=i?I(i,"source-token-spec"):"",l+=o.trim()?I(o,"source-token-indicators"):E(o),l+=a?I(s,"source-token-name"):E(s),l+=a&&r.trim()?I(r,"source-token-type"):L(r),l+=L(d),l}function A(e){const t=document.getElementById("source-syntax-highlights-content");if(!e||!t)return;const n=e.value.split("\n");t.innerHTML=n.map(C).join("\n")}function F(e){const t=document.getElementById("source-line-numbers");if(!e||!t)return;const n=e.value.split("\n").length;let i="";for(let e=1;e<=n;e++)i+=e+"\n";t.textContent=i}function R(e){const t=e.target,n=document.getElementById("source-line-numbers"),i=document.querySelector(".ruler-content"),o=document.getElementById("source-syntax-highlights-content"),s=document.getElementById("search-highlights-content");t&&n&&(n.scrollTop=t.scrollTop,o&&(o.style.transform=`translate(${-t.scrollLeft}px, ${-t.scrollTop}px)`),s&&(s.style.transform=`translate(${-t.scrollLeft}px, ${-t.scrollTop}px)`),i&&(i.scrollLeft=t.scrollLeft))}function O(e){if(!k)return;const{Logger:t,vscode:n,setCurrentDocument:i,getCurrentRecord:o,parseDspfFields:s}=k,r=e.target.value;i(r),F(e.target),A(e.target),n.postMessage({type:"update",content:r,currentRecord:o()}),s(r),t.debug("Source editor changed, designer view updated")}function T({Logger:e,vscode:t,getCurrentDocument:n,setCurrentDocument:i,getCurrentRecord:o,parseDspfFields:s}){const r=document.getElementById("source-editor");if(!r)return;k={Logger:e,vscode:t,setCurrentDocument:i,getCurrentRecord:o,parseDspfFields:s};const d=n();if(r.value!==d){const e=r.selectionStart,t=r.selectionEnd,n=r.scrollTop;r.value=d,r.setSelectionRange(e,t),r.scrollTop=n}F(r),function(){const e=document.querySelector(".ruler-main");e&&(e.textContent="        .....AAN01N02N03..Name++++++RLen++TDpBLinPosFunctions+++++++++++++++++++++++++++Comments+++++++++++")}(),A(r),r.removeEventListener("input",O),r.addEventListener("input",O),r.removeEventListener("scroll",R),r.addEventListener("scroll",R)}function N(){const e=document.querySelectorAll(".properties-tab"),t=document.querySelectorAll(".tab-panel");e.forEach(n=>{n.addEventListener("click",function(){const n=this.getAttribute("data-tab");e.forEach(e=>e.classList.remove("active")),t.forEach(e=>e.classList.remove("active")),this.classList.add("active");const i=document.getElementById(`tab-${n}`);i&&i.classList.add("active")})})}function B(e){const{Logger:t,getCurrentDocument:n,getCurrentRecord:i,DisplaySizeUtils:o,IndicatorUtils:s,scanIndicatorsBackward:r,indicatorConfigurations:d,setIndicatorButtonState:a,openIBMiModal:l,applySubfileControl:c}=e,u=n(),p=i();t.stats("Loading subfile control keywords for record:",p);const g=u.split("\n");let f=!1;const h={sflsiz:{ds3:"",ds4:""},sflpag:{ds3:"",ds4:""},sfllin:{ds3:"",ds4:""},sfldsp:{indicators:null},sfldspctl:{indicators:null}},m=o.getAvailableDisplaySizes(u);for(let e=0;e<g.length;e++){const n=g[e];if(n.includes(`R ${p}`)||n.includes(`R  ${p}`))f=!0;else{if(f&&n.match(/^\s*A\s+R\s+\w+/))break;if(f){const i=n.trim();if(i.includes("SFLSIZ(")){const e=i.match(/SFLSIZ\((\d{1,4})\)/);if(e){const n=e[1];i.includes("*DS3")?(h.sflsiz.ds3=n,t.stats(`Found SFLSIZ DS3: ${n}`)):i.includes("*DS4")?(h.sflsiz.ds4=n,t.stats(`Found SFLSIZ DS4: ${n}`)):m.singleSize&&("DS3"===m.singleSize?(h.sflsiz.ds3=n,t.stats(`Found SFLSIZ (single size DS3): ${n}`)):"DS4"===m.singleSize&&(h.sflsiz.ds4=n,t.stats(`Found SFLSIZ (single size DS4): ${n}`)))}}if(i.includes("SFLPAG(")){const e=i.match(/SFLPAG\((\d{1,4})\)/);if(e){const n=e[1];i.includes("*DS3")?(h.sflpag.ds3=n,t.stats(`Found SFLPAG DS3: ${n}`)):i.includes("*DS4")?(h.sflpag.ds4=n,t.stats(`Found SFLPAG DS4: ${n}`)):m.singleSize&&("DS3"===m.singleSize?(h.sflpag.ds3=n,t.stats(`Found SFLPAG (single size DS3): ${n}`)):"DS4"===m.singleSize&&(h.sflpag.ds4=n,t.stats(`Found SFLPAG (single size DS4): ${n}`)))}}if(i.includes("SFLLIN(")){const e=i.match(/SFLLIN\((\d+)\)/);if(e){const n=e[1];i.includes("*DS3")?(h.sfllin.ds3=n,t.stats(`Found SFLLIN DS3: ${n}`)):i.includes("*DS4")&&(h.sfllin.ds4=n,t.stats(`Found SFLLIN DS4: ${n}`))}}if(i.includes("SFLDSP")&&!i.includes("SFLDSPCTL")){t.debug(`[SFLDSP PARSE] Found SFLDSP at line ${e}`);const i=s.extractFromDdsLine(n,"SFLDSP-PARSE"),o=n.length>6&&"O"===n[6];let d={scannedLines:[],hasOrLines:!1};e>0&&(d=r(g,0,e,"SFLDSP-BACKWARD"));const a=d.scannedLines;let l=d.hasOrLines;if(i&&i.length>0&&(o?(a.push({indicators:i,isOr:!0}),l=!0):a.length>0?a[a.length-1].indicators.push(...i):a.push({indicators:i,isOr:!1})),a.length>0){if(l){const e=[];a.forEach(t=>{t.isOr?e.push({indicators:[...t.indicators]}):e.length>0?e[e.length-1].indicators.push(...t.indicators):e.push({indicators:[...t.indicators]})}),h.sfldsp.indicators={groups:e,isOr:!0}}else{const e=[];a.forEach(t=>{e.push(...t.indicators)}),h.sfldsp.indicators={groups:[{indicators:e}],isOr:!1}}t.stats(`Found SFLDSP with ${h.sfldsp.indicators.groups.length} group(s), isOr=${h.sfldsp.indicators.isOr}`)}}if(i.includes("SFLDSPCTL")){t.debug(`[SFLDSPCTL PARSE] Found SFLDSPCTL at line ${e}`);const i=s.extractFromDdsLine(n,"SFLDSPCTL-PARSE"),o=n.length>6&&"O"===n[6];let d={scannedLines:[],hasOrLines:!1};e>0&&(d=r(g,0,e,"SFLDSPCTL-BACKWARD"));const a=d.scannedLines;let l=d.hasOrLines;if(i&&i.length>0&&(o?(a.push({indicators:i,isOr:!0}),l=!0):a.length>0?a[a.length-1].indicators.push(...i):a.push({indicators:i,isOr:!1})),a.length>0){if(l){const e=[];a.forEach(t=>{t.isOr?e.push({indicators:[...t.indicators]}):e.length>0?e[e.length-1].indicators.push(...t.indicators):e.push({indicators:[...t.indicators]})}),h.sfldspctl.indicators={groups:e,isOr:!0}}else{const e=[];a.forEach(t=>{e.push(...t.indicators)}),h.sfldspctl.indicators={groups:[{indicators:e}],isOr:!1}}t.stats(`Found SFLDSPCTL with ${h.sfldspctl.indicators.groups.length} group(s), isOr=${h.sfldspctl.indicators.isOr}`)}}}}}const y=document.getElementById("sflsiz-ds3"),b=document.getElementById("sflsiz-ds4"),v=document.getElementById("sflpag-ds3"),$=document.getElementById("sflpag-ds4"),S=document.getElementById("sfllin-ds3"),w=document.getElementById("sfllin-ds4"),x=document.getElementById("sflsiz-ds3-enabled"),k=document.getElementById("sflsiz-ds4-enabled"),D=document.getElementById("sflpag-ds3-enabled"),E=document.getElementById("sflpag-ds4-enabled"),I=document.getElementById("sfllin-ds3-enabled"),L=document.getElementById("sfllin-ds4-enabled");y&&x&&(y.value=h.sflsiz.ds3,x.checked=""!==h.sflsiz.ds3,y.disabled=!x.checked),b&&k&&(b.value=h.sflsiz.ds4,k.checked=""!==h.sflsiz.ds4,b.disabled=!k.checked),v&&D&&(v.value=h.sflpag.ds3,D.checked=""!==h.sflpag.ds3,v.disabled=!D.checked),$&&E&&($.value=h.sflpag.ds4,E.checked=""!==h.sflpag.ds4,$.disabled=!E.checked),S&&I&&(S.value=h.sfllin.ds3,I.checked=""!==h.sfllin.ds3,S.disabled=!I.checked),w&&L&&(w.value=h.sfllin.ds4,L.checked=""!==h.sfllin.ds4,w.disabled=!L.checked),x&&y&&x.addEventListener("change",function(){y.disabled=!this.checked,this.checked||(y.value="")}),k&&b&&k.addEventListener("change",function(){b.disabled=!this.checked,this.checked||(b.value="")}),D&&v&&D.addEventListener("change",function(){v.disabled=!this.checked,this.checked||(v.value="")}),E&&$&&E.addEventListener("change",function(){$.disabled=!this.checked,this.checked||($.value="")}),I&&S&&I.addEventListener("change",function(){S.disabled=!this.checked,this.checked||(S.value="")}),L&&w&&L.addEventListener("change",function(){w.disabled=!this.checked,this.checked||(w.value="")});const C=document.getElementById("sfldsp-enabled"),A=document.getElementById("sfldsp-indicators-btn");if(C&&A){const e=h.sfldsp.indicators&&h.sfldsp.indicators.groups&&h.sfldsp.indicators.groups.length>0;if(C.checked=e,A.disabled=!C.checked,e){const e="sfldsp:enabled";d.set(e,h.sfldsp.indicators),a(A,h.sfldsp.indicators)}C.addEventListener("change",function(){A.disabled=!this.checked,this.checked||(d.delete("sfldsp:enabled"),a(A,null))}),A.addEventListener("click",function(){l("sfldsp","enabled","SFLDSP indicators")})}const F=document.getElementById("sfldspctl-enabled"),R=document.getElementById("sfldspctl-indicators-btn");if(F&&R){const e=h.sfldspctl.indicators&&h.sfldspctl.indicators.groups&&h.sfldspctl.indicators.groups.length>0;if(F.checked=e,R.disabled=!F.checked,e){const e="sfldspctl:enabled";d.set(e,h.sfldspctl.indicators),a(R,h.sfldspctl.indicators)}F.addEventListener("change",function(){R.disabled=!this.checked,this.checked||(d.delete("sfldspctl:enabled"),a(R,null))}),R.addEventListener("click",function(){l("sfldspctl","enabled","SFLDSPCTL indicators")})}const O=document.getElementById("apply-subfile-control-btn");O&&O.addEventListener("click",c),t.success("Subfile control keywords loaded")}function W(e){const{Logger:t,vscode:n,getCurrentDocument:i,setCurrentDocument:o,getCurrentRecord:s,getCurrentView:r,updateDocumentInEditor:d,generateDdsLineWithIndicators:a,indicatorConfigurations:l,showScreenProperties:c,parseDspfFields:u,updatePreviewView:p}=e;t.dds("Applying subfile control changes...");try{const e=i(),g=s(),f=document.getElementById("sflsiz-ds3-enabled")?.checked||!1,h=document.getElementById("sflsiz-ds4-enabled")?.checked||!1,m=document.getElementById("sflpag-ds3-enabled")?.checked||!1,y=document.getElementById("sflpag-ds4-enabled")?.checked||!1,b=document.getElementById("sfllin-ds3-enabled")?.checked||!1,v=document.getElementById("sfllin-ds4-enabled")?.checked||!1,$=f?document.getElementById("sflsiz-ds3").value:"",S=h?document.getElementById("sflsiz-ds4").value:"",w=m?document.getElementById("sflpag-ds3").value:"",x=y?document.getElementById("sflpag-ds4").value:"",k=b?document.getElementById("sfllin-ds3").value:"",D=v?document.getElementById("sfllin-ds4").value:"",E=document.getElementById("sfldsp-enabled").checked,I=document.getElementById("sfldspctl-enabled").checked,L=e.split("\n");let C=!1,A=-1,F=-1;for(let e=0;e<L.length;e++){const t=L[e].trim();if(t.includes(`R ${g}`)||t.includes(`R  ${g}`))A=e,C=!0;else if(C&&t.match(/^A\s+R\s+\w+/)){F=e;break}}if(-1===A)return t.error("Could not find record start"),void n.postMessage({type:"applyChangesError",message:"Error: Could not find record definition"});-1===F&&(F=L.length);const R={sflsizDs3:-1,sflsizDs4:-1,sflpagDs3:-1,sflpagDs4:-1,sfllinDs3:-1,sfllinDs4:-1,sfldsp:-1,sfldspctl:-1};for(let e=A+1;e<F;e++){const t=L[e].trim();t.includes("SFLSIZ(")&&t.includes("*DS3")?R.sflsizDs3=e:t.includes("SFLSIZ(")&&t.includes("*DS4")?R.sflsizDs4=e:t.includes("SFLPAG(")&&t.includes("*DS3")?R.sflpagDs3=e:t.includes("SFLPAG(")&&t.includes("*DS4")?R.sflpagDs4=e:t.includes("SFLLIN(")&&t.includes("*DS3")?R.sfllinDs3=e:t.includes("SFLLIN(")&&t.includes("*DS4")?R.sfllinDs4=e:t.includes("SFLDSPCTL")?R.sfldspctl=e:t.includes("SFLDSP")&&(R.sfldsp=e)}let O=0,T=A;if($){const e=`     A  *DS3                                SFLSIZ(${$.padStart(4,"0")})`;-1!==R.sflsizDs3?(L[R.sflsizDs3]=e,t.dds(`Updated SFLSIZ DS3 at line ${R.sflsizDs3}`),T=R.sflsizDs3,O++):(T++,L.splice(T,0,e),t.dds(`Inserted SFLSIZ DS3 at line ${T}`),Object.keys(R).forEach(e=>{R[e]>=T&&R[e]++}),F++,O++)}else-1!==R.sflsizDs3&&(L.splice(R.sflsizDs3,1),t.dds("Removed SFLSIZ DS3"),Object.keys(R).forEach(e=>{R[e]>R.sflsizDs3&&R[e]--}),F--,O++);if(S){const e=`     A  *DS4                                SFLSIZ(${S.padStart(4,"0")})`;-1!==R.sflsizDs4?(L[R.sflsizDs4]=e,t.dds(`Updated SFLSIZ DS4 at line ${R.sflsizDs4}`),T=R.sflsizDs4,O++):(T++,L.splice(T,0,e),t.dds(`Inserted SFLSIZ DS4 at line ${T}`),Object.keys(R).forEach(e=>{R[e]>=T&&R[e]++}),F++,O++)}else-1!==R.sflsizDs4&&(L.splice(R.sflsizDs4,1),t.dds("Removed SFLSIZ DS4"),Object.keys(R).forEach(e=>{R[e]>R.sflsizDs4&&R[e]--}),F--,O++);if(w){const e=`     A  *DS3                                SFLPAG(${w.padStart(4,"0")})`;-1!==R.sflpagDs3?(L[R.sflpagDs3]=e,t.dds(`Updated SFLPAG DS3 at line ${R.sflpagDs3}`),T=R.sflpagDs3,O++):(T++,L.splice(T,0,e),t.dds(`Inserted SFLPAG DS3 at line ${T}`),Object.keys(R).forEach(e=>{R[e]>=T&&R[e]++}),F++,O++)}else-1!==R.sflpagDs3&&(L.splice(R.sflpagDs3,1),t.dds("Removed SFLPAG DS3"),Object.keys(R).forEach(e=>{R[e]>R.sflpagDs3&&R[e]--}),F--,O++);if(x){const e=`     A  *DS4                                SFLPAG(${x.padStart(4,"0")})`;-1!==R.sflpagDs4?(L[R.sflpagDs4]=e,t.dds(`Updated SFLPAG DS4 at line ${R.sflpagDs4}`),T=R.sflpagDs4,O++):(T++,L.splice(T,0,e),t.dds(`Inserted SFLPAG DS4 at line ${T}`),Object.keys(R).forEach(e=>{R[e]>=T&&R[e]++}),F++,O++)}else-1!==R.sflpagDs4&&(L.splice(R.sflpagDs4,1),t.dds("Removed SFLPAG DS4"),Object.keys(R).forEach(e=>{R[e]>R.sflpagDs4&&R[e]--}),F--,O++);if(k){const e=`     A  *DS3                                SFLLIN(${k})`;-1!==R.sfllinDs3?(L[R.sfllinDs3]=e,t.dds(`Updated SFLLIN DS3 at line ${R.sfllinDs3}`),T=R.sfllinDs3,O++):(T++,L.splice(T,0,e),t.dds(`Inserted SFLLIN DS3 at line ${T}`),Object.keys(R).forEach(e=>{R[e]>=T&&R[e]++}),F++,O++)}else-1!==R.sfllinDs3&&(L.splice(R.sfllinDs3,1),t.dds("Removed SFLLIN DS3"),Object.keys(R).forEach(e=>{R[e]>R.sfllinDs3&&R[e]--}),F--,O++);if(D){const e=`     A  *DS4                                SFLLIN(${D})`;-1!==R.sfllinDs4?(L[R.sfllinDs4]=e,t.dds(`Updated SFLLIN DS4 at line ${R.sfllinDs4}`),T=R.sfllinDs4,O++):(T++,L.splice(T,0,e),t.dds(`Inserted SFLLIN DS4 at line ${T}`),Object.keys(R).forEach(e=>{R[e]>=T&&R[e]++}),F++,O++)}else-1!==R.sfllinDs4&&(L.splice(R.sfllinDs4,1),t.dds("Removed SFLLIN DS4"),Object.keys(R).forEach(e=>{R[e]>R.sfllinDs4&&R[e]--}),F--,O++);if(E){const e=l.get("sfldsp:enabled");if(e&&e.groups&&e.groups.length>0){const n=a("SFLDSP",e).split("\n");if(-1!==R.sfldsp){let e=1,i=R.sfldsp-1;for(;i>=A;){const t=L[i],n=t.trim();if(!/^A[O\s]\s*[N\d\s]+$/.test(n)||""!==t.substring(18).trim())break;e++,i--}L.splice(R.sfldsp-(e-1),e,...n),t.dds(`Updated SFLDSP: removed ${e} lines, inserted ${n.length} lines`),T=R.sfldsp;const o=n.length-e;Object.keys(R).forEach(e=>{R[e]>R.sfldsp&&(R[e]+=o)}),F+=o,O++}else T++,L.splice(T,0,...n),t.dds(`Inserted SFLDSP: ${n.length} line(s)`),Object.keys(R).forEach(e=>{R[e]>=T&&(R[e]+=n.length)}),F+=n.length,O++}}else if(-1!==R.sfldsp){let e=1,n=R.sfldsp-1;for(;n>=A;){const t=L[n],i=t.trim();if(!/^A[O\s]\s*[N\d\s]+$/.test(i)||""!==t.substring(18).trim())break;e++,n--}L.splice(R.sfldsp-(e-1),e),t.dds(`Removed SFLDSP (${e} line(s))`),Object.keys(R).forEach(t=>{R[t]>R.sfldsp&&(R[t]-=e)}),F-=e,O++}if(I){const e=l.get("sfldspctl:enabled");if(e&&e.groups&&e.groups.length>0){const n=a("SFLDSPCTL",e).split("\n");if(-1!==R.sfldspctl){let e=1,i=R.sfldspctl-1;for(;i>=A;){const t=L[i],n=t.trim();if(!/^A[O\s]\s*[N\d\s]+$/.test(n)||""!==t.substring(18).trim())break;e++,i--}L.splice(R.sfldspctl-(e-1),e,...n),t.dds(`Updated SFLDSPCTL: removed ${e} lines, inserted ${n.length} lines`);const o=n.length-e;Object.keys(R).forEach(e=>{R[e]>R.sfldspctl&&(R[e]+=o)}),F+=o,O++}else T++,L.splice(T,0,...n),t.dds(`Inserted SFLDSPCTL: ${n.length} line(s)`),F+=n.length,O++}}else if(-1!==R.sfldspctl){let e=1,n=R.sfldspctl-1;for(;n>=A;){const t=L[n],i=t.trim();if(!/^A[O\s]\s*[N\d\s]+$/.test(i)||""!==t.substring(18).trim())break;e++,n--}L.splice(R.sfldspctl-(e-1),e),t.dds(`Removed SFLDSPCTL (${e} line(s))`),Object.keys(R).forEach(t=>{R[t]>R.sfldspctl&&(R[t]-=e)}),F-=e,O++}const N=L.join("\n");o(N),d(),t.success("Subfile control keywords applied successfully");const B=0===O?"No changes were made":`Successfully updated ${O} subfile control keyword${O>1?"s":""}`;n.postMessage({type:"applyChangesSuccess",message:B}),c(),requestAnimationFrame(()=>{const e=document.querySelector('.properties-tab[data-tab="subfile-control"]');e&&e.click()});const W=r?r():"designer";"preview"===W&&p?p():"designer"===W&&u&&u(N)}catch(e){t.error("Error applying subfile control:",e),n.postMessage({type:"applyChangesError",message:"Error updating subfile control: "+e.message})}}function P(e){const{getCurrentDocument:t,getCurrentRecord:n,createFunctionKeyRow:i}=e,o=document.getElementById("function-keys-list");if(!o)return;const s=t(),r=n(),d=s.split("\n");let a=!1;const l={};for(let e of d)if(e.includes(`R ${r}`)||e.includes(`R  ${r}`))a=!0;else{if(a&&e.match(/^\s*A\s+R\s+\w+/))break;if(a){const t=e.match(/CF(\d+)\((\d+)(?:\s+'([^']*)')?\)/i),n=e.match(/CA(\d+)\((\d+)(?:\s+'([^']*)')?\)/i);t?l[`F${parseInt(t[1])}`]={type:"CF",indicator:t[2],description:t[3]||""}:n&&(l[`F${parseInt(n[1])}`]={type:"CA",indicator:n[2],description:n[3]||""})}}o.innerHTML="";for(let e=1;e<=24;e++){const t=`F${e}`,n=l[t]||{type:"",indicator:"",description:""};o.appendChild(i({fk:{key:t,...n}}))}}function M(e){const{fk:t=null,key:n,type:i,indicator:o,description:s,index:r=null,IdGenerator:d,saveFunctionKeys:a}=e,l=document.createElement("div");l.className="function-key-row";const c=d.generateUniqueId("fk-row");l.dataset.rowId=c,l.style.cssText="display: grid; grid-template-columns: 70px 240px 70px 1fr; gap: 8px; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 8px; align-items: center; min-width: 600px;";const u=t||{key:n,type:i,indicator:o,description:s},p=u&&u.key?u.key:"F1",g=u&&u.type?u.type:"",f=u&&u.indicator?u.indicator:"",h=u&&u.description?u.description:"";return l.innerHTML=`\n        <select class="fk-key" style="width: 100%; padding: 4px;">\n            ${function(e){const t=[];for(let e=1;e<=24;e++)t.push(`F${e}`);return t.map(t=>`<option value="${t}" ${t===e?"selected":""}>${t}</option>`).join("")}(p)}\n        </select>\n        <div style="display: flex; gap: 10px; align-items: center;">\n            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">\n                <input type="radio" name="type-${c}" value="" ${""===g?"checked":""} />\n                <span style="font-size: 12px;">Unspecified</span>\n            </label>\n            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">\n                <input type="radio" name="type-${c}" value="CA" ${"CA"===g?"checked":""} />\n                <span style="font-size: 12px;">Attention</span>\n            </label>\n            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">\n                <input type="radio" name="type-${c}" value="CF" ${"CF"===g?"checked":""} />\n                <span style="font-size: 12px;">Function</span>\n            </label>\n        </div>\n        <input type="number" class="fk-indicator" value="${f}" placeholder="Ind" min="1" max="99" style="width: 100%; padding: 4px; text-align: center;" />\n        <input type="text" class="fk-description" value="${h}" placeholder="Description" style="width: 100%; padding: 4px; min-width: 150px;" />\n    `,l.querySelectorAll("select, input").forEach(e=>{e.addEventListener("change",a),e.addEventListener("blur",a)}),l}function z(e){const{Logger:t,isReadOnly:n,getCurrentDocument:i,setCurrentDocument:o,getCurrentRecord:s,updateDocumentInEditor:r}=e;if(n)return void t.warn("Cannot save function keys in read-only mode");t.ui("Saving function keys...");const d=document.getElementById("function-keys-list");if(!d)return;const a=[];d.querySelectorAll(".function-key-row").forEach(e=>{const t=e.querySelector(".fk-key"),n=e.querySelectorAll('input[type="radio"]'),i=e.querySelector(".fk-indicator"),o=e.querySelector(".fk-description"),s=t.value;let r="";n.forEach(e=>{e.checked&&(r=e.value)});const d=i.value.trim(),l=o.value.trim();r&&d&&a.push({key:s,type:r,indicator:d,description:l})});const l=i(),c=s(),u=l.split("\n");let p=!1,g=-1,f=-1,h=-1;const m=[];for(let e=0;e<u.length;e++){const t=u[e];if(t.includes(`R ${c}`)||t.includes(`R  ${c}`))p=!0,h=e,g=e;else{if(p&&t.match(/^\s*A\s+R\s+\w+/)){f=e;break}p&&(t.match(/CF\d+\(/)||t.match(/CA\d+\(/)||t.includes("PAGEDOWN(")||t.includes("PAGEUP("))&&m.push(e)}}-1!==g?f=g+1:-1===f&&(f=u.length);for(let e=m.length-1;e>=0;e--){const t=m[e];u.splice(t,1),t<f&&f--}const y=[];a.forEach(e=>{let t="";if("PAGEDOWN"===e.key||"PAGEUP"===e.key)t=e.key;else{const n=e.key.substring(1).padStart(2,"0");t=`${e.type}${n}`}const n=`     A                                      ${t}(${e.indicator.padStart(2,"0")}${e.description?` '${e.description}'`:""})`;y.push(n)}),u.splice(f,0,...y),o(u.join("\n")),r(),t.success(`Saved ${a.length} function keys to DDS`)}e=n.hmd(e),function(){l.success("DSPF Designer script loaded");const t=acquireVsCodeApi();window.vscodeApi=t;let n="",c=null,v=[],$=null,S=[],w="DS3",k=!1,D="designer",E=1;async function I(){await async function(e,t){try{document.fonts&&document.fonts.ready&&await document.fonts.ready}catch(e){t&&"function"==typeof t.warn&&t.warn("Font readiness check failed, using immediate metrics",e)}await new Promise(requestAnimationFrame);const n=document.createElement("span");n.textContent="WWWWWWWWWW",n.style.position="absolute",n.style.visibility="hidden",n.style.whiteSpace="pre",n.style.fontFamily="'3270', 'IBM Plex Mono', 'Consolas', 'Courier New', monospace",n.style.fontSize="15px",n.style.lineHeight="20px",document.body.appendChild(n);const i=n.getBoundingClientRect();document.body.removeChild(n);const o=i.width/10,s=i.height;return o&&s?(e.CHAR_WIDTH=o,e.CHAR_HEIGHT=s,t&&"function"==typeof t.ui&&t.ui(`Calibrated char metrics -> width: ${o.toFixed(2)}px, height: ${s.toFixed(2)}px`),{width:o,height:s}):(t&&"function"==typeof t.warn&&t.warn("Could not calibrate char metrics, using defaults"),null)}(o,l),function(e,t){document.getElementById("fields-container").addEventListener("click",function(n){n.target===this&&(e(),t())})}(Q,de),function({Logger:e,vscode:t,saveDocument:n,navigateToPreviousRecord:i,navigateToNextRecord:o,setViewZoom:s,getCurrentZoom:r,switchToView:d}){document.getElementById("saveBtn").addEventListener("click",function(){e.ui("Save button clicked!"),n()});const a=document.getElementById("backBtn");a&&a.addEventListener("click",function(){e.ui("Back button clicked"),t.postMessage({type:"backToRecordList"})});const l=document.getElementById("prevRecordBtn"),c=document.getElementById("nextRecordBtn");l&&l.addEventListener("click",function(){e.ui("Previous Record button clicked"),i()}),c&&c.addEventListener("click",function(){e.ui("Next Record button clicked"),o()});const u=document.getElementById("zoomOutBtn"),p=document.getElementById("zoomInBtn"),g=document.getElementById("zoomResetBtn");u&&u.addEventListener("click",function(){s(r()-.05)}),p&&p.addEventListener("click",function(){s(r()+.05)}),g&&g.addEventListener("click",function(){s(1)});const f=document.getElementById("designerTab"),h=document.getElementById("previewTab"),m=document.getElementById("sourceTab");f?f.addEventListener("click",function(t){t.preventDefault(),e.ui("Designer tab clicked"),d("designer")}):e.error("Designer tab not found"),h?h.addEventListener("click",function(t){t.preventDefault(),e.ui("Preview tab clicked"),d("preview")}):e.error("Preview tab not found"),m?m.addEventListener("click",function(t){t.preventDefault(),e.ui("Source tab clicked"),d("source")}):e.error("Source tab not found"),e.success("Toolbar buttons setup complete")}({Logger:l,vscode:t,saveDocument:$e,navigateToPreviousRecord:R,navigateToNextRecord:O,setViewZoom:L,getCurrentZoom:()=>E,switchToView:Se}),function({Logger:e,getCurrentDisplaySize:t,setCurrentDisplaySize:n,updateCanvasSize:i,setupRulers:o,parseDspfFields:s,getCurrentDocument:r,applyDefaultZoomForDisplaySize:d,updatePreviewView:a}){document.querySelectorAll('input[name="displaySize"]').forEach(l=>{l.addEventListener("change",function(){n(this.value);const l=t();e.ui(`Designer display size changed to: ${l}`),d&&d(l),i(l),o(),s(r());const c=document.getElementById("preview-view");c&&c.classList.contains("active")&&a()})})}({Logger:l,getCurrentDisplaySize:()=>w,setCurrentDisplaySize:e=>{w=e},updateCanvasSize:e=>y(e,o,l),setupRulers:F,parseDspfFields:Ke,getCurrentDocument:()=>n,applyDefaultZoomForDisplaySize:C,updatePreviewView:xe}),L(E),y(w,o,l),function({Logger:e,setupRulers:t}){document.getElementById("screen-grid")&&e.success("Grid lines setup complete"),t()}({Logger:l,setupRulers:F}),setTimeout(()=>{!function({Logger:e,ScreenCoordinates:t,getCurrentRecord:n,getCurrentDisplaySize:i,getCurrentZoom:o,getWindowDimensions:s,moveField:r,createField:d}){const a=document.querySelectorAll(".tool-item"),l=document.getElementById("fields-container");l?(e.ui("Setting up drag and drop for",a.length,"tool items"),a.forEach((t,n)=>{e.debug(`Setting up drag for item ${n}:`,t.dataset.type),t.addEventListener("dragstart",function(t){t.dataTransfer.setData("text/plain",this.dataset.type),t.dataTransfer.effectAllowed="copy",this.classList.add("dragging"),e.debug("Drag started for:",this.dataset.type)}),t.addEventListener("dragend",function(){this.classList.remove("dragging"),e.debug("Drag ended for:",this.dataset.type)})}),l.addEventListener("dragover",function(e){e.preventDefault(),e.dataTransfer.dropEffect="copy",this.classList.add("drop-zone")}),l.addEventListener("dragenter",function(e){e.preventDefault(),this.classList.add("drop-zone")}),l.addEventListener("dragleave",function(e){this.contains(e.relatedTarget)||this.classList.remove("drop-zone")}),l.addEventListener("drop",function(a){a.preventDefault(),this.classList.remove("drop-zone");const l=a.dataTransfer.getData("text/plain");if(e.debug("Drop event triggered with data:",l),!l)return void e.error("No data received in drop event");const c=this.getBoundingClientRect(),u=o?o():1,p=t?t.fromClientPoint(a.clientX,a.clientY,c,u):{row:Math.max(1,Math.floor((a.clientY-c.top)/u/20)+1),col:Math.max(1,Math.floor((a.clientX-c.left)/u/8)+1)},g=(a.clientX-c.left)/u,f=(a.clientY-c.top)/u;let h=Math.max(1,p.row),m=Math.max(1,p.col);const y=n?n():null,b=y?s(y):null;if(b&&b.hasWindow){const t="DS3"===(i?i():null)?b.ds3:b.ds4;if(t){const n=h-(t.row-1),i=m-t.col;n>0&&i>0&&(h=n,m=i,e.window(`🪟 [WINDOW] Converted absolute screen (${h+(t.row-1)}, ${m+t.col}) to WINDOW-relative (${h}, ${m})`))}}e.debug("Drop at pixel:",{x:g,y:f,currentZoom:u},"grid:",{row:h,col:m});try{const t=JSON.parse(l);"existing-field"===t.type?(e.debug("Moving existing field:",t.fieldId),r(t.fieldId,h,m)):d(l,h,m)}catch(a){e.debug("Creating new field type:",l),d(l,h,m)}}),e.success("Drag and drop setup complete")):e.error("Fields container not found, skipping drag and drop setup")}({Logger:l,ScreenCoordinates:o,getCurrentRecord:()=>$,getCurrentDisplaySize:()=>w,getCurrentZoom:()=>E,getWindowDimensions:pe,moveField:ve,createField:_})},100),Se("designer"),t.postMessage({type:"getDocument"}),l.success("DSPF Designer initialized")}function L(e){return function(e){const{zoomValue:t,setCurrentZoom:n}=e,i=Math.max(.5,Math.min(2,t));n&&n(i);const o=document.getElementById("views-container");o&&o.style.setProperty("--view-zoom",i.toString());const s=document.getElementById("zoomLabel");s&&(s.textContent=`${Math.round(100*i)}%`)}({zoomValue:e,setCurrentZoom:e=>{E=e}})}function C(e,t=D){L("designer"===t&&"DS4"===e?.7:1)}function A(){const e=r.getAvailableDisplaySizes(n),t=e.singleSize;var i;t&&w!==t&&(w=t,C(w),y(w,o,l),F(),l.ui(`Default display size set from DSPSIZ: ${w}`)),i=w,document.querySelectorAll('input[name="displaySize"]').forEach(e=>{e.checked=e.value===i}),document.querySelectorAll('input[name="preview-display-size"]').forEach(e=>{e.checked=e.value===i}),function(e){const t=e.hasDS3||e.hasDS4,n=!t||e.hasDS3,i=!t||e.hasDS4,o=(e,t)=>{e.disabled=!t,e.title=t?"":"Not available based on DSPSIZ";const n=e.closest("label");n&&(n.style.opacity=t?"1":"0.55",n.style.cursor=t?"pointer":"not-allowed",n.title=t?"":"Not available based on DSPSIZ")};document.querySelectorAll('input[name="displaySize"][value="DS3"], input[name="preview-display-size"][value="DS3"]').forEach(e=>{o(e,n)}),document.querySelectorAll('input[name="displaySize"][value="DS4"], input[name="preview-display-size"][value="DS4"]').forEach(e=>{o(e,i)})}(e)}function F(){m(w,o,l)}function R(){return function({Logger:e,vscode:t,getAllRecords:n,getCurrentRecord:i,getCurrentView:o}){const s=n?n():[];if(!s||0===s.length)return void e.warn("No records available for navigation");const r=i?i():null,d=s.findIndex(e=>e.name===r);if(d>0){const n=s[d-1];e.ui("Navigating to previous record:",n.name,"preserving view:",o?o():void 0),t.postMessage({type:"navigateToRecord",recordName:n.name,preserveView:o?o():void 0})}else e.info("Already at first record")}({Logger:l,vscode:t,getAllRecords:()=>S,getCurrentRecord:()=>$,getCurrentView:()=>D})}function O(){return function({Logger:e,vscode:t,getAllRecords:n,getCurrentRecord:i,getCurrentView:o}){const s=n?n():[];if(!s||0===s.length)return void e.warn("No records available for navigation");const r=i?i():null,d=s.findIndex(e=>e.name===r);if(d<s.length-1){const n=s[d+1];e.ui("Navigating to next record:",n.name,"preserving view:",o?o():void 0),t.postMessage({type:"navigateToRecord",recordName:n.name,preserveView:o?o():void 0})}else e.info("Already at last record")}({Logger:l,vscode:t,getAllRecords:()=>S,getCurrentRecord:()=>$,getCurrentView:()=>D})}function U(e){return function(e){const{prefix:t,fields:n,IdGenerator:i}=e,o=n.map(e=>e.name);return i.generateUniqueName(t,o)}({prefix:e,fields:v,IdGenerator:d})}function _(e,t,n){return function({type:e,row:t,col:n,Logger:i,fields:o,generateUniqueFieldName:s,generateId:r,getDefaultLength:d,getWindowDimensions:a,getCurrentRecord:l,getCurrentDisplaySize:c,renderField:u,renderWindowField:p,getSubfileRelationship:g,getSflpagValue:f,selectField:h,addFieldToDds:m,showFieldProperties:y}){let b,v,$,S,w,x,k=!1;"text"===e?(b=s("TXT_"),v="A",$="O",S="character",w=0):"number"===e?(b=s("NUM_"),v="Y",$="I",S="zoned",w=0,x="S"):"keyword-date"===e?(b="DATE",v="",$="",S="keyword",w=0,k=!0):"keyword-time"===e?(b="TIME",v="",$="",S="keyword",w=0,k=!0):"keyword-sysname"===e?(b="SYSNAME",v="",$="",S="keyword",w=0,k=!0):"keyword-user"===e?(b="USER",v="",$="",S="keyword",w=0,k=!0):"field-date"===e?(b=s("DATE_"),v="L",$="O",S="date",w=0):"field-time"===e?(b=s("TIME_"),v="T",$="O",S="time",w=0):"field-timestamp"===e?(b=s("TS_"),v="Z",$="O",S="timestamp",w=0):(b=s("constant"===e?"CONST_":`${e.toUpperCase()}_`),v="constant"===e?"":"A",$="O",S="constant"===e?"constant":"character",w=0);const D={id:r(),name:b,type:"number"===e?"input":k?"keyword":"field-date"===e||"field-time"===e||"field-timestamp"===e?"output":e,ddsType:v,usage:$,dataType:S,row:t,col:n,length:k?null:d(e),decimals:w,value:"constant"===e?"TEXT":"",isKeyword:k};x&&(D.shift=x),o.push(D);const E=l?l():null,I=a?a(E):null,L=c?c():null;if(I&&I.hasWindow){const e="DS3"===L?I.ds3:I.ds4;e?p(D,e):u(D)}else u(D);i.ui(`[CREATE] Field created: ${D.name} (id: ${D.id}) at row ${D.row}, col ${D.col}`),i.ui(`[CREATE] Field pushed to array, total fields: ${o.length}`);const C=g?g(E):null,A=C?f(C.sflctlRecord):1;if(i.ui(`[CREATE] Checking SFLPAG: subfileRelationship=${!!C}, sflpagRepeat=${A}`),A>1&&(E===C.sflRecord&&!D.isBackgroundRecord||E===C.sflctlRecord&&D.isBackgroundRecord)){i.debug(`Creating ${A-1} visual copies for new field in SFL`);for(let e=1;e<A;e++){const t={...D,id:D.id+"_repeat"+e,row:D.row+e,isVisualCopy:!0};if(I&&I.hasWindow){const e="DS3"===L?I.ds3:I.ds4;e?p(t,e):u(t)}else u(t)}}h&&h(D),m&&m(D),i.success("New field created:",b,"at",{row:t,col:n}),y&&y(D)}({type:e,row:t,col:n,Logger:l,fields:v,generateUniqueFieldName:U,generateId:_e,getDefaultLength:Ve,getWindowDimensions:pe,getCurrentRecord:()=>$,getCurrentDisplaySize:()=>w,renderField:j,renderWindowField:Y,getSubfileRelationship:le,getSflpagValue:ce,selectField:X,addFieldToDds:Fe,showFieldProperties:re})}function V(e,t){return function(e){const{fieldElement:t,attributes:n}=e;n&&(n.underline&&t.classList.add("underline"),n.blink&&t.classList.add("blink"),n.reverse&&t.classList.add("reverse"))}({fieldElement:e,attributes:t})}function K(e,t="designer"){return function(e){const{field:t,mode:n="designer",ColorUtils:i,ScreenCoordinates:o,getKeywordDisplay:s,getFieldDisplayText:r}=e,d="preview"===n;let a="",l="",c=[];if("constant"===t.type){a=t.value||"",c.push("constant");let e=t.color;!e&&t.colors&&t.colors.length>0&&(e=t.colors[0]),e&&i.isValidColorCode(e)&&(l=i.IBM_COLORS[e])}else if("keyword"===t.type||t.isKeyword){a=s(t.name,t.keywordArgs),c.push("constant");let e=t.color;!e&&t.colors&&t.colors.length>0&&(e=t.colors[0]),e&&i.isValidColorCode(e)&&(l=i.IBM_COLORS[e])}else a=r(t,t.length||1),"input"===t.type?c.push("input-field"):"output"===t.type?c.push("output-field"):c.push(`${t.type}-field`),l=i.getColorStyle(t,"#00ffff").replace("color: ","").replace(";","")||"#00ffff";return t.attributes&&(t.attributes.underline&&c.push("underline"),t.attributes.reverse&&c.push("reverse"),d&&t.attributes.blink&&c.push("blink"),d&&t.attributes.nonDisplay&&c.push("non-display")),t.attributeIndicators&&(t.attributeIndicators.underline&&c.push("underline"),t.attributeIndicators.reverse&&c.push("reverse"),d&&t.attributeIndicators.blink&&c.push("blink"),d&&t.attributeIndicators.nonDisplay&&c.push("non-display"),t.attributeIndicators.highlight&&c.push("highlight")),{text:a,widthPx:o.getWidthInPixels(a.length||t.length||1),color:l,classes:c}}({field:e,mode:t,ColorUtils:i,ScreenCoordinates:o,getKeywordDisplay:Z,getFieldDisplayText:H})}function H(e,t){return function(e){const{field:t,fieldLength:n,getFieldCharForDisplay:i}=e;function o(e,n){if("Z"===(t.edtcde&&t.edtcde.value?String(t.edtcde.value).trim().toUpperCase():""))return e;const i=t.edtcde&&t.edtcde.replaceLeadingZerosWith?String(t.edtcde.replaceLeadingZerosWith).trim():"";if(!i||"*"!==i&&"$"!==i)return e;const o=e.indexOf(n);return-1===o?e:`${e.substring(0,o)}${i}${e.substring(o+1)}`}if("date"===t.dataType)return"yyyy-mm-dd";if("time"===t.dataType)return"hh.mm.ss";if("timestamp"===t.dataType)return"yyyy-mm-dd-hh.mm.ss.mmmmmm";const s=n||t.length||1;if("numeric"===t.dataType||"zoned"===t.dataType||"packed"===t.dataType||"float"===t.dataType||"binary"===t.dataType){const e=i(t),n=t.edtcde&&t.edtcde.value?String(t.edtcde.value).trim().toUpperCase():"",r=t=>{const n=e.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),i=new RegExp(`${n}{4,}`,"g");return t.replace(i,e=>e.replace(/\B(?=(\d{3})+(?!\d))/g,"."))},d=t=>{if(!n)return t;let i=t;if(["1","2","3","A","B","J","K","N","O"].includes(n)&&(i=r(i)),["A","B","C","D"].includes(n)&&!i.endsWith("CR")&&(i=`${i}CR`),["J","K","L","M"].includes(n)&&!i.endsWith("-")&&(i=`${i}-`),["N","O","P","Q"].includes(n)&&(i=i.replace(/-$/,""),i.startsWith("-")||(i=`-${i}`)),"Z"===n&&(i=i.replace(/\./g,""),i=i.replace(/-/g,"")),"Y"===n){const n=t.length;if(6===n)i=`${e.repeat(2)}-${e.repeat(2)}-${e.repeat(2)}`;else if(8===n)i=`${e.repeat(2)}-${e.repeat(2)}-${e.repeat(4)}`;else{let t="";for(let i=0;i<n;i++)i>0&&i%2==0&&i<n-1&&(t+="-"),t+=e;i=t}}if("W"===n){const n=t.length;i=5===n?`${e.repeat(2)}-${e.repeat(3)}`:7===n?`${e.repeat(4)}-${e.repeat(3)}`:`${e.repeat(Math.max(1,n-3))}-${e.repeat(3)}`}return i};let a;const l=("I"===t.usage||"B"===t.usage)&&"S"===t.shift,c="B"===t.usage&&Boolean(n),u=Number.isInteger(t.decimals)?t.decimals:0,p=(t,n)=>{if(n<=0)return e.repeat(t);const i=Math.max(1,t-n);return`${e.repeat(i)},${e.repeat(n)}`};if("float"===t.dataType){const n=Math.max(1,s-u);a=`-${u>0?`${e.repeat(n)},${e.repeat(u)}`:e.repeat(s)}${"DOUBLE"===t.precision?"D":"E"}-${e.repeat(3)}`}else a=l&&!c?`${p(s,u)}-`:p(s,u);if(n)return o(d(a),e);const g=function(e){const n=t.edtwrd&&"object"==typeof t.edtwrd?t.edtwrd.value||"":t.edtwrd||"",i=String(n).replace(/^'(.*)'$/,"$1");if(!i)return null;i[0];let o=e;for(let t=1;t<i.length;t++){const n=i[t];o+=" "===n?e:"&"===n?" ":n}return o}(e);if(null!==g)return g;const f=function(e){const n=t.edtmsk&&"object"==typeof t.edtmsk?t.edtmsk.value||"":t.edtmsk||"",i=String(n).replace(/^'(.*)'$/,"$1");if(!i)return null;let o="";for(let t=0;t<i.length;t++){const n=i[t];o+=" "===n?e:"&"===n?" ":n}return o}(e);return null!==f?f:o(d(a),e)}return i(t).repeat(s)}({field:e,fieldLength:t,getFieldCharForDisplay:J})}function Z(e,t=null){return function(e){const{keywordName:t,keywordArgs:n=null}=e;if("DATE"===t){const e=String(n||"").replace(/[()]/g,"").replace(/\s+/g,"").toUpperCase();return"*SYS*YY"===e||"*JOB*YY"===e?"MM/DD/YYYY":"MM/DD/YY"}return{TIME:"HH:MM:SS",SYSNAME:"SSSSSSSS",USER:"UUUUUUUUUU"}[t]||t}({keywordName:e,keywordArgs:t})}function G(e,t){return function(e){const{fieldElement:t,field:n,computeFieldDisplay:i}=e,{text:o,widthPx:s,color:r,classes:d}=i(n,"designer");t.textContent=o||"",t.style.padding="0",t.style.minWidth="auto",t.style.backgroundColor="transparent",t.style.border="none",t.style.whiteSpace="pre",s&&(t.style.width=`${s}px`),r&&(t.style.color=r),d.forEach(e=>t.classList.add(e))}({fieldElement:e,field:t,computeFieldDisplay:K})}function q(e,t){return function(e){const{fieldElement:t,field:n,Logger:i,applyAttributeClasses:o,setFieldContent:s,selectField:r,isReadOnly:d,editField:a}=e;t.className=`dspf-field ${n.type}-field`,t.dataset.fieldId=n.id,n.isBackgroundRecord&&t.classList.add("field-background"),n.isVisualCopy?(t.classList.add("field-visual-copy"),t.style.pointerEvents="none",t.style.zIndex="1",i.debug(`[VISUAL COPY] Created copy with id: ${n.id}, row: ${n.row}`)):i.debug(`[ORIGINAL] Created original field with id: ${n.id}, row: ${n.row}`),o(t,n.attributes),n.attributeIndicators&&(n.attributeIndicators.underline&&t.classList.add("underline"),n.attributeIndicators.reverse&&t.classList.add("reverse"),n.attributeIndicators.blink&&t.classList.add("blink"),n.attributeIndicators.highlight&&t.classList.add("highlight")),s(t,n),t.draggable=!0,t.style.cursor="move",t.addEventListener("click",function(e){i.ui(`[CLICK] Field clicked: ${n.name} (id: ${n.id}, isVisualCopy: ${n.isVisualCopy||!1})`),i.ui(`[CLICK] Element dataset.fieldId: ${t.dataset.fieldId}`),i.ui(`[CLICK] Element classes: ${t.className}`),i.ui(`[CLICK] Element zIndex: ${t.style.zIndex||"default"}`),i.ui(`[CLICK] Element pointerEvents: ${t.style.pointerEvents||"auto"}`),e.stopPropagation(),r(n)}),t.addEventListener("dblclick",function(){d||a(n)}),t.addEventListener("dragstart",function(e){e.dataTransfer.setData("text/plain",JSON.stringify({type:"existing-field",fieldId:n.id})),t.style.opacity="0.5",i.debug("Started dragging field:",n.name)}),t.addEventListener("dragend",function(){t.style.opacity="1",i.debug("Ended dragging field:",n.name)})}({fieldElement:e,field:t,Logger:l,applyAttributeClasses:V,setFieldContent:G,selectField:X,isReadOnly:k,editField:be})}function j(e){return function(e){const{field:t,Logger:n,ScreenCoordinates:i,getCurrentDisplaySize:o,setupFieldElement:s,getFieldDisplayText:r}=e,d=document.getElementById("fields-container");if(!d)return void n.error("Fields container not found");const a=i.calculateFieldWrapping(t,o());if(1===a.length){const e=document.createElement("div");s(e,t);const{left:o,top:r}=i.toPixels(t.row,t.col);e.style.left=`${o}px`,e.style.top=`${r}px`,d.appendChild(e),n.success(`Rendered field: ${t.name} at (${t.row}, ${t.col}) -> (${r}px, ${o}px)`)}else a.forEach((e,o)=>{const l=document.createElement("div");s(l,t),l.dataset.fieldSegment=o,l.dataset.segmentLength=e.length;const{left:c,top:u}=i.toPixels(e.row,e.col);l.style.left=`${c}px`,l.style.top=`${u}px`,l.style.width=8*e.length+"px";const p=t.length||10,g=r(t,p),f=a.slice(0,o).reduce((e,t)=>e+t.length,0),h=g.substring(f,f+e.length);l.textContent=h,d.appendChild(l),n.success(`Rendered field segment ${o+1}/${a.length}: ${t.name} at (${e.row}, ${e.col})`)})}({field:e,Logger:l,ScreenCoordinates:o,getCurrentDisplaySize:()=>w,setupFieldElement:q,getFieldDisplayText:H})}function Y(e,t){return function(e){const{field:t,windowDimensions:n,Logger:i,ScreenCoordinates:o,getCurrentDisplaySize:s,setupFieldElement:r,getFieldDisplayText:d}=e,a=document.getElementById("fields-container");if(!a)return void i.error("Fields container not found");i.window(`RENDER START: ${t.name} has field.length=${t.length}`);const l=o.calculateFieldWrapping(t,s());if(1===l.length){const e=document.createElement("div");r(e,t);const s=n.row+t.row-1,d=n.col+t.col+1,{top:l,left:c}=o.toPixels(s,d),u=l+500,p=c+800;e.style.left=`${Math.min(c,p)}px`,e.style.top=`${Math.min(l,u)}px`,a.appendChild(e),i.window(`Rendered window field: ${t.name} at window-relative (${t.row},${t.col}) -> absolute (${l},${c});`)}else l.forEach((e,s)=>{const c=document.createElement("div");r(c,t),c.dataset.fieldSegment=s,c.dataset.segmentLength=e.length;const u=n.row+e.row-1,p=n.col+e.col+1,{top:g,left:f}=o.toPixels(u,p);c.style.left=`${f}px`,c.style.top=`${g}px`,c.style.width=8*e.length+"px";const h=t.length||10,m=d(t,h),y=l.slice(0,s).reduce((e,t)=>e+t.length,0),b=m.substring(y,y+e.length);c.textContent=b,a.appendChild(c),i.window(`Rendered window field segment ${s+1}/${l.length}: ${t.name} at (${e.row}, ${e.col})`)})}({field:e,windowDimensions:t,Logger:l,ScreenCoordinates:o,getCurrentDisplaySize:()=>w,setupFieldElement:q,getFieldDisplayText:H})}function J(e){return function(e){const{field:t}=e;let n="_";return n="numeric"===t.dataType||"zoned"===t.dataType||"packed"===t.dataType||"float"===t.dataType||"binary"===t.dataType?"O"===t.usage?"6":"I"===t.usage?"3":"B"===t.usage?"9":"6":"I"===t.usage?"I":"B"===t.usage?"B":(t.usage,"O"),n}({field:e})}function X(e){return function({field:e,Logger:t,deselectAllFields:n,getSelectedField:i,setSelectedField:o,indicatorConfigurations:s,getFreshFieldFromDds:r,showFieldProperties:d}){t.ui(`[SELECT] Attempting to select field: ${e.name} (id: ${e.id})`),t.ui(`[SELECT] Field isVisualCopy: ${e.isVisualCopy||!1}`),n&&n();const a=i?i():null;a&&a.id!==e.id&&(t.debug("Clearing indicatorConfigurations when switching fields"),s.clear()),o&&o(e),t.ui(`[SELECT] selectedField set to: ${e.name}`);const l=document.querySelector(`[data-field-id="${e.id}"]`);if(t.ui(`[SELECT] Found element with selector [data-field-id="${e.id}"]: ${l?"YES":"NO"}`),l)t.ui(`[SELECT] Element classes before: ${l.className}`),l.classList.add("selected"),t.ui(`[SELECT] Element classes after: ${l.className}`),t.ui(`[SELECT] Element display: ${window.getComputedStyle(l).display}`),t.ui(`[SELECT] Element visibility: ${window.getComputedStyle(l).visibility}`);else{t.error(`[SELECT] Could not find element with data-field-id="${e.id}"`);const n=document.querySelectorAll("[data-field-id]");t.ui(`[SELECT] Total fields in DOM: ${n.length}`),n.forEach((e,n)=>{n<5&&t.ui(`[SELECT]   - ${e.dataset.fieldId} (${e.className})`)})}const c=r?r(e):null;d&&d(c||e)}({field:e,Logger:l,deselectAllFields:Q,getSelectedField:()=>c,setSelectedField:e=>{c=e},indicatorConfigurations:je,getFreshFieldFromDds:e=>function({field:e,Logger:t,getCurrentDocument:n,getCurrentRecord:i,parseDspfForPreview:o,getFields:s,updateFieldAtIndex:r}){if(!e||!n)return e;const d=n();if(!d)return e;t.debug(`Re-parsing field ${e.name} from DDS to get fresh indicator data`);const a=o(d,i?i():null).fields.find(t=>t.name===e.name&&t.row===e.row&&t.col===e.col&&t.type===e.type);if(a){a.id=e.id;const n=(s?s():[]).findIndex(t=>t.id===e.id);return n>=0&&r&&r(n,a),t.debug(`Fresh field data obtained with ${Object.keys(a.colorIndicators||{}).length} color indicators, ${Object.keys(a.attributeIndicators||{}).length} attribute indicators`),a}return t.warn(`Could not find fresh data for field ${e.name}, using cached data`),e}({field:e,Logger:l,getCurrentDocument:()=>n,getCurrentRecord:()=>$,parseDspfForPreview:Ee,getFields:()=>v,updateFieldAtIndex:(e,t)=>{v[e]=t}}),showFieldProperties:re})}function Q(){return function({Logger:e,indicatorConfigurations:t,setSelectedField:n,showFieldProperties:i}){document.querySelectorAll(".dspf-field.selected").forEach(e=>{e.classList.remove("selected")}),e.debug("Clearing indicatorConfigurations when deselecting all fields"),t.clear(),n&&n(null),i&&i(null)}({Logger:l,indicatorConfigurations:je,setSelectedField:e=>{c=e},showFieldProperties:re})}function ee(e){return function(e){return Array.isArray(e)&&0!==e.length?e.map(e=>e.not?`N${e.number.padStart(2,"0")}`:e.number.padStart(2,"0")).join(" "):"No ind."}(e)}function te(e,t){return function({btn:e,indicators:t,formatIndicatorLabel:n}){if(!e)return;if(!n)throw new Error("setIndicatorButtonState: formatIndicatorLabel is required");let i=[];Array.isArray(t)?i=t:t&&t.groups&&t.groups.forEach(e=>{i.push(...e.indicators)});const o=i.length>0;e.classList.toggle("has-indicators",o);const s=e.querySelector(".indicator-text");s&&(s.textContent=n(i)),e.title=o?n(i):"Configurar indicadores"}({btn:e,indicators:t,formatIndicatorLabel:ee})}document.addEventListener("DOMContentLoaded",function(){l.ui("DOM loaded, initializing designer"),I()}),"loading"===document.readyState?l.parse("Document still loading, waiting..."):(l.success("Document already loaded, initializing immediately"),I());const ne=[{key:"blink",label:"Blinking (BL)",checkboxId:"attr-blink",dataAttr:"blink",extraClass:""},{key:"columnSeparator",label:"Column Separator (CS)",checkboxId:"attr-column-separator",dataAttr:"columnSeparator",extraClass:""},{key:"highlight",label:"High Intensity (HI)",checkboxId:"attr-high-intensity",dataAttr:"highlight",extraClass:""},{key:"nonDisplay",label:"Non-Display (ND)",checkboxId:"attr-non-display",dataAttr:"nonDisplay",extraClass:""},{key:"reverse",label:"Reverse Image (RI)",checkboxId:"attr-reverse-image",dataAttr:"reverse",extraClass:""},{key:"underline",label:"Underline (UL)",checkboxId:"attr-underline",dataAttr:"underline",extraClass:""},{key:"cursorPosition",label:"Cursor Position (PC)",checkboxId:"attr-cursor-position",dataAttr:"cursorPosition",extraClass:""},{key:"modifiedDataTag",label:"Set modified data tag (MDT)",checkboxId:"attr-mdt",dataAttr:"modifiedDataTag",extraClass:"usage-not-output-attr"},{key:"protect",label:"Protect field (PR)",checkboxId:"attr-protect",dataAttr:"protect",extraClass:"usage-not-output-attr"},{key:"operatorId",label:"Operator ID magnetic card (OID)",checkboxId:"attr-oid",dataAttr:"operatorId",extraClass:"usage-not-output-attr"},{key:"selectLightPen",label:"Select by light pen (SP)",checkboxId:"attr-select-pen",dataAttr:"selectLightPen",extraClass:"usage-not-output-attr"}],ie=new Set(["underline","reverse","blink","highlight","cursorPosition","columnSeparator","nonDisplay"]);function oe(e=null,t="variable"){return function(e){const{allowedKeys:t=null,fieldType:n="variable",attributeUiDefs:i}=e,o=t?new Set(t):null;return'\n        <div class="property-group" style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color, #3c3c3c); padding-bottom: 8px; margin-bottom: 8px;">\n            <label style="flex: 1;">\n                Variable Indicators\n            </label>\n            <button class="indicator-config-btn" data-field-indicators="true" title="Configure field indicators"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n        </div>\n    '+i.filter(e=>!o||o.has(e.key)).map(e=>`\n            <div class="property-group ${e.extraClass}" style="display: flex; align-items: center; gap: 8px;">\n                <label style="flex: 1;">\n                    <input type="checkbox" id="${e.checkboxId}" />\n                    ${e.label}\n                </label>\n                <button class="indicator-config-btn" data-attr="${e.dataAttr}" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n            </div>\n        `).join("")}({allowedKeys:e,fieldType:t,attributeUiDefs:ne})}function se(e=null){return function(e){const{allowedKeys:t=null,attributeUiDefs:n}=e,i=t?new Set(t):null,o={};return n.forEach(e=>{i&&!i.has(e.key)||(o[e.key]=e.checkboxId)}),o}({allowedKeys:e,attributeUiDefs:ne})}function re(e){return function({field:e,Logger:t,KEYWORD_ATTRIBUTE_ALLOW_LIST:n,renderAttributeRows:i,getAttributeCheckboxMap:o,setupIndicatorButtons:s,setIndicatorButtonState:r,indicatorConfigurations:d,applyFieldProperties:a,deleteField:l}){const c=document.getElementById("field-properties");if(!e)return void(c.innerHTML="<p>Select a field to edit properties</p>");if("keyword"===e.type||e.isKeyword){const u=Array.from(n);c.innerHTML=`\n                <div class="properties-tabs">\n                    <button class="properties-tab active" data-tab="basic">Basic</button>\n                    <button class="properties-tab" data-tab="attributes">Attributes</button>\n                    <button class="properties-tab" data-tab="colors">Colors</button>\n                </div>\n                \n                <div class="properties-content">\n                    <div id="tab-basic" class="tab-panel active">\n                        <div class="property-group">\n                            <label>Field Name</label>\n                            <input type="text" id="prop-name" value="${e.name}" readonly style="background-color: #2d2d2d; cursor: not-allowed;" />\n                        </div>\n                        <div class="property-group">\n                            <label>Row</label>\n                            <input type="number" id="prop-row" value="${e.row}" min="1" max="24" />\n                        </div>\n                        <div class="property-group">\n                            <label>Column</label>\n                            <input type="number" id="prop-col" value="${e.col}" min="1" max="80" />\n                        </div>\n                    </div>\n                    \n                    <div id="tab-attributes" class="tab-panel">\n                        ${i(u,"keyword")}\n                    </div>\n\n                    <div id="tab-colors" class="tab-panel">\n                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="color-green" value="green" />\n                                <span class="color-indicator" style="background-color: #00FF00;"></span>\n                                Green\n                            </label>\n                            <button class="indicator-config-btn" data-color="GRN" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                        </div>\n                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="color-white" value="white" />\n                                <span class="color-indicator" style="background-color: #FFFFFF;"></span>\n                                White\n                            </label>\n                            <button class="indicator-config-btn" data-color="WHT" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                        </div>\n                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="color-red" value="red" />\n                                <span class="color-indicator" style="background-color: #FF0000;"></span>\n                                Red\n                            </label>\n                            <button class="indicator-config-btn" data-color="RED" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                        </div>\n                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="color-turquoise" value="turquoise" />\n                                <span class="color-indicator" style="background-color: #00FFFF;"></span>\n                                Turquoise\n                            </label>\n                            <button class="indicator-config-btn" data-color="TRQ" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                        </div>\n                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="color-yellow" value="yellow" />\n                                <span class="color-indicator" style="background-color: #FFFF00;"></span>\n                                Yellow\n                            </label>\n                            <button class="indicator-config-btn" data-color="YLW" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                        </div>\n                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="color-pink" value="pink" />\n                                <span class="color-indicator" style="background-color: #FF00FF;"></span>\n                                Pink\n                            </label>\n                            <button class="indicator-config-btn" data-color="PNK" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                        </div>\n                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="color-blue" value="blue" />\n                                <span class="color-indicator" style="background-color: #0000FF;"></span>\n                                Blue\n                            </label>\n                            <button class="indicator-config-btn" data-color="BLU" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                        </div>\n                    </div>\n                </div>\n                \n                <div style="padding: 16px; border-top: 1px solid var(--border-color); background-color: var(--panel-background);">\n                    <div class="property-group" style="margin-bottom: 8px;">\n                        <button id="apply-properties" style="width: 100%; padding: 8px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">Apply Changes</button>\n                    </div>\n                    <div class="property-group" style="margin: 0;">\n                        <button id="delete-field" style="width: 100%; padding: 8px; background-color: var(--error-color); color: white; border: none; border-radius: 4px; cursor: pointer;">Delete Field</button>\n                    </div>\n                </div>\n            `,document.querySelectorAll(".properties-tab").forEach(e=>{e.addEventListener("click",function(){const e=this.dataset.tab;document.querySelectorAll(".properties-tab").forEach(e=>e.classList.remove("active")),document.querySelectorAll(".tab-panel").forEach(e=>e.classList.remove("active")),this.classList.add("active"),document.getElementById(`tab-${e}`).classList.add("active")})}),document.getElementById("apply-properties").addEventListener("click",function(){a(e)}),document.getElementById("delete-field").addEventListener("click",function(){l(e)});const p=e.colors||(e.color?[e.color]:[]);if(p.length>0){const n={GRN:"color-green",WHT:"color-white",RED:"color-red",TRQ:"color-turquoise",YLW:"color-yellow",PNK:"color-pink",BLU:"color-blue"};p.forEach(i=>{const o=n[i];if(o){const n=document.getElementById(o);n&&(n.checked=!0,t.debug(`Pre-selected color ${i} (${o}) for keyword ${e.name}`))}})}if(e.attributes){const t=o(u);Object.entries(t).forEach(([t,n])=>{if(e.attributes[t]){const e=document.getElementById(n);e&&(e.checked=!0)}})}if(e.colorIndicators)for(const[t,n]of Object.entries(e.colorIndicators)){const e=`color:${t}`,i=new Set;Array.isArray(n)?n.forEach(e=>i.add(JSON.stringify(e))):n.groups&&n.groups.forEach(e=>{e.indicators.forEach(e=>i.add(JSON.stringify(e)))}),d.set(e,i)}if(e.attributeIndicators)for(const[t,i]of Object.entries(e.attributeIndicators)){if(!n.has(t))continue;const e=`attr:${t}`,o=new Set;Array.isArray(i)?i.forEach(e=>o.add(JSON.stringify(e))):i.groups&&i.groups.forEach(e=>{e.indicators.forEach(e=>o.add(JSON.stringify(e)))}),d.set(e,o)}if(s(),e.colorIndicators)for(const[t,n]of Object.entries(e.colorIndicators)){const e=document.querySelector(`.indicator-config-btn[data-color="${t}"]`);r(e,n)}if(e.attributeIndicators)for(const[t,i]of Object.entries(e.attributeIndicators)){if(!n.has(t))continue;const e=document.querySelector(`.indicator-config-btn[data-attr="${t}"]`);r(e,i)}if(e.indicators){const n=`field-indicators:${e.name}`;if(e.indicators.groups){const i={groups:e.indicators.groups.map(e=>({indicators:e.indicators||[]})),isOr:e.indicators.isOr||!1};d.set(n,i);const o=document.querySelector('.indicator-config-btn[data-field-indicators="true"]');if(o){t.debug(`🔍 [KEYWORD-IND] About to call setIndicatorButtonState for keyword ${e.name}`),t.debug("🔍 [KEYWORD-IND] field.indicators:",e.indicators),t.debug("🔍 [KEYWORD-IND] field.indicators.groups:",e.indicators.groups),r(o,e.indicators);const n=e.indicators.groups.reduce((e,t)=>e+t.indicators.length,0);t.debug(`Marked keyword field-level indicator button with ${n} indicators`)}}}return}let u=e.usage||"";const p="numeric"===e.dataType||"binary"===e.dataType?"zoned":e.dataType;u||("input"===e.type?u="O":"output"===e.type&&(u="I"));const g=`\n            <option value="I" ${"I"===u?"selected":""}>Input</option>\n            <option value="O" ${"O"===u?"selected":""}>Output</option>\n            <option value="B" ${"B"===u?"selected":""}>Both</option>\n            \x3c!--<option value="M" ${"M"===u?"selected":""}>Message</option>--\x3e \n            \x3c!--<option value="P" ${"P"===u?"selected":""}>Program-to-System</option>--\x3e \n        `;c.innerHTML=`\n            <div class="properties-tabs">\n                <button class="properties-tab active" data-tab="basic">Basic</button>\n                <button class="properties-tab" data-tab="attributes">Attributes</button>\n                <button class="properties-tab" data-tab="colors">Colors</button>\n                <button class="properties-tab" data-tab="keying-options">Keying options</button>\n                <button class="properties-tab" data-tab="validity-check">Validity check</button>\n            </div>\n            \n            <div class="properties-content">\n                <div id="tab-basic" class="tab-panel active">\n                    ${"constant"!==e.type?`\n                    <div class="property-group">\n                        <label>Field Name</label>\n                        <input type="text" id="prop-name" value="${e.name}" maxlength="10" />\n                    </div>\n                    `:""}\n                    ${"constant"!==e.type?`\n                    <div class="property-group">\n                        <label>Usage</label>\n                        <select id="prop-usage">\n                            ${g}\n                        </select>\n                    </div>\n                    <div class="property-group">\n                        <label>Type</label>\n                        <select id="prop-type">\n                            <option value="character" ${"character"===p?"selected":""}>Character</option>\n                            <option value="date" ${"date"===p?"selected":""}>Date (L)</option>\n                            <option value="time" ${"time"===p?"selected":""}>Time (T)</option>\n                            <option value="timestamp" ${"timestamp"===p?"selected":""}>Timestamp (Z)</option>\n                            <option value="packed" ${"packed"===p?"selected":""}>Packed (Empaquetado)</option>\n                            <option value="zoned" ${"zoned"===p?"selected":""}>Con Zona</option>\n                            <option value="float" ${"float"===p?"selected":""}>Coma flotante</option>\n                            <option value="double" ${"double"===p?"selected":""}>Double Byte</option>\n                        </select>\n                    </div>\n                    <div class="property-group">\n                        <label>Shift</label>\n                        <select id="prop-shift">\n                            \x3c!-- Options will be populated dynamically based on Type --\x3e\n                        </select>\n                    </div>\n                    `:""}\n                    <div class="property-group">\n                        <label>Row</label>\n                        <input type="number" id="prop-row" value="${e.row}" min="1" max="24" />\n                    </div>\n                    <div class="property-group">\n                        <label>Column</label>\n                        <input type="number" id="prop-col" value="${e.col}" min="1" max="80" />\n                    </div>\n                    <div class="property-group">\n                        <label>Length</label>\n                        <input type="number" id="prop-length" value="${e.length||""}" min="1" max="9999" ${"constant"===e.type||"date"===e.dataType||"time"===e.dataType||"timestamp"===e.dataType?'readonly style="background-color: #2d2d2d; cursor: not-allowed;"':""} />\n                    </div>\n                    ${"constant"!==e.type?`\n                    <div class="property-group">\n                        <label>Decimals</label>\n                        <input type="number" id="prop-decimals" value="${e.decimals||0}" min="0" ${"character"===e.dataType||"double"===e.dataType||"date"===e.dataType||"time"===e.dataType||"timestamp"===e.dataType?'readonly style="background-color: #2d2d2d; cursor: not-allowed;"':""} />\n                    </div>\n                    `:""}\n                    ${"constant"===e.type?`\n                    <div class="property-group">\n                        <label>Value</label>\n                        <input type="text" id="prop-value" value="${e.value||""}" />\n                    </div>\n                    `:""}\n                </div>\n                \n                <div id="tab-attributes" class="tab-panel">\n                    ${i(null,e.type)}\n                </div>\n                <div id="tab-colors" class="tab-panel">\n                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                            <input type="checkbox" id="color-green" value="green" />\n                            <span class="color-indicator" style="background-color: #00FF00;"></span>\n                            Green\n                        </label>\n                        <button class="indicator-config-btn" data-color="GRN" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                    </div>\n                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                            <input type="checkbox" id="color-white" value="white" />\n                            <span class="color-indicator" style="background-color: #FFFFFF;"></span>\n                            White\n                        </label>\n                        <button class="indicator-config-btn" data-color="WHT" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                    </div>\n                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                            <input type="checkbox" id="color-red" value="red" />\n                            <span class="color-indicator" style="background-color: #FF0000;"></span>\n                            Red\n                        </label>\n                        <button class="indicator-config-btn" data-color="RED" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                    </div>\n                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                            <input type="checkbox" id="color-turquoise" value="turquoise" />\n                            <span class="color-indicator" style="background-color: #00FFFF;"></span>\n                            Turquoise\n                        </label>\n                        <button class="indicator-config-btn" data-color="TRQ" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                    </div>\n                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                            <input type="checkbox" id="color-yellow" value="yellow" />\n                            <span class="color-indicator" style="background-color: #FFFF00;"></span>\n                            Yellow\n                        </label>\n                        <button class="indicator-config-btn" data-color="YLW" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                    </div>\n                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                            <input type="checkbox" id="color-pink" value="pink" />\n                            <span class="color-indicator" style="background-color: #FF00FF;"></span>\n                            Pink\n                        </label>\n                        <button class="indicator-config-btn" data-color="PNK" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                    </div>\n                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">\n                            <input type="checkbox" id="color-blue" value="blue" />\n                            <span class="color-indicator" style="background-color: #0000FF;"></span>\n                            Blue\n                        </label>\n                        <button class="indicator-config-btn" data-color="BLU" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                    </div>\n                </div>\n\n                <div id="tab-keying-options" class="tab-panel">\n                    <div class="property-group check-char-title" style="margin-bottom: 6px; color: var(--vscode-descriptionForeground); font-weight: 600;">Character (Input/Both)</div>\n                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-me" />\n                            Mandatory entry (ME)\n                        </label>\n                        <button class="indicator-config-btn" data-check="ME" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                    </div>\n                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-er" />\n                            Automatic record advance (ER)\n                        </label>\n                        <button class="indicator-config-btn" data-check="ER" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                    </div>\n                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-mf" />\n                            Mandatory fill (MF)\n                        </label>\n                    </div>\n                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-fe" />\n                            Field exit key required (FE)\n                        </label>\n                    </div>\n                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-rb" />\n                            Right adjust blank fill (RB)\n                        </label>\n                    </div>\n                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-rz" />\n                            Right adjust zero fill (RZ)\n                        </label>\n                    </div>\n                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-rl" />\n                            Move cursor right to left (RL)\n                        </label>\n                    </div>\n                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-lc" />\n                            Lowercase entry allowed (LC)\n                        </label>\n                    </div>\n\n                    <div class="property-group check-num-title" style="margin: 10px 0 6px 0; color: var(--vscode-descriptionForeground); font-weight: 600;">Numeric (Input/Both)</div>\n                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-num-me" />\n                            Mandatory entry (ME)\n                        </label>\n                        <button class="indicator-config-btn" data-check="ME" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                    </div>\n                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-num-er" />\n                            Automatic record advance (ER)\n                        </label>\n                        <button class="indicator-config-btn" data-check="ER" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                    </div>\n                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-num-mf" />\n                            Mandatory fill (MF)\n                        </label>\n                    </div>\n                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-num-fe" />\n                            Field exit key required (FE)\n                        </label>\n                    </div>\n                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-num-rb" />\n                            Right adjust blank fill (RB)\n                        </label>\n                    </div>\n                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-num-rz" />\n                            Right adjust zero fill (RZ)\n                        </label>\n                    </div>\n                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="check-num-rl" />\n                            Move cursor right to left (RL)\n                        </label>\n                    </div>\n                </div>\n\n                <div id="tab-validity-check" class="tab-panel">\n                    <div class="property-group values-group" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="prop-values-enabled" />\n                            Values (VALUES)\n                        </label>\n                    </div>\n                    <div class="property-group values-value-group" style="display: none;">\n                        <label>Allowed values</label>\n                        <textarea id="prop-values-list" rows="4" placeholder="One value per line"></textarea>\n                    </div>\n                </div>\n\n                <div id="tab-general-keywords" class="tab-panel">\n                    <div class="property-group dft-group" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="prop-dft-enabled" />\n                            Default (DFT)\n                        </label>\n                    </div>\n                    <div class="property-group dft-value-group" style="display: none;">\n                        <label>Value</label>\n                        <input type="text" id="prop-dft-value" placeholder="e.g. *DATE or 'ABC'" />\n                    </div>\n\n                    <div class="property-group dftval-group" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="prop-dftval-enabled" />\n                            Default Value (DFTVAL)\n                        </label>\n                        <button class="indicator-config-btn" data-dftval="enabled" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>\n                    </div>\n                    <div class="property-group dftval-value-group" style="display: none;">\n                        <label>Value</label>\n                        <input type="text" id="prop-dftval-value" placeholder="Default value" />\n                    </div>\n                </div>\n\n                <div id="tab-editing-keywords" class="tab-panel">\n                    <div class="property-group" style="margin-top: 4px; margin-bottom: 6px; font-weight: 600; color: var(--vscode-descriptionForeground);">\n                        Edit code (EDTCDE)\n                    </div>\n                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="prop-edtcde-enabled" />\n                            Enable EDTCDE\n                        </label>\n                    </div>\n                    <div class="property-group edtcde-value-group" style="display: none;">\n                        <label>Code</label>\n                        <select id="prop-edtcde-value">\n                            <option value="">Select code</option>\n                            <option value="1">1 - Comma/period, no sign</option>\n                            <option value="2">2 - Period/comma, no sign</option>\n                            <option value="3">3 - Comma/period, no separator</option>\n                            <option value="4">4 - No separator, no sign</option>\n                            <option value="A">A - Comma/period + CR</option>\n                            <option value="B">B - Period/comma + CR</option>\n                            <option value="C">C - No separator + CR</option>\n                            <option value="D">D - No separator/period + CR</option>\n                            <option value="J">J - Comma/period + minus</option>\n                            <option value="K">K - Period/comma + minus</option>\n                            <option value="L">L - No separator + minus</option>\n                            <option value="M">M - No separator/period + minus</option>\n                            <option value="N">N - Comma/period, leading -</option>\n                            <option value="O">O - Period/comma, leading -</option>\n                            <option value="P">P - No separator, leading -</option>\n                            <option value="Q">Q - No separator/period, leading -</option>\n                            <option value="W">W - Julian date (YY/DDD)</option>\n                            <option value="Y">Y - Date (MM/DD/YY)</option>\n                            <option value="Z">Z - No sign, no separator</option>\n                        </select>\n                    </div>\n\n                    <div class="property-group edtcde-replace-group" style="display: none;">\n                        <label>Replace leading zeros with</label>\n                        <select id="prop-edtcde-replace-leading-zeros-with">\n                            <option value="">(blank)</option>\n                            <option value="*">*</option>\n                            <option value="$">$</option>\n                        </select>\n                    </div>\n\n                    <div class="property-group" style="margin-top: 12px; margin-bottom: 6px; font-weight: 600; color: var(--vscode-descriptionForeground);">\n                        Edit word (EDTWRD)\n                    </div>\n                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="prop-edtwrd-enabled" />\n                            Enable EDTWRD\n                        </label>\n                    </div>\n                    <div class="property-group edtwrd-value-group" style="display: none;">\n                        <label>Word</label>\n                        <input type="text" id="prop-edtwrd-value" placeholder="e.g. .  " />\n                    </div>\n\n                    <div class="property-group" style="margin-top: 12px; margin-bottom: 6px; font-weight: 600; color: var(--vscode-descriptionForeground);">\n                        Edit mask (EDTMSK)\n                    </div>\n                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">\n                        <label style="flex: 1;">\n                            <input type="checkbox" id="prop-edtmsk-enabled" />\n                            Enable EDTMSK\n                        </label>\n                    </div>\n                    <div class="property-group edtmsk-value-group" style="display: none;">\n                        <label>Mask</label>\n                        <input type="text" id="prop-edtmsk-value" placeholder="e.g. 000,000.00" />\n                    </div>\n                </div>\n            </div>\n            \n            <div style="padding: 16px; border-top: 1px solid var(--border-color); background-color: var(--panel-background);">\n                <div class="property-group" style="margin-bottom: 8px;">\n                    <button id="apply-properties" style="width: 100%; padding: 8px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">Apply Changes</button>\n                </div>\n                <div class="property-group" style="margin: 0;">\n                    <button id="delete-field" style="width: 100%; padding: 8px; background-color: var(--error-color); color: white; border: none; border-radius: 4px; cursor: pointer;">Delete Field</button>\n                </div>\n            </div>\n        `;const f=c.querySelector(".properties-tabs");if(f){const e=document.createElement("button");e.className="properties-tab",e.setAttribute("data-tab","general-keywords"),e.textContent="General keywords",f.appendChild(e);const t=document.createElement("button");t.className="properties-tab",t.setAttribute("data-tab","editing-keywords"),t.textContent="Editing keywords",f.appendChild(t)}const h=document.getElementById("prop-usage"),m=Array.from(document.querySelectorAll(".usage-not-output-attr")),y=document.querySelector('.properties-tab[data-tab="keying-options"]'),b=document.getElementById("tab-keying-options"),v=document.querySelector('.properties-tab[data-tab="validity-check"]'),$=document.getElementById("tab-validity-check"),S=document.querySelector('.properties-tab[data-tab="general-keywords"]'),w=document.getElementById("tab-general-keywords"),x=document.querySelector('.properties-tab[data-tab="editing-keywords"]'),k=document.getElementById("tab-editing-keywords"),D=Array.from(document.querySelectorAll(".check-char")),E=Array.from(document.querySelectorAll(".check-num")),I=Array.from(document.querySelectorAll(".check-char-title")),L=Array.from(document.querySelectorAll(".check-num-title")),C=document.querySelector(".values-group"),A=document.querySelector(".values-value-group"),F=document.querySelector(".dft-group"),R=document.querySelector(".dft-value-group"),O=document.querySelector(".dftval-group"),T=document.querySelector(".dftval-value-group"),N=document.getElementById("prop-shift"),B=N?N.closest(".property-group"):null,W=()=>{const t="constant"!==e.type&&h&&"O"!==h.value;m.forEach(e=>{e.style.display=t?"flex":"none"});const n="constant"!==e.type&&h&&"O"!==h.value;if(y&&(y.style.display=n?"inline-flex":"none"),b&&(b.style.display=n?"":"none"),n){const t=document.getElementById("prop-type"),n=t?t.value:e.dataType,i="character"===n||"double"===n||"date"===n||"time"===n||"timestamp"===n,o=["packed","zoned","float"].includes(n);D.forEach(e=>{e.style.display=i?"flex":"none"}),E.forEach(e=>{e.style.display=o?"flex":"none"}),I.forEach(e=>{e.style.display=i?"":"none"}),L.forEach(e=>{e.style.display=o?"":"none"})}if(!n&&y&&y.classList.contains("active")){y.classList.remove("active"),b?.classList.remove("active");const e=document.querySelector('.properties-tab[data-tab="basic"]'),t=document.getElementById("tab-basic");e?.classList.add("active"),t?.classList.add("active")}const i=document.getElementById("prop-type"),o=i?i.value:e.dataType,s=["character","double"].includes(o),r=["numeric","zoned","packed","float","binary"].includes(o),d="constant"!==e.type&&"keyword"!==e.type&&!e.isKeyword&&h&&"O"!==h.value&&(s||r);if(C&&(C.style.display=d?"flex":"none"),A&&(A.style.display=d?"block":"none"),v&&(v.style.display=d?"inline-flex":"none"),$&&($.style.display=d?"":"none"),!d&&v&&v.classList.contains("active")){v.classList.remove("active"),$?.classList.remove("active");const e=document.querySelector('.properties-tab[data-tab="basic"]'),t=document.getElementById("tab-basic");e?.classList.add("active"),t?.classList.add("active")}const a="constant"!==e.type&&"keyword"!==e.type&&!e.isKeyword,l=a,c=a,u=a&&h&&("O"===h.value||"B"===h.value);F&&(F.style.display=c?"flex":"none"),R&&(R.style.display=c?"block":"none"),O&&(O.style.display=u?"flex":"none"),T&&(T.style.display=u?"block":"none"),S&&(S.style.display=l?"inline-flex":"none"),w&&(w.style.display=l?"":"none");const p=["numeric","zoned","packed","float","binary"].includes(o),g="constant"!==e.type&&h&&("O"===h.value||"B"===h.value)&&p,f="constant"!==e.type&&h&&"O"===h.value&&"zoned"===o;if(B&&(B.style.display=""),N&&(N.disabled=f,N.title=f?"Shift se controla mediante EDTCDE para campos zoned de salida":""),x&&(x.style.display=g?"inline-flex":"none"),k&&(k.style.display=g?"":"none"),!g&&x&&x.classList.contains("active")){x.classList.remove("active"),k?.classList.remove("active");const e=document.querySelector('.properties-tab[data-tab="basic"]'),t=document.getElementById("tab-basic");e?.classList.add("active"),t?.classList.add("active")}};W(),h&&h.addEventListener("change",W);const P=document.getElementById("prop-type");function M(e){const t=document.getElementById("prop-shift");if(!t)return;let n="";switch(e){case"character":n='\n                        <option value="A">A - Alphanumeric</option>\n                        <option value="X">X - Alphabetic</option>\n                        <option value="N">N - Numeric Character Shift</option>\n                        <option value="I">I - Inhibit Keyboard</option>\n                        <option value="D">D - Digits Only</option>\n                        <option value="M">M - Numeric Character Only</option>\n                        <option value="W">W - Katakana</option>\n                    ';break;case"zoned":n='\n                        <option value="">None</option>\n                        <option value="Y">Y - Numeric Only</option>\n                        <option value="S">S - Signed Numeric</option>\n                        <option value="N">N - Numeric Character Shift</option>\n                        <option value="I">I - Inhibit Keyboard</option>\n                        <option value="D">D - Digits Only</option>\n                    ';break;case"float":n='\n                        <option value="SINGLE">Sencilla</option>\n                        <option value="DOUBLE">Doble</option>\n                    ';break;case"double":n='\n                        <option value="J">J - DBCS Only</option>\n                        <option value="E">E - DBCS Either</option>\n                        <option value="O">O - DBCS Open</option>\n                        <option value="G">G - Graphic DBCS</option>\n                    ';break;default:n='<option value="">None</option>'}t.innerHTML=n}function z(t){const n=document.getElementById("prop-length");if(!n)return;const i="constant"===e.type||"date"===t||"time"===t||"timestamp"===t;n.readOnly=i,i?(n.style.backgroundColor="#2d2d2d",n.style.cursor="not-allowed"):(n.style.backgroundColor="",n.style.cursor=""),"date"===t?n.value="10":"time"===t?n.value="8":"timestamp"===t&&(n.value="26")}if(P&&P.addEventListener("change",W),document.querySelectorAll(".properties-tab").forEach(e=>{e.addEventListener("click",function(){const e=this.dataset.tab;document.querySelectorAll(".properties-tab").forEach(e=>e.classList.remove("active")),document.querySelectorAll(".tab-panel").forEach(e=>e.classList.remove("active")),this.classList.add("active"),document.getElementById(`tab-${e}`).classList.add("active")})}),"constant"!==e.type){const t=document.getElementById("prop-type"),n=document.getElementById("prop-shift");t&&n&&(M(t.value),z(t.value),"float"===e.dataType&&e.precision?n.value=e.precision:e.shift&&(n.value=e.shift),t.addEventListener("change",function(){M(this.value),z(this.value)}))}else z(e.dataType);if(document.getElementById("apply-properties").addEventListener("click",function(){a(e)}),document.getElementById("delete-field").addEventListener("click",function(){t.ui("Delete button clicked for field:",e.name),l(e)}),"constant"!==e.type){const t=document.getElementById("prop-name");t&&e.name.startsWith(e.type.toUpperCase())&&setTimeout(()=>{t.focus(),t.select()},100)}if(e.colors&&e.colors.length>0){const n={GRN:"color-green",WHT:"color-white",RED:"color-red",TRQ:"color-turquoise",YLW:"color-yellow",PNK:"color-pink",BLU:"color-blue"};e.colors.forEach(i=>{const o=n[i];if(o){const n=document.getElementById(o);n&&(n.checked=!0,t.debug(`Pre-selected color ${i} (${o}) for field ${e.name}`))}})}else if(e.color){const n={GRN:"color-green",WHT:"color-white",RED:"color-red",TRQ:"color-turquoise",YLW:"color-yellow",PNK:"color-pink",BLU:"color-blue"}[e.color];if(n){const i=document.getElementById(n);i&&(i.checked=!0,t.debug(`Pre-selected color ${e.color} (${n}) for field ${e.name}`))}}const U=(e,t)=>{const n=document.getElementById(e);n&&(n.checked=Boolean(t))},_=e.dataType,V="character"===_||"double"===_||"date"===_||"time"===_||"timestamp"===_,K=["packed","zoned","float"].includes(_),H=e.checkOptions||{};if(V&&(U("check-me",H.ME),U("check-er",H.ER),U("check-mf",H.MF),U("check-fe",H.FE),U("check-rb",H.RB),U("check-rz",H.RZ),U("check-rl",H.RL),U("check-lc",H.LC)),K&&(U("check-num-me",H.ME),U("check-num-er",H.ER),U("check-num-mf",H.MF),U("check-num-fe",H.FE),U("check-num-rb",H.RB),U("check-num-rz",H.RZ),U("check-num-rl",H.RL)),e.attributes){if(t.parse("Field has attributes:",e.attributes),e.attributes.underline){const e=document.getElementById("attr-underline");e&&(e.checked=!0,t.debug("Checked underline checkbox"))}if(e.attributes.reverse){const e=document.getElementById("attr-reverse-image");e&&(e.checked=!0,t.debug("Checked reverse checkbox"))}if(e.attributes.blink){const e=document.getElementById("attr-blink");e&&(e.checked=!0,t.debug("Checked blink checkbox"))}if(e.attributes.highlight){const e=document.getElementById("attr-high-intensity");e&&(e.checked=!0,t.debug("Checked highlight checkbox"))}if(e.attributes.cursorPosition){const e=document.getElementById("attr-cursor-position");e&&(e.checked=!0,t.debug("Checked cursor position checkbox"))}if(e.attributes.columnSeparator){const e=document.getElementById("attr-column-separator");e&&(e.checked=!0,t.debug("Checked column separator checkbox"))}if(e.attributes.nonDisplay){const e=document.getElementById("attr-non-display");e&&(e.checked=!0,t.debug("Checked non-display checkbox"))}if(e.attributes.modifiedDataTag){const e=document.getElementById("attr-mdt");e&&(e.checked=!0,t.debug("Checked modified data tag checkbox"))}if(e.attributes.protect){const e=document.getElementById("attr-protect");e&&(e.checked=!0,t.debug("Checked protect checkbox"))}if(e.attributes.operatorId){const e=document.getElementById("attr-oid");e&&(e.checked=!0,t.debug("Checked operator ID checkbox"))}if(e.attributes.selectLightPen){const e=document.getElementById("attr-select-pen");e&&(e.checked=!0,t.debug("Checked select by light pen checkbox"))}}else t.debug("Field has no attributes object");if(e.colorIndicators){t.debug("Loading colorIndicators:",e.colorIndicators);for(const[n,i]of Object.entries(e.colorIndicators)){const e=`color:${n}`;if(t.debug(`Processing color ${n}, indicatorData type:`,typeof i,i),Array.isArray(i)){t.debug(`Color ${n} has old array format with ${i.length} indicators`);const o=new Set;i.forEach(e=>{o.add(JSON.stringify(e))}),d.set(e,o),t.debug(`Loaded ${o.size} indicators (array format) for color ${n} into config`)}else if(i.groups)if(t.debug(`Color ${n} has groups format with ${i.groups.length} groups`),!0===i.isOr&&i.groups.length>1)d.set(e,{groups:i.groups,isOr:!0}),t.debug(`Loaded ${i.groups.length} groups (OR format) for color ${n} into config`);else{const o=new Set;i.groups.forEach((e,n)=>{t.debug(`  Group ${n}: ${e.indicators.length} indicators`),e.indicators.forEach(e=>{t.debug("    Adding indicator:",e),o.add(JSON.stringify(e))})}),d.set(e,o),t.debug(`Loaded ${o.size} indicators (AND format) for color ${n} into config`)}else t.warn(`Color ${n} has unexpected format:`,i)}}if(e.attributeIndicators)if(e.hasGroupedDspatr){const n=Object.keys(e.attributeIndicators)[0],i=e.attributeIndicators[n]||[],o=["underline","reverse","blink","highlight","cursorPosition","columnSeparator","nonDisplay"];if(!Array.isArray(i)&&i.groups&&!0===i.isOr&&i.groups.length>1)o.forEach(t=>{if(e.attributes&&e.attributes[t]){const e=`attr:${t}`;d.set(e,{groups:i.groups,isOr:!0})}}),t.debug(`Loaded ${i.groups.length} groups (OR format) for grouped DSPATR`);else{const n=[];Array.isArray(i)?n.push(...i):i.groups&&i.groups.forEach(e=>{n.push(...e.indicators)}),o.forEach(t=>{if(e.attributes&&e.attributes[t]){const e=`attr:${t}`,i=new Set;n.forEach(e=>{i.add(JSON.stringify(e))}),d.set(e,i)}}),t.debug(`Loaded ${n.length} shared indicators (AND format) for grouped DSPATR`)}}else for(const[n,i]of Object.entries(e.attributeIndicators)){const e=`attr:${n}`;if(Array.isArray(i)){const o=new Set;i.forEach(e=>{o.add(JSON.stringify(e))}),d.set(e,o),t.debug(`Loaded ${o.size} indicators (array format) for attribute ${n} into config`)}else if(i.groups){t.debug(`    Checking OR format for ${n}: isOr=${i.isOr}, groups.length=${i.groups.length}`);const o=!0===i.isOr&&i.groups.length>1;if(t.debug(`    Result: isOr=${o}`),o)d.set(e,{groups:i.groups,isOr:!0}),t.debug(`Loaded ${i.groups.length} groups (OR format) for attribute ${n} into config`);else{const o=new Set;i.groups.forEach(e=>{e.indicators.forEach(e=>{o.add(JSON.stringify(e))})}),d.set(e,o),t.debug(`Loaded ${o.size} indicators (AND format) for attribute ${n} into config`)}}}if(e.checkIndicators){t.debug("Loading checkIndicators:",e.checkIndicators);for(const[n,i]of Object.entries(e.checkIndicators)){const e=`check:${n}`;if(t.debug(`Processing CHECK ${n}, indicatorData type:`,typeof i,i),Array.isArray(i)){t.debug(`CHECK ${n} has old array format with ${i.length} indicators`);const o=new Set;i.forEach(e=>{o.add(JSON.stringify(e))}),d.set(e,o),t.debug(`Loaded ${o.size} indicators (array format) for CHECK ${n} into config`)}else if(i.groups)if(t.debug(`CHECK ${n} has groups format with ${i.groups.length} groups`),!0===i.isOr&&i.groups.length>1)d.set(e,{groups:i.groups,isOr:!0}),t.debug(`Loaded ${i.groups.length} groups (OR format) for CHECK ${n} into config`);else{const o=new Set;i.groups.forEach(e=>{e.indicators.forEach(e=>{o.add(JSON.stringify(e))})}),d.set(e,o),t.debug(`Loaded ${o.size} indicators (AND format) for CHECK ${n} into config`)}}}const Z=document.getElementById("prop-values-enabled"),G=document.getElementById("prop-values-list");if((Array.isArray(e.values)&&e.values.length>0||"string"==typeof e.values&&e.values.trim().length>0)&&(Z&&(Z.checked=!0),G)){if(Array.isArray(e.values))G.value=e.values.join("\n");else{const t=e.values.match(/'(?:''|[^'])*'/g)||[];t.length>0?G.value=t.map(e=>e.substring(1,e.length-1).replace(/''/g,"'")).join("\n"):G.value=e.values}G.parentElement.style.display="block"}Z&&Z.addEventListener("change",function(){A&&(A.style.display=this.checked?"block":"none",this.checked&&G&&G.focus())});const q=document.getElementById("prop-dft-enabled"),j=document.getElementById("prop-dft-value");e.dft&&(q&&(q.checked=!0),j&&e.dft.value&&(j.value=e.dft.value,j.parentElement.style.display="block")),q&&q.addEventListener("change",function(){R&&(R.style.display=this.checked?"block":"none",this.checked&&j&&j.focus())});const Y=document.getElementById("prop-dftval-enabled"),J=document.getElementById("prop-dftval-value");if(e.dftval&&(Y&&(Y.checked=!0),J&&e.dftval.value&&(J.value=e.dftval.value,J.parentElement.style.display="block"),e.dftvalIndicators)){const n="dftval:enabled",i=e.dftvalIndicators;if(t.debug("Processing DFTVAL indicatorData type:",typeof i,i),Array.isArray(i)){t.debug(`DFTVAL has old array format with ${i.length} indicators`);const e=new Set;i.forEach(t=>{e.add(JSON.stringify(t))}),d.set(n,e),t.debug(`Loaded ${e.size} indicators (array format) for DFTVAL into config`)}else if(i.groups)if(t.debug(`DFTVAL has groups format with ${i.groups.length} groups`),!0===i.isOr&&i.groups.length>1)d.set(n,{groups:i.groups,isOr:!0}),t.debug(`Loaded ${i.groups.length} groups (OR format) for DFTVAL into config`);else{const e=new Set;i.groups.forEach((n,i)=>{t.debug(`  DFTVAL Group ${i}: ${n.indicators.length} indicators`),n.indicators.forEach(n=>{t.debug("    Adding DFTVAL indicator:",n),e.add(JSON.stringify(n))})}),d.set(n,e),t.debug(`Loaded ${e.size} indicators (AND format) for DFTVAL into config`)}else t.warn("DFTVAL has unexpected format:",i)}Y&&Y.addEventListener("change",function(){T&&(T.style.display=this.checked?"block":"none",this.checked&&J&&J.focus())});const X=document.getElementById("prop-edtcde-enabled"),Q=document.getElementById("prop-edtcde-value"),ee=document.querySelector(".edtcde-value-group"),te=document.querySelector(".edtcde-replace-group"),ne=document.getElementById("prop-edtcde-replace-leading-zeros-with"),ie=document.getElementById("prop-edtwrd-enabled"),oe=document.getElementById("prop-edtwrd-value"),se=document.querySelector(".edtwrd-value-group"),re=document.getElementById("prop-edtmsk-enabled"),de=document.getElementById("prop-edtmsk-value"),ae=document.querySelector(".edtmsk-value-group"),le=()=>{if(!te)return;const e=Boolean(X&&X.checked),t=Q?Q.value.trim().toUpperCase():"",n=e&&!["Z","Y","W"].includes(t);te.style.display=n?"block":"none",!n&&ne&&(ne.value="")};if(e.edtcde&&e.edtcde.value){if(X&&(X.checked=!0),ee&&(ee.style.display="block"),Q){const t=String(e.edtcde.value).trim().toUpperCase();if(!Array.from(Q.options).some(e=>e.value===t)){const e=document.createElement("option");e.value=t,e.textContent=t,Q.appendChild(e)}Q.value=t}if(ne){const t=e.edtcde.replaceLeadingZerosWith?String(e.edtcde.replaceLeadingZerosWith).trim():"";"*"!==t&&"$"!==t||"Z"===String(e.edtcde.value).trim().toUpperCase()?ne.value="":ne.value=t}le()}X&&X.addEventListener("change",function(){ee&&(ee.style.display=this.checked?"block":"none"),le(),this.checked&&Q&&Q.focus()}),Q&&Q.addEventListener("change",le),le();const ce=e=>e?"string"==typeof e?e:"string"==typeof e.value?e.value:"":"",ue=ce(e.edtwrd);ue.length>0&&(ie&&(ie.checked=!0),se&&(se.style.display="block"),oe&&(oe.value=ue)),ie&&ie.addEventListener("change",function(){se&&(se.style.display=this.checked?"block":"none"),this.checked&&oe&&oe.focus()});const pe=ce(e.edtmsk);if(pe.length>0&&(re&&(re.checked=!0),ae&&(ae.style.display="block"),de&&(de.value=pe)),re&&re.addEventListener("change",function(){ae&&(ae.style.display=this.checked?"block":"none"),this.checked&&de&&de.focus()}),s(),e.colorIndicators)for(const[n,i]of Object.entries(e.colorIndicators))if(Array.isArray(i)&&i.length>0||i&&i.groups&&i.groups.length>0){const e=document.querySelector(`.indicator-config-btn[data-color="${n}"]`);r(e,i);const o=Array.isArray(i)?i.length:i.groups.reduce((e,t)=>e+t.indicators.length,0);t.debug(`Marked color button for ${n} with ${o} indicators`)}if(e.attributeIndicators){const n={underline:"underline",reverse:"reverse",blink:"blink",highlight:"highlight",cursorPosition:"cursorPosition",columnSeparator:"columnSeparator",nonDisplay:"nonDisplay",modifiedDataTag:"modifiedDataTag",protect:"protect",operatorId:"operatorId",selectLightPen:"selectLightPen"};for(const[i,o]of Object.entries(e.attributeIndicators))if(Array.isArray(o)&&o.length>0||o&&o.groups&&o.groups.length>0){const e=n[i];if(e){const n=document.querySelector(`.indicator-config-btn[data-attr="${e}"]`);r(n,o);const s=Array.isArray(o)?o.length:o.groups.reduce((e,t)=>e+t.indicators.length,0);t.debug(`Marked attribute button for ${i} with ${s} indicators`)}}}if(e.checkIndicators&&["ME","ER"].forEach(n=>{const i=e.checkIndicators[n];if(i&&i.groups&&i.groups.length>0){const e=document.querySelector(`.indicator-config-btn[data-check="${n}"]`);r(e,i);const o=i.groups.reduce((e,t)=>e+t.indicators.length,0);t.debug(`Marked CHECK(${n}) button with ${o} indicators`)}}),e.dftvalIndicators&&(Array.isArray(e.dftvalIndicators)&&e.dftvalIndicators.length>0||e.dftvalIndicators&&e.dftvalIndicators.groups&&e.dftvalIndicators.groups.length>0)){const n=document.querySelector('.indicator-config-btn[data-dftval="enabled"]');r(n,e.dftvalIndicators);const i=Array.isArray(e.dftvalIndicators)?e.dftvalIndicators.length:e.dftvalIndicators.groups.reduce((e,t)=>e+t.indicators.length,0);t.debug(`Marked DFTVAL button with ${i} indicators`)}if(e.indicators){const n=`field-indicators:${e.name}`;if(t.debug(`🔍 [${e.type.toUpperCase()}-IND-LOAD] Loading field indicators for ${e.name}`),t.debug(`🔍 [${e.type.toUpperCase()}-IND-LOAD] field.indicators:`,e.indicators),e.indicators.groups){const i={groups:e.indicators.groups.map(e=>({indicators:e.indicators||[]})),isOr:e.indicators.isOr||!1};d.set(n,i);const o=document.querySelector('.indicator-config-btn[data-field-indicators="true"]');if(o){if(t.debug("🔍 [FIELD-IND] About to call setIndicatorButtonState"),t.debug("🔍 [FIELD-IND] field.indicators:",e.indicators),t.debug("🔍 [FIELD-IND] field.indicators.groups:",e.indicators.groups),e.indicators.groups.length>0&&e.indicators.groups[0].indicators.length>0){const n=e.indicators.groups[0].indicators[0];t.debug("🔍 [FIELD-IND] First indicator:",n),t.debug("🔍 [FIELD-IND] First indicator.number type: "+typeof n.number),t.debug(`🔍 [FIELD-IND] First indicator.number value: "${n.number}"`)}r(o,e.indicators);const n=e.indicators.groups.reduce((e,t)=>e+t.indicators.length,0);t.debug(`Marked field-level indicator button with ${n} indicators`)}}}}({field:e,Logger:l,KEYWORD_ATTRIBUTE_ALLOW_LIST:ie,renderAttributeRows:oe,getAttributeCheckboxMap:se,setupIndicatorButtons:ct,setIndicatorButtonState:te,indicatorConfigurations:je,applyFieldProperties:me,deleteField:ye})}function de(){return function(e){const{Logger:t,vscode:n,isReadOnly:i,getCurrentDocument:o,setCurrentDocument:s,getCurrentRecord:r,getRecordType:d,IdGenerator:a,getWindowDimensions:l,setupPropertiesTabs:c,loadSubfileControl:u,applySubfileControl:p,loadFunctionKeys:g,createFunctionKeyRow:f,saveFunctionKeys:h,updateDocumentInEditor:m,generateDdsLineWithIndicators:y,indicatorConfigurations:b,DisplaySizeUtils:v,IndicatorUtils:$,scanIndicatorsBackward:S,setIndicatorButtonState:w,openIBMiModal:x,applyWindowDimensions:k,showScreenProperties:D}=e,E=document.getElementById("field-properties"),I=r?r():null;if(!I)return void(E.innerHTML="<p>No screen selected</p>");const L=d(I),C=l(I);let A="";if(C.hasWindow){const e=C.isReference||!1,t=C.referenceName||"";A=`\n                <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />\n                <h4 style="margin: 12px 0 8px 0; color: var(--text-color); font-size: 14px;">Window</h4>\n                \n                <div style="margin-bottom: 16px;">\n                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-color);">Type</label>\n                    <div style="display: flex; gap: 16px; margin-bottom: 12px;">\n                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">\n                            <input type="radio" name="window-type" id="window-type-coords" value="coordinates" ${e?"":"checked"} />\n                            <span>Coordinates</span>\n                        </label>\n                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">\n                            <input type="radio" name="window-type" id="window-type-ref" value="reference" ${e?"checked":""} />\n                            <span>Reference</span>\n                        </label>\n                    </div>\n                </div>\n                \n                <div id="window-reference-section" style="display: ${e?"block":"none"}; margin-bottom: 16px;">\n                    <div class="property-group" style="margin: 0;">\n                        <label>Window Reference</label>\n                        <input type="text" id="window-reference-name" value="${t}" placeholder="e.g. WIND1" maxlength="10" style="padding: 6px 8px; text-transform: uppercase;" />\n                    </div>\n                    ${e&&C.ds3?`\n                        <div style="margin-top: 8px; padding: 8px; background-color: rgba(0, 122, 204, 0.1); border-left: 3px solid #007ACC; font-size: 11px; color: var(--text-muted);">\n                            <strong>Note:</strong> Resolved coordinates from ${t}:<br/>\n                            Row: ${C.ds3.row}, Col: ${C.ds3.col}, Height: ${C.ds3.height}, Width: ${C.ds3.width}\n                        </div>\n                    `:""}\n                </div>\n                \n                <div id="window-coordinates-section" style="display: ${e?"none":"block"};">\n                    ${C.ds3?`\n                    <div style="margin-bottom: 12px;">\n                        <label style="display: block; margin-bottom: 4px; font-weight: 600; color: #888;">*DS3 (24 x 80)</label>\n                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">\n                            <div class="property-group" style="margin: 0;">\n                                <label style="font-size: 11px;">Row</label>\n                                <input type="number" id="window-ds3-row" value="${C.ds3.row}" min="1" max="24" style="padding: 4px 8px;" />\n                            </div>\n                            <div class="property-group" style="margin: 0;">\n                                <label style="font-size: 11px;">Column</label>\n                                <input type="number" id="window-ds3-col" value="${C.ds3.col}" min="1" max="80" style="padding: 4px 8px;" />\n                            </div>\n                            <div class="property-group" style="margin: 0;">\n                                <label style="font-size: 11px;">Height</label>\n                                <input type="number" id="window-ds3-height" value="${C.ds3.height}" min="1" max="24" style="padding: 4px 8px;" />\n                            </div>\n                            <div class="property-group" style="margin: 0;">\n                                <label style="font-size: 11px;">Width</label>\n                                <input type="number" id="window-ds3-width" value="${C.ds3.width}" min="1" max="80" style="padding: 4px 8px;" />\n                            </div>\n                        </div>\n                    </div>\n                    `:""}\n                    \n                    ${C.ds4?`\n                    <div style="margin-bottom: 12px;">\n                        <label style="display: block; margin-bottom: 4px; font-weight: 600; color: #888;">*DS4 (27 x 132)</label>\n                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">\n                            <div class="property-group" style="margin: 0;">\n                                <label style="font-size: 11px;">Row</label>\n                                <input type="number" id="window-ds4-row" value="${C.ds4.row}" min="1" max="27" style="padding: 4px 8px;" />\n                            </div>\n                            <div class="property-group" style="margin: 0;">\n                                <label style="font-size: 11px;">Column</label>\n                                <input type="number" id="window-ds4-col" value="${C.ds4.col}" min="1" max="132" style="padding: 4px 8px;" />\n                            </div>\n                            <div class="property-group" style="margin: 0;">\n                                <label style="font-size: 11px;">Height</label>\n                                <input type="number" id="window-ds4-height" value="${C.ds4.height}" min="1" max="27" style="padding: 4px 8px;" />\n                            </div>\n                            <div class="property-group" style="margin: 0;">\n                                <label style="font-size: 11px;">Width</label>\n                                <input type="number" id="window-ds4-width" value="${C.ds4.width}" min="1" max="132" style="padding: 4px 8px;" />\n                            </div>\n                        </div>\n                    </div>\n                    `:""}\n                </div>\n                \n                <button id="apply-window-dimensions-btn" style="width: 100%; padding: 8px; margin-top: 8px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">\n                    Apply Changes\n                </button>\n            `}if(E.innerHTML=`\n            <div class="properties-tabs">\n                <button class="properties-tab active" data-tab="basic">Basic</button>\n                ${"SFLCTL"===L?'<button class="properties-tab" data-tab="subfile-control">Subfile Control</button>':""}\n                ${"SFL"!==L?'<button class="properties-tab" data-tab="function-keys">Function Keys</button>':""}\n            </div>\n            \n            <div class="properties-content">\n                <div id="tab-basic" class="tab-panel active">\n                    <div class="property-group">\n                        <label>Name</label>\n                        <input type="text" id="screen-name" value="${I}" readonly style="background-color: #2d2d2d; cursor: not-allowed;" />\n                    </div>\n                    <div class="property-group">\n                        <label>Type</label>\n                        <input type="text" id="screen-type" value="${L}" readonly style="background-color: #2d2d2d; cursor: not-allowed;" />\n                    </div>\n                    ${A}\n                </div>\n                \n                ${"SFLCTL"===L?'\n                <div id="tab-subfile-control" class="tab-panel">\n                    <div class="subfile-control-section">\n                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Size (SFLSIZ)</label>\n                        \n                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">\n                            <div style="display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="sflsiz-ds3-enabled" style="width: 16px; height: 16px; cursor: pointer;">\n                                <label for="sflsiz-ds3-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS3 (24x80):</label>\n                            </div>\n                            <input type="number" id="sflsiz-ds3" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />\n                            \n                            <div style="display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="sflsiz-ds4-enabled" style="width: 16px; height: 16px; cursor: pointer;">\n                                <label for="sflsiz-ds4-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS4 (27x132):</label>\n                            </div>\n                            <input type="number" id="sflsiz-ds4" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />\n                        </div>\n                        \n                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />\n                        \n                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Page (SFLPAG)</label>\n                        \n                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">\n                            <div style="display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="sflpag-ds3-enabled" style="width: 16px; height: 16px; cursor: pointer;">\n                                <label for="sflpag-ds3-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS3 (24x80):</label>\n                            </div>\n                            <input type="number" id="sflpag-ds3" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />\n                            \n                            <div style="display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="sflpag-ds4-enabled" style="width: 16px; height: 16px; cursor: pointer;">\n                                <label for="sflpag-ds4-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS4 (27x132):</label>\n                            </div>\n                            <input type="number" id="sflpag-ds4" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />\n                        </div>\n                        \n                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />\n                        \n                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Lines (SFLLIN)</label>\n                        <p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin-bottom: 12px;">Number of lines displayed (without indicators)</p>\n                        \n                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">\n                            <div style="display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="sfllin-ds3-enabled" style="width: 16px; height: 16px; cursor: pointer;">\n                                <label for="sfllin-ds3-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS3 (24x80):</label>\n                            </div>\n                            <input type="number" id="sfllin-ds3" placeholder="0" min="0" max="99" style="padding: 6px 8px; width: 100px;" disabled />\n                            \n                            <div style="display: flex; align-items: center; gap: 8px;">\n                                <input type="checkbox" id="sfllin-ds4-enabled" style="width: 16px; height: 16px; cursor: pointer;">\n                                <label for="sfllin-ds4-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS4 (27x132):</label>\n                            </div>\n                            <input type="number" id="sfllin-ds4" placeholder="0" min="0" max="99" style="padding: 6px 8px; width: 100px;" disabled />\n                            </div>\n                        </div>\n                        \n                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />\n                        \n                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Display (SFLDSP)</label>\n                        \n                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">\n                            <input type="checkbox" id="sfldsp-enabled" style="width: 18px; height: 18px; cursor: pointer;">\n                            <label for="sfldsp-enabled" style="margin: 0; cursor: pointer;">Include in code</label>\n                            <button id="sfldsp-indicators-btn" class="indicator-config-btn" disabled>\n                                <span class="indicator-icon">🔢</span>\n                                <span class="indicator-text">No ind.</span>\n                            </button>\n                        </div>\n                        \n                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />\n                        \n                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Display Control (SFLDSPCTL)</label>\n                        \n                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">\n                            <input type="checkbox" id="sfldspctl-enabled" style="width: 18px; height: 18px; cursor: pointer;">\n                            <label for="sfldspctl-enabled" style="margin: 0; cursor: pointer;">Include in code</label>\n                            <button id="sfldspctl-indicators-btn" class="indicator-config-btn" disabled>\n                                <span class="indicator-icon">🔢</span>\n                                <span class="indicator-text">No ind.</span>\n                            </button>\n                        </div>\n                        \n                        <button id="apply-subfile-control-btn" style="width: 100%; padding: 10px; margin-top: 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">\n                            Apply Changes\n                        </button>\n                    </div>\n                </div>\n                ':""}\n                \n                ${"SFL"!==L?'\n                <div id="tab-function-keys" class="tab-panel">\n                    <div class="function-keys-header" style="margin-bottom: 10px;">\n                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Function Keys</label>\n                        \x3c!-- Column headers --\x3e\n                        <div style="display: grid; grid-template-columns: 70px 240px 70px 1fr; gap: 8px; padding: 4px 8px; font-size: 11px; font-weight: 600; color: var(--vscode-descriptionForeground); border-bottom: 1px solid var(--border-color); margin-bottom: 8px;">\n                            <span>Key</span>\n                            <span>Type</span>\n                            <span>Indicator</span>\n                            <span>Description</span>\n                        </div>\n                    </div>\n                    \n                    <div id="function-keys-list" style="max-height: 400px; overflow-y: auto; overflow-x: auto;">\n                        \x3c!-- Function keys will be populated here --\x3e\n                    </div>\n                </div>\n                ':""}\n            </div>\n        `,c(),"SFLCTL"===L&&u({Logger:t,getCurrentDocument:o,getCurrentRecord:r,DisplaySizeUtils:v,IndicatorUtils:$,scanIndicatorsBackward:S,indicatorConfigurations:b,setIndicatorButtonState:w,openIBMiModal:x,applySubfileControl:()=>p({Logger:t,vscode:n,getCurrentDocument:o,setCurrentDocument:s,getCurrentRecord:r,getCurrentView:e.getCurrentView,updateDocumentInEditor:m,generateDdsLineWithIndicators:y,indicatorConfigurations:b,showScreenProperties:D,parseDspfFields:e.parseDspfFields,updatePreviewView:e.updatePreviewView})}),"SFL"!==L){const e=()=>h({Logger:t,isReadOnly:i,getCurrentDocument:o,setCurrentDocument:s,getCurrentRecord:r,updateDocumentInEditor:m});g({getCurrentDocument:o,getCurrentRecord:r,createFunctionKeyRow:t=>f({...t,IdGenerator:a,saveFunctionKeys:e})})}const F=document.getElementById("apply-window-dimensions-btn");F&&F.addEventListener("click",function(){k()});const R=document.getElementById("window-type-coords"),O=document.getElementById("window-type-ref"),T=document.getElementById("window-coordinates-section"),N=document.getElementById("window-reference-section");R&&O&&T&&N&&(R.addEventListener("change",function(){this.checked&&(T.style.display="block",N.style.display="none")}),O.addEventListener("change",function(){this.checked&&(T.style.display="none",N.style.display="block")}))}({Logger:l,vscode:t,isReadOnly:k,getCurrentDocument:()=>n,setCurrentDocument:e=>{n=e},getCurrentRecord:()=>$,getCurrentView:()=>D,getRecordType:ae,IdGenerator:d,getWindowDimensions:pe,setupPropertiesTabs:N,loadSubfileControl:B,applySubfileControl:W,loadFunctionKeys:P,createFunctionKeyRow:M,saveFunctionKeys:z,updateDocumentInEditor:Ne,generateDdsLineWithIndicators:We,indicatorConfigurations:je,DisplaySizeUtils:r,IndicatorUtils:s,scanIndicatorsBackward:ke,setIndicatorButtonState:te,openIBMiModal:ot,applyWindowDimensions:ge,parseDspfFields:Ke,updatePreviewView:xe,showScreenProperties:de})}function ae(e){return function({recordName:e,currentDocument:t}){const n=t.split("\n");for(let t=0;t<n.length;t++){const i=n[t];if(i.includes(`R ${e}`)||i.includes(`R  ${e}`)){if(i.includes("SFLCTL"))return"SFLCTL";if(i.includes("SFL"))return"SFL";if(i.includes("WINDOW("))return"WINDOW";for(let e=t+1;e<n.length;e++){const t=n[e];if(t.match(/^\s{5}A\s+R\s+\w+/))break;if(t.includes("SFLCTL"))return"SFLCTL";if(t.includes("SFL")&&!t.includes("SFLCTL"))return"SFL";if(t.includes("WINDOW("))return"WINDOW"}return"SCREEN"}}return"SCREEN"}({recordName:e,currentDocument:n})}function le(e){return function(e){const{recordName:t,currentDocument:n,getRecordType:i,Logger:o}=e,s=n.split("\n"),r=i(t);if("SFLCTL"===r)for(let e=0;e<s.length;e++){const n=s[e];if(n.includes(`R ${t}`)||n.includes(`R  ${t}`)){if(n.includes("SFLCTL(")){const e=n.match(/SFLCTL\((\w+)\)/);if(e){const n=e[1];return o.debug(`Found SFLCTL relationship (same line): ${t} controls ${n}`),{sflRecord:n,sflctlRecord:t,companionRecord:n}}}for(let n=e+1;n<s.length;n++){const e=s[n];if(e.match(/^\s{5}A\s+R\s+\w+/))break;if(e.includes("SFLCTL(")){const n=e.match(/SFLCTL\((\w+)\)/);if(n){const e=n[1];return o.debug(`Found SFLCTL relationship (next line): ${t} controls ${e}`),{sflRecord:e,sflctlRecord:t,companionRecord:e}}}}break}}if("SFL"===r)for(let e=0;e<s.length;e++){const n=s[e],i=n.match(/^\s{5}A\s+R\s+(\w+)/);if(i){const r=i[1],d=n.match(/SFLCTL\((\w+)\)/);if(d&&d[1]===t)return o.debug(`Found SFL relationship (same line): ${t} is controlled by ${r}`),{sflRecord:t,sflctlRecord:r,companionRecord:r};for(let n=e+1;n<s.length;n++){const e=s[n];if(e.match(/^\s{5}A\s+R\s+\w+/))break;const i=e.match(/SFLCTL\((\w+)\)/);if(i&&i[1]===t)return o.debug(`Found SFL relationship (next line): ${t} is controlled by ${r}`),{sflRecord:t,sflctlRecord:r,companionRecord:r}}}}return null}({recordName:e,currentDocument:n,getRecordType:ae,Logger:l})}function ce(e){return function(e){const{sflctlRecordName:t,currentDocument:n,currentDisplaySize:i,DisplaySizeUtils:o,Logger:s}=e;if(!t)return 0;const r=n.split("\n");let d=!1,a=0;const l="DS3"===i?"*DS3":"*DS4",c=o.getAvailableDisplaySizes(n);for(let e=0;e<r.length;e++){const n=r[e].trim();if(n.includes(`R ${t}`)||n.includes(`R  ${t}`)){if(n.includes("SFLCTL(")){d=!0;continue}for(let t=e+1;t<r.length;t++){const e=r[t].trim();if(e.match(/^A\s+R\s+\w+/))break;if(e.includes("SFLCTL(")){d=!0;break}}}else{if(d&&n.match(/^A\s+R\s+\w+/))break;if(d&&n.includes("SFLPAG(")){const e=n.match(/SFLPAG\((\d+)\)/);if(e){if(n.includes(l)){a=parseInt(e[1],10),s.stats(`Found SFLPAG for ${l}: ${a}`);break}if(c.singleSize&&c.singleSize===i){a=parseInt(e[1],10),s.stats(`Found SFLPAG (single size ${c.singleSize}): ${a}`);break}}}}}return a}({sflctlRecordName:e,currentDocument:n,currentDisplaySize:w,DisplaySizeUtils:r,Logger:l})}function ue(e,t,i){return function(e){const{trimmedLine:t,currentRecordName:n,currentWindowDimensions:i,currentDisplaySize:o,DisplaySizeUtils:s,currentDocument:r,getWindowDimensions:d,Logger:a}=e;if(i)return i;if(!t.includes("WINDOW("))return null;const l="DS3"===o?"*DS3":"*DS4",c=t.match(/WINDOW\(([A-Z0-9_]+)\)/);if(c&&!/\d+\s+\d+/.test(c[0])){const e=c[1];a.parse(`Found WINDOW reference to ${e} in record ${n}`);const t=d(e);if(t.hasWindow){const n="DS3"===o?t.ds3:t.ds4;if(n)return a.parse(`Resolved window dimensions from ${e}:`,n),n}return null}const u=t.match(/WINDOW\((\d+)\s+(\d+)\s+(\d+)\s+(\d+)\)/);if(u){const e=s.getAvailableDisplaySizes(r);let i=!1;if((t.includes(l)||e.singleSize)&&(i=!0),i){const e={row:parseInt(u[1],10),col:parseInt(u[2],10),height:parseInt(u[3],10),width:parseInt(u[4],10)},i=t.includes(l)?l:"(single size)";return a.parse(`Found ${i} window dimensions for ${n}:`,e),e}}return null}({trimmedLine:e,currentRecordName:t,currentWindowDimensions:i,currentDisplaySize:w,DisplaySizeUtils:r,currentDocument:n,getWindowDimensions:pe,Logger:l})}function pe(e){const t=n.split("\n");let i=!1;const o={hasWindow:!1,isReference:!1,referenceName:null,ds3:null,ds4:null},s=r.getAvailableDisplaySizes(n);for(let n=0;n<t.length;n++){const r=t[n];if(r.includes(`R ${e}`)||r.includes(`R  ${e}`))i=!0;else{if(i&&r.match(/^\s*A\s+R\s+\w+/))break;if(i&&r.includes("WINDOW(")){const t=r.match(/WINDOW\(([A-Z0-9_]+)\)/);if(t&&!/\d+\s+\d+/.test(t[0])){const n=t[1];l.window(`Found WINDOW reference to ${n} in record ${e}`);const i=pe(n);return{hasWindow:i.hasWindow,isReference:!0,referenceName:n,ds3:i.ds3,ds4:i.ds4}}const n=r.match(/WINDOW\((\d+)\s+(\d+)\s+(\d+)\s+(\d+)\)/);if(n){const e={row:parseInt(n[1]),col:parseInt(n[2]),height:parseInt(n[3]),width:parseInt(n[4])};o.hasWindow=!0,o.isReference=!1,r.includes("*DS3")?o.ds3=e:r.includes("*DS4")?o.ds4=e:s.singleSize&&(o.ds3=e,o.ds4=e)}}}}return o}function ge(){return function(e){const{Logger:t,isReadOnly:n,getCurrentDocument:i,setCurrentDocument:o,getCurrentRecord:s,updateDocumentInEditor:r,parseDspfFields:d}=e;if(n)return void t.warn("Cannot apply window dimensions - document is read-only");t.window("Applying window dimensions changes");const a=s?s():null;if(!a)return void t.warn("No current record selected for window update");const l=document.getElementById("window-type-ref"),c=l&&l.checked,u=(i?i():"").split("\n");let p=!1,g=-1,f=-1,h=-1;for(let e=0;e<u.length;e++){const t=u[e];if(t.includes(`R ${a}`)||t.includes(`R  ${a}`))p=!0;else{if(p&&t.match(/^\s*A\s+R\s+\w+/))break;p&&t.includes("WINDOW(")&&(t.includes("*DS3")?f=e:t.includes("*DS4")?h=e:g=e)}}if(c){const e=document.getElementById("window-reference-name");if(!e)return void t.error("Reference name input not found");const n=e.value.trim().toUpperCase();if(!n)return t.error("Reference name is required"),void alert("Please enter a window reference name (e.g., WIND1)");const i=`     A                                      WINDOW(${n})`;-1!==f?(u[f]=i,(-1!==h&&h>f||-1!==h&&h<f)&&u.splice(h,1),t.success(`Updated WINDOW to reference: ${n}`)):-1!==g&&(u[g]=i,t.success(`Updated WINDOW to reference: ${n}`))}else{const e=document.getElementById("window-ds3-row"),n=document.getElementById("window-ds3-col"),i=document.getElementById("window-ds3-height"),o=document.getElementById("window-ds3-width");if(e&&n&&i&&o){const s=parseInt(e.value),r=parseInt(n.value),d=parseInt(i.value),a=parseInt(o.value);-1!==f?(u[f]=u[f].replace(/WINDOW\([^)]+\)/,`WINDOW(${s} ${r} ${d} ${a})`),t.success(`Updated DS3 WINDOW dimensions: (${s},${r}) ${d}x${a}`)):-1!==g&&(u[g]=u[g].replace(/WINDOW\([^)]+\)/,`WINDOW(${s} ${r} ${d} ${a})`),t.success(`Converted WINDOW from reference to coordinates: (${s},${r}) ${d}x${a}`))}const s=document.getElementById("window-ds4-row"),r=document.getElementById("window-ds4-col"),d=document.getElementById("window-ds4-height"),a=document.getElementById("window-ds4-width");if(-1!==h&&s&&r&&d&&a){const e=parseInt(s.value),n=parseInt(r.value),i=parseInt(d.value),o=parseInt(a.value);u[h]=u[h].replace(/WINDOW\([^)]+\)/,`WINDOW(${e} ${n} ${i} ${o})`),t.success(`Updated DS4 WINDOW dimensions: (${e},${n}) ${i}x${o}`)}}const m=u.join("\n");o&&o(m),r(),d(m),t.window("Window dimensions applied successfully")}({Logger:l,isReadOnly:k,getCurrentDocument:()=>n,setCurrentDocument:e=>{n=e},getCurrentRecord:()=>$,updateDocumentInEditor:Ne,parseDspfFields:Ke})}function fe(e){const{kind:t,keys:n,field:i,fieldType:o="field",attrFormat:s="individual"}=e;if(!i||!t||!n||0===n.length)return l.warn(`transferIndicators: Invalid options for ${t}:`,{kind:t,keysCount:n?.length,fieldName:i?.name}),!1;let r=!1,d=null,a=null,c=null;switch(t){case"color":d="color",a="colorIndicators",c="colorIndicatorsModified";break;case"attr":d="attr",a="attributeIndicators",c="attributeIndicatorsModified";break;case"check":d="check",a="checkIndicators",c="checkIndicatorsModified";break;case"keyword":d="keyword",a="keywordIndicators",c="keywordIndicatorsModified";break;default:return l.error(`transferIndicators: Unknown kind "${t}"`),!1}i[a]||(i[a]="color"===t||"attr"===t?{}:[]);let u=null;return n.forEach(e=>{const n=`${d}:${e}`;if(je&&je.has(n)){const o=Array.from(je.get(n)).map(e=>"string"==typeof e?JSON.parse(e):e);"keyword"===t?i[a]=o:"attr"===t&&"grouped"===s?u||(u=o):"color"!==t&&"attr"!==t&&"check"!==t||(i[a][e]="color"===t||"attr"===t?{groups:[{indicators:o}],isOr:!1}:o),r=!0,l.debug(`[transferIndicators-${t}] Transferred ${o.length} indicators for ${e}`)}else"keyword"===t?i[a]=[]:"attr"!==t&&"color"!==t&&"check"!==t||i[a]&&i[a][e]&&(delete i[a][e],r=!0,l.debug(`[transferIndicators-${t}] Cleared indicators for ${e} (no config entry)`))}),"attr"===t&&"grouped"===s&&null!==u&&n.forEach(e=>{i[a][e]=[...u],l.debug(`[transferIndicators-attr] Applied ${u.length} shared indicators to ${e}`)}),"keyword"!==t&&Object.keys(i[a]).forEach(e=>{n.includes(e)||(delete i[a][e],r=!0,l.debug(`[transferIndicators-${t}] Removed indicators for unselected ${e}`))}),"keyword"===t?0===i[a].length&&delete i[a]:0===Object.keys(i[a]).length&&delete i[a],r&&(i[c]=!0),r}function he(e){return function({field:e,Logger:t,transferIndicators:n}){const i={"color-green":"GRN","color-white":"WHT","color-red":"RED","color-turquoise":"TRQ","color-yellow":"YLW","color-pink":"PNK","color-blue":"BLU"},o=[];for(const[e,t]of Object.entries(i)){const n=document.getElementById(e);n&&n.checked&&o.push(t)}o.length>0?(e.color=o[0],e.colors=o,t.debug(`Colors set to [${o.join(", ")}] for field ${e.name}`),e.colorIndicators||(e.colorIndicators={}),n({kind:"color",keys:o,field:e,fieldType:"field"})):(delete e.color,delete e.colors,delete e.colorIndicators,t.debug(`Colors removed for field ${e.name}`))}({field:e,Logger:l,transferIndicators:fe})}function me(e){return function({field:e,Logger:t,getSelectedField:n,setSelectedField:i,getFields:o,getCurrentRecord:s,getCurrentDocument:r,setCurrentDocument:d,applyColorChanges:a,getAttributeCheckboxMap:l,transferIndicators:c,KEYWORD_ATTRIBUTE_ALLOW_LIST:u,updateFieldInDds:p,parseDspfFields:g,updateSourceViewUI:f,vscode:h,showFieldProperties:m,selectField:y}){try{const b=n?n():null,v=o?o():[],$=s?s():null;b&&b.id===e.id&&(b.indicators&&(e.indicators=b.indicators),b.fieldIndicatorsModified&&(e.fieldIndicatorsModified=b.fieldIndicatorsModified),b.colorIndicatorsModified&&(e.colorIndicatorsModified=b.colorIndicatorsModified),b.attributeIndicatorsModified&&(e.attributeIndicatorsModified=b.attributeIndicatorsModified),b.dftvalIndicatorsModified&&(e.dftvalIndicatorsModified=b.dftvalIndicatorsModified));const S={...e,attributes:e.attributes?{...e.attributes}:void 0,colorIndicators:e.colorIndicators?JSON.parse(JSON.stringify(e.colorIndicators)):void 0,attributeIndicators:e.attributeIndicators?JSON.parse(JSON.stringify(e.attributeIndicators)):void 0,checkOptions:e.checkOptions?{...e.checkOptions}:void 0,checkIndicators:e.checkIndicators?JSON.parse(JSON.stringify(e.checkIndicators)):void 0,keywordIndicators:e.keywordIndicators?JSON.parse(JSON.stringify(e.keywordIndicators)):void 0,edtcde:e.edtcde?{...e.edtcde}:void 0,edtwrd:e.edtwrd?{...e.edtwrd}:void 0,edtmsk:e.edtmsk?{...e.edtmsk}:void 0,dft:e.dft?{...e.dft}:void 0,values:e.values,dftval:e.dftval?{...e.dftval}:void 0,dftvalIndicators:e.dftvalIndicators?JSON.parse(JSON.stringify(e.dftvalIndicators)):void 0};if(t.debug("Applying properties to field:",S.name),"keyword"===e.type||e.isKeyword){e.row=parseInt(document.getElementById("prop-row").value),e.col=parseInt(document.getElementById("prop-col").value),a(e);const n=l(u);e.attributes||(e.attributes={});const o=[];for(const[i,s]of Object.entries(n)){const n=document.getElementById(s);n&&n.checked?(e.attributes[i]=!0,o.push(i)):(delete e.attributes[i],t.debug(`Attribute ${i} removed from keyword ${e.name}`))}c({kind:"attr",keys:o,field:e,fieldType:"keyword",attrFormat:"individual"}),0===Object.keys(e.attributes).length&&delete e.attributes,c({kind:"keyword",keys:[e.name],field:e,fieldType:"keyword"}),t.debug("Old keyword:",S),t.debug("New keyword:",e),p(e,S),g(r?r():"");const b=v.find(t=>t.name===e.name&&t.record===$);return b&&(i&&i(b),y(b),m(b),t.debug("Re-selected keyword after re-parse:",b.name)),f({Logger:t,vscode:h,getCurrentDocument:r,setCurrentDocument:d,getCurrentRecord:s,parseDspfFields:g}),t.debug("Source view synchronized after keyword update"),h.postMessage({type:"applyChangesSuccess",message:`Keyword "${e.name}" updated successfully`}),m(e),void t.success("Keyword properties applied and DDS updated")}if("constant"!==e.type){const n=document.getElementById("prop-name");if(n){const i=n.value.trim().toUpperCase();if(t.debug("Name validation - Field ID:",e.id,"Old name:",S.name,"New name:",i,"Current record:",$),!i)return void alert("Field name cannot be empty.");if(i!==S.name){t.debug("Name changed, checking for duplicates..."),t.debug("Current record:",$),t.debug("All fields:",v.map(e=>`${e.name} (record: ${e.record||"undefined"})`));const o=v.filter(e=>e.record===$||!e.record&&$).find(t=>t.id!==e.id&&t.name===i);if(t.debug("Duplicate field found:",o),o)return h.postMessage({type:"error",message:`A field with the name "${i}" already exists in record "${$}".`}),void(n.value=S.name)}e.name=i}}if(e.row=parseInt(document.getElementById("prop-row").value),e.col=parseInt(document.getElementById("prop-col").value),e.length=parseInt(document.getElementById("prop-length").value)||null,"constant"!==e.type){const t=document.getElementById("prop-decimals");t&&(e.decimals="double"===e.dataType?0:parseInt(t.value)||0)}if("constant"!==e.type){const n=document.getElementById("prop-usage");n&&(e.usage=n.value,t.debug("Usage updated to:",e.usage));const i=document.getElementById("prop-type");i&&(e.dataType=i.value,t.debug("Data type updated to:",e.dataType),"date"===e.dataType?(e.length=10,e.decimals=0,delete e.shift,delete e.precision):"time"===e.dataType?(e.length=8,e.decimals=0,delete e.shift,delete e.precision):"timestamp"===e.dataType&&(e.length=26,e.decimals=0,delete e.shift,delete e.precision));const o=document.getElementById("prop-shift"),s="zoned"===e.dataType&&"O"===e.usage;if(o)if("float"===e.dataType)e.precision=o.value,t.debug("Precision updated to:",e.precision);else if("zoned"===e.dataType||"double"===e.dataType)if(s)t.debug("Shift not updated from UI because it is controlled by EDTCDE for zoned Output fields");else{const n=o.value?o.value.trim():"";n?e.shift=n:delete e.shift,t.debug("Shift updated to:",e.shift||"(none)")}}if("constant"===e.type&&(e.value=document.getElementById("prop-value").value),a(e),"constant"===e.type||"keyword"!==e.type){const n=l();e.attributes||(e.attributes={});const i=[];for(const[o,s]of Object.entries(n)){const n=document.getElementById(s);n&&n.checked?(e.attributes[o]=!0,i.push(o)):(delete e.attributes[o],t.debug(`Attribute ${o} removed from field ${e.name}`))}const o=e.hasGroupedDspatr?"grouped":"individual",s=c({kind:"attr",keys:i,field:e,fieldType:"field",attrFormat:o});if(0===Object.keys(e.attributes).length&&delete e.attributes,e.hasGroupedDspatr&&!s){const n=new Set(Object.keys(S.attributes||{}).filter(e=>S.attributes[e])),i=new Set(Object.keys(e.attributes||{}).filter(t=>e.attributes[t]));(n.size!==i.size||[...n].some(e=>!i.has(e)))&&(e.attributeIndicatorsModified=!0,t.debug("Grouped DSPATR format detected attribute changes, will regenerate line"))}}if("constant"!==e.type&&"O"!==e.usage){const n=e.dataType,i="character"===n||"double"===n,o=["packed","zoned","float"].includes(n),s={},r=(e,t)=>{const n=document.getElementById(e);n&&n.checked&&(s[t]=!0)};i&&(r("check-me","ME"),r("check-er","ER"),r("check-mf","MF"),r("check-fe","FE"),r("check-rb","RB"),r("check-rz","RZ"),r("check-rl","RL"),r("check-lc","LC")),o&&(r("check-num-me","ME"),r("check-num-er","ER"),r("check-num-mf","MF"),r("check-num-fe","FE"),r("check-num-rb","RB"),r("check-num-rz","RZ"),r("check-num-rl","RL")),Object.keys(s).length>0?e.checkOptions=s:delete e.checkOptions;const d=["ME","ER"];let a=!1;e.checkIndicators||(e.checkIndicators={}),d.forEach(n=>{b&&b.checkIndicators&&b.checkIndicators[n]?(e.checkIndicators[n]=b.checkIndicators[n],a=!0,t.debug(`Transferred CHECK(${n}) indicators from selectedField:`,e.checkIndicators[n])):!e.checkIndicators[n]||s&&s[n]||(delete e.checkIndicators[n],a=!0)}),Object.keys(e.checkIndicators).forEach(t=>{s[t]||delete e.checkIndicators[t]}),0===Object.keys(e.checkIndicators).length&&delete e.checkIndicators,a&&(e.checkIndicatorsModified=!0)}else delete e.checkOptions,delete e.checkIndicators;const w=document.getElementById("prop-values-enabled"),x=document.getElementById("prop-values-list"),k=["character","double"].includes(e.dataType),D=["numeric","zoned","packed","float","binary"].includes(e.dataType);if("constant"!==e.type&&"keyword"!==e.type&&!e.isKeyword&&("I"===e.usage||"B"===e.usage)&&(k||D)&&w&&w.checked&&x){const t=x.value.trim();if(t)if(/'(?:''|[^'])*'/.test(t)){const n=t.match(/'(?:''|[^'])*'/g)||[];e.values=n.join(" ")}else{const n=t.split(/\r?\n/).map(e=>e.trim()).filter(e=>e.length>0).map(e=>`'${e.replace(/'/g,"''")}'`);n.length>0?e.values=n.join(" "):delete e.values}else delete e.values}else delete e.values;if("constant"!==e.type){const n=document.getElementById("prop-dft-enabled"),i=document.getElementById("prop-dft-value");if(n&&n.checked&&i){const n=i.value.trim();n?(e.dft={value:n},t.debug(`DFT set to '${n}' for field ${e.name}`)):delete e.dft}else delete e.dft}else delete e.dft;if("constant"===e.type||"O"!==e.usage&&"B"!==e.usage)delete e.dftval,delete e.dftvalIndicators;else{const n=document.getElementById("prop-dftval-enabled"),i=document.getElementById("prop-dftval-value");if(n&&n.checked&&i){const n=i.value.trim();n?(e.dftval={value:n},t.debug(`DFTVAL set to '${n}' for field ${e.name}`),b&&b.dftvalIndicators&&(e.dftvalIndicators=b.dftvalIndicators,t.debug("Transferred DFTVAL indicators from selectedField:",e.dftvalIndicators))):(delete e.dftval,delete e.dftvalIndicators)}else delete e.dftval,delete e.dftvalIndicators}const E=document.getElementById("prop-edtcde-enabled"),I=document.getElementById("prop-edtcde-value"),L=document.getElementById("prop-edtcde-replace-leading-zeros-with"),C=["numeric","zoned","packed","float","binary"].includes(e.dataType);if("constant"!==e.type&&("O"===e.usage||"B"===e.usage)&&C&&E&&E.checked&&I){const t=I.value.trim().toUpperCase();if(t){const n=L?L.value.trim():"";e.edtcde={value:t},"*"!==n&&"$"!==n||"Z"===t?delete e.edtcde.replaceLeadingZerosWith:e.edtcde.replaceLeadingZerosWith=n}else delete e.edtcde}else delete e.edtcde;const A=document.getElementById("prop-edtwrd-enabled"),F=document.getElementById("prop-edtwrd-value"),R=document.getElementById("prop-edtmsk-enabled"),O=document.getElementById("prop-edtmsk-value"),T="constant"!==e.type&&("O"===e.usage||"B"===e.usage)&&C;if(T&&A&&A.checked&&F){const t=F.value;t.length>0?e.edtwrd={value:t}:delete e.edtwrd}else delete e.edtwrd;if(T&&R&&R.checked&&O){const t=O.value;t.length>0?e.edtmsk={value:t}:delete e.edtmsk}else delete e.edtmsk;const N=e.edtcde&&e.edtcde.value?String(e.edtcde.value).trim().toUpperCase():"",B=["1","2","3","A","B","C","D","J","K","L","M","N","O","P","Q"];"constant"!==e.type&&"zoned"===e.dataType&&("O"===e.usage||"B"===e.usage)&&("Z"===N?(delete e.shift,t.debug("Shift cleared for EDTCDE(Z) on zoned Output/Both field")):B.includes(N)?(e.shift="Y",t.debug(`Shift forced to Y for EDTCDE(${N}) on zoned Output/Both field`)):"B"!==e.usage||e.shift?"O"===e.usage&&(delete e.shift,t.debug("Shift cleared by default for zoned Output field without EDTCDE override")):(e.shift="S",t.debug("Shift defaulted to S for zoned Both field without EDTCDE override"))),t.debug("Old field:",S),t.debug("New field:",e);const W=S.row!==e.row||S.col!==e.col,P=S.name!==e.name,M=Boolean(e.colorIndicatorsModified||e.attributeIndicatorsModified||e.keywordIndicatorsModified||e.fieldIndicatorsModified||e.dftvalIndicatorsModified),z=JSON.stringify(S.colors||[S.color].filter(Boolean))!==JSON.stringify(e.colors||[e.color].filter(Boolean)),U=JSON.stringify(S.attributes||{})!==JSON.stringify(e.attributes||{}),_=S.usage!==e.usage,V=S.dataType!==e.dataType,K=S.length!==e.length,H=S.decimals!==e.decimals,Z=("zoned"===e.dataType||"double"===e.dataType)&&S.shift!==e.shift,G="float"===e.dataType&&S.precision!==e.precision,q=JSON.stringify(S.checkOptions||{})!==JSON.stringify(e.checkOptions||{}),j=Boolean(e.checkIndicatorsModified),Y=JSON.stringify(S.dft||null)!==JSON.stringify(e.dft||null),J=JSON.stringify(S.values||null)!==JSON.stringify(e.values||null),X=JSON.stringify(S.dftval||null)!==JSON.stringify(e.dftval||null),Q=JSON.stringify(S.dftvalIndicators||null)!==JSON.stringify(e.dftvalIndicators||null),ee=JSON.stringify(S.edtcde||null)!==JSON.stringify(e.edtcde||null),te=JSON.stringify(S.edtwrd||null)!==JSON.stringify(e.edtwrd||null),ne=JSON.stringify(S.edtmsk||null)!==JSON.stringify(e.edtmsk||null),ie="constant"===e.type&&S.value!==e.value;if(Boolean(M||W||P||z||U||_||V||K||H||Z||G||ie||q||j||Y||J||X||Q||ee||te||ne)){t.dds(`Updating DDS (colorIndicators: ${e.colorIndicatorsModified}, attributeIndicators: ${e.attributeIndicatorsModified}, checkIndicators: ${j}, dft: ${Y}, values: ${J}, dftval: ${X}, dftvalIndicators: ${Q}, edtcde: ${ee}, edtwrd: ${te}, edtmsk: ${ne}, position: ${W}, name: ${P}, color: ${z}, attributes: ${U}, checks: ${q}, usage: ${_}, dataType: ${V}, length: ${K}, decimals: ${H}, shift: ${Z}, precision: ${G}, value: ${ie})`),p(e,S),delete e.colorIndicatorsModified,delete e.attributeIndicatorsModified,delete e.checkIndicatorsModified,delete e.keywordIndicatorsModified,delete e.dftvalIndicatorsModified,g(r?r():"");const n=v.find(t=>t.name===e.name&&t.record===$);n&&(i&&i(n),y(n),m(n),t.debug("Re-selected field after re-parse:",n.name)),f({Logger:t,vscode:h,getCurrentDocument:r,setCurrentDocument:d,getCurrentRecord:s,parseDspfFields:g}),t.debug("Source view synchronized after field update"),h.postMessage({type:"applyChangesSuccess",message:`Changes applied to field "${e.name}"`})}else t.debug("Skipping DDS update - no relevant changes detected"),h.postMessage({type:"applyChangesSuccess",message:`No changes detected for field "${e.name}"`});m(e),t.success("Field properties applied")}catch(e){t.error("Error applying field properties:",e),h.postMessage({type:"applyChangesError",message:`Error applying changes: ${e.message}`})}}({field:e,Logger:l,getSelectedField:()=>c,setSelectedField:e=>{c=e},getFields:()=>v,getCurrentRecord:()=>$,getCurrentDocument:()=>n,setCurrentDocument:e=>{n=e},applyColorChanges:he,getAttributeCheckboxMap:se,transferIndicators:fe,KEYWORD_ATTRIBUTE_ALLOW_LIST:ie,updateFieldInDds:Te,parseDspfFields:Ke,updateSourceViewUI:T,vscode:t,showFieldProperties:re,selectField:X})}function ye(e){k?l.warn("Cannot delete field in read-only mode"):(l.debug("Attempting to delete field:",e),l.debug("Field ID:",e.id,"Type:",e.type,"Name:",e.name),function(e){const{field:t,Logger:n,onConfirm:i}=e,o=document.createElement("div");o.className="confirmation-modal-overlay",o.style.cssText='\n        position: fixed;\n        top: 0;\n        left: 0;\n        right: 0;\n        bottom: 0;\n        background: rgba(0, 0, 0, 0.7);\n        display: flex;\n        justify-content: center;\n        align-items: center;\n        z-index: 1000;\n        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\n    ';const s=document.createElement("div");s.className="confirmation-modal",s.style.cssText="\n        background: #2d2d30;\n        border: 1px solid #454545;\n        border-radius: 6px;\n        padding: 20px;\n        min-width: 400px;\n        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);\n        color: #cccccc;\n    ";let r="Field";"keyword"===t.type?r="Keyword":"constant"===t.type&&(r="Constant"),s.innerHTML=`\n        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">\n            <span style="font-size: 20px; color: #f48771;">⚠</span>\n            <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #f48771;">Delete ${r}</h3>\n        </div>\n        <p style="margin: 0 0 8px 0; font-size: 13px; line-height: 1.5; color: #cccccc;">\n            Are you sure you want to delete the ${r.toLowerCase()} <strong>"${t.name}"</strong>?\n        </p>\n        <p style="margin: 0 0 20px 0; font-size: 12px; font-style: italic; color: #999999;">\n            This action cannot be undone.\n        </p>\n        <div style="display: flex; gap: 10px; justify-content: flex-end;">\n            <button id="confirm-delete-no" style="\n                padding: 6px 14px;\n                background-color: #3c3c3c;\n                color: #cccccc;\n                border: 1px solid #555555;\n                border-radius: 2px;\n                cursor: pointer;\n                font-size: 13px;\n                font-weight: 400;\n                min-width: 70px;\n                transition: background-color 0.15s;\n            ">No</button>\n            <button id="confirm-delete-yes" style="\n                padding: 6px 14px;\n                background-color: #c74e39;\n                color: white;\n                border: none;\n                border-radius: 2px;\n                cursor: pointer;\n                font-size: 13px;\n                font-weight: 400;\n                min-width: 70px;\n                transition: background-color 0.15s;\n            ">Yes</button>\n        </div>\n    `,o.appendChild(s),document.body.appendChild(o);const d=document.getElementById("confirm-delete-no"),a=document.getElementById("confirm-delete-yes");setTimeout(()=>{d.focus()},100),d.addEventListener("mouseenter",function(){this.style.backgroundColor="#505050"}),d.addEventListener("mouseleave",function(){this.style.backgroundColor="#3c3c3c"}),a.addEventListener("mouseenter",function(){this.style.backgroundColor="#a84233"}),a.addEventListener("mouseleave",function(){this.style.backgroundColor="#c74e39"});const l=()=>{o.remove(),document.removeEventListener("keydown",c)};d.addEventListener("click",function(){l(),n.debug("Delete cancelled by user")}),a.addEventListener("click",function(){l(),i()});const c=e=>{"Escape"===e.key?l():"Enter"===e.key&&(l(),i())};document.addEventListener("keydown",c),o.addEventListener("click",function(e){e.target===o&&l()})}({field:e,Logger:l,onConfirm:()=>function(e){const{field:t,Logger:n,fields:i,deselectAllFields:o,removeFieldFromDds:s}=e,r=document.querySelector(`[data-field-id="${t.id}"]`);r&&(r.remove(),n.debug("Removed original field element from DOM"));const d=`${t.id}_repeat`,a=document.querySelectorAll("[data-field-id]");let l=0;a.forEach(e=>{e.dataset.fieldId.startsWith(d)&&(e.remove(),l++,n.debug(`Removed visual copy: ${e.dataset.fieldId}`))}),n.success(`Removed field from DOM: 1 original + ${l} visual copies`);const c=i.findIndex(e=>e.id===t.id);n.debug("Finding field in array, index:",c),c>-1?(i.splice(c,1),n.success("Field removed from fields array, remaining:",i.length)):(n.error("Field not found in fields array with id:",t.id),n.debug("All fields in array:",i.map(e=>({id:e.id,name:e.name,type:e.type})))),o(),s(t),n.success("Field deletion process completed")}({field:e,Logger:l,fields:v,deselectAllFields:Q,removeFieldFromDds:Oe})}))}function be(e){return function({field:e,Logger:t,isReadOnly:n,selectField:i}){if(n)t.warn("Cannot edit field in read-only mode");else{if(i&&i(e),"constant"!==e.type){const e=document.getElementById("prop-name");e&&setTimeout(()=>{e.focus(),e.select()},100)}t.debug("Field selected for editing in properties panel")}}({field:e,Logger:l,isReadOnly:k,selectField:X})}function ve(e,t,n){return function(e){const{fieldId:t,newRow:n,newCol:i,Logger:o,fields:s,getCurrentRecord:r,setCurrentRecord:d,getCurrentDisplaySize:a,getWindowDimensions:l,renderField:c,renderWindowField:u,getSubfileRelationship:p,getSflpagValue:g,selectField:f,updateFieldInDds:h}=e,m=s.find(e=>e.id===t);if(!m)return void o.error("Field not found for moving:",t);const y=r?r():null,b=m.row,v=m.col;o.debug(`Moving field ${m.name} from (${b},${v}) to (${n},${i}) in record: ${y||"ALL"}`),m.row=n,m.col=i;const $=document.querySelector(`[data-field-id="${t}"]`);$&&$.remove();const S=`${t}_repeat`,w=document.querySelectorAll("[data-field-id]");let x=0;w.forEach(e=>{const t=e.getAttribute("data-field-id");t&&t.includes(S)&&(e.remove(),x++)}),x>0&&o.dds(`Removed ${x} visual copies during move`);const k=y?l(y):null;if(k&&k.hasWindow){const e="DS3"===(a?a():null)?k.ds3:k.ds4;e?u(m,e):c(m)}else c(m);const D=y?p(y):null;if(D&&D.sflRecord===y){const e=g(D.sflctlRecord);if(e>1){o.dds(`Regenerating ${e-1} visual copies for field ${m.name} after move in SFL record`);for(let n=1;n<e;n++){const e={...m,row:m.row+n,isVisualCopy:!0,id:`${t}_repeat${n}`};if(k&&k.hasWindow){const t="DS3"===(a?a():null)?k.ds3:k.ds4;t?u(e,t):c(e)}else c(e)}}}f(m);const E=y;if(h(m,{...m,row:b,col:v}),E&&d){const e=r?r():null;e&&E!==e&&(o.debug("Restoring record context after move:",E),d(E))}o.success("Field moved and DDS updated, maintaining record filter:",r?r():y)}({fieldId:e,newRow:t,newCol:n,Logger:l,fields:v,getCurrentRecord:()=>$,setCurrentRecord:e=>{$=e},getCurrentDisplaySize:()=>w,getWindowDimensions:pe,renderField:j,renderWindowField:Y,getSubfileRelationship:le,getSflpagValue:ce,selectField:X,updateFieldInDds:Te})}function $e(){return function(e){const{Logger:t,vscode:n,getCurrentDocument:i,getCurrentRecord:o,showNotification:s}=e,r=i?i():"",d=o?o():null;t.debug("Save function called, currentDocument:",r?r.substring(0,100):"null"),n.postMessage({type:"update",content:r,currentRecord:d}),s("✅ Document saved successfully","success"),t.success("Document saved, preserving record context:",d)}({Logger:l,vscode:t,getCurrentDocument:()=>n,getCurrentRecord:()=>$,showNotification:Ge})}function Se(e){return"designer"===e?C(w,"designer"):L(1),function({viewName:e,Logger:t,setCurrentView:n,getSelectedField:i,setSelectedField:o,getFields:s,getCurrentDocument:r,parseDspfFields:d,showFieldProperties:a,updatePreviewView:l,updateSourceViewUI:c,vscode:u,setCurrentDocument:p,getCurrentRecord:g,setupSourceSearchUI:f,scrollToRecordInSource:h}){t.ui("Switching to view:",e),n&&n(e),document.querySelectorAll(".view").forEach(e=>{e.classList.remove("active"),e.style.display="none",t.debug("Hidden view:",e.id)}),document.querySelectorAll(".tab-button").forEach(e=>{e.classList.remove("active")});const m=document.getElementById("properties-panel");switch(e){case"designer":{const e=document.getElementById("designer-view"),n=document.getElementById("designerTab");if(e&&n){e.style.display="flex",e.classList.add("active"),n.classList.add("active"),m&&m.classList.remove("hidden");const l=i?i():null,c=l?l.name:null;if(d(r?r():""),c){const e=(s?s():[]).find(e=>e.name===c);if(e){o&&o(e),a(e);const n=document.querySelector(`[data-field-name="${e.name}"]`);n&&(n.classList.add("field-updated"),setTimeout(()=>{n.classList.remove("field-updated")},800)),t.debug("Auto-updated properties for field:",e.name)}else o&&o(null),a(null),t.warn("Previously selected field no longer exists, resetting properties")}else o&&o(null),a(null);t.debug("Designer view activated and visible")}else t.error("Designer elements not found");break}case"preview":{const e=document.getElementById("preview-view"),n=document.getElementById("previewTab");e&&n?(e.style.display="flex",e.classList.add("active"),n.classList.add("active"),m&&m.classList.add("hidden"),l(),t.debug("Preview view activated and visible")):t.error("Preview elements not found");break}case"source":{const e=document.getElementById("source-view"),n=document.getElementById("sourceTab");e&&n?(e.style.display="flex",e.classList.add("active"),n.classList.add("active"),m&&m.classList.add("hidden"),c({Logger:t,vscode:u,getCurrentDocument:r,setCurrentDocument:p,getCurrentRecord:g,parseDspfFields:d}),f({Logger:t}),h(),t.debug("Source view activated and visible")):t.error("Source elements not found");break}}document.querySelectorAll(".view").forEach(e=>{const n=e.classList.contains("active"),i=window.getComputedStyle(e).display;t.debug(`${e.id}: active=${n}, display=${i}`)})}({viewName:e,Logger:l,setCurrentView:e=>{D=e},getSelectedField:()=>c,setSelectedField:e=>{c=e},getFields:()=>v,getCurrentDocument:()=>n,parseDspfFields:Ke,showFieldProperties:re,updatePreviewView:xe,updateSourceViewUI:T,vscode:t,setCurrentDocument:e=>{n=e},getCurrentRecord:()=>$,setupSourceSearchUI:x,scrollToRecordInSource:we})}function we(){return function(e){const{currentRecord:t,currentDocument:n,Logger:i}=e;if(!t)return void(i&&i.warn("No current record to scroll to"));const o=document.getElementById("source-editor");if(!o)return void(i&&i.error("Source editor not found"));const s=n.split("\n");let r=-1;for(let e=0;e<s.length;e++){const n=s[e].match(/^\s*A\*?\s+R\s+(\w+)/i);if(n&&n[1].toUpperCase()===t.toUpperCase()){r=e;break}}if(-1===r)return void(i&&i.warn(`Record ${t} not found in source`));i&&i.debug(`Scrolling to record ${t} at line ${r+1}`);const d=21*r;o.scrollTop=Math.max(0,d-100)}({currentRecord:$,currentDocument:n,Logger:l})}function xe(){const e=function(e){const{Logger:t,ScreenCoordinates:n,parseDspfForPreview:i,generateWindowFieldHtml:o,generateFieldHtml:s,setupPreviewDisplaySizeListeners:r,updateCanvasSize:d,setupRulers:a,parseDspfFields:l,getCurrentDocument:c,getCurrentRecord:u,getCurrentDisplaySize:p,setCurrentDisplaySize:g,applyDefaultZoomForDisplaySize:f,updatePreviewView:h}=e,m=document.getElementById("preview-container");if(!m)return;const y=c(),b=u(),v=p(),$=i(y,b),S="DS3"===v?24:27,w="DS3"===v?80:132;let x=`\n        <div class="header">\n            <h2>DSPF Preview - ${b||$.recordName||"DISPLAY"} (${v})</h2>\n            \x3c!-- Display Size Selection for Preview --\x3e\n            <div style="display: flex; align-items: center; gap: 15px; border: 1px solid #555; padding: 5px 10px; border-radius: 3px; margin: 10px auto; width: fit-content; background-color: #1e1e1e;">\n                <label style="margin: 0; color: #cccccc; cursor: pointer;">\n                    <input type="radio" name="preview-display-size" value="DS3" ${"DS3"===v?"checked":""}>\n                    <span style="margin-left: 5px;">24 x 80 (*DS3)</span>\n                </label>\n                <label style="margin: 0; color: #cccccc; cursor: pointer;">\n                    <input type="radio" name="preview-display-size" value="DS4" ${"DS4"===v?"checked":""}>\n                    <span style="margin-left: 5px;">27 x 132 (*DS4)</span>\n                </label>\n            </div>\n        </div>\n        <div class="screen" style="width: ${n.getWidthInPixels(w)}px; height: ${n.getHeightInPixels(S)}px;">\n    `;for(let e=1;e<=S;e++){const t="".padEnd(w," "),i=n.toPixels(e,1).top;x+=`<div class="screen-line" style="top: ${i}px; width: ${n.getWidthInPixels(w)}px;">${t}</div>\n`}if($.windowDimensions){const e=$.windowDimensions,i=n.toPixels(e.row,e.col),o=i.top,s=i.left,r=n.getHeightInPixels(e.height),d=n.getWidthInPixels(e.width+4);x+=`<div class="window-frame" style="\n            position: absolute;\n            top: ${o}px;\n            left: ${s}px;\n            width: ${d}px;\n            height: ${r}px;\n            border: 2px dotted #00FF00;\n            pointer-events: none;\n            z-index: 5;\n        "></div>`,t.window(`Adding window frame at ${e.row},${e.col} size ${e.height}x${e.width}`)}$.fields.forEach(e=>{$.windowDimensions?x+=o(e,$.windowDimensions):x+=s(e)}),x+="</div>",m.innerHTML=x,r({Logger:t,getCurrentDisplaySize:p,setCurrentDisplaySize:g,updateCanvasSize:d,setupRulers:a,parseDspfFields:l,getCurrentDocument:c,applyDefaultZoomForDisplaySize:f,updatePreviewView:h}),m.querySelectorAll(".input-field").forEach(e=>{e.addEventListener("click",function(){this.contentEditable=!0,this.focus()}),e.addEventListener("blur",function(){this.contentEditable=!1})})}({Logger:l,ScreenCoordinates:o,parseDspfForPreview:Ee,generateWindowFieldHtml:Ae,generateFieldHtml:Ce,setupPreviewDisplaySizeListeners:b,updateCanvasSize:e=>y(e,o,l),setupRulers:F,parseDspfFields:Ke,getCurrentDocument:()=>n,getCurrentRecord:()=>$,getCurrentDisplaySize:()=>w,setCurrentDisplaySize:e=>{w=e},applyDefaultZoomForDisplaySize:C,updatePreviewView:xe});return A(),e}function ke(e,t,n,i=""){return function({lines:e,startIndex:t,lineOffset:n,contextLabel:i="",IndicatorUtils:o,Logger:s}){const r=[];let d=!1,a=n-1,l=null;for(;a>0;){const n=e[t+a];if(n.length<6||"A"!==n[5])break;const c=n.substring(18).trim(),u=/^[A-Z][A-Z0-9_]{2,}\s+\d+/i.test(c),p=n.length>43?n.substring(43).trim():"";if(p.length>0&&/^[A-Z]+\s*\(/.test(p)){s.debug(`[${i}] scanIndicatorsBackward stopping - found keyword at backOffset ${a}`);break}const g=n.substring(6,18).trim(),f=/^O?\s*[N\d\s]+$/.test(g);if(!(!u&&f&&g.length>0))break;const h=n.length>6&&"O"===n[6],m=o.extractFromDdsLine(n,i);m&&m.length>0&&(h?(d=!0,l?(l.indicators.unshift(...m),l.isOr=!0):l={indicators:[...m],isOr:!0},r.unshift({indicators:l.indicators,isOr:l.isOr}),l=null):null===l?l={indicators:[...m],isOr:!1}:l.indicators.unshift(...m)),a--}return l&&l.indicators.length>0&&r.unshift({indicators:l.indicators,isOr:l.isOr}),{scannedLines:r,hasOrLines:d}}({lines:e,startIndex:t,lineOffset:n,contextLabel:i,IndicatorUtils:s,Logger:l})}function De(e){return function({options:e,Logger:t,IndicatorUtils:n,scanIndicatorsBackward:i,extractAttributes:o,attributeContentRegex:s}){const{lines:r,startIndex:d,field:a,contextLabel:l="PARSER",includeChecks:c=!1,preserveOriginalSpacing:u=!1,stopOnFieldKeywordsRegex:p=null,attributeRegex:g=s||/COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(/}=e;let f=1;for(;d+f<r.length;){const e=r[d+f],s=e.trim();if(e.length>6&&"A"===e[5]&&"*"===e[6]||s.startsWith("A*")||s.startsWith("*")||s.startsWith("-")){t.debug(`[${l}] Skipping comment line at offset ${f}: "${s}"`),f++;continue}const h=e.length>18?e.substring(18).trim():"",m=/^[A-Z][A-Z0-9_]{0,9}\s+\d+/i.test(h),y=e.length>6?e.substring(6,18).trim():"",b=/^O?\s*[N\d\s]+$/.test(y),v=e.length>6&&"A"===e[5]&&!m&&b&&y.length>0&&""===h,$=/^[A-Z_][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(h),S=s.match(/\d+\s+\d+'/),w=s.match(/^A\s+R\s+\w+/),x=""===s||"A"===s,k=/\d{1,2}\s+\d{1,2}(DATE|TIME|SYSNAME|USER)/.test(s),D=s.startsWith("A")&&s.includes("'")&&!s.match(/\d+\s+\d+'/)&&!g.test(s),E=!!p&&p.test(s);if($||S||w||x||k||E){t.debug(`[${l}] Stopping scan - found ${$?"field":S?"constant":w?"record":k?"keyword":E?"field keyword":"blank"}`);break}if(v){t.debug(`[${l}] Skipping indicator-only line at offset ${f}, continuing...`),f++;continue}if(D){f++;continue}const I=g.test(s);t.debug(`[${l}] Line ${d+f+1}: hasAttribute=${I}, nextTrimmed="${s}"`);const L=e.substring(18).trim();t.debug(`[${l}] Line ${d+f+1}: contentAfter18="${L}"`);const C=!I&&s.match(/^A[O\s]\s*[N\d\s]+$/)&&""===L&&!$;if(t.debug(`[${l}] Line ${d+f+1}: hasOnlyIndicators=${C}`),!I&&!C){const n=e.length>43?e.substring(43).trim():"";if(s.startsWith("A")&&n.length>0&&!$){t.debug(`[${l}] Skipping unknown keyword at column 44+: "${n}"`),f++;continue}t.debug(`[${l}] Stopping - unknown line type at offset ${f}`);break}if(C){t.debug(`[${l}] Found indicator-only line at offset ${f}, continuing...`),f++;continue}const A=e.length>6&&"O"===e[6],F=n.extractFromDdsLine(e,`${l}-CURRENT`),R=i(r,d,f,`${l}-BACKWARD`),O=R.scannedLines;let T=R.hasOrLines;F&&F.length>0&&(A?(O.push({indicators:F,isOr:!0}),T=!0):O.length>0?O[O.length-1].indicators.push(...F):O.push({indicators:F,isOr:!1}));const N=()=>{if(0===O.length)return null;if(T){const e=[];return O.forEach(t=>{t.isOr?e.push({indicators:[...t.indicators]}):e.length>0?e[e.length-1].indicators.push(...t.indicators):e.push({indicators:[...t.indicators]})}),{groups:e,isOr:!0}}const e=[];return O.forEach(t=>{e.push(...t.indicators)}),{groups:[{indicators:e}],isOr:!1}},B=e.match(/COLOR\((\w+)\)/);if(B){const n=B[1];a.color||(a.color=n,t.parse(`Found color ${a.color} for ${l} field ${a.name} at offset ${f}`)),a.colors||(a.colors=[]),a.colors.includes(n)||a.colors.push(n),u&&(a.originalColorLines=a.originalColorLines||{},a.originalColorLines[n]||(a.originalColorLines[n]=[]),a.originalColorLines[n].push(e));const i=N();i&&(a.colorIndicators||(a.colorIndicators={}),a.colorIndicators[n]&&!a.colorIndicatorsModified?(a.colorIndicators[n].groups.push(...i.groups),a.colorIndicators[n].isOr=a.colorIndicators[n].isOr||i.isOr,t.debug(`[${l}] COLOR ${n}: Accumulated ${i.groups.length} more group(s), total=${a.colorIndicators[n].groups.length}`)):(a.colorIndicators[n]=i,t.debug(`[${l}] COLOR ${n}: Stored ${i.groups.length} group(s), isOr=${i.isOr}`)),i.groups.forEach((e,n)=>{t.debug(`[${l}]   Group ${n}: ${e.indicators.length} indicators:`,e.indicators.map(e=>e.number+(e.not?"N":"")).join(", "))}))}const W=o(e,e);if(W.attrs&&Object.keys(W.attrs).length>0){a.attributes={...a.attributes,...W.attrs},u&&(a.originalAttrLines=a.originalAttrLines||{}),W.isGroupedFormat&&(a.hasGroupedDspatr=!0,u&&(a.groupedDspatrLine=e));for(const[t,n]of Object.entries(W.attrs))n&&u&&(a.originalAttrLines[t]||(a.originalAttrLines[t]=[]),a.originalAttrLines[t].push(e));const n=N();if(n)for(const[e,i]of Object.entries(W.attrs))i&&(a.attributeIndicators||(a.attributeIndicators={}),a.attributeIndicators[e]&&!a.attributeIndicatorsModified?(a.attributeIndicators[e].groups.push(...n.groups),a.attributeIndicators[e].isOr=a.attributeIndicators[e].isOr||n.isOr,t.debug(`[${l}] DSPATR ${e}: Accumulated ${n.groups.length} more group(s), total=${a.attributeIndicators[e].groups.length}`)):(a.attributeIndicators[e]=n,t.debug(`[${l}] DSPATR ${e}: Stored ${n.groups.length} group(s), isOr=${n.isOr}`)))}const P=e.match(/DFTVAL\('([^']*)'\)/);if(t.debug(`[${l}] Checking line ${d+f+1} for DFTVAL: ${s.substring(0,50)}`),t.debug(`[${l}] DFTVAL match result:`,P?`YES (value='${P[1]}')`:"NO"),P){const e=P[1];a.dftval={value:e},t.parse(`Found DFTVAL='${e}' for ${l} field ${a.name} at offset ${f}`),t.debug(`[${l}] DFTVAL processing - scannedLines count: ${O.length}`),t.debug(`[${l}] DFTVAL processing - currentLineIndicators:`,F),O.forEach((e,n)=>{t.debug(`[${l}]   DFTVAL scannedLine ${n}: ${e.indicators.length} indicators, isOr=${e.isOr}`,e.indicators.map(e=>e.number).join(","))});const n=N();n&&n.groups&&n.groups.length>0?(a.dftvalIndicators=n,t.debug(`[${l}] DFTVAL: Stored ${n.groups.length} group(s), isOr=${n.isOr}`),n.groups.forEach((e,n)=>{t.debug(`[${l}]   DFTVAL Group ${n}: ${e.indicators.length} indicators:`,e.indicators.map(e=>e.number+(e.not?"N":"")).join(", "))})):t.debug(`[${l}] DFTVAL: No indicator groups built (no indicators present)`)}const M=(e,t)=>{const n=new RegExp(`${e}\\(\\s*'((?:''|[^'])*)'\\s*\\)`,"i"),i=t.match(n);if(i)return i[1].replace(/''/g,"'");const o=new RegExp(`${e}\\(\\s*([^)]*?)\\s*\\)`,"i"),s=t.match(o);return s?s[1].trim():""},z=e.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);if(z){const e=z[1].replace(/["']/g,"").trim().toUpperCase();if(e){const n=z[2]?z[2].trim():"";a.edtcde={value:e},"*"!==n&&"$"!==n||"Z"===e||(a.edtcde.replaceLeadingZerosWith=n),t.parse(`Found EDTCDE(${e}${n?` ${n}`:""}) for ${l} field ${a.name} at offset ${f}`)}}const U=M("EDTWRD",e);U.length>0&&(a.edtwrd={value:U},t.parse(`Found EDTWRD('${U}') for ${l} field ${a.name} at offset ${f}`));const _=M("EDTMSK",e);_.length>0&&(a.edtmsk={value:_},t.parse(`Found EDTMSK('${_}') for ${l} field ${a.name} at offset ${f}`));const V=M("DFT",e);if(V.length>0&&(a.dft={value:V},t.parse(`Found DFT(${V}) for ${l} field ${a.name} at offset ${f}`)),/VALUES\(/i.test(e)){let n=e,i=f;for(;!/\)/.test(n)&&d+i+1<r.length;){const e=r[d+i+1],t=e.trim(),o=e.length>6&&"A"===e[5]&&"*"===e[6]||t.startsWith("A*")||t.startsWith("*"),s=/\b[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(t),a=t.match(/^A\s+R\s+\w+/);if(o||s||a)break;n+=" "+t,i++}const o=n.match(/VALUES\(([^)]*)\)/i);if(o){const e=o[1].replace(/\s*[+-]\s*/g," ").replace(/\s+/g," ").trim();e.length>0&&(a.values=e,t.parse(`Found VALUES(${e}) for ${l} field ${a.name} at offset ${f}`)),i>f&&(f=i)}}if(c){const n=e.match(/CHECK\(([^)]+)\)/);if(n){t.debug(`[${l}] ===== FOUND CHECK LINE =====`),t.debug(`[${l}] nextLine: "${e}"`),t.debug(`[${l}] lineOffset: ${f}`),t.debug(`[${l}] scannedLines.length: ${O.length}`),t.debug(`[${l}] hasOrLines: ${T}`),t.debug(`[${l}] scannedLines:`,JSON.stringify(O));const i=n[1].trim().split(/\s+/);t.debug(`[${l}] CHECK codes found: ${i.join(", ")}`),a.checkOptions||(a.checkOptions={}),i.forEach(e=>{a.checkOptions[e]=!0}),u&&(a.originalCheckLines=a.originalCheckLines||{},i.forEach(t=>{a.originalCheckLines[t]=e})),i.forEach(e=>{if(["ME","ER"].includes(e)){t.debug(`[${l}] Processing CHECK(${e}) - calling buildIndicatorGroups()`);const n=N();t.debug(`[${l}] CHECK(${e}): buildIndicatorGroups returned:`,JSON.stringify(n)),n&&n.groups&&n.groups.length>0?(a.checkIndicators||(a.checkIndicators={}),a.checkIndicators[e]=n,t.debug(`[${l}] CHECK(${e}): Stored ${n.groups.length} group(s), isOr=${n.isOr}`),n.groups.forEach((n,i)=>{t.debug(`[${l}]   CHECK(${e}) Group ${i}: ${n.indicators.length} indicators: ${n.indicators.map(e=>(e.not?"N":"")+e.number).join(", ")}`)})):t.debug(`[${l}] CHECK(${e}): No indicators stored (indicatorData is null or empty)`)}else t.debug(`[${l}] Skipping indicators for CHECK(${e}) - not ME/ER`)}),t.debug(`[${l}] Stored CHECK options for field ${a.name}`),t.debug(`[${l}] field.checkIndicators:`,JSON.stringify(a.checkIndicators))}}f++}}({options:e,Logger:l,IndicatorUtils:s,scanIndicatorsBackward:ke,extractAttributes:Le,attributeContentRegex:p})}function Ee(e,t=null){const n=e.split("\n");let i=[],o="",s={rows:24,cols:80},r=null,d=null,a=!1,c=0;if(l.parse("Parsing DSPF for preview, target record:",t),n.forEach((e,u)=>{if(c>0)return void c--;const p=e.trim();if(!p||p.startsWith("A*"))return;if(p.includes("DSPSIZ(")){const e=p.match(/DSPSIZ\((\d+)\s+(\d+)/);e&&(s.rows=parseInt(e[1]),s.cols=parseInt(e[2]))}if(p.match(/^A\s+R\s+\w+/)){const e=p.match(/R\s+(\w+)/);return void(e&&(d=e[1],t||o||p.includes("SFL")||(t=d,l.parse(`No target record specified, using first found: ${t}`)),a=t===d,l.parse(`Found record: ${d}, target: ${a}`),a&&!o&&(o=d)))}if(a){const e=ue(p,d,r);e&&(r=e)}const g=e.length>44&&/^[ 0-9]{2}[ 0-9]{3}/.test(e.substring(39,44));if(a&&e.length>6&&"A"===e[5]&&(p.includes("'")||/\d+\s+\d+/.test(p)||/\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(p)||g)&&!p.includes("WINDOW(")){let t=e;if(e.includes("'")&&e.match(/'[^']*[-+]\s*$/)){l.parse(`Multi-line constant detected at line ${u+1}`);const i=Ie({initialLine:e,getNextLine:e=>e<n.length?n[e]:null,startIndex:u+1,context:"PREVIEW"});t=i.fullLine,c=i.linesConsumed}const o=Ze(t);if(o){o.recordName=d,o.attributeIndicators={},o.colorIndicators={};const e=[];let t=!1;if(u>0){let i="PREVIEW-VARIABLE-BACKWARD";"keyword"===o.type||o.isKeyword?i="PREVIEW-KEYWORD-BACKWARD":"constant"===o.type&&(i="PREVIEW-CONSTANT-BACKWARD"),ke(n,0,u,i).scannedLines.forEach(n=>{n.indicators&&n.indicators.length>0&&(e.push({indicators:n.indicators}),n.isOr&&(t=!0))})}o._inlineIndicators&&o._inlineIndicators.length>0&&(o._inlineIsOr?(e.push({indicators:o._inlineIndicators}),t=!0):e.length>0?e[e.length-1].indicators.push(...o._inlineIndicators):e.push({indicators:o._inlineIndicators}),delete o._inlineIndicators,delete o._inlineIsOr),e.length>0&&(o.indicators={groups:e,isOr:t||e.length>1}),De({lines:n,startIndex:u,field:o,contextLabel:"PREVIEW",attributeRegex:/COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(/}),l.debug(`Parsed preview field: ${o.name} (${o.type}) at ${o.row},${o.col} for record ${d}`),i.push(o)}else l.warn(`Failed to parse line: "${p.substring(0,60)}..."`)}}),l.parse(`Preview parsed ${i.length} fields for record ${t||"ALL"}`),t){const e=le(t);if(e&&e.companionRecord){l.parse(`Preview: Parsing companion record: ${e.companionRecord}`);let t=!1,o=null;n.forEach((s,r)=>{if(c>0)return void c--;const d=s.trim();if(!d||d.startsWith("A*"))return;if(d.match(/^A\s+R\s+\w+/)){const n=d.match(/R\s+(\w+)/);n&&(o=n[1],t=e.companionRecord===o,t&&l.parse(`Preview: Found companion record: ${o}`))}const a=s.length>44&&/^[ 0-9]{2}[ 0-9]{3}/.test(s.substring(39,44));if(t&&s.length>6&&"A"===s[5]&&(d.includes("'")||/\d+\s+\d+/.test(d)||/\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(d)||a)&&!d.includes("WINDOW(")){let e=s;if(s.includes("'")&&s.match(/'[^']*[-+]\s*$/)){l.parse(`Preview: Multi-line constant in companion record detected at line ${r+1}`);const t=Ie({initialLine:s,getNextLine:e=>e<n.length?n[e]:null,startIndex:r+1,context:"PREVIEW-COMPANION"});e=t.fullLine,c=t.linesConsumed}const t=Ze(e);t&&(t.isBackgroundRecord=!0,t.recordName=o,t.attributeIndicators={},t.colorIndicators={},De({lines:n,startIndex:r,field:t,contextLabel:"PREVIEW-COMPANION",includeDftval:!0,attributeRegex:/COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(/,stopOnFieldKeywordsRegex:/(PSHBTN(FLD|CHC)|RANGE\()/}),l.debug(`Preview: Parsed companion field: ${t.name} at ${t.row},${t.col} with color=${t.color}, attrs=${t.attributes?Object.keys(t.attributes).join(","):"none"}`),i.push(t))}})}}r&&l.window(`Using declared window dimensions: ${r.height}x${r.width} at (${r.row},${r.col})`);const u=le(t);if(i=function(e,t,n){return function(e){const{fields:t,targetRecord:n,subfileRelationship:i,getSflpagValue:o,Logger:s}=e;if(!i)return t;const r=i.sflctlRecord,d=o(r);if(d<=1)return t;s.debug(`Applying SFLPAG repetition: ${d} times for ${n} (from ${r})`);const a=[...t],l=[...t];for(let e=1;e<d;e++)a.forEach(t=>{if(n===i.sflRecord&&!t.isBackgroundRecord||n===i.sflctlRecord&&t.isBackgroundRecord){const n={...t,row:t.row+e,isVisualCopy:!0};l.push(n)}});return l}({fields:e,targetRecord:t,subfileRelationship:n,getSflpagValue:ce,Logger:l})}(i,t,u),u&&u.sflRecord===t){const e=pe(u.sflctlRecord);if(e.hasWindow){const n="DS3"===w?e.ds3:e.ds4;n&&(r=n,l.window(`SFL ${t}: Using SFLCTL ${u.sflctlRecord} WINDOW dimensions: ${r.height}x${r.width} at (${r.row},${r.col})`))}}return{recordName:o,screenSize:s,fields:i,windowDimensions:r}}function Ie(e){return function({initialLine:e,getNextLine:t,startIndex:n,context:i,Logger:o}){let s=e,r=0,d=n;const a=e.includes("'");for(;;){const e=t(d);if(!e)break;const n=e.length>6?e.substring(6):"",l=n.trim(),c=e.length>18?e.substring(18).trim():"",u=e.length>6?e.substring(6,18).trim():"",p=u.length>0&&/^O?\s*[N\d\s]+$/.test(u)&&""===c;if(!(e.length>6&&"A"===e[5])||p||/^\d+\s+\d+/.test(l)||!(l.length>0||a&&n.length>0))break;o.parse(`Continuation found at index ${d}: ${e}`);const g=n.includes("'");let f,h;if(a||g){const e=38;n.length>e?(f=n.substring(e),h=e):(f=n,h=0)}else h=n.search(/\S/),f=h>=0?n.substring(h):"";const m=h>38;o.parse(`[${i}] contentStart: ${h}, column: ${h+7}, hasLeadingSpaces: ${m}`);const y=f.includes("'");if(y&&f.length>1){const e=f.substring(0,f.length-1),t=e.match(/[-+]\s*$/);t&&(f=e.substring(0,e.length-t[0].length)+"'",o.parse(`[${i}] Removed trailing continuation sequence from last continuation line: "${f}"`))}const b=s.match(/'([^']*)$/);if(b){const e=b[1],t=e.match(/[-+]\s*$/),n=!!t;if(o.parse(`[${i}] Before concat: constant value ends with: "${e.slice(-10)}", hasContinuation: ${n}, isLastLine: ${y}`),n){const e=t[0].length;m?(o.parse(`[${i}] Removing trailing continuation sequence and replacing with space (has indentation)`),s=s.substring(0,s.length-e)+" "):(o.parse(`[${i}] Removing trailing continuation sequence without space (no indentation)`),s=s.substring(0,s.length-e))}}if(s+=f,o.parse(`[${i}] After concat: fullLine length: ${s.length}, last 10 chars: "${s.slice(-10)}"`),d++,r++,y)break}return o.parse(`Completed multi-line constant, full line length: ${s.length}`),o.parse(`Complete constant last 40 chars: "${s.slice(-40)}"`),{fullLine:s,linesConsumed:r}}({...e,Logger:l})}function Le(e,t=null){return function({content:e,fullLine:t=null,IndicatorUtils:n,Logger:i}){const o={},s={attrs:o,indicators:[],isGroupedFormat:!1};t&&(s.indicators=n.extractFromDdsLine(t,"extractAttributes"));const r=e.match(/DSPATR\(([A-Z]{2}(?:\s+[A-Z]{2})+)\)/);if(r){s.isGroupedFormat=!0;const e=r[1].split(/\s+/);i.parse("Found grouped DSPATR format with codes:",e),e.forEach(e=>{switch(e){case"UL":o.underline=!0;break;case"BL":o.blink=!0;break;case"HI":o.highlight=!0;break;case"RI":o.reverse=!0;break;case"PC":o.cursorPosition=!0;break;case"CS":o.columnSeparator=!0;break;case"ND":o.nonDisplay=!0;break;case"MDT":o.modifiedDataTag=!0;break;case"PR":o.protect=!0;break;case"OID":o.operatorId=!0;break;case"SP":o.selectLightPen=!0}})}else e.includes("DSPATR(UL)")&&(o.underline=!0),e.includes("DSPATR(BL)")&&(o.blink=!0),e.includes("DSPATR(HI)")&&(o.highlight=!0),e.includes("DSPATR(RI)")&&(o.reverse=!0),e.includes("DSPATR(PC)")&&(o.cursorPosition=!0),e.includes("DSPATR(CS)")&&(o.columnSeparator=!0),e.includes("DSPATR(ND)")&&(o.nonDisplay=!0),e.includes("DSPATR(MDT)")&&(o.modifiedDataTag=!0),e.includes("DSPATR(PR)")&&(o.protect=!0),e.includes("DSPATR(OID)")&&(o.operatorId=!0),e.includes("DSPATR(SP)")&&(o.selectLightPen=!0);return s}({content:e,fullLine:t,IndicatorUtils:s,Logger:l})}function Ce(e,t=null){let n=e.row,i=e.col;t&&(n=t.row+e.row-1,i=t.col+e.col+1);const{text:s,widthPx:r,color:d,classes:a}=K(e,"preview");t&&l.window(`Window field "${e.name}" type=${e.type} at (${e.row},${e.col}) value=[${s}] length=${s.length}`);const c="keyword"===e.type||e.isKeyword,u=o.calculateFieldWrapping(e,w);if(1===u.length){const{top:t,left:l}=o.toPixels(n,i),u=r?`width: ${r}px;`:"",p=d?`color: ${d};`:"";return`        <div class="field ${"constant"===e.type||c?"constant":`${e.type}-field`}${a.length?` ${a.join(" ")}`:""}" style="top: ${t}px; left: ${l}px; ${u} ${p} white-space: pre;">${s}</div>\n`}{let n="",i=0;const r="constant"===e.type||c?"constant":`${e.type}-field`;return u.forEach(e=>{const d=t?t.row+e.row-1:e.row,a=t?t.col+e.col+1:e.col,{top:l,left:c}=o.toPixels(d,a),u=s.substring(i,i+e.length),p=`width: ${o.getWidthInPixels(e.length)}px;`;n+=`        <div class="field ${r}" data-field-segment="true" style="top: ${l}px; left: ${c}px; ${p} white-space: pre;">${u}</div>\n`,i+=e.length}),n}}function Ae(e,t){return function(e){const{field:t,windowDimensions:n,generateFieldHtml:i}=e;return i(t,{row:n.row,col:n.col})}({field:e,windowDimensions:t,generateFieldHtml:Ce})}function Fe(e){const t=n.split("\n"),i=Ue(e);let o=-1,s=t.length,r=!1;for(let e=0;e<t.length;e++){const n=t[e].trim();if(n.match(/^A\s+R\s+(\w+)/)){const t=n.match(/^A\s+R\s+(\w+)/);if(t){const n=t[1];if(n===$)o=e,r=!0,l.dds(`Found record ${$} at line ${e+1}`);else if(r){s=e,l.dds(`Record ${$} ends at line ${s+1}, next record is ${n}`);break}}}}if(-1===o)return void l.error(`Record ${$} not found`);l.dds(`Record boundaries: ${o+1} to ${s}`);let d=o+1;for(let n=s-1;n>o;n--){const i=t[n],o=i.trim();if(!o||o.startsWith("A*"))continue;const r=i.length>43?i.substring(43):"";if(o.startsWith("A ")&&p.test(r))continue;if(o.startsWith("A")&&o.includes("'")&&!o.match(/^A\s+\d+\s+\d+/)){l.dds(`Skipping continuation line during search at line ${n+1}`);continue}const a=(i.length>38?i.substring(38):"").match(/^\s*(\d+)\s+(\d+)/);if(a){const i=parseInt(a[1]),o=parseInt(a[2]);if(e.row>i||e.row===i&&e.col>o){for(d=n+1,l.dds(`New field row=${e.row} col=${e.col} comes after existing field at row=${i} col=${o}`);d<s;){const e=t[d],n=e.trim();if(e.length>6&&"A"===e[5]&&"*"===e[6]||n.startsWith("A*")||n.startsWith("*")||n.startsWith("-")){l.dds(`Skipping comment line at ${d+1}`),d++;continue}if(!n||"A"===n)break;const i=e.length>43?e.substring(43):"",o=n.startsWith("A ")&&p.test(i),s=n.startsWith("A")&&n.includes("'")&&!n.match(/^A\s+\d+\s+\d+/),a=e.length>18?e.substring(18).trim():"",c=e.length>38?e.substring(38):"",u=/^\s*\d+\s+\d+/.test(c),g=n.startsWith("A")&&!u&&""===a&&n.length>1,f=e.length>43?e.substring(43).trim():"",h=f.length>0&&!p.test(r);if(o)l.dds(`Skipping attribute line at ${d+1}`),d++;else if(s)l.dds(`Skipping continuation line at ${d+1}: ${n.substring(0,50)}...`),d++;else if(g)l.dds(`Skipping indicator-only line at ${d+1}`),d++;else{if(!h)break;l.dds(`Skipping unknown keyword line at ${d+1}: ${f.substring(0,30)}...`),d++}}break}l.dds(`New field row=${e.row} col=${e.col} comes before existing field at row=${i} col=${o}`)}}l.dds(`Inserting field ${e.name} at line ${d+1} within record boundaries ${o+1}-${s}`);const a=i.split("\n");t.splice(d,0,...a),n=t.join("\n"),l.dds(`✅ Added field ${e.name} to record ${$} at line ${d+1}`),Ne()}function Re(e){const t=e.match(/^\s*([ 0-9]{2})([ 0-9]{3})(DATE|TIME|SYSNAME|USER)\b/);if(t){const n=parseInt(t[1],10),i=parseInt(t[2],10),o=t[3],s="DATE"===o?((e,t,n)=>{const i=t.replace(/[-/\\^$*+?.()|[\]{}]/g,"\\$&"),o=n.replace(/[-/\\^$*+?.()|[\]{}]/g,"\\$&"),s=new RegExp(`^\\s*${i}${o}DATE\\(\\s*([^)]*?)\\s*\\)`,"i"),r=e.match(s);return r?r[1].trim():null})(e,t[1],t[2]):null;if(!Number.isNaN(n)&&!Number.isNaN(i))return{row:String(n),col:String(i),keyword:o,keywordArgs:s}}const n=e.trim().match(/^(\d{1,2})\s+(\d{1,3})(DATE|TIME|SYSNAME|USER)\b/);if(!n)return null;const i=n[3],o="DATE"===i?(()=>{const t=e.trim().match(/^\d{1,2}\s+\d{1,3}DATE\(\s*([^)]*?)\s*\)/i);return t?t[1].trim():null})():null;return{row:String(parseInt(n[1],10)),col:String(parseInt(n[2],10)),keyword:i,keywordArgs:o}}function Oe(e){const t=n.split("\n"),i=e.recordName||$;l.debug("Searching for field to remove:",e,"in record:",i);let o=-1,s=t.length;if(i)for(let e=0;e<t.length;e++){const n=t[e],r=n.match(/^\s*A\s+R\s+(\w+)/);if(r&&r[1]===i&&(o=e,l.parse("Found record start at line",e+1)),o>=0&&e>o&&n.match(/^\s*A\s+R\s+\w+/)){s=e,l.parse("Found record end at line",e);break}}const r=o>=0?o:0;let d=s;if("keyword"===e.type||e.isKeyword){const n=e.row.toString(),i=e.col.toString();l.debug(`Looking for keyword "${e.name}" at row=${n} col=${i}`);for(let o=r;o<d;o++){const s=Re(t[o].substring(18));if(s&&s.keyword===e.name&&s.row===n&&s.col===i){let n=[];l.dds("Scanning backward for indicator-only lines before keyword...");for(let e=o-1;e>=r;e--){const i=t[e],o=i.trim();if(""!==o&&"A"!==o&&!(i.length>6&&"A"===i[5]&&"*"===i[6]||o.startsWith("A*")||o.startsWith("*"))){if(/DATE|TIME|SYSNAME|USER/.test(i)||i.length>15&&/[A-Z_][A-Z0-9_]+/.test(i.substring(15))){l.dds(`  Stopped at line ${e}: has field/keyword`);break}if(!o.match(/^A\s*(O|N\d{2}|AND|\s)*\s*(?:N?\d{2}\s*)*$/)){l.dds(`  Stopped at line ${e}: not an indicator line`);break}l.dds(`  Found indicator line at ${e}: "${o}"`),n.push(e)}}let i=o;if(n.length>0){for(const e of n)l.dds(`  Removing indicator line at index ${e}`),t.splice(e,1),i--,d--;l.dds(`Removed ${n.length} indicator line(s) before keyword`)}let s=1;"DATE"===e.name?i+1<t.length&&t[i+1].match(/EDTCDE\(/)&&(s=2,l.debug("Removing EDTCDE line for DATE keyword"),i+2<t.length&&t[i+2].match(/COLOR\(/)&&(s=3,l.dds("Removing COLOR line after EDTCDE"))):i+1<t.length&&t[i+1].match(/COLOR\(/)&&(s=2,l.debug("Removing COLOR line")),l.dds(`Removing ${s} keyword line(s) starting at adjusted index ${i}`),t.splice(i,s);let a=s+n.length;for(d--,o=i,l.dds(`Starting comment/keyword cleanup at index ${o}, endSearch=${d}, lines.length=${t.length}`);o<t.length&&o<d;){const e=t[o],n=e.trim(),i=Re(e.substring(18));if(l.dds(`  Checking line ${o}: "${n}"`),e.length>6&&"A"===e[5]&&"*"===e[6]||n.startsWith("A*")||n.startsWith("*")||n.startsWith("-")){l.dds(`   Removing comment line: ${n.substring(0,60)}...`),t.splice(o,1),a++,d--;continue}if(""===n||"A"===n){l.dds("   Stopping: blank line");break}if(!n.startsWith("A")){l.dds("   Stopping: doesn't start with A");break}const s=n.match(/\d+\s+\d+'/);if(n.match(/^A\s+R\s+\w+/)||s||i){l.dds("   Stopping: found record def or constant");break}const r=e.length>39?e.substring(39).trim():"",c=/^\d{1,2}\s\d{1,2}/.test(r)||/^\d{1,2}\s\d\D/.test(r);if(l.dds(`   Coordinates check: "${r.substring(0,10)}", hasCoordinates=${c}`),c){l.dds("   Stopping: found new field with coordinates");break}const u=e.length>43?e.substring(43).trim():"";if(l.dds(`   contentAfter43: "${u}", length: ${u.length}`),!(u.length>0)){l.dds("   Stopping: unrecognized line type");break}l.dds(`   Removing unknown keyword/attribute line: ${n.substring(0,60)}...`),t.splice(o,1),a++,d--}l.dds(`Removed keyword ${e.name} and ${a-s} associated line(s)`);break}}}else if("constant"===e.type){const n=e.row.toString(),i=e.col.toString(),o=e.value.substring(0,Math.min(10,e.value.length));l.debug(`Looking for constant at row=${n} col=${i} starting with "${o}"`),l.debug(`Searching within record boundaries: lines ${r+1} to ${d}`);let s=-1,a=0;for(let e=r;e<d;e++){const c=t[e],u=c.substring(18).match(/(\d{1,2})\s+(\d{1,2})'/);if(u&&u[1]===n&&u[2]===i){const n=c.indexOf("'");if(n>0&&c.substring(n+1).startsWith(o)){if(s=e,a=1,c.match(/'[^']*[-+]\s*$/)){let e=s+1;for(;e<d;){const n=t[e].trim(),i=/^A\s+R\s+\w+/.test(n),o=/\d+\s+\d+'/.test(n),s=/\b[A-Z][A-Z0-9_]{2,}\s+\d+[A-Z]/i.test(n);if(i||o||s)break;if(!n.startsWith("A")||!n.includes("'")||n.match(/\d+\s+\d+'/))break;a++,e++}}const n=[];if(s>r)for(let e=s-1;e>=r;e--){const i=t[e],o=i.trim();if(o.length<10)break;if(!o.startsWith("A"))break;if(!/^A(?:O)?\s*(?:N?\d{2}\s*)+$/.test(o))break;if((i.length>18?i.substring(18).trim():"").length>0)break;n.unshift(e),l.debug(`Found indicator-only line before constant at line ${e+1}: ${o}`)}n.forEach(e=>{l.dds(`Removing indicator line at index ${e}`),t.splice(e,1),s--}),l.dds(`Removing ${a} constant line(s) starting at adjusted index ${s}`),t.splice(s,a);let i=a+n.length;d--;let o=s;for(l.dds(`Starting comment/keyword cleanup at index ${o}, endSearch=${d}, lines.length=${t.length}`);o<t.length&&o<d;){const e=t[o],n=e.trim();if(l.dds(`  Checking line ${o}: "${n}"`),e.length>6&&"A"===e[5]&&"*"===e[6]||n.startsWith("A*")||n.startsWith("*")||n.startsWith("-")){l.dds(`   Removing comment line: ${n.substring(0,60)}...`),t.splice(o,1),i++,d--;continue}if(""===n||"A"===n){l.dds("   Stopping: blank line");break}if(!n.startsWith("A")){l.dds("   Stopping: doesn't start with A");break}const s=n.match(/\d+\s+\d+'/);if(n.match(/^A\s+R\s+\w+/)||s){l.dds("   Stopping: found record def or constant");break}const r=e.length>39?e.substring(39).trim():"",a=/^\d{1,2}\s\d{1,2}/.test(r)||/^\d{1,2}\s\d\D/.test(r);if(l.dds(`   Coordinates check: "${r.substring(0,10)}", hasCoordinates=${a}`),a){l.dds("   Stopping: found new field with coordinates");break}const c=e.length>43?e.substring(43).trim():"";if(l.dds(`   contentAfter43: "${c}", length: ${c.length}`),!(c.length>0)){l.dds("   Stopping: unrecognized line type");break}l.dds(`   Removing unknown keyword/attribute line: ${n.substring(0,60)}...`),t.splice(o,1),i++,d--}l.dds(`Removed constant and ${i-a} associated line(s)`);break}}}-1===s&&l.error("Constant line not found in DDS")}else{const n=e.row.toString(),i=e.col.toString();l.debug(`Looking for field "${e.name}" at row=${n} col=${i}`),l.debug(`Searching within record boundaries: lines ${r+1} to ${d}`);for(let o=r;o<d;o++){const s=t[o];l.debug(`Checking line ${o+1}: includesName=${s.includes(e.name)}, includesRow=${s.includes(n)}, includesCol=${s.includes(i)}, hasQuote=${s.includes("'")}`);const a=s.match(/\d+\s+\d+'/);if(s.includes(e.name)&&s.includes(n)&&s.includes(i)&&!a){l.dds("Found field line at index",o,":",s);let n=[];l.dds("Scanning backward for indicator-only lines...");for(let e=o-1;e>=r;e--){const i=t[e],o=i.trim();if(""!==o&&"A"!==o&&!(i.length>6&&"A"===i[5]&&"*"===i[6]||o.startsWith("A*")||o.startsWith("*"))){if(i.length>15&&/[A-Z_][A-Z0-9_]+/.test(i.substring(15))){l.dds(`  Stopped at line ${e}: has field name`);break}if(!o.match(/^A\s*(O|N\d{2}|AND|\s)*\s*(?:N?\d{2}\s*)*$/)){l.dds(`  Stopped at line ${e}: not an indicator line`);break}l.dds(`  Found indicator line at ${e}: "${o}"`),n.push(e)}}let i=o;if(n.length>0){for(const e of n)l.dds(`  Removing indicator line at index ${e}`),t.splice(e,1),i--,d--;l.dds(`Removed ${n.length} indicator line(s) before field`)}l.dds(`Removing field line at adjusted index ${i}: "${t[i]}"`),t.splice(i,1);let a=1+n.length;for(d--,o=i,l.dds(`Starting attribute cleanup at index ${o}, endSearch=${d}, lines.length=${t.length}`);o<t.length&&o<d;){const e=t[o],n=e.trim();if(l.dds(`  Checking line ${o}: "${n}"`),e.length>6&&"A"===e[5]&&"*"===e[6]||n.startsWith("A*")||n.startsWith("*")||n.startsWith("-")){l.dds(`   Removing comment line: ${n.substring(0,60)}...`),t.splice(o,1),a++,d--;continue}if(""===n||"A"===n){l.dds("   Stopping: blank line");break}if(!n.startsWith("A")){l.dds("   Stopping: doesn't start with A");break}const i=n.match(/\d+\s+\d+'/);if(n.match(/^A\s+R\s+\w+/)||i){l.dds("   Stopping: found record def or constant");break}const s=e.length>39?e.substring(39).trim():"",r=/^\d{1,2}\s\d{1,2}/.test(s)||/^\d{1,2}\s\d\D/.test(s);if(l.dds(`   Coordinates check (raw substring 37+): "${s.substring(0,10)}", hasCoordinates=${r}`),r){l.dds(`   Stopping: found new field with coordinates: "${s.substring(0,10)}"`);break}const c=e.length>43?e.substring(43).trim():"";if(l.dds(`   contentAfter43: "${c}", length: ${c.length}`),c.length>0){l.dds(`   Removing attribute/keyword line: ${n.substring(0,60)}...`),t.splice(o,1),a++,d--;continue}const u=e.substring(6,18).trim(),p=/^O?\s*[N\d\s]+$/.test(u);if(!(e.length>=28&&/^[A-Z][A-Z0-9_]{2,}\s+\d+/i.test(e.substring(18).trim()))&&p&&u.length>0&&o+1<t.length){const e=t[o+1],i=e.length>39?e.substring(39).trim():"";if(/^\d{1,2}\s\d{1,2}/.test(i)||/^\d{1,2}\s\d\D/.test(i)){l.dds(`   Stopping: next line indicates new field with coordinates: "${i.substring(0,10)}"`);break}l.dds(`   Removing indicator-only line: ${n.substring(0,60)}...`),t.splice(o,1),a++,d--;continue}l.dds("   Stopping: unrecognized line type");break}l.dds(`Removed field ${e.name} and ${a-1} associated line(s)`);break}}}n=t.join("\n"),l.parse("Document updated after removal"),Ne()}function Te(e,t=null){const i=n.split("\n"),o=Ue(e);let s=!1;const r=t||e,d=e.recordName||$;l.debug("Looking for field to update:",r.name,"type:",r.type,"in record:",d),l.debug("New DDS line will be:",o);let a=-1,c=i.length;if(d)for(let e=0;e<i.length;e++){const t=i[e],n=t.match(/^\s*A\s+R\s+(\w+)/);if(n&&n[1]===d&&(a=e,l.parse("Found record start at line",e+1)),a>=0&&e>a&&t.match(/^\s*A\s+R\s+\w+/)){c=e,l.parse("Found record end at line",e);break}}l.debug(`Searching within record boundaries: lines ${a+1} to ${c}`);const p=function(e,t,i){const o=n.split("\n"),s=e.recordName||$;if(l.dds(`findFieldBlockInDds: searching for field ${e.name} (row=${e.row}, col=${e.col}, type=${e.type}) in record ${s}`),(void 0===t||void 0===i)&&(t=-1,i=o.length,s))for(let e=0;e<o.length;e++){const n=o[e],r=n.match(/^\s*A\s+R\s+(\w+)/);if(r&&r[1]===s&&(t=e),t>=0&&e>t&&n.match(/^\s*A\s+R\s+\w+/)){i=e;break}}const r=t>=0?t:0;let d=i,a=-1;if("keyword"===e.type||e.isKeyword){const t=e.row.toString(),n=e.col.toString();for(let i=r;i<d;i++){const s=Re(o[i].substring(18));if(s&&s.keyword===e.name&&s.row===t&&s.col===n){a=i;break}}}else if("constant"===e.type){const t=e.row.toString(),n=e.col.toString();for(let e=r;e<d;e++){const i=o[e].substring(18).match(/(\d{1,2})\s+(\d{1,2})'/);if(i&&i[1]===t&&i[2]===n){a=e;break}}}else{const t=e.row.toString(),n=e.col.toString();for(let i=r;i<d;i++){const s=o[i],r=s.match(/\d+\s+\d+'/);if(s.includes(e.name)&&s.includes(t)&&s.includes(n)&&!r){a=i;break}}}if(-1===a)return l.dds(`  ❌ Field ${e.name} NOT FOUND at coordinates (${e.row}, ${e.col})`),null;l.dds(`  ✅ Found field at line ${a+1}`);let c=a,p=a-1;for(;p>=r;){const e=o[p],t=e.trim();if(""===t||"A"===t||!t.startsWith("A"))break;const n=t.match(/\d+\s+\d+'/),i=t.match(/^A\s+R\s+\w+/),s=e.length>=28&&/^[A-Z_][A-Z0-9_]*$/i.test(e.substring(18,28).trim());if(i||n||s)break;const r=e.length>43?e.substring(43).trim():"",d=r.length>0&&/^[A-Z]+\s*\(/.test(r),a=e.length>6&&"A"===e[5]&&"*"===e[6]||t.startsWith("A*");if(d||a)break;const l=e.substring(18).trim(),u=/^[A-Z][A-Z0-9_]{2,}\s+\d+/i.test(l),g=e.substring(6,18).trim(),f=/^O?\s*[N\d\s]+$/.test(g);if(!(!u&&f&&g.length>0))break;c=p,p--}c<a&&l.dds(`  ⬆️ Found ${a-c} indicator line(s) before field`);let g=a,f=a+1;for(;f<o.length&&f<d;){const e=o[f],t=e.trim(),n=Re(e.substring(18));if(e.length>6&&"A"===e[5]&&"*"===e[6]||t.startsWith("A*")||t.startsWith("*")||t.startsWith("-")){g=f,f++;continue}if(""===t||"A"===t)break;if(!t.startsWith("A"))break;const i=t.match(/\d+\s+\d+'/);if(t.match(/^A\s+R\s+\w+/)||i||n)break;const s=e.length>=28?e.substring(18,28).trim():"";if(s.length>0&&/^[A-Z_][A-Z0-9_]*$/i.test(s)){const t=e.length>28?e.substring(28).trim():"";if(/^\d+[A-Z]?/.test(t)||/^\d+\s+[IOB]?\s*\d+\s+\d+/.test(t))break}const r=e.substring(18).trim();if(/^A[O\s]\s*[N\d\s]+$/.test(t)&&""===r){g=f,f++;continue}const d=e.length>43?e.substring(43).trim():"",a=d.match(/^([A-Z0-9_]+)\s*\(/i),l=!!a&&u.has(a[1].toUpperCase());if(!(d.length>0||l))break;g=f,f++}return l.dds(`  Block found: lines ${c+1} to ${g+1} (${g-c+1} lines total)`),{startLine:c,endLine:g,count:g-c+1}}(r,a,c);if(p){const e="constant"===r.type?"constant":"keyword"===r.type||r.isKeyword?"keyword":"field";l.parse(`Found ${e} at line ${p.startLine+1}, block ends at line ${p.endLine+1}`),l.dds(`${e} block contains ${p.count} line(s)`);const t=i.slice(p.startLine,p.endLine+1),n=[];let d=!1,a=[];t.forEach((e,t)=>{if(0===t)return void l.dds(`Skipping blockLines[0] (original field declaration at line ${p.startLine+1})`);const i=p.startLine+t,o=e.trim(),s=e.length>43?e.substring(43).trim():"",c=e.length>18?e.substring(18).trim():"";if("constant"===r.type&&o.startsWith("A")&&o.includes("'")&&!o.match(/\d+\s+\d+'/))return void l.dds(`Skipping constant continuation line ${i+1}`);if(o.startsWith("A*")||o.startsWith("*"))return a.length>0&&(n.push(...a),a=[]),n.push(e),void l.dds(`Preserving comment line ${i+1}`);const u=e.length>6?e.substring(6,18).trim():"",f=/^O?\s*[N\d\s]+$/.test(u),h=/^[A-Z][A-Z0-9_]{0,9}\s+\d+/i.test(c);if(e.length>6&&"A"===e[5]&&f&&u.length>0&&!h&&""===c)return a.push(e),void l.dds(`Buffering indicator-only line ${i+1}`);if(/VALUES\(/i.test(s))return a=[],d=/[+-]\s*$/.test(s),void l.dds(`Skipping known VALUES line ${i+1}, continuation=${d}`);if(d){if(/^'/.test(s)||/^\)/.test(s))return a=[],d=/[+-]\s*$/.test(s),void l.dds(`Skipping VALUES continuation line ${i+1}, continuation=${d}`);d=!1}if(s.length>0){const t=s.match(/^([A-Z0-9_]+)\b/i),o=t?t[1].toUpperCase():"";return void(g.has(o)?a=[]:(a.length>0&&(n.push(...a),a=[]),n.push(e),l.dds(`Preserving unknown keyword line ${i+1}: "${s}"`)))}if(o.startsWith("A")&&c.length>0)return a.length>0&&(n.push(...a),a=[]),n.push(e),void l.dds(`Preserving trailing associated line ${i+1}: "${o}"`);a=[]}),a.length>0&&n.push(...a);const c=[...o.split("\n").filter(e=>e.length>0),...n];i.splice(p.startLine,p.count,...c),l.dds(`Updated ${e}: replaced ${p.count} lines with ${c.length} lines (${n.length} preserved extras)`),s=!0}if(!s)return l.error("Could not find field/constant to update:",e.name),l.debug("Available lines in document:"),void i.forEach((e,t)=>{e.trim()&&!e.trim().startsWith("A*")&&l.debug(`  ${t+1}: ${e}`)});n=i.join("\n"),Ne()}function Ne(){return function(e){const{currentRecord:t,currentDocument:n,Logger:i}=e,o=t,s=document.getElementById("source-content");s&&(s.value=n),i&&i.dds("Document updated internally, waiting for Save. Record context:",o)}({currentRecord:$,currentDocument:n,Logger:l})}const Be={underline:"UL",reverse:"RI",blink:"BL",highlight:"HI",cursorPosition:"PC",columnSeparator:"CS",nonDisplay:"ND",modifiedDataTag:"MDT",protect:"PR",operatorId:"OID",selectLightPen:"SP"};function We(e,t){return function({keyword:e,indicatorsOrGroups:t,IndicatorUtils:n}){let i=[],o=[],s=!1;if(Array.isArray(t)?i=t:t&&t.groups&&(o=t.groups,s=t.isOr),o.length>1&&s){const t=[];return o.forEach((i,s)=>{if(i.indicators.length>3){const r=Math.ceil(i.indicators.length/3);for(let d=0;d<r;d++){const a=3*d,l=i.indicators.slice(a,a+3),c=n.formatForDds(l),u=0===s||0!==d?"A":"AO",p=l[0]?.not;let g=p?" ":"  ";"AO"===u&&(g=p?"":" ");const f="AO"===u?36:37,h=Math.max(1,f-c.length);s===o.length-1&&d===r-1?t.push(`     ${u}${g}${c}${" ".repeat(h)}${e}`):t.push(`     ${u}${g}${c}`)}}else{const r=n.formatForDds(i.indicators),d=0===s?"A":"AO",a=i.indicators.length>0&&i.indicators[0].not;let l=a?" ":"  ";"AO"===d&&(l=a?"":" ");const c="AO"===d?36:37,u=Math.max(1,c-r.length);s===o.length-1?t.push(`     ${d}${l}${r}${" ".repeat(u)}${e}`):t.push(`     ${d}${l}${r}`)}}),t.join("\n")}const r=o.length>0?o[0].indicators:i;if(r&&r.length>0){if(r.length>3&&!s){const t=[],i=Math.ceil(r.length/3);for(let o=0;o<i;o++){const s=3*o,d=r.slice(s,s+3),a=n.formatForDds(d),l=d[0]?.not,c=l?" ":"  ";if(o===i-1){const n=l?37:36,i=Math.max(1,n-a.length);t.push(`     A${c}${a}${" ".repeat(i)}${e}`)}else t.push(`     A${c}${a}`)}return t.join("\n")}const t=n.formatForDds(r),i=r[0]?.not,o=i?" ":"  ",d=i?37:36,a=Math.max(1,d-t.length);return`     A${o}${t}${" ".repeat(a)}${e}`}return`     A                                      ${e}`}({keyword:e,indicatorsOrGroups:t,IndicatorUtils:s})}function Pe(e){return function({field:e,indicatorConfigurations:t,Logger:n}){e&&(n.dds(`Applying indicator changes from Map to field: ${e.name}`),e.colors&&Array.isArray(e.colors)&&e.colors.forEach(i=>{const o=`color:${i}`;if(t.has(o)){const s=t.get(o);if(e.colorIndicators||(e.colorIndicators={}),s.isOr&&s.groups)e.colorIndicators[i]=s,n.dds(`Applied OR indicators for color ${i}:`,s);else if(s instanceof Set){const t=Array.from(s).map(e=>JSON.parse(e));e.colorIndicators[i]=t,n.dds(`Applied AND indicators for color ${i}:`,t)}}}),e.attributes&&Object.keys(e.attributes).forEach(i=>{if(!e.attributes[i])return;const o=`attr:${i}`;if(t.has(o)){const s=t.get(o);if(e.attributeIndicators||(e.attributeIndicators={}),s.isOr&&s.groups)e.attributeIndicators[i]=s,n.dds(`Applied OR indicators for attribute ${i}:`,s);else if(s instanceof Set){const t=Array.from(s).map(e=>JSON.parse(e));e.attributeIndicators[i]=t,n.dds(`Applied AND indicators for attribute ${i}:`,t)}}}))}({field:e,indicatorConfigurations:je,Logger:l})}function Me(e){return function({field:e,DSPATR_ATTRIBUTE_MAP:t,applyIndicatorChangesToField:n,generateDdsLineWithIndicators:i,Logger:o}){n(e);const s=[];if(!e.attributes||0===Object.keys(e.attributes).length)return s;if(e.hasGroupedDspatr){const n=[];for(const[i,o]of Object.entries(t))e.attributes[i]&&n.push(o);if(n.length>0){const t=Object.keys(e.attributes).find(t=>e.attributes[t]),r=e.attributeIndicators&&t&&e.attributeIndicators[t]||[],d=i(`DSPATR(${n.join(" ")})`,r).split("\n");s.push(...d),o.dds("Generated grouped DSPATR line with indicators")}}else for(const[n,r]of Object.entries(t))if(e.attributes[n])if(e.originalAttrLines&&e.originalAttrLines[n]&&!e.attributeIndicatorsModified&&Array.isArray(e.originalAttrLines[n]))o.dds(`Preserving ${e.originalAttrLines[n].length} original DSPATR line(s) for ${n}`),s.push(...e.originalAttrLines[n]);else{o.dds(`Generating new DSPATR line(s) for ${n}`);const t=i(`DSPATR(${r})`,e.attributeIndicators&&e.attributeIndicators[n]?e.attributeIndicators[n]:[]).split("\n");s.push(...t)}return s}({field:e,DSPATR_ATTRIBUTE_MAP:Be,applyIndicatorChangesToField:Pe,generateDdsLineWithIndicators:We,Logger:l})}function ze(e){return function({field:e,applyIndicatorChangesToField:t,generateDdsLineWithIndicators:n,Logger:i}){t(e);const o=[];if(e.colors&&e.colors.length>1)e.colors.forEach(t=>{const s=e.colorIndicators&&e.colorIndicators[t]?e.colorIndicators[t]:[];if(e.originalColorLines&&e.originalColorLines[t]&&!e.colorIndicatorsModified&&Array.isArray(e.originalColorLines[t]))i.dds(`Preserving ${e.originalColorLines[t].length} original COLOR line(s) for ${t}`),o.push(...e.originalColorLines[t]);else{const e=n(`COLOR(${t})`,s);o.push(e)}});else if(e.color){const t=e.colorIndicators&&e.colorIndicators[e.color]?e.colorIndicators[e.color]:[];if(Array.isArray(t)?t.length>0:t.groups&&t.groups.length>0)if(e.originalColorLines&&e.originalColorLines[e.color]&&!e.colorIndicatorsModified&&Array.isArray(e.originalColorLines[e.color]))o.push(...e.originalColorLines[e.color]);else{const i=n(`COLOR(${e.color})`,t);o.push(i)}}return o}({field:e,applyIndicatorChangesToField:Pe,generateDdsLineWithIndicators:We,Logger:l})}function Ue(e){Pe(e);const t=e.row.toString().padStart(2," "),n=e.col.toString().padStart(2," "),i=e.col>=100?"":" ";if("keyword"===e.type||e.isKeyword){const o=[];let r="            ";const d=[];if(e.indicators&&e.indicators.groups&&e.indicators.groups.length>0){const t=e.indicators.groups;if(e.indicators.isOr&&t.length>1){let e=[];if(t.forEach((t,n)=>{const i=t.indicators||[];if(0===i.length)return;const o=Math.ceil(i.length/3);for(let t=0;t<o;t++){const o=3*t,r=i.slice(o,o+3),d=s.formatForDds(r),a=r[0]?.not;let l,c;0===t?(l=0===n?"A":"AO",c=a?" ":"  ","AO"===l&&(c=a?"":" ")):(l="A",c=a?" ":"  "),e.push(`     ${l}${c}${d}`)}}),e.length>1){d.push(...e.slice(0,-1));const t=e[e.length-1],n=t.startsWith("     AO");let i;i=n?t.substring(7):t.substring(6),i=i.trimEnd(),r=n?"O"+i:i;const o=12-r.length;r+=" ".repeat(Math.max(0,o))}else if(1===e.length){const t=e[0],n=t.startsWith("     AO");let i;i=n?t.substring(7):t.substring(6),i=i.trimEnd(),r=n?"O"+i:i;const o=12-r.length;r+=" ".repeat(Math.max(0,o))}}else{const e=t.length>0?t[0].indicators:[];if(e.length>3){const t=Math.ceil(e.length/3);for(let n=0;n<t-1;n++){const t=3*n,i=e.slice(t,t+3),o=s.formatForDds(i),r=i[0]?.not,a=r?" ":"  ";d.push(`     A${a}${o}`)}const n=3*(t-1),i=e.slice(n),o=s.formatForDds(i),a=i[0]?.not,l=a?" ":"  ",c=12-l.length-o.length;r=l+o+" ".repeat(Math.max(0,c))}else if(e.length>0){const t=s.formatForDds(e),n=e[0]?.not,i=n?" ":"  ",o=12-i.length-t.length;r=i+t+" ".repeat(Math.max(0,o))}}}d.length>0&&o.push(...d);const a=`     A${r}${" ".repeat(22)}${t}${i}${n}${"DATE"===e.name&&e.keywordArgs?`DATE(${e.keywordArgs})`:e.name}`;o.push(a),"DATE"===e.name&&o.push("     A                                      EDTCDE(Y)");const l=Me(e);return l.length>0&&o.push(...l),(e.colors||(e.color?[e.color]:[])).forEach(t=>{const n=e.colorIndicators&&e.colorIndicators[t]?e.colorIndicators[t]:[];o.push(We(`COLOR(${t})`,n))}),o.join("\n")}if("constant"===e.type){const t=function(e){return function({field:e,IndicatorUtils:t}){const n=e.row.toString().padStart(2," "),i=e.col.toString().padStart(2," "),o=e.value||"TEXT",s=[];let r="            ";const d=[];if(e.indicators&&e.indicators.groups&&e.indicators.groups.length>0){const n=e.indicators.groups;if(e.indicators.isOr&&n.length>1){let e=[];if(n.forEach((n,i)=>{const o=n.indicators||[];if(0===o.length)return;const s=Math.ceil(o.length/3);for(let n=0;n<s;n++){const s=3*n,r=o.slice(s,s+3),d=t.formatForDds(r),a=r[0]?.not;let l,c;0===n?(l=0===i?"A":"AO",c=a?" ":"  ","AO"===l&&(c=a?"":" ")):(l="A",c=a?" ":"  "),e.push(`     ${l}${c}${d}`)}}),e.length>1){d.push(...e.slice(0,-1));const t=e[e.length-1],n=t.startsWith("     AO");let i;i=n?t.substring(7):t.substring(6),i=i.trimEnd(),r=n?"O"+i:i;const o=12-r.length;r+=" ".repeat(Math.max(0,o))}else if(1===e.length){const t=e[0],n=t.startsWith("     AO");let i;i=n?t.substring(7):t.substring(6),i=i.trimEnd(),r=n?"O"+i:i;const o=12-r.length;r+=" ".repeat(Math.max(0,o))}}else{const e=n.length>0?n[0].indicators:[];if(e.length>3){const n=Math.ceil(e.length/3);for(let i=0;i<n-1;i++){const n=3*i,o=e.slice(n,n+3),s=t.formatForDds(o),r=o[0]?.not,a=r?" ":"  ";d.push(`     A${a}${s}`)}const i=3*(n-1),o=e.slice(i),s=t.formatForDds(o),a=o[0]?.not,l=a?" ":"  ",c=12-l.length-s.length;r=l+s+" ".repeat(Math.max(0,c))}else if(e.length>0){const n=t.formatForDds(e),i=e[0]?.not,o=i?" ":"  ",s=12-o.length-n.length;r=o+n+" ".repeat(Math.max(0,s))}}}d.length>0&&s.push(...d);const a=" ".repeat(21);if(o.length<=34)s.push(`     A${r}${a}${n} ${i}'${o}'`);else{let e=o,t=!0;for(;e.length>0;){const o=e.substring(0,34);e=e.substring(34);const d=e.length>0;t?(s.push(`     A${r}${a}${n} ${i}'${o}${d?"-":"'"}`),t=!1):s.push(`     A                                      ${o}${d?"-":"'"}`)}}return s}({field:e,IndicatorUtils:s})}(e),n=Me(e),i=ze(e),o=[...t,...n,...i];return e.color&&0===i.length&&o.push(`     A                                      COLOR(${e.color})`),o.join("\n")}const o=e.name.padEnd(10," "),r=function(e){return function({field:e}){const t="date"===e.dataType,n="time"===e.dataType,i="timestamp"===e.dataType,o=t?10:n?8:i?26:e.length||10,s=e.decimals||0;let r="A";"character"===e.dataType?r="A":"zoned"===e.dataType?r="string"==typeof e.shift&&""!==e.shift.trim()?e.shift.trim():"I"===e.usage||"B"===e.usage?"S":"":"float"===e.dataType?r="F":"double"===e.dataType?r=e.shift||"J":"date"===e.dataType?r="L":"time"===e.dataType?r="T":"timestamp"===e.dataType&&(r="Z");const d=t?"L":n?"T":i?"Z":`${o}${r}`,a=["zoned","float","double"].includes(e.dataType);let l="O";l="I"===e.usage?"I":"O"===e.usage?"O":"B"===e.usage?"B":"input"===e.type?"I":(e.type,"O");let c="";return c="double"===e.dataType?`${d}  ${l}`:a&&s>0?`${d} ${s}${l}`:a?`${d} 0${l}`:`${d}  ${l}`,c}({field:e})}(e),d=r.padStart(9," ");let a="";"float"===e.dataType&&e.precision&&(a=`FLTPCN(*${e.precision})`);const c=ze(e);e.color&&0===c.length&&(a+=`COLOR(${e.color})`);let u="            ";const p=[];if(e.indicators&&e.indicators.groups&&e.indicators.groups.length>0){const t=e.indicators.groups;if(e.indicators.isOr&&t.length>1){let e=[];if(t.forEach((t,n)=>{const i=t.indicators||[];if(0===i.length)return;const o=Math.ceil(i.length/3);for(let t=0;t<o;t++){const o=3*t,r=i.slice(o,o+3),d=s.formatForDds(r),a=r[0]?.not;let l,c;0===t?(l=0===n?"A":"AO",c=a?" ":"  ","AO"===l&&(c=a?"":" ")):(l="A",c=a?" ":"  "),e.push(`     ${l}${c}${d}`)}}),e.length>1){p.push(...e.slice(0,-1));const t=e[e.length-1],n=t.startsWith("     AO");let i;i=n?t.substring(7):t.substring(6),i=i.trimEnd(),u=n?"O"+i:i;const o=12-u.length;u+=" ".repeat(Math.max(0,o))}else if(1===e.length){const t=e[0],n=t.startsWith("     AO");let i;i=n?t.substring(7):t.substring(6),i=i.trimEnd(),u=n?"O"+i:i;const o=12-u.length;u+=" ".repeat(Math.max(0,o))}}else{const e=t.length>0?t[0].indicators:[];if(e.length>3){const t=Math.ceil(e.length/3);for(let n=0;n<t-1;n++){const t=3*n,i=e.slice(t,t+3),o=s.formatForDds(i),r=i[0]?.not,d=r?" ":"  ";p.push(`     A${d}${o}`)}const n=3*(t-1),i=e.slice(n),o=s.formatForDds(i),r=i[0]?.not,d=r?" ":"  ",a=12-d.length-o.length;u=d+o+" ".repeat(Math.max(0,a))}else if(e.length>0){const t=s.formatForDds(e),n=e[0]?.not,i=n?" ":"  ",o=12-i.length-t.length;u=i+t+" ".repeat(Math.max(0,o))}}}const g=Me(e),m=function(e){return function({field:e,CHECK_CHAR_CODES:t,CHECK_NUMERIC_CODES:n,generateDdsLineWithIndicators:i,Logger:o}){const s=[];if(!e.checkOptions)return s;const r=[...t,...n],d=new Set;return r.forEach(t=>{if(d.has(t))return;if(d.add(t),!e.checkOptions[t])return;const n=`CHECK(${t})`;if(["ME","ER"].includes(t)){const r=e.checkIndicators&&e.checkIndicators[t]?e.checkIndicators[t]:null;o.debug(`[CHECK GEN ${t}] field.checkIndicators[${t}]:`,r);const d=r&&r.groups&&r.groups.length>0;if(o.debug(`[CHECK GEN ${t}] hasIndicators=${d}`),d){o.debug(`[CHECK GEN ${t}] Calling generateDdsLineWithIndicators with keyword="${n}"`);const e=i(n,r);o.debug(`[CHECK GEN ${t}] Generated result (type=${typeof e}):`,e),o.debug(`[CHECK GEN ${t}] Generated length: ${e.length} chars`),s.push(e)}else o.debug(`[CHECK GEN ${t}] No indicators, using default line`),s.push(`     A                                      ${n}`);o.debug(`[CHECK GEN ${t}] Returning ${s.length} line(s) for this code`)}else s.push(`     A                                      ${n}`)}),s}({field:e,CHECK_CHAR_CODES:f,CHECK_NUMERIC_CODES:h,generateDdsLineWithIndicators:We,Logger:l})}(e),y=function(e){return function({field:e}){const t=[];if(!e.edtcde||!e.edtcde.value)return t;const n=String(e.edtcde.value).trim().toUpperCase(),i=e.edtcde.replaceLeadingZerosWith?String(e.edtcde.replaceLeadingZerosWith).trim():"",o="Z"!==n&&i?`EDTCDE(${n} ${i})`:`EDTCDE(${n})`;return t.push(`     A                                      ${o}`),t}({field:e})}(e),b=function(e){return function({field:e}){const t=[],n=e=>String(e).replace(/'/g,"''"),i=e=>e?"string"==typeof e?e:"string"==typeof e.value?e.value:"":"",o=i(e.edtwrd);o.length>0&&t.push(`     A                                      EDTWRD('${n(o)}')`);const s=i(e.edtmsk);return s.length>0&&t.push(`     A                                      EDTMSK('${n(s)}')`),t}({field:e})}(e),v=function(e){return function({field:e}){const t=[];if(!e?.values)return t;const n=("string"==typeof e.values?e.values:"").trim();if(!n)return t;const i="     A                                      ",o=`VALUES(${n})`;if((i+o).length<=80)return t.push(i+o),t;const s=[],r=/'(?:''|[^'])*'/g;let d;for(;null!==(d=r.exec(n));)s.push(d[0]);if(0===s.length)return t.push((i+o).substring(0,80)),t;let a="VALUES(";for(let e=0;e<s.length;e++){const n=s[e],o=e===s.length-1,r=`${a}${"VALUES("===a?"":" "}${n}${o?")":""}`;(i+r).length<=80?(a=r,o&&t.push(i+a)):(t.push(i+a+" -"),a=n+(o?")":""),o&&t.push(i+a))}return t}({field:e})}(e),$=function(e){return function({field:e}){const t=[];if(!e.dft)return t;const n="string"==typeof e.dft?e.dft.trim():e.dft.value?String(e.dft.value).trim():"";if(!n)return t;const i=`DFT('${n.replace(/'/g,"''")}')`;return t.push(`     A                                      ${i}`),t}({field:e})}(e),S=function(e){return function({field:e,generateDdsLineWithIndicators:t,Logger:n}){const i=[];if(!e.dftval||!e.dftval.value)return i;const o=`DFTVAL('${e.dftval.value}')`,s=e.dftvalIndicators;n.debug("[DFTVAL GEN] field.dftvalIndicators:",s);const r=Array.isArray(s)?s.length>0:s&&s.groups&&s.groups.length>0;if(n.debug(`[DFTVAL GEN] hasIndicators=${r}`),r){n.debug(`[DFTVAL GEN] Calling generateDdsLineWithIndicators with keyword="${o}"`);const e=t(o,s);n.debug(`[DFTVAL GEN] Generated result (type=${typeof e}):`,e),n.debug(`[DFTVAL GEN] Generated length: ${e.length} chars`),i.push(e)}else n.debug("[DFTVAL GEN] No indicators, using default line"),i.push(`     A                                      ${o}`);return n.debug(`[DFTVAL GEN] Returning ${i.length} line(s):`,i),i}({field:e,generateDdsLineWithIndicators:We,Logger:l})}(e),w=`     A${u}${o} ${d} ${t}${i}${n}${a}`,x=(p.length>0?p.join("\n")+"\n":"")+w+(g.length>0?"\n"+g.join("\n"):"")+(m.length>0?"\n"+m.join("\n"):"")+(y.length>0?"\n"+y.join("\n"):"")+(b.length>0?"\n"+b.join("\n"):"")+(v.length>0?"\n"+v.join("\n"):"")+($.length>0?"\n"+$.join("\n"):"")+(S.length>0?"\n"+S.join("\n"):"")+(c.length>0?"\n"+c.join("\n"):"");return l.dds(`Generated DDS: name="${e.name}" padded="${o}" type="${r}" padded="${d}"`),l.dds(`Full line(s): "${x}"`),x}function _e(){return function(e){return e.generateFieldId()}(d)}function Ve(e){return function(e){switch(e){case"text":case"field-date":default:return 10;case"number":return 6;case"constant":return null;case"field-time":return 8;case"field-timestamp":return 26}}(e)}function Ke(e){v=[];const t=e.split("\n");l.parse("Parsing DSPF content for record:",$,"total lines:",t.length),$||l.warn("No current record specified, parsing all fields");let n=!1,i=null,s=null;t.forEach((e,o)=>{const r=e.trim(),d=e.length>6&&"A"===e[5]&&"*"===e[6]||r.startsWith("A*");if(r&&!d){if(r.match(/^A\s+R\s+\w+/)){const e=r.match(/^A\s+R\s+(\w+)/);return void(e&&(i=e[1],n=$===i,l.parse(`Found record: ${i}, target: ${n}, looking for: ${$}`)))}if(n){const e=ue(r,i,s);e&&(s=e)}if(n){const s=!/A\s+\w+\s+/.test(r)&&(r.includes("WINDOW(")||r.includes("CF")||r.includes("CA")||r.includes("PAGEDOWN")||r.includes("PAGEUP")||r.includes("RTNCSRLOC")||r.includes("CSRLOC")||r.includes("OVERLAY")||r.includes("KEEP")),d=/\b[A-Z][A-Z0-9_]{0,9}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(r),a=p.test(r),c=!d&&a,u=e.length>44&&/^[ 0-9]{2}[ 0-9]{3}/.test(e.substring(39,44));if(e.length>6&&"A"===e[5]&&(r.includes("'")||/\d+\s+\d+/.test(r)||/\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(r)||u)&&!s&&!c&&!r.includes("WINDOW(")&&n){l.parse(`Line ${o+1} (${i}): ${e}`);let n=e;e.includes("'")&&e.match(/'[^']*[-+]\s*$/)&&(l.parse(`Multi-line constant detected at line ${o+1}`),n=Ie({initialLine:e,getNextLine:e=>e<t.length?t[e]:null,startIndex:o+1,context:"DESIGNER"}).fullLine);const s=Ze(n);if(s){s.recordName=i,s.attributeIndicators={},s.colorIndicators={},s.checkIndicators={};const e=[];let n=!1;if(o>0){let i="VARIABLE-BACKWARD";"keyword"===s.type||s.isKeyword?i="KEYWORD-BACKWARD":"constant"===s.type&&(i="CONSTANT-BACKWARD"),ke(t,0,o,i).scannedLines.forEach(t=>{t.indicators&&t.indicators.length>0&&(e.push({indicators:t.indicators}),t.isOr&&(n=!0))})}s._inlineIndicators&&s._inlineIndicators.length>0&&(s._inlineIsOr?(e.push({indicators:s._inlineIndicators}),n=!0,l.parse(`${s.type} ${s.name}: Inline indicators are OR (from AO line), created separate group`)):(e.length>0?e[e.length-1].indicators.push(...s._inlineIndicators):e.push({indicators:s._inlineIndicators}),l.parse(`${s.type} ${s.name}: Inline indicators are AND, merged with last group`)),delete s._inlineIndicators,delete s._inlineIsOr),e.length>0&&(s.indicators={groups:e,isOr:n||e.length>1},l.parse(`${s.type} ${s.name}: Found ${e.length} field indicator group(s), isOr=${n||e.length>1}`)),De({lines:t,startIndex:o,field:s,contextLabel:"DESIGNER",includeChecks:!0,includeDftval:!0,preserveOriginalSpacing:!0,attributeRegex:p}),l.parse(`Parsed field: ${s.name} (${s.type}) at ${s.row},${s.col} for record ${i}`),l.debug(`Final colorIndicators for ${s.name}:`,s.colorIndicators),l.debug(`Final attributeIndicators for ${s.name}:`,s.attributeIndicators),v.push(s)}else l.error(`Failed to parse line: ${e}`)}else e.length>6&&"A"===e[5]&&r.length>2&&!s&&!c&&l.warn(`Skipped potential field line ${o+1}: ${e}`)}}});const r=le($);if(r&&r.companionRecord){l.parse(`Parsing companion record: ${r.companionRecord}`);let e=!1,n=null;t.forEach((i,o)=>{const s=i.trim();if(s&&!s.startsWith("A*")){if(s.match(/^A\s+R\s+\w+/)){const t=s.match(/^A\s+R\s+(\w+)/);return void(t&&(n=t[1],e=r.companionRecord===n,e&&l.parse(`Found companion record: ${n}`)))}if(e){const e=!/A\s+\w+\s+/.test(s)&&(s.includes("WINDOW(")||s.includes("CF")||s.includes("CA")||s.includes("PAGEDOWN")||s.includes("PAGEUP")||s.includes("RTNCSRLOC")||s.includes("CSRLOC")||s.includes("OVERLAY")||s.includes("KEEP")||s.includes("SFLCTL")),r=/\b[A-Z][A-Z0-9_]{0,9}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(s),d=p.test(s),a=!r&&d,c=i.length>44&&/^[ 0-9]{2}[ 0-9]{3}/.test(i.substring(39,44));if(s.startsWith("A ")&&(s.includes("'")||/\d+\s+\d+/.test(s)||/\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(s)||c)&&!e&&!a&&!s.includes("WINDOW(")){let e=i;i.includes("'")&&i.match(/'[^']*[-+]\s*$/)&&(l.parse(`Designer: Multi-line constant in companion record detected at line ${o+1}`),e=Ie({initialLine:i,getNextLine:e=>e<t.length?t[e]:null,startIndex:o+1,context:"DESIGNER-COMPANION"}).fullLine);const s=Ze(e);s&&(s.isBackgroundRecord=!0,s.recordName=n,l.parse(`Parsed companion field: ${s.name} (${s.type}) at ${s.row},${s.col}`),v.push(s))}}}})}if($){const e=pe($);if(e.hasWindow){const t="DS3"===w?e.ds3:e.ds4;t&&(s=t,l.window(`Designer: Using ${w} WINDOW dimensions from record ${$}: ${t.height}x${t.width} at (${t.row},${t.col})`))}}const d=le($);if(d&&d.sflRecord===$){const e=pe(d.sflctlRecord);if(e.hasWindow){const t="DS3"===w?e.ds3:e.ds4;t&&(s=t,l.window(`Designer: SFL ${$}: Using SFLCTL ${d.sflctlRecord} WINDOW dimensions: ${s.height}x${s.width} at (${s.row},${s.col})`))}}const a=document.getElementById("fields-container");if(a){if(a.querySelectorAll(".dspf-field, .window-frame").forEach(e=>e.remove()),s){l.window(`Designer: Using declared window dimensions: ${s.height}x${s.width}`);const e=s,t=o.toPixels(e.row,e.col),n=t.top,i=t.left,r=o.getHeightInPixels(e.height),d=o.getWidthInPixels(e.width+4),c=document.createElement("div");c.className="window-frame",c.style.position="absolute",c.style.top=`${n}px`,c.style.left=`${i}px`,c.style.width=`${d}px`,c.style.height=`${r}px`,c.style.border="2px dotted #00FF00",c.style.pointerEvents="none",c.style.zIndex="5",c.style.boxSizing="border-box",c.dataset.row=e.row,c.dataset.col=e.col,c.dataset.height=e.height,c.dataset.width=e.width,["nw","ne","sw","se"].forEach(e=>{const t=document.createElement("div");t.className=`window-resize-handle ${e}`,t.style.position="absolute",t.style.width="10px",t.style.height="10px",t.style.backgroundColor="#00FF00",t.style.border="1px solid #000",t.style.pointerEvents="auto",t.style.cursor=`${e}-resize`,t.style.zIndex="10",e.includes("n")&&(t.style.top="-5px"),e.includes("s")&&(t.style.bottom="-5px"),e.includes("w")&&(t.style.left="-5px"),e.includes("e")&&(t.style.right="-5px"),c.appendChild(t)}),a.appendChild(c),function({windowFrame:e,originalDimensions:t,Logger:n,ScreenCoordinates:i,getCurrentDisplaySize:o,getCurrentZoom:s,updateWindowDimensions:r}){e.querySelectorAll(".window-resize-handle").forEach(d=>{d.addEventListener("mousedown",function(d){d.preventDefault(),d.stopPropagation();const a=this.className.split(" ")[1],l=d.clientX,c=d.clientY,u=e.offsetWidth,p=e.offsetHeight,g=e.offsetLeft,f=e.offsetTop;function h(t){const n=s?s():1,i=(t.clientX-l)/n,o=(t.clientY-c)/n;let r=u,d=p,h=g,m=f;if(a.includes("e")&&(r=Math.max(80,u+i)),a.includes("w")){const e=-i;r=Math.max(80,u+e),h=g-(r-u)}if(a.includes("s")&&(d=Math.max(40,p+o)),a.includes("n")){const e=-o;d=Math.max(40,p+e),m=f-(d-p)}e.style.width=`${r}px`,e.style.height=`${d}px`,e.style.left=`${h}px`,e.style.top=`${m}px`}document.addEventListener("mousemove",h),document.addEventListener("mouseup",function d(){document.removeEventListener("mousemove",h),document.removeEventListener("mouseup",d);const a=s?s():1,l=i?i.fromPixels(e.offsetTop,e.offsetLeft):{row:Math.round(e.offsetTop/20)+1,col:Math.round(e.offsetLeft/8)+1},c=i?i.sizeFromPixels(e.offsetHeight,e.offsetWidth,1):{rows:Math.round(e.offsetHeight/20),cols:Math.round(e.offsetWidth/8)};let u=l.row,p=l.col,g=c.rows,f=c.cols-4;const m=o?o():"DS3",y="DS3"===m?24:27,b="DS3"===m?80:132;u=Math.max(1,Math.min(u,y)),p=Math.max(1,Math.min(p,b)),g=Math.max(1,Math.min(g,y-u+1)),f=Math.max(1,Math.min(f,b-p+1)),n.window(`Window resized to: row=${u}, col=${p}, height=${g}, width=${f}, zoom=${a}`),n.debug(`Validation check - Display: ${m}, Max rows: ${y}, Max cols: ${b}`),r(t,u,p,g,f)})})})}({windowFrame:c,originalDimensions:s,Logger:l,ScreenCoordinates:o,getCurrentDisplaySize:()=>w,getCurrentZoom:()=>E,updateWindowDimensions:He}),l.window(`Added window frame in Designer at ${e.row},${e.col} size ${e.height}x${e.width}`)}l.ui(`Rendering ${v.length} fields:`,v.map(e=>`${e.name}(${e.row},${e.col})`));const e=le($),t=e?ce(e.sflctlRecord):1;t>1&&l.stats(`Subfile detected: Repeating SFL fields ${t} times (SFLPAG from ${e.sflctlRecord})`),v.forEach(n=>{if(s?Y(n,s):j(n),t>1&&($===e?.sflRecord&&!n.isBackgroundRecord||$===e?.sflctlRecord&&n.isBackgroundRecord))for(let e=1;e<t;e++){const t={...n,id:n.id+"_repeat"+e,row:n.row+e,isVisualCopy:!0};s?Y(t,s):j(t)}})}else l.error("Fields container not found for rendering")}function He(e,i,o,s,r){const d=n.split("\n");let a=!1;l.debug(`Searching for WINDOW in record: ${$}`),l.debug(`Display size: ${w}`),l.debug(`Original dimensions: WINDOW(${e.row} ${e.col} ${e.height} ${e.width})`),l.debug(`New dimensions: WINDOW(${i} ${o} ${s} ${r})`);let c=-1;const u=new RegExp(`^\\s*A\\s+R\\s+${$}\\s*(\\s|$)`);for(let e=0;e<d.length;e++)if(u.test(d[e])){c=e,l.parse(`Found record definition '${$}' at line ${e}: ${d[e].trim()}`);break}if(-1===c)return void l.error(`Record ${$} not found`);const p="DS3"===w?"*DS3":"*DS4";l.debug(`Looking for ${p} WINDOW after line ${c}...`);const g=/WINDOW\(\s*\d+\s+\d+\s+\d+\s+\d+\s*\)/;let f=d.length;const h=/^\s*A\s+R\s+\w+/;for(let e=c+1;e<d.length;e++)if(h.test(d[e])){f=e,l.debug(`Next record found at line ${e}, limiting search to lines ${c}-${e}`);break}if(g.test(d[c])){l.parse(`Found WINDOW on record line ${c}: ${d[c].trim()}`);const e=`WINDOW(${i} ${o} ${s} ${r})`,t=d[c];d[c]=d[c].replace(g,e),a=!0,l.dds(`Updated line ${c}:`),l.dds(`   OLD: ${t.trim()}`),l.dds(`   NEW: ${d[c].trim()}`)}else for(let e=c+1;e<f;e++){const t=d[e];if(g.test(t)&&t.includes(p)){l.parse(`Found ${p} WINDOW at line ${e}: ${t.trim()}`);const n=`WINDOW(${i} ${o} ${s} ${r})`,c=t;d[e]=t.replace(g,n),a=!0,l.dds(`Updated line ${e}:`),l.dds(`   OLD: ${c.trim()}`),l.dds(`   NEW: ${d[e].trim()}`);break}}a?(n=d.join("\n"),l.dds("Sending update message to VS Code..."),t.postMessage({type:"update",content:n,currentRecord:$}),l.success("Update message sent")):l.error("WINDOW line not found or not updated")}function Ze(e){if(e.length<40)return null;if("A"!==e[5])return null;const t=e.length>6&&"O"===e[6],n=t?7:6,i=e.substring(n,18).trim(),o=Re(e.substring(18));if(o){const e=parseInt(o.row,10),n=parseInt(o.col,10),s=o.keyword,r=o.keywordArgs||null;l.key(`Found keyword: ${s} at ${e},${n}`);const d=[];if(i.length>0){const e=i.split(/\s+/).filter(e=>e.length>0);for(const t of e)if(/^N?\d{2}$/.test(t)){const e=t.startsWith("N"),n=e?t.substring(1):t;d.push({number:n.padStart(2,"0"),not:e})}l.debug(`Found ${d.length} inline indicators for keyword ${s}`)}const a={id:_e(),type:"keyword",name:s,row:e,col:n,dataType:"keyword",isKeyword:!0,keywordArgs:r,length:null,indicators:{groups:[],isOr:!1}};return d.length>0&&(a._inlineIndicators=d,a._inlineIsOr=t,l.debug(`Stored ${d.length} inline indicators for keyword ${s}, isOr=${t}`)),a}if(e.includes("'")){const t=e.length>6&&"O"===e[6],n=t?7:6,i=e.substring(n,18).trim(),o=e.substring(18).trim();l.parse(`[DESIGNER PARSE] Input line: "${e}"`),l.parse(`[DESIGNER PARSE] Input line length: ${e.length}`);const s=o.match(/(\d+)\s+(\d+)'([^']*)/),r=o.match(/^(\d{1,2})(\d{3})'([^']*)/);if(s||r){const n=s||r,o=parseInt(n[1]),d=parseInt(n[2]);let a=n[3];l.parse(`[DESIGNER PARSE] Full match[0]: "${n[0]}"`),l.parse(`[DESIGNER PARSE] Matched text (match[3]): "${a}"`),l.parse(`[DESIGNER PARSE] Matched text length: ${a.length}, first 20 chars: "${a.substring(0,20)}", last 20 chars: "${a.slice(-20)}"`),l.parse(`Parsed constant in Designer at (${o},${d}), value length: ${a.length}, value: "${a}"`);const c=[];if(i.length>0){const e=i.split(/\s+/).filter(e=>e.length>0);for(const t of e)if(/^N?\d{2}$/.test(t)){const e=t.startsWith("N"),n=e?t.substring(1):t;c.push({number:n.padStart(2,"0"),not:e})}l.debug(`Found ${c.length} inline indicators for constant at (${o},${d})`)}let u=a.replace(/[^a-zA-Z0-9]/g,"_").replace(/_+/g,"_").replace(/^_|_$/g,"").toUpperCase();u=!u||u.length<2?`CONST_${o}_${d}`:u.substring(0,10)+`_${o}_${d}`;const p={id:_e(),type:"constant",name:u,row:o,col:d,value:a,length:a.length,attributes:Le(e),color:null,indicators:{groups:[],isOr:!1}};return c.length>0&&(p._inlineIndicators=c,p._inlineIsOr=t,l.debug(`Stored ${c.length} inline indicators for constant ${u}, isOr=${t}`)),p}}const s=e.length>6&&"O"===e[6],r=s?7:6,d=e.substring(r).trim();l.debug(`Parsing content (hasOrPrefix=${s}): "${d}"`);let c=d.split(/\s+/).filter(e=>e.length>0);if(l.debug("Parts:",c),c.length<4)return l.warn(`Not enough parts: ${c.length}`),null;let u=0;const p=[];for(;u<c.length-3;){const e=c[u];if(!/^N?\d{2}$/.test(e))break;if(p.push(e),u++,p.length>=3)break}p.length>0&&l.debug(`Found ${p.length} field-level indicators: ${p.join(", ")}`);const g=c[u];if(!a.isValid(g,{mustStartWithLetter:!1,allowEmpty:!1}))return l.error(`Invalid field name: "${g}"`),null;const f=c[u+1],h=function(e,t){return function({parts:e,startIndex:t}){let n=0,i="O",o=!1,s=t;if(s>=e.length)return{decimals:n,usage:i,hasDecimals:o,nextIndex:s};const r=e[s],d=r.match(/^(\d+)([OIBHMP]?)$/);if(d){if(o=!0,n=parseInt(d[1]),d[2])i=d[2],s++;else if(s++,s<e.length){const t=e[s];1===t.length&&/[OIBHMP]/.test(t)&&(i=t,s++)}}else 1===r.length&&/[OIBHMP]/.test(r)&&(i=r,s++);return{decimals:n,usage:i,hasDecimals:o,nextIndex:s}}({parts:e,startIndex:t})}(c,u+2);l.debug(`Parsing field: typeSpec="${f}" hasDecimals=${h.hasDecimals}`);const m=function(e,t=!1){return function({typeSpec:e,hasDecimals:t=!1}){const n=(e||"").trim().toUpperCase();if("L"===n)return{length:10,typeChar:"L",dataType:"date"};if("T"===n)return{length:8,typeChar:"T",dataType:"time"};if("Z"===n)return{length:26,typeChar:"Z",dataType:"timestamp"};const i=n.match(/(\d+)([A-Z])?/);if(!i)return null;const o=parseInt(i[1]),s=i[2];let r="character";return s?"A"===s?r="character":"F"===s?r="float":"P"===s?r="packed":"S"===s||"Y"===s||"N"===s||"D"===s||"I"===s?r="zoned":"J"!==s&&"E"!==s&&"O"!==s&&"G"!==s||(r="double"):r=t?"zoned":"character",{length:o,typeChar:s,dataType:r}}({typeSpec:e,hasDecimals:t})}(f,h.hasDecimals);if(!m)return l.error(`Invalid type spec: "${f}"`),null;l.stats(`Mapped typeChar="${m.typeChar}" hasDecimals=${h.hasDecimals} to dataType="${m.dataType}"`);let y=function(e,t){return function({parts:e,startIndex:t}){if(t>=e.length)return null;const n=e[t],i=parseInt(n);if(isNaN(i))return null;if(t+1<e.length){const n=e[t+1],o=parseInt(n);if(!isNaN(o))return{row:i,col:o,nextIndex:t+2}}const o=n.match(/^(\d{1,2})(\d{3})$/);if(!o)return null;const s=parseInt(o[1],10),r=parseInt(o[2],10);return isNaN(s)||isNaN(r)?null:{row:s,col:r,nextIndex:t+1}}({parts:e,startIndex:t})}(c,h.nextIndex);if(!y){const t=(e.length>39?e.substring(39):"").match(/^\s*([ 0-9]{2})([ 0-9]{3})/);if(t){const e=parseInt(t[1].trim(),10),n=parseInt(t[2].trim(),10);isNaN(e)||isNaN(n)||(y={row:e,col:n,nextIndex:h.nextIndex+1},l.debug(`Extracted compact fixed coordinates row=${e}, col=${n}`))}}if(!y)return l.error("Missing essentials"),null;const b=function(e,t){return function({line:e,dataType:t}){if("float"!==t)return null;if(e.includes("FLTPCN")){if(e.includes("*SINGLE"))return"SINGLE";if(e.includes("*DOUBLE"))return"DOUBLE"}return null}({line:e,dataType:t})}(e,m.dataType);l.debug(`Extracted: name="${g}" type="${f}" decimals="${h.decimals}" usage="${h.usage}" row="${y.row}" col="${y.col}" precision="${b}"`);let v="output";"I"===h.usage||"B"===h.usage?v="input":"O"===h.usage&&(v="output");const $="H"===h.usage?"O":h.usage||"O";l.parse(`Parsed: ${g} (${m.dataType}) at ${y.row},${y.col} length=${m.length}`);const S={id:_e(),type:v,name:g,row:y.row,col:y.col,length:"date"===m.dataType?10:"time"===m.dataType?8:"timestamp"===m.dataType?26:m.length,decimals:h.decimals,usage:$,dataType:m.dataType,value:""};if(p.length>0){const e=p.map(e=>{const t=e.startsWith("N");return{number:(t?e.substring(1):e).padStart(2,"0"),not:t}});S._inlineIndicators=e,S._inlineIsOr=s,l.debug(`Stored ${e.length} inline indicators for field ${g}, isOr=${s}`)}const w=e.match(/COLOR\((\w+)\)/);w&&(S.color=w[1],l.parse(`Found inline color ${S.color} for field ${g}`));const x=Le(e,e);x.attrs&&Object.keys(x.attrs).length>0&&(S.attributes=x.attrs,l.parse(`Found inline DSPATR attributes for field ${g}:`,x.attrs));const k=e.match(/CHECK\(([^)]+)\)/);if(k){const e=k[1].trim().split(/\s+/);S.checkOptions||(S.checkOptions={}),e.forEach(e=>{S.checkOptions[e]=!0}),l.parse(`Found inline CHECK options for field ${g}:`,e)}const D=e.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);if(D){const e=D[1].replace(/["']/g,"").trim().toUpperCase();if(e){const t=D[2]?D[2].trim():"";S.edtcde={value:e},"*"!==t&&"$"!==t||"Z"===e||(S.edtcde.replaceLeadingZerosWith=t),l.parse(`Found inline EDTCDE(${e}${t?` ${t}`:""}) for field ${g}`)}}const E=(e,t)=>{const n=new RegExp(`${e}\\(\\s*'((?:''|[^'])*)'\\s*\\)`,"i"),i=t.match(n);if(i)return i[1].replace(/''/g,"'");const o=new RegExp(`${e}\\(\\s*([^)]*?)\\s*\\)`,"i"),s=t.match(o);return s?s[1].trim():""},I=E("EDTWRD",e);I.length>0&&(S.edtwrd={value:I},l.parse(`Found inline EDTWRD('${I}') for field ${g}`));const L=E("EDTMSK",e);L.length>0&&(S.edtmsk={value:L},l.parse(`Found inline EDTMSK('${L}') for field ${g}`));const C=E("DFT",e);C.length>0&&(S.dft={value:C},l.parse(`Found inline DFT(${C}) for field ${g}`));const A=e.match(/VALUES\(([^)]*)\)/i);if(A){const e=A[1].replace(/\s+/g," ").trim();e.length>0&&(S.values=e,l.parse(`Found inline VALUES(${e}) for field ${g}`))}b&&(S.precision=b);const F=function(e,t){return function({typeSpec:e,dataType:t}){if("zoned"===t){const t=e.match(/\d+([SYNDI])/);return t?t[1]:null}if("double"===t){const t=e.match(/\d+([JEOG])/);return t?t[1]:"J"}return null}({typeSpec:e,dataType:t})}(f,m.dataType);return F&&(S.shift=F,l.debug(`Extracted shift="${S.shift}" from typeSpec="${f}"`)),S}function Ge(e,t="info"){return function(e){const{message:t,type:n="info"}=e,i=document.createElement("div");i.className="notification",i.textContent=t;const o={success:{background:"#4caf50",color:"white"},error:{background:"#f44336",color:"white"},info:{background:"#2196F3",color:"white"}},s=o[n]||o.info;Object.assign(i.style,{position:"fixed",top:"70px",right:"20px",padding:"12px 20px",borderRadius:"4px",backgroundColor:s.background,color:s.color,fontSize:"14px",fontWeight:"500",boxShadow:"0 2px 8px rgba(0,0,0,0.3)",zIndex:"10001",animation:"slideIn 0.3s ease-out"}),document.body.appendChild(i),setTimeout(()=>{i.style.animation="slideOut 0.3s ease-out",setTimeout(()=>{i.parentNode&&document.body.removeChild(i)},300)},3e3)}({message:e,type:t})}window.addEventListener("message",e=>{const i=e.data;switch(i.type){case"documentContent":n=i.content,$=i.currentRecord||null,A(),function({Logger:e,getCurrentRecord:t}){const n=document.querySelector(".toolbar-left h2"),i=t?t():null;n&&i&&(n.textContent=`DSPF Designer - ${i}`,e.debug(`Updated title to: DSPF Designer - ${i}`))}({Logger:l,getCurrentRecord:()=>$}),i.records&&(S=i.records,l.debug("Received records list:",S.map(e=>e.name)),function({getCurrentRecord:e,getAllRecords:t}){const n=document.getElementById("prevRecordBtn"),i=document.getElementById("nextRecordBtn"),o=t?t():null,s=e?e():null;if(!n||!i||!o||0===o.length)return;const r=o.findIndex(e=>e.name===s);n.disabled=r<=0,i.disabled=r>=o.length-1}({getCurrentRecord:()=>$,getAllRecords:()=>S}));const e=i.preserveView||null;if(l.debug("Message received:",{type:i.type,hasContent:!!i.content,currentRecord:i.currentRecord,isReadOnly:i.isReadOnly,isReadOnlyUndefined:void 0===i.isReadOnly,recordsCount:S.length,preserveView:e}),void 0!==i.isReadOnly?(k=i.isReadOnly,l.debug("Document is read-only:",k),e||function({Logger:e,isReadOnly:t,setCurrentView:n,updatePreviewView:i}){e.debug("updateReadOnlyMode called, isReadOnly:",t);const o=document.getElementById("designerTab"),s=document.getElementById("designer-view"),r=document.getElementById("previewTab"),d=document.getElementById("preview-view"),a=document.getElementById("saveBtn"),l=document.querySelector(".add-record-btn"),c=document.getElementById("source-editor");if(t){o&&(o.style.display="none"),s&&(s.style.display="none"),a&&(a.style.display="none"),l&&(l.style.display="none"),c&&(c.readOnly=!0,c.style.cursor="not-allowed"),r&&d&&(document.querySelectorAll(".tab").forEach(e=>e.classList.remove("active")),document.querySelectorAll(".view").forEach(e=>e.classList.remove("active")),r.classList.add("active"),d.classList.add("active"),n&&n("preview"),i());const t=document.querySelector(".header h1");if(t&&!t.querySelector(".readonly-badge")){const e=document.createElement("span");e.className="readonly-badge",e.textContent=" [READ ONLY]",e.style.color="#ff6b6b",e.style.fontSize="0.8em",e.style.fontWeight="normal",t.appendChild(e)}e.key("Read-only mode enabled - Designer tab hidden, Preview/Source only")}else{o&&(o.style.display="inline-block"),s&&(s.style.display="block"),a&&(a.style.display="inline-block"),l&&(l.style.display="inline-block"),c&&(c.readOnly=!1,c.style.cursor="text");const t=document.querySelector(".readonly-badge");t&&t.remove(),e.key("Edit mode enabled")}}({Logger:l,isReadOnly:k,setCurrentView:e=>{D=e},updatePreviewView:xe})):l.warn("isReadOnly is undefined in message"),l.debug("Received document content for record:",$),Ke(i.content),e)l.debug("Restoring view after navigation:",e),Se(e);else{const e=document.querySelector(".view.active");e&&"preview-view"===e.id?xe():e&&"source-view"===e.id&&T({Logger:l,vscode:t,getCurrentDocument:()=>n,setCurrentDocument:e=>{n=e},getCurrentRecord:()=>$,parseDspfFields:Ke})}l.success("Document content updated, fields parsed for record:",$,"count:",v.length);break;case"saveSuccess":l.success("Document changed successfully");break;case"saveError":const o=i.error||"Unknown error occurred while saving";Ge("❌ Save failed: "+o,"error"),l.error("Save failed:",o)}});const qe=document.createElement("style");qe.textContent="\n        @keyframes slideIn {\n            from {\n                transform: translateX(400px);\n                opacity: 0;\n            }\n            to {\n                transform: translateX(0);\n                opacity: 1;\n            }\n        }\n        @keyframes slideOut {\n            from {\n                transform: translateX(0);\n                opacity: 1;\n            }\n            to {\n                transform: translateX(400px);\n                opacity: 0;\n            }\n        }\n    ",document.head.appendChild(qe);let je=new Map,Ye=null,Je=null;function Xe(e,t=null){if(function(){if(document.getElementById("indicator-picker-modal"))return;document.body.insertAdjacentHTML("beforeend",'\n            <div id="indicator-picker-modal" style="\n                display: none;\n                position: fixed;\n                top: 0;\n                left: 0;\n                width: 100%;\n                height: 100%;\n                background-color: rgba(0, 0, 0, 0.7);\n                z-index: 10001;\n                justify-content: center;\n                align-items: center;\n            ">\n                <div style="\n                    background: var(--panel-background, #1e1e1e);\n                    border: 1px solid var(--border-color, #3c3c3c);\n                    border-radius: 8px;\n                    padding: 20px;\n                    max-width: 600px;\n                    width: 90%;\n                ">\n                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">\n                        <h3 style="margin: 0; color: var(--text-color, #fff);">Select Indicator</h3>\n                        <button id="picker-modal-close" style="\n                            background: none;\n                            border: none;\n                            color: var(--text-color, #fff);\n                            font-size: 24px;\n                            cursor: pointer;\n                            padding: 0;\n                            width: 30px;\n                            height: 30px;\n                            display: flex;\n                            align-items: center;\n                            justify-content: center;\n                        ">×</button>\n                    </div>\n                    \n                    <div style="margin-bottom: 16px;">\n                        <label style="color: var(--text-color, #fff); font-size: 13px; font-weight: bold; margin-bottom: 8px; display: block;">Select Indicator (1-99):</label>\n                        <p style="margin: 0 0 12px 0; color: var(--text-muted, #888); font-size: 11px;">\n                            Click to select. Ctrl+Click for NOT (N).\n                        </p>\n                        <div id="picker-indicator-grid" style="\n                            display: grid;\n                            grid-template-columns: repeat(10, 1fr);\n                            gap: 4px;\n                        "></div>\n                    </div>\n                    \n                    <div style="display: flex; gap: 8px; justify-content: space-between;">\n                        <button id="picker-modal-clear" style="\n                            padding: 8px 16px;\n                            background: var(--error-color, #c53520);\n                            color: white;\n                            border: none;\n                            border-radius: 4px;\n                            cursor: pointer;\n                        ">Clear</button>\n                        <button id="picker-modal-cancel" style="\n                            padding: 8px 16px;\n                            background: var(--button-secondary-background, #555);\n                            color: white;\n                            border: none;\n                            border-radius: 4px;\n                            cursor: pointer;\n                        ">Cancel</button>\n                    </div>\n                </div>\n            </div>\n        ');const e=document.getElementById("picker-indicator-grid");for(let t=1;t<=99;t++){const n=document.createElement("button");n.className="picker-indicator-cell",n.dataset.indicator=t.toString(),n.textContent=t.toString(),n.style.cssText="\n                padding: 8px 4px;\n                border: 1px solid var(--border-color, #3c3c3c);\n                background: var(--button-background, #333);\n                color: var(--text-color, #fff);\n                cursor: pointer;\n                border-radius: 4px;\n                font-size: 11px;\n                transition: all 0.2s;\n            ",n.addEventListener("mouseenter",function(){this.style.background="var(--list-hover-background, #2a2d2e)"}),n.addEventListener("mouseleave",function(){this.style.background="var(--button-background, #333)"}),n.addEventListener("click",function(e){const t=e.ctrlKey||e.metaKey;tt(this.dataset.indicator,t)}),e.appendChild(n)}document.getElementById("picker-modal-close").addEventListener("click",Qe),document.getElementById("picker-modal-cancel").addEventListener("click",Qe),document.getElementById("picker-modal-clear").addEventListener("click",et),document.getElementById("indicator-picker-modal").addEventListener("click",function(e){e.target===this&&Qe()})}(),Ye=e,Je=t,document.querySelectorAll(".picker-indicator-cell").forEach(e=>{e.classList.remove("selected","selected-not"),e.style.background="var(--button-background, #333)",e.style.borderColor="var(--border-color, #3c3c3c)",e.textContent=e.dataset.indicator}),t){const e=parseInt(t.number,10).toString(),n=document.querySelector(`.picker-indicator-cell[data-indicator="${e}"]`);n&&(t.not?(n.classList.add("selected-not"),n.style.background="#ff6600",n.style.borderColor="#ff9900",n.textContent="N"+e):(n.classList.add("selected"),n.style.background="var(--primary-color, #007ACC)",n.style.borderColor="var(--primary-color, #007ACC)"))}document.getElementById("indicator-picker-modal").style.display="flex"}function Qe(){document.getElementById("indicator-picker-modal").style.display="none",Ye=null,Je=null}function et(){Ye&&Ye(null,!1),Qe()}function tt(e,t){Ye&&Ye(e,t),Qe()}let nt=null,it=[];function ot(e,t,n){l.debug(`🚀 [MODAL] openIBMiModal called - type: ${e}, key: ${t}, label: ${n}`),document.getElementById("ibmi-indicator-modal")||(document.body.insertAdjacentHTML("beforeend",'\n            <div id="ibmi-indicator-modal" style="\n                display: none;\n                position: fixed;\n                top: 0;\n                left: 0;\n                width: 100%;\n                height: 100%;\n                background-color: rgba(0, 0, 0, 0.7);\n                z-index: 10000;\n                justify-content: center;\n                align-items: center;\n            ">\n                <div style="\n                    background: var(--panel-background, #1e1e1e);\n                    border: 1px solid var(--border-color, #3c3c3c);\n                    border-radius: 8px;\n                    padding: 20px;\n                    max-width: 600px;\n                    width: 90%;\n                ">\n                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">\n                        <h3 style="margin: 0; color: var(--text-color, #fff);">Select Indicators</h3>\n                        <button id="ibmi-modal-close" style="\n                            background: none;\n                            border: none;\n                            color: var(--text-color, #fff);\n                            font-size: 24px;\n                            cursor: pointer;\n                            padding: 0;\n                            width: 30px;\n                            height: 30px;\n                            display: flex;\n                            align-items: center;\n                            justify-content: center;\n                        ">×</button>\n                    </div>\n                    \n                    <div style="margin-bottom: 16px; padding: 12px; background: var(--input-background, #333); border-radius: 4px;">\n                        <p style="margin: 0; color: var(--text-color, #fff); font-size: 13px;">\n                            <strong id="ibmi-target-label">Field or keyword . . . . . : SFLDSP</strong>\n                        </p>\n                    </div>\n                    \n                    <div style="margin-bottom: 16px;">\n                        <label style="color: var(--text-color, #fff); font-size: 13px; display: block; margin-bottom: 8px;">\n                            Type indicators, press Enter.\n                        </label>\n                        <div id="ibmi-indicators-container" style="display: flex; flex-direction: column; gap: 8px;">\n                            \x3c!-- OR indicator rows will be added here --\x3e\n                        </div>\n                        <p style="margin: 8px 0 0 0; color: var(--text-muted, #888); font-size: 11px; font-style: italic;">\n                            (Indicators shown horizontally are under AND condition)\n                        </p>\n                    </div>\n                    \n                    <div style="display: flex; gap: 8px; justify-content: flex-end;">\n                        <button id="ibmi-modal-cancel" style="\n                            padding: 8px 16px;\n                            background: var(--button-secondary-background, #555);\n                            color: white;\n                            border: none;\n                            border-radius: 4px;\n                            cursor: pointer;\n                        ">Cancel</button>\n                        <button id="ibmi-modal-ok" style="\n                            padding: 8px 16px;\n                            background: var(--primary-color, #007ACC);\n                            color: white;\n                            border: none;\n                            border-radius: 4px;\n                            cursor: pointer;\n                        ">OK</button>\n                    </div>\n                </div>\n            </div>\n        '),document.getElementById("ibmi-modal-close").addEventListener("click",st),document.getElementById("ibmi-modal-cancel").addEventListener("click",st),document.getElementById("ibmi-modal-ok").addEventListener("click",at),document.getElementById("ibmi-indicator-modal").addEventListener("click",function(e){e.target===this&&st()})),nt={type:e,key:t};const i=`${e}:${t}`;if(l.debug(`🚀 [MODAL] configKey: ${i}`),l.debug(`🚀 [MODAL] indicatorConfigurations.has(configKey): ${je.has(i)}`),l.debug(`🚀 [MODAL] selectedField exists: ${!!c}`),document.getElementById("ibmi-target-label").textContent=n,it=[],c){l.debug("🚀 [MODAL] Loading from selectedField"),l.debug(`🚀 [MODAL] selectedField.type: ${c.type}`),l.debug(`🚀 [MODAL] selectedField.name: ${c.name}`),l.debug("🚀 [MODAL] selectedField.indicators:",c.indicators);const n="color"===e?c.colorIndicators?.[t]:"attr"===e?c.attributeIndicators?.[t]:"dftval"===e?c.dftvalIndicators:"check"===e?c.checkIndicators?.[t]:"field-indicators"===e?c.indicators:null;l.debug(`[MODAL] Loading indicators for ${e}:${t}`),l.debug("[MODAL] fieldData:",n),l.debug("[MODAL] fieldData.groups:",n?.groups),l.debug("[MODAL] fieldData.isOr:",n?.isOr),n&&n.groups?(it=n.groups.map(e=>[...e.indicators]),l.debug(`[MODAL] Loaded ${it.length} groups:`,it)):l.warn("[MODAL] No groups found in fieldData")}else if(je.has(i)){l.debug("🚀 [MODAL] Loading from indicatorConfigurations (no selectedField)");const e=je.get(i);if(l.debug("[MODAL] configData:",e),e&&e.groups)it=e.groups.map(e=>[...e.indicators]),l.debug(`[MODAL] Loaded ${it.length} groups from Map:`,it);else if(e instanceof Set){const t=[];e.forEach(e=>{try{t.push(JSON.parse(e))}catch(e){}}),t.length>0&&it.push(t)}}0===it.length&&it.push([]),rt(),document.getElementById("ibmi-indicator-modal").style.display="flex"}function st(){document.getElementById("ibmi-indicator-modal").style.display="none",nt=null}function rt(){const e=document.getElementById("ibmi-indicators-container");e.innerHTML="",it.forEach((t,n)=>{const i=document.createElement("div");if(i.style.cssText="display: flex; align-items: center; gap: 4px;",n>0){const e=document.createElement("span");e.textContent="OR",e.style.cssText="color: #00CED1; font-weight: bold; width: 30px; font-size: 12px;",i.appendChild(e)}else{const e=document.createElement("span");e.style.width="30px",i.appendChild(e)}for(let e=0;e<9;e++){const o=document.createElement("input");if(o.type="text",o.className="ibmi-indicator-input",o.dataset.groupIndex=n,o.dataset.index=e,o.maxLength=3,o.placeholder="Nnn",o.style.cssText="\n                    width: 40px;\n                    padding: 4px;\n                    background: var(--input-background, #333);\n                    border: 1px solid var(--border-color, #3c3c3c);\n                    color: var(--text-color, #fff);\n                    border-radius: 3px;\n                    text-align: center;\n                    font-size: 12px;\n                    font-family: monospace;\n                ",t[e]){const n=t[e];o.value=n.not?`N${n.number.toString().padStart(2,"0")}`:n.number.toString().padStart(2,"0")}o.addEventListener("click",function(){const e=parseInt(this.dataset.groupIndex);parseInt(this.dataset.index);let t=null;const n=this.value.trim().toUpperCase();if(n){const e=n.startsWith("N"),i=e?n.substring(1):n,o=parseInt(i);!isNaN(o)&&o>=1&&o<=99&&(t={number:o.toString(),not:e})}Xe((t,n)=>{this.value=null===t?"":n?`N${t.padStart(2,"0")}`:t.padStart(2,"0"),dt(e)},t)}),o.addEventListener("blur",function(){dt(parseInt(this.dataset.groupIndex))}),i.appendChild(o)}if(it.length>1){const e=document.createElement("button");e.textContent="×",e.style.cssText="\n                    background: var(--error-color, #c53520);\n                    color: white;\n                    border: none;\n                    border-radius: 3px;\n                    width: 24px;\n                    height: 24px;\n                    cursor: pointer;\n                    font-size: 16px;\n                    padding: 0;\n                ",e.addEventListener("click",()=>{it.splice(n,1),rt()}),i.appendChild(e)}e.appendChild(i)});const t=document.createElement("button");t.textContent="+ Add OR Group",t.style.cssText="\n            padding: 6px 12px;\n            background: var(--primary-color, #007ACC);\n            color: white;\n            border: none;\n            border-radius: 4px;\n            cursor: pointer;\n            font-size: 12px;\n            margin-top: 8px;\n        ",t.addEventListener("click",()=>{it.push([]),rt()}),e.appendChild(t)}function dt(e){const t=document.querySelectorAll(`input[data-group-index="${e}"]`),n=[];t.forEach(e=>{const t=e.value.trim().toUpperCase();if(!t)return;const i=t.startsWith("N"),o=i?t.substring(1):t,s=parseInt(o);!isNaN(s)&&s>=1&&s<=99&&n.push({number:s.toString(),not:i})}),it[e]=n}function at(){if(!nt)return;it.forEach((e,t)=>{dt(t)});const e=it.filter(e=>e.length>0),t=`${nt.type}:${nt.key}`,{type:n,key:i}=nt;if(c&&(l.debug(`[SAVE] Updating field ${c.name} ${n}:${i}`),"color"===n?(c.colorIndicators||(c.colorIndicators={}),0===e.length?delete c.colorIndicators[i]:1===e.length?c.colorIndicators[i]={groups:[{indicators:e[0]}],isOr:!1}:c.colorIndicators[i]={groups:e.map(e=>({indicators:e})),isOr:!0},l.debug(`[SAVE] Updated colorIndicators[${i}]:`,c.colorIndicators[i])):"attr"===n?(c.attributeIndicators||(c.attributeIndicators={}),0===e.length?delete c.attributeIndicators[i]:1===e.length?c.attributeIndicators[i]={groups:[{indicators:e[0]}],isOr:!1}:c.attributeIndicators[i]={groups:e.map(e=>({indicators:e})),isOr:!0},l.debug(`[SAVE] Updated attributeIndicators[${i}]:`,c.attributeIndicators[i])):"dftval"===n?(0===e.length?delete c.dftvalIndicators:1===e.length?c.dftvalIndicators={groups:[{indicators:e[0]}],isOr:!1}:c.dftvalIndicators={groups:e.map(e=>({indicators:e})),isOr:!0},c.dftvalIndicatorsModified=!0,l.debug("[SAVE] Updated dftvalIndicators:",c.dftvalIndicators)):"check"===n?(c.checkIndicators||(c.checkIndicators={}),0===e.length?delete c.checkIndicators[i]:1===e.length?c.checkIndicators[i]={groups:[{indicators:e[0]}],isOr:!1}:c.checkIndicators[i]={groups:e.map(e=>({indicators:e})),isOr:!0},l.debug(`[SAVE] Updated checkIndicators[${i}]:`,c.checkIndicators[i])):"field-indicators"===n?(0===e.length?delete c.indicators:1===e.length?c.indicators={groups:[{indicators:e[0]}],isOr:!1}:c.indicators={groups:e.map(e=>({indicators:e})),isOr:!0},c.fieldIndicatorsModified=!0,l.debug("[SAVE] Updated field.indicators:",c.indicators)):"sfldsp"!==n&&"sfldspctl"!==n||l.debug(`[SAVE] Updating ${n} indicators`),"sfldsp"!==n&&"sfldspctl"!==n&&"field-indicators"!==n&&(Te(c),l.debug("[SAVE] DDS updated"))),0===e.length)je.delete(t);else if(1===e.length)if("sfldsp"===n||"sfldspctl"===n)je.set(t,{groups:[{indicators:e[0]}],isOr:!1});else{const n=new Set;e[0].forEach(e=>{n.add(JSON.stringify(e))}),je.set(t,n)}else je.set(t,{groups:e.map(e=>({indicators:e})),isOr:!0});!function(e,t){const n=`${e}:${t}`,i=je.get(n);let o=0;i instanceof Set?o=i.size:i&&i.groups&&(o=i.groups.reduce((e,t)=>e+t.indicators.length,0));const s="color"===e?`.color-indicator-btn[data-color="${t}"]`:"attr"===e?`.attr-indicator-btn[data-attr="${t}"]`:"field-indicators"===e?'.indicator-config-btn[data-field-indicators="true"]':"sfldsp"===e?"#sfldsp-indicators-btn":"sfldspctl"===e?"#sfldspctl-indicators-btn":null;if(s){const t=document.querySelector(s);if(t)if("sfldsp"===e||"sfldspctl"===e||"field-indicators"===e)te(t,i);else{const e=t.querySelector(".indicator-count");e&&(o>0?(e.textContent=o,e.style.display="flex"):e.style.display="none")}}}(nt.type,nt.key),st()}function lt(e,t,n){ot(e,t,n)}function lt(e,t,n){l.debug(`Opening indicator modal: type=${e}, key=${t}, label=${n}`),l.debug("Selected field:",c),c&&(l.debug("Field colorIndicators:",c.colorIndicators),l.debug("Field attributeIndicators:",c.attributeIndicators)),ot(e,t,n)}function ct(){return function({Logger:e,openIndicatorModal:t}){t?(document.querySelectorAll(".indicator-config-btn").forEach(e=>{const t=e.cloneNode(!0);e.parentNode.replaceChild(t,e)}),document.querySelectorAll(".indicator-config-btn[data-keyword]").forEach(n=>{n.addEventListener("click",function(n){n.preventDefault(),n.stopPropagation();const i=this.dataset.keyword;e.debug(`Keyword indicator button clicked: ${i}`),t("keyword",i,`Indicadores para ${i}`)})}),document.querySelectorAll(".indicator-config-btn[data-attr]").forEach(n=>{n.addEventListener("click",function(n){n.preventDefault(),n.stopPropagation();const i=this.dataset.attr,o=this.previousElementSibling.textContent.trim();e.debug(`Attribute indicator button clicked: ${i}`),t("attr",i,`Attribute: ${o}`)})}),document.querySelectorAll(".indicator-config-btn[data-color]").forEach(n=>{n.addEventListener("click",function(n){n.preventDefault(),n.stopPropagation();const i=this.dataset.color,o=this.closest(".property-group").querySelector("label").textContent.trim();e.debug(`Color indicator button clicked: ${i}`),t("color",i,`Color: ${o}`)})}),document.querySelectorAll(".indicator-config-btn[data-check]").forEach(n=>{n.addEventListener("click",function(n){n.preventDefault(),n.stopPropagation();const i=this.dataset.check;this.previousElementSibling.textContent.trim(),e.debug(`CHECK indicator button clicked: ${i}`),t("check",i,`CHECK ${i} indicators`)})}),document.querySelectorAll(".indicator-config-btn[data-dftval]").forEach(n=>{n.addEventListener("click",function(n){n.preventDefault(),n.stopPropagation(),e.debug("DFTVAL indicator button clicked"),t("dftval","enabled","DFTVAL indicators")})}),document.querySelectorAll(".indicator-config-btn[data-field-indicators]").forEach(n=>{n.addEventListener("click",function(n){n.preventDefault(),n.stopPropagation(),e.debug("Field-level indicator button clicked"),t("field-indicators","field","Field-level indicators")})})):e.warn("setupIndicatorButtons: openIndicatorModal is required")}({Logger:l,openIndicatorModal:lt})}function ut(e){n=e}function pt(){return n}function gt(e){$=e}function ft(){return $}try{"undefined"!=typeof window&&window&&(window.__TESTS=window.__TESTS||{},void 0!==Oe&&(window.__TESTS.removeFieldFromDds=Oe),void 0!==Te&&(window.__TESTS.updateFieldInDds=Te),void 0!==Ie&&(window.__TESTS.processMultiLineContinuation=Ie),void 0!==p&&(window.__TESTS.attributeContentRegex=p),void 0!==u&&(window.__TESTS.ATTRIBUTE_KEYWORDS_SET=u),window.__TESTS.setCurrentDocument=ut,window.__TESTS.getCurrentDocument=pt,window.__TESTS.setCurrentRecord=gt,window.__TESTS.getCurrentRecord=ft)}catch(e){}if(e.exports)try{void 0!==Oe&&(e.exports.removeFieldFromDds=Oe),void 0!==Te&&(e.exports.updateFieldInDds=Te),void 0!==Ie&&(e.exports.processMultiLineContinuation=Ie),void 0!==p&&(e.exports.attributeContentRegex=p),void 0!==u&&(e.exports.ATTRIBUTE_KEYWORDS_SET=u),e.exports.setCurrentDocument=ut,e.exports.getCurrentDocument=pt,e.exports.setCurrentRecord=gt,e.exports.getCurrentRecord=ft}catch(e){}}()}},t={};function n(i){var o=t[i];if(void 0!==o)return o.exports;var s=t[i]={id:i,loaded:!1,exports:{}};return e[i](s,s.exports,n),s.loaded=!0,s.exports}n.hmd=e=>((e=Object.create(e)).children||(e.children=[]),Object.defineProperty(e,"exports",{enumerable:!0,set:()=>{throw new Error("ES Modules may not assign module.exports or exports.*, Use ESM export syntax, instead: "+e.id)}}),e),n(237)})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ([
+/* 0 */
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _modules_utils_colorUtils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/* harmony import */ var _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
+/* harmony import */ var _modules_utils_displaySizeUtils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4);
+/* harmony import */ var _modules_utils_idGenerator_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+/* harmony import */ var _modules_utils_fieldNameValidator_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(6);
+/* harmony import */ var _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(7);
+/* harmony import */ var _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(8);
+/* harmony import */ var _modules_utils_charMetrics_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(9);
+/* harmony import */ var _modules_ui_rulers_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(10);
+/* harmony import */ var _modules_ui_canvasSetup_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(11);
+/* harmony import */ var _modules_ui_toolbarSetup_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(12);
+/* harmony import */ var _modules_ui_displaySizeSelector_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(13);
+/* harmony import */ var _modules_ui_canvasSize_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(14);
+/* harmony import */ var _modules_ui_dragAndDrop_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(15);
+/* harmony import */ var _modules_ui_gridLines_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(16);
+/* harmony import */ var _modules_ui_previewDisplaySizeListeners_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(17);
+/* harmony import */ var _modules_ui_sourceSearch_js__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(18);
+/* harmony import */ var _modules_ui_navigation_js__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(19);
+/* harmony import */ var _modules_ui_windowResize_js__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(20);
+/* harmony import */ var _modules_ui_sourceView_js__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(21);
+/* harmony import */ var _modules_ui_moveField_js__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(22);
+/* harmony import */ var _modules_ui_applyWindowDimensions_js__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(23);
+/* harmony import */ var _modules_ui_showScreenProperties_js__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(24);
+/* harmony import */ var _modules_ui_saveDocument_js__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(25);
+/* harmony import */ var _modules_ui_setViewZoom_js__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(26);
+/* harmony import */ var _modules_ui_switchToView_js__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(27);
+/* harmony import */ var _modules_ui_indicatorButtons_js__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(28);
+/* harmony import */ var _modules_ui_showFieldProperties_js__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(29);
+/* harmony import */ var _modules_ui_applyFieldProperties_js__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(30);
+/* harmony import */ var _modules_ui_propertiesTabs_js__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(31);
+/* harmony import */ var _modules_ui_subfileControl_js__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(32);
+/* harmony import */ var _modules_ui_functionKeys_js__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(33);
+/* harmony import */ var _modules_ui_deleteConfirmation_js__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(34);
+/* harmony import */ var _modules_ui_previewView_js__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(35);
+/* harmony import */ var _modules_ui_updateReadOnlyMode_js__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(36);
+/* harmony import */ var _modules_ui_selectField_js__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(37);
+/* harmony import */ var _modules_ui_deselectAllFields_js__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(38);
+/* harmony import */ var _modules_ui_editField_js__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(39);
+/* harmony import */ var _modules_ui_scrollToRecordInSource_js__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(40);
+/* harmony import */ var _modules_ui_recordNavigation_js__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(41);
+/* harmony import */ var _modules_ui_createField_js__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(42);
+/* harmony import */ var _modules_ui_generateUniqueFieldName_js__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(43);
+/* harmony import */ var _modules_ui_applyAttributeClasses_js__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(44);
+/* harmony import */ var _modules_ui_computeFieldDisplay_js__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(45);
+/* harmony import */ var _modules_ui_setFieldContent_js__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(46);
+/* harmony import */ var _modules_ui_setupFieldElement_js__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(47);
+/* harmony import */ var _modules_ui_renderField_js__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(48);
+/* harmony import */ var _modules_ui_renderWindowField_js__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(49);
+/* harmony import */ var _modules_ui_getFieldCharForDisplay_js__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(50);
+/* harmony import */ var _modules_ui_getFieldDisplayText_js__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(51);
+/* harmony import */ var _modules_ui_generateWindowFieldHtml_js__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(52);
+/* harmony import */ var _modules_ui_generateId_js__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(53);
+/* harmony import */ var _modules_ui_getDefaultLength_js__WEBPACK_IMPORTED_MODULE_53__ = __webpack_require__(54);
+/* harmony import */ var _modules_ui_getKeywordDisplay_js__WEBPACK_IMPORTED_MODULE_54__ = __webpack_require__(55);
+/* harmony import */ var _modules_ui_extractAttributes_js__WEBPACK_IMPORTED_MODULE_55__ = __webpack_require__(56);
+/* harmony import */ var _modules_ui_renderAttributeRows_js__WEBPACK_IMPORTED_MODULE_56__ = __webpack_require__(57);
+/* harmony import */ var _modules_ui_getAttributeCheckboxMap_js__WEBPACK_IMPORTED_MODULE_57__ = __webpack_require__(58);
+/* harmony import */ var _modules_ui_formatIndicatorLabel_js__WEBPACK_IMPORTED_MODULE_58__ = __webpack_require__(59);
+/* harmony import */ var _modules_ui_setIndicatorButtonState_js__WEBPACK_IMPORTED_MODULE_59__ = __webpack_require__(60);
+/* harmony import */ var _modules_ui_applyColorChanges_js__WEBPACK_IMPORTED_MODULE_60__ = __webpack_require__(61);
+/* harmony import */ var _modules_ui_getRecordType_js__WEBPACK_IMPORTED_MODULE_61__ = __webpack_require__(62);
+/* harmony import */ var _modules_ui_extractRowColFromParts_js__WEBPACK_IMPORTED_MODULE_62__ = __webpack_require__(63);
+/* harmony import */ var _modules_ui_parseDdsTypeSpecification_js__WEBPACK_IMPORTED_MODULE_63__ = __webpack_require__(64);
+/* harmony import */ var _modules_ui_parseUsageAndDecimals_js__WEBPACK_IMPORTED_MODULE_64__ = __webpack_require__(65);
+/* harmony import */ var _modules_ui_extractFloatPrecision_js__WEBPACK_IMPORTED_MODULE_65__ = __webpack_require__(66);
+/* harmony import */ var _modules_ui_extractShiftCode_js__WEBPACK_IMPORTED_MODULE_66__ = __webpack_require__(67);
+/* harmony import */ var _modules_ui_parseWindowDimensionsFromLine_js__WEBPACK_IMPORTED_MODULE_67__ = __webpack_require__(68);
+/* harmony import */ var _modules_ui_processMultiLineContinuation_js__WEBPACK_IMPORTED_MODULE_68__ = __webpack_require__(69);
+/* harmony import */ var _modules_ui_scanIndicatorsBackward_js__WEBPACK_IMPORTED_MODULE_69__ = __webpack_require__(70);
+/* harmony import */ var _modules_ui_scanAttributeLinesAfterField_js__WEBPACK_IMPORTED_MODULE_70__ = __webpack_require__(71);
+/* harmony import */ var _modules_ui_showNotification_js__WEBPACK_IMPORTED_MODULE_71__ = __webpack_require__(72);
+/* harmony import */ var _modules_ui_updateDocumentInEditor_js__WEBPACK_IMPORTED_MODULE_72__ = __webpack_require__(73);
+/* harmony import */ var _modules_ui_buildVariableTypeAndUsage_js__WEBPACK_IMPORTED_MODULE_73__ = __webpack_require__(74);
+/* harmony import */ var _modules_ui_generateConstantFieldLines_js__WEBPACK_IMPORTED_MODULE_74__ = __webpack_require__(75);
+/* harmony import */ var _modules_ui_generateFieldDspatrLines_js__WEBPACK_IMPORTED_MODULE_75__ = __webpack_require__(76);
+/* harmony import */ var _modules_ui_generateFieldColorLines_js__WEBPACK_IMPORTED_MODULE_76__ = __webpack_require__(77);
+/* harmony import */ var _modules_ui_generateFieldCheckLines_js__WEBPACK_IMPORTED_MODULE_77__ = __webpack_require__(78);
+/* harmony import */ var _modules_ui_generateFieldEdtcdeLines_js__WEBPACK_IMPORTED_MODULE_78__ = __webpack_require__(79);
+/* harmony import */ var _modules_ui_generateFieldEditKeywordsLines_js__WEBPACK_IMPORTED_MODULE_79__ = __webpack_require__(80);
+/* harmony import */ var _modules_ui_generateFieldValuesLines_js__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(81);
+/* harmony import */ var _modules_ui_generateFieldDftLines_js__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(82);
+/* harmony import */ var _modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_82__ = __webpack_require__(83);
+/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(84);
+/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(85);
+/* module decorator */ module = __webpack_require__.hmd(module);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(function() {
+    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.success('DSPF Designer script loaded');
+    
+    const vscode = acquireVsCodeApi();
+    window.vscodeApi = vscode; // Make it globally available
+    
+    // IBM i Color Mappings (5250 standard colors) - now using ColorUtils
+    const IBM_COLORS = _modules_utils_colorUtils_js__WEBPACK_IMPORTED_MODULE_0__.ColorUtils.IBM_COLORS;
+    
+    let currentDocument = '';
+    let selectedField = null;
+    let fields = [];
+    let currentRecord = null; // Track which record we're editing
+    let allRecords = []; // List of all records in the DSPF file
+    let currentDisplaySize = 'DS3'; // Current display size: DS3 (24x80) or DS4 (27x132)
+    let isReadOnly = false; // Track if document is in read-only mode
+    let currentView = 'designer'; // Track the current active view (designer, preview, source)
+    let currentZoom = 1; // Zoom level for views container
+    
+    // Initialize the designer when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.ui('DOM loaded, initializing designer');
+        initializeDesigner();
+    });
+    
+    // Also try to initialize immediately in case DOM is already loaded
+    if (document.readyState === 'loading') {
+        // Still loading, wait for DOMContentLoaded
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Document still loading, waiting...');
+    } else {
+        // Already loaded
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.success('Document already loaded, initializing immediately');
+        initializeDesigner();
+    }
+    
+    async function initializeDesigner() {
+        await (0,_modules_utils_charMetrics_js__WEBPACK_IMPORTED_MODULE_8__.calibrateCharMetrics)(_modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates, _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger);
+        (0,_modules_ui_canvasSetup_js__WEBPACK_IMPORTED_MODULE_10__.setupCanvasInteraction)(deselectAllFields, showScreenProperties);
+        (0,_modules_ui_toolbarSetup_js__WEBPACK_IMPORTED_MODULE_11__.setupToolbarButtons)({
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            vscode,
+            saveDocument,
+            navigateToPreviousRecord,
+            navigateToNextRecord,
+            setViewZoom,
+            getCurrentZoom: () => currentZoom,
+            switchToView
+        });
+        (0,_modules_ui_displaySizeSelector_js__WEBPACK_IMPORTED_MODULE_12__.setupDisplaySizeSelector)({
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            getCurrentDisplaySize: () => currentDisplaySize,
+            setCurrentDisplaySize: (value) => { currentDisplaySize = value; },
+            updateCanvasSize: (displaySize) => (0,_modules_ui_canvasSize_js__WEBPACK_IMPORTED_MODULE_13__.updateCanvasSize)(displaySize, _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates, _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger),
+            setupRulers,
+            parseDspfFields,
+            getCurrentDocument: () => currentDocument,
+            applyDefaultZoomForDisplaySize,
+            updatePreviewView
+        });
+        setViewZoom(currentZoom);
+        (0,_modules_ui_canvasSize_js__WEBPACK_IMPORTED_MODULE_13__.updateCanvasSize)(currentDisplaySize, _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates, _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger);
+        (0,_modules_ui_gridLines_js__WEBPACK_IMPORTED_MODULE_15__.setupGridLines)({
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            setupRulers
+        });
+        
+        // Setup drag and drop with a delay to ensure DOM is fully loaded
+        setTimeout(() => {
+            (0,_modules_ui_dragAndDrop_js__WEBPACK_IMPORTED_MODULE_14__.setupDragAndDrop)({
+                Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+                ScreenCoordinates: _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates,
+                getCurrentRecord: () => currentRecord,
+                getCurrentDisplaySize: () => currentDisplaySize,
+                getCurrentZoom: () => currentZoom,
+                getWindowDimensions,
+                moveField,
+                createField
+            });
+        }, 100);
+        
+        // Ensure Designer view is active by default
+        switchToView('designer');
+        
+        // Request initial document content
+        vscode.postMessage({ type: 'getDocument' });
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.success('DSPF Designer initialized');
+    }
+
+    function setViewZoom(zoomValue) {
+        return (0,_modules_ui_setViewZoom_js__WEBPACK_IMPORTED_MODULE_25__.setViewZoom)({
+            zoomValue,
+            setCurrentZoom: (value) => { currentZoom = value; }
+        });
+    }
+
+    function applyDefaultZoomForDisplaySize(displaySize, targetView = currentView) {
+        const defaultZoom = targetView === 'designer'
+            ? (displaySize === 'DS4' ? 0.7 : 1)
+            : 1;
+        setViewZoom(defaultZoom);
+    }
+
+    function syncDisplaySizeRadioButtons(displaySize) {
+        const designerRadios = document.querySelectorAll('input[name="displaySize"]');
+        designerRadios.forEach(radio => {
+            radio.checked = radio.value === displaySize;
+        });
+
+        const previewRadios = document.querySelectorAll('input[name="preview-display-size"]');
+        previewRadios.forEach(radio => {
+            radio.checked = radio.value === displaySize;
+        });
+    }
+
+    function syncDisplaySizeRadioAvailability(displayConfig) {
+        const hasAnyDeclaredSize = displayConfig.hasDS3 || displayConfig.hasDS4;
+        const allowDS3 = hasAnyDeclaredSize ? displayConfig.hasDS3 : true;
+        const allowDS4 = hasAnyDeclaredSize ? displayConfig.hasDS4 : true;
+
+        const updateRadioState = (radio, isAllowed) => {
+            radio.disabled = !isAllowed;
+            radio.title = isAllowed ? '' : 'Not available based on DSPSIZ';
+            const label = radio.closest('label');
+            if (label) {
+                label.style.opacity = isAllowed ? '1' : '0.55';
+                label.style.cursor = isAllowed ? 'pointer' : 'not-allowed';
+                label.title = isAllowed ? '' : 'Not available based on DSPSIZ';
+            }
+        };
+
+        const ds3Radios = document.querySelectorAll('input[name="displaySize"][value="DS3"], input[name="preview-display-size"][value="DS3"]');
+        ds3Radios.forEach(radio => {
+            updateRadioState(radio, allowDS3);
+        });
+
+        const ds4Radios = document.querySelectorAll('input[name="displaySize"][value="DS4"], input[name="preview-display-size"][value="DS4"]');
+        ds4Radios.forEach(radio => {
+            updateRadioState(radio, allowDS4);
+        });
+    }
+
+    function applyDisplaySizeSettingsFromDocument() {
+        const displayConfig = _modules_utils_displaySizeUtils_js__WEBPACK_IMPORTED_MODULE_3__.DisplaySizeUtils.getAvailableDisplaySizes(currentDocument);
+        const preferredDisplaySize = displayConfig.singleSize;
+
+        if (preferredDisplaySize && currentDisplaySize !== preferredDisplaySize) {
+            currentDisplaySize = preferredDisplaySize;
+            applyDefaultZoomForDisplaySize(currentDisplaySize);
+            (0,_modules_ui_canvasSize_js__WEBPACK_IMPORTED_MODULE_13__.updateCanvasSize)(currentDisplaySize, _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates, _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger);
+            setupRulers();
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.ui(`Default display size set from DSPSIZ: ${currentDisplaySize}`);
+        }
+
+        syncDisplaySizeRadioButtons(currentDisplaySize);
+        syncDisplaySizeRadioAvailability(displayConfig);
+    }
+    
+    // Update UI based on read-only mode
+    function updateReadOnlyMode() {
+        return (0,_modules_ui_updateReadOnlyMode_js__WEBPACK_IMPORTED_MODULE_35__.updateReadOnlyMode)({
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            isReadOnly,
+            setCurrentView: (value) => { currentView = value; },
+            updatePreviewView
+        });
+    }
+    
+    
+    // Setup numbered rulers 
+    function setupRulers() {
+        (0,_modules_ui_rulers_js__WEBPACK_IMPORTED_MODULE_9__.setupRulers)(currentDisplaySize, _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates, _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger);
+    }
+    
+    
+    // Navigate to previous record
+    function navigateToPreviousRecord() {
+        return (0,_modules_ui_recordNavigation_js__WEBPACK_IMPORTED_MODULE_40__.navigateToPreviousRecord)({
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            vscode,
+            getAllRecords: () => allRecords,
+            getCurrentRecord: () => currentRecord,
+            getCurrentView: () => currentView
+        });
+    }
+    
+    // Navigate to next record
+    function navigateToNextRecord() {
+        return (0,_modules_ui_recordNavigation_js__WEBPACK_IMPORTED_MODULE_40__.navigateToNextRecord)({
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            vscode,
+            getAllRecords: () => allRecords,
+            getCurrentRecord: () => currentRecord,
+            getCurrentView: () => currentView
+        });
+    }
+    
+    
+    // Generate a unique field name for the current record
+    function generateUniqueFieldName(prefix) {
+        return (0,_modules_ui_generateUniqueFieldName_js__WEBPACK_IMPORTED_MODULE_42__.generateUniqueFieldName)({
+            prefix,
+            fields,
+            IdGenerator: _modules_utils_idGenerator_js__WEBPACK_IMPORTED_MODULE_4__.IdGenerator
+        });
+    }
+    
+    // Create a new field on the canvas
+    function createField(type, row, col) {
+        return (0,_modules_ui_createField_js__WEBPACK_IMPORTED_MODULE_41__.createField)({
+            type,
+            row,
+            col,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            fields,
+            generateUniqueFieldName,
+            generateId,
+            getDefaultLength,
+            getWindowDimensions,
+            getCurrentRecord: () => currentRecord,
+            getCurrentDisplaySize: () => currentDisplaySize,
+            renderField,
+            renderWindowField,
+            getSubfileRelationship,
+            getSflpagValue,
+            selectField,
+            addFieldToDds,
+            showFieldProperties
+        });
+    }
+    
+    // Helper: Apply display attribute classes to field element
+    function applyAttributeClasses(fieldElement, attributes) {
+        return (0,_modules_ui_applyAttributeClasses_js__WEBPACK_IMPORTED_MODULE_43__.applyAttributeClasses)({
+            fieldElement,
+            attributes
+        });
+    }
+
+    // Shared: compute display text, width, color and classes for a field (Designer/Preview)
+    function computeFieldDisplay(field, mode = 'designer') {
+        return (0,_modules_ui_computeFieldDisplay_js__WEBPACK_IMPORTED_MODULE_44__.computeFieldDisplay)({
+            field,
+            mode,
+            ColorUtils: _modules_utils_colorUtils_js__WEBPACK_IMPORTED_MODULE_0__.ColorUtils,
+            ScreenCoordinates: _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates,
+            getKeywordDisplay,
+            getFieldDisplayText
+        });
+    }
+
+    function getFieldDisplayText(field, fieldLength) {
+        return (0,_modules_ui_getFieldDisplayText_js__WEBPACK_IMPORTED_MODULE_50__.getFieldDisplayText)({
+            field,
+            fieldLength,
+            getFieldCharForDisplay
+        });
+    }
+    
+    // Helper: Get keyword display text
+    function getKeywordDisplay(keywordName, keywordArgs = null) {
+        return (0,_modules_ui_getKeywordDisplay_js__WEBPACK_IMPORTED_MODULE_54__.getKeywordDisplay)({
+            keywordName,
+            keywordArgs
+        });
+    }
+    
+    // Helper: Set field element content and styling based on field type
+    function setFieldContent(fieldElement, field) {
+        return (0,_modules_ui_setFieldContent_js__WEBPACK_IMPORTED_MODULE_45__.setFieldContent)({
+            fieldElement,
+            field,
+            computeFieldDisplay
+        });
+    }
+    
+    // Helper: Setup common field element properties and event listeners
+    function setupFieldElement(fieldElement, field) {
+        return (0,_modules_ui_setupFieldElement_js__WEBPACK_IMPORTED_MODULE_46__.setupFieldElement)({
+            fieldElement,
+            field,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            applyAttributeClasses,
+            setFieldContent,
+            selectField,
+            isReadOnly,
+            editField
+        });
+    }
+    
+    // Render a field on the canvas
+    function renderField(field) {
+        return (0,_modules_ui_renderField_js__WEBPACK_IMPORTED_MODULE_47__.renderField)({
+            field,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            ScreenCoordinates: _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates,
+            getCurrentDisplaySize: () => currentDisplaySize,
+            setupFieldElement,
+            getFieldDisplayText
+        });
+    }
+    
+    // Render field positioned relative to a window
+    function renderWindowField(field, windowDimensions) {
+        return (0,_modules_ui_renderWindowField_js__WEBPACK_IMPORTED_MODULE_48__.renderWindowField)({
+            field,
+            windowDimensions,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            ScreenCoordinates: _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates,
+            getCurrentDisplaySize: () => currentDisplaySize,
+            setupFieldElement,
+            getFieldDisplayText
+        });
+    }
+    
+    // Helper function to get display character for a field
+    function getFieldCharForDisplay(field) {
+        return (0,_modules_ui_getFieldCharForDisplay_js__WEBPACK_IMPORTED_MODULE_49__.getFieldCharForDisplay)({
+            field
+        });
+    }
+    
+    // Select a field and show its properties
+    function selectField(field) {
+        return (0,_modules_ui_selectField_js__WEBPACK_IMPORTED_MODULE_36__.selectField)({
+            field,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            deselectAllFields,
+            getSelectedField: () => selectedField,
+            setSelectedField: (value) => { selectedField = value; },
+            indicatorConfigurations,
+            getFreshFieldFromDds: (targetField) => (0,_modules_ui_selectField_js__WEBPACK_IMPORTED_MODULE_36__.getFreshFieldFromDds)({
+                field: targetField,
+                Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+                getCurrentDocument: () => currentDocument,
+                getCurrentRecord: () => currentRecord,
+                parseDspfForPreview,
+                getFields: () => fields,
+                updateFieldAtIndex: (index, updatedField) => { fields[index] = updatedField; }
+            }),
+            showFieldProperties
+        });
+    }
+    
+    // Deselect all fields
+    function deselectAllFields() {
+        return (0,_modules_ui_deselectAllFields_js__WEBPACK_IMPORTED_MODULE_37__.deselectAllFields)({
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            indicatorConfigurations,
+            setSelectedField: (value) => { selectedField = value; },
+            showFieldProperties
+        });
+    }
+
+    // -------------------- Shared indicator UI helpers --------------------
+    // Convierte un array de indicadores en texto como "02 43 11" o "N03 51"
+    function formatIndicatorLabel(list) {
+        return (0,_modules_ui_formatIndicatorLabel_js__WEBPACK_IMPORTED_MODULE_58__.formatIndicatorLabel)(list);
+    }
+
+    // Actualiza el botón con el texto generado por formatIndicatorLabel
+    function setIndicatorButtonState(btn, indicators) {
+        return (0,_modules_ui_setIndicatorButtonState_js__WEBPACK_IMPORTED_MODULE_59__.setIndicatorButtonState)({
+            btn,
+            indicators,
+            formatIndicatorLabel
+        });
+    }
+    
+    // Attribute UI metadata (shared by variables, constants, and keyword fields)
+    const ATTRIBUTE_UI_DEFS = [
+        { key: 'blink', label: 'Blinking (BL)', checkboxId: 'attr-blink', dataAttr: 'blink', extraClass: '' },
+        { key: 'columnSeparator', label: 'Column Separator (CS)', checkboxId: 'attr-column-separator', dataAttr: 'columnSeparator', extraClass: '' },
+        { key: 'highlight', label: 'High Intensity (HI)', checkboxId: 'attr-high-intensity', dataAttr: 'highlight', extraClass: '' },
+        { key: 'nonDisplay', label: 'Non-Display (ND)', checkboxId: 'attr-non-display', dataAttr: 'nonDisplay', extraClass: '' },
+        { key: 'reverse', label: 'Reverse Image (RI)', checkboxId: 'attr-reverse-image', dataAttr: 'reverse', extraClass: '' },
+        { key: 'underline', label: 'Underline (UL)', checkboxId: 'attr-underline', dataAttr: 'underline', extraClass: '' },
+        { key: 'cursorPosition', label: 'Cursor Position (PC)', checkboxId: 'attr-cursor-position', dataAttr: 'cursorPosition', extraClass: '' },
+        { key: 'modifiedDataTag', label: 'Set modified data tag (MDT)', checkboxId: 'attr-mdt', dataAttr: 'modifiedDataTag', extraClass: 'usage-not-output-attr' },
+        { key: 'protect', label: 'Protect field (PR)', checkboxId: 'attr-protect', dataAttr: 'protect', extraClass: 'usage-not-output-attr' },
+        { key: 'operatorId', label: 'Operator ID magnetic card (OID)', checkboxId: 'attr-oid', dataAttr: 'operatorId', extraClass: 'usage-not-output-attr' },
+        { key: 'selectLightPen', label: 'Select by light pen (SP)', checkboxId: 'attr-select-pen', dataAttr: 'selectLightPen', extraClass: 'usage-not-output-attr' }
+    ];
+
+    const KEYWORD_ATTRIBUTE_ALLOW_LIST = new Set(['underline','reverse','blink','highlight','cursorPosition','columnSeparator','nonDisplay']);
+
+    function renderAttributeRows(allowedKeys = null, fieldType = 'variable') {
+        return (0,_modules_ui_renderAttributeRows_js__WEBPACK_IMPORTED_MODULE_56__.renderAttributeRows)({
+            allowedKeys,
+            fieldType,
+            attributeUiDefs: ATTRIBUTE_UI_DEFS
+        });
+    }
+
+    function getAttributeCheckboxMap(allowedKeys = null) {
+        return (0,_modules_ui_getAttributeCheckboxMap_js__WEBPACK_IMPORTED_MODULE_57__.getAttributeCheckboxMap)({
+            allowedKeys,
+            attributeUiDefs: ATTRIBUTE_UI_DEFS
+        });
+    }
+    
+    // Show field properties in the properties panel
+    function showFieldProperties(field) {
+        return (0,_modules_ui_showFieldProperties_js__WEBPACK_IMPORTED_MODULE_28__.showFieldProperties)({
+            field,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            KEYWORD_ATTRIBUTE_ALLOW_LIST,
+            renderAttributeRows,
+            getAttributeCheckboxMap,
+            setupIndicatorButtons,
+            setIndicatorButtonState,
+            indicatorConfigurations,
+            applyFieldProperties,
+            deleteField
+        });
+    }
+    
+    // Show screen/record properties in the properties panel
+    function showScreenProperties() {
+        return (0,_modules_ui_showScreenProperties_js__WEBPACK_IMPORTED_MODULE_23__.showScreenProperties)({
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            vscode,
+            isReadOnly,
+            getCurrentDocument: () => currentDocument,
+            setCurrentDocument: (value) => { currentDocument = value; },
+            getCurrentRecord: () => currentRecord,
+            getCurrentView: () => currentView,
+            getRecordType,
+            IdGenerator: _modules_utils_idGenerator_js__WEBPACK_IMPORTED_MODULE_4__.IdGenerator,
+            getWindowDimensions,
+            setupPropertiesTabs: _modules_ui_propertiesTabs_js__WEBPACK_IMPORTED_MODULE_30__.setupPropertiesTabs,
+            loadSubfileControl: _modules_ui_subfileControl_js__WEBPACK_IMPORTED_MODULE_31__.loadSubfileControl,
+            applySubfileControl: _modules_ui_subfileControl_js__WEBPACK_IMPORTED_MODULE_31__.applySubfileControl,
+            loadFunctionKeys: _modules_ui_functionKeys_js__WEBPACK_IMPORTED_MODULE_32__.loadFunctionKeys,
+            createFunctionKeyRow: _modules_ui_functionKeys_js__WEBPACK_IMPORTED_MODULE_32__.createFunctionKeyRow,
+            saveFunctionKeys: _modules_ui_functionKeys_js__WEBPACK_IMPORTED_MODULE_32__.saveFunctionKeys,
+            updateDocumentInEditor,
+            generateDdsLineWithIndicators,
+            indicatorConfigurations,
+            DisplaySizeUtils: _modules_utils_displaySizeUtils_js__WEBPACK_IMPORTED_MODULE_3__.DisplaySizeUtils,
+            IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils,
+            scanIndicatorsBackward,
+            setIndicatorButtonState,
+            openIBMiModal,
+            applyWindowDimensions,
+            parseDspfFields,
+            updatePreviewView,
+            showScreenProperties
+        });
+    }
+    
+    // Get the type of the current record (SFLCTL, SFL, or SCREEN)
+    function getRecordType(recordName) {
+        return (0,_modules_ui_getRecordType_js__WEBPACK_IMPORTED_MODULE_61__.getRecordType)({
+            recordName,
+            currentDocument
+        });
+    }
+    
+    // Get subfile relationship (SFL + SFLCTL pairing)
+    // Returns { sflRecord, sflctlRecord, companionRecord } or null if not a subfile record
+    function getSubfileRelationship(recordName) {
+        return (0,_modules_ui_subfileControl_js__WEBPACK_IMPORTED_MODULE_31__.getSubfileRelationship)({
+            recordName,
+            currentDocument,
+            getRecordType,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+    
+    // Get SFLPAG value from SFLCTL record
+    function getSflpagValue(sflctlRecordName) {
+        return (0,_modules_ui_subfileControl_js__WEBPACK_IMPORTED_MODULE_31__.getSflpagValue)({
+            sflctlRecordName,
+            currentDocument,
+            currentDisplaySize,
+            DisplaySizeUtils: _modules_utils_displaySizeUtils_js__WEBPACK_IMPORTED_MODULE_3__.DisplaySizeUtils,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+    
+    // Parse WINDOW dimensions from a line during record parsing
+    // Returns windowDimensions object if found for current display size, null otherwise
+    function parseWindowDimensionsFromLine(trimmedLine, currentRecordName, currentWindowDimensions) {
+        return (0,_modules_ui_parseWindowDimensionsFromLine_js__WEBPACK_IMPORTED_MODULE_67__.parseWindowDimensionsFromLine)({
+            trimmedLine,
+            currentRecordName,
+            currentWindowDimensions,
+            currentDisplaySize,
+            DisplaySizeUtils: _modules_utils_displaySizeUtils_js__WEBPACK_IMPORTED_MODULE_3__.DisplaySizeUtils,
+            currentDocument,
+            getWindowDimensions,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+    
+    // Get window dimensions for DS3 and DS4 if this is a WINDOW record
+    function getWindowDimensions(recordName) {
+        const lines = currentDocument.split('\n');
+        let inTargetRecord = false;
+        const result = {
+            hasWindow: false,
+            isReference: false,
+            referenceName: null,
+            ds3: null,
+            ds4: null
+        };
+        
+        // Get display size configuration
+        const displayConfig = _modules_utils_displaySizeUtils_js__WEBPACK_IMPORTED_MODULE_3__.DisplaySizeUtils.getAvailableDisplaySizes(currentDocument);
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            
+            // Check if we're entering the target record
+            if (line.includes(`R ${recordName}`) || line.includes(`R  ${recordName}`)) {
+                inTargetRecord = true;
+                continue;
+            }
+            
+            // Stop when we hit the next record
+            if (inTargetRecord && line.match(/^\s*A\s+R\s+\w+/)) {
+                break;
+            }
+            
+            // Look for WINDOW keywords
+            if (inTargetRecord && line.includes('WINDOW(')) {
+                // Check if it's a reference to another window record (no digits, just a name)
+                const windowRefMatch = line.match(/WINDOW\(([A-Z0-9_]+)\)/);
+                if (windowRefMatch && !/\d+\s+\d+/.test(windowRefMatch[0])) {
+                    // It's a reference to another WINDOW record
+                    const referencedRecord = windowRefMatch[1];
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.window(`Found WINDOW reference to ${referencedRecord} in record ${recordName}`);
+                    
+                    // Get dimensions from referenced record
+                    const refResult = getWindowDimensions(referencedRecord);
+                    
+                    // Return with reference info and resolved dimensions
+                    return {
+                        hasWindow: refResult.hasWindow,
+                        isReference: true,
+                        referenceName: referencedRecord,
+                        ds3: refResult.ds3,
+                        ds4: refResult.ds4
+                    };
+                }
+                
+                // Otherwise, it's direct coordinates
+                const windowMatch = line.match(/WINDOW\((\d+)\s+(\d+)\s+(\d+)\s+(\d+)\)/);
+                if (windowMatch) {
+                    const dimensions = {
+                        row: parseInt(windowMatch[1]),
+                        col: parseInt(windowMatch[2]),
+                        height: parseInt(windowMatch[3]),
+                        width: parseInt(windowMatch[4])
+                    };
+                    
+                    result.hasWindow = true;
+                    result.isReference = false;
+                    
+                    // Check for explicit display size marker
+                    if (line.includes('*DS3')) {
+                        result.ds3 = dimensions;
+                    } else if (line.includes('*DS4')) {
+                        result.ds4 = dimensions;
+                    } else if (displayConfig.singleSize) {
+                        // No marker, but single size mode - assign to both sizes
+                        result.ds3 = dimensions;
+                        result.ds4 = dimensions;
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    // Apply window dimensions changes to DDS
+    function applyWindowDimensions() {
+        return (0,_modules_ui_applyWindowDimensions_js__WEBPACK_IMPORTED_MODULE_22__.applyWindowDimensions)({
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            isReadOnly,
+            getCurrentDocument: () => currentDocument,
+            setCurrentDocument: (value) => { currentDocument = value; },
+            getCurrentRecord: () => currentRecord,
+            updateDocumentInEditor,
+            parseDspfFields
+        });
+    }
+    
+    // Transfer indicators from modal configuration to field object
+    // Consolidates duplicated indicator transfer logic for color, attributes, checks, keywords
+    // Options: { kind, keys, field, fieldType, attrFormat }
+    // - kind: 'color' | 'attr' | 'check' | 'keyword'
+    // - keys: array of items to transfer (colors, attribute names, check codes, keyword name)
+    // - field: target field object to update
+    // - fieldType: for logging context (e.g., 'field', 'keyword')
+    // - attrFormat: for attributes only - 'grouped' or 'individual'
+    function transferIndicators(options) {
+        const {
+            kind,
+            keys,
+            field,
+            fieldType = 'field',
+            attrFormat = 'individual'
+        } = options;
+
+        if (!field || !kind || !keys || keys.length === 0) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.warn(`transferIndicators: Invalid options for ${kind}:`, { kind, keysCount: keys?.length, fieldName: field?.name });
+            return false;
+        }
+
+        let indicatorsModified = false;
+        let storageKey = null;
+        let indicatorsKey = null;
+        let modifiedKey = null;
+
+        switch (kind) {
+            case 'color':
+                storageKey = 'color';
+                indicatorsKey = 'colorIndicators';
+                modifiedKey = 'colorIndicatorsModified';
+                break;
+            case 'attr':
+                storageKey = 'attr';
+                indicatorsKey = 'attributeIndicators';
+                modifiedKey = 'attributeIndicatorsModified';
+                break;
+            case 'check':
+                storageKey = 'check';
+                indicatorsKey = 'checkIndicators';
+                modifiedKey = 'checkIndicatorsModified';
+                break;
+            case 'keyword':
+                storageKey = 'keyword';
+                indicatorsKey = 'keywordIndicators';
+                modifiedKey = 'keywordIndicatorsModified';
+                break;
+            default:
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error(`transferIndicators: Unknown kind "${kind}"`);
+                return false;
+        }
+
+        // Initialize storage if needed
+        if (!field[indicatorsKey]) {
+            field[indicatorsKey] = kind === 'color' || kind === 'attr' ? {} : [];
+        }
+
+        // For grouped format attributes, collect indicators once
+        let groupedIndicators = null;
+
+        // Transfer indicators for each key
+        keys.forEach(key => {
+            const configKey = `${storageKey}:${key}`;
+            const hasConfig = indicatorConfigurations && indicatorConfigurations.has(configKey);
+
+            if (hasConfig) {
+                const indicators = Array.from(indicatorConfigurations.get(configKey));
+                const parsedIndicators = indicators.map(ind => {
+                    return typeof ind === 'string' ? JSON.parse(ind) : ind;
+                });
+
+                if (kind === 'keyword') {
+                    // Keywords store indicators as array (not keyed)
+                    field[indicatorsKey] = parsedIndicators;
+                } else if (kind === 'attr' && attrFormat === 'grouped') {
+                    // Grouped format: collect once, apply to all
+                    if (!groupedIndicators) {
+                        groupedIndicators = parsedIndicators;
+                    }
+                } else if (kind === 'color' || kind === 'attr' || kind === 'check') {
+                    // Individual format: each key gets its own indicators
+                    // Store in new groups structure for color and attr
+                    if (kind === 'color' || kind === 'attr') {
+                        field[indicatorsKey][key] = {
+                            groups: [{ indicators: parsedIndicators }],
+                            isOr: false
+                        };
+                    } else {
+                        // Check indicators keep old format
+                        field[indicatorsKey][key] = parsedIndicators;
+                    }
+                }
+
+                indicatorsModified = true;
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[transferIndicators-${kind}] Transferred ${parsedIndicators.length} indicators for ${key}`);
+            } else {
+                // No config entry means user cleared indicators for this key
+                if (kind === 'keyword') {
+                    field[indicatorsKey] = [];
+                } else if (kind === 'attr' || kind === 'color' || kind === 'check') {
+                    if (field[indicatorsKey] && field[indicatorsKey][key]) {
+                        delete field[indicatorsKey][key];
+                        indicatorsModified = true;
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[transferIndicators-${kind}] Cleared indicators for ${key} (no config entry)`);
+                    }
+                }
+            }
+        });
+
+        // For grouped attributes, apply to all active attributes
+        if (kind === 'attr' && attrFormat === 'grouped' && groupedIndicators !== null) {
+            keys.forEach(key => {
+                field[indicatorsKey][key] = [...groupedIndicators]; // Clone
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[transferIndicators-attr] Applied ${groupedIndicators.length} shared indicators to ${key}`);
+            });
+        }
+
+        // Remove indicators for keys that are no longer selected (for color, attr, check)
+        if (kind !== 'keyword') {
+            Object.keys(field[indicatorsKey]).forEach(existingKey => {
+                if (!keys.includes(existingKey)) {
+                    delete field[indicatorsKey][existingKey];
+                    indicatorsModified = true;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[transferIndicators-${kind}] Removed indicators for unselected ${existingKey}`);
+                }
+            });
+        }
+
+        // Clean up empty indicators storage
+        if (kind === 'keyword') {
+            if (field[indicatorsKey].length === 0) {
+                delete field[indicatorsKey];
+            }
+        } else {
+            if (Object.keys(field[indicatorsKey]).length === 0) {
+                delete field[indicatorsKey];
+            }
+        }
+
+        // Mark field if indicators were modified
+        if (indicatorsModified) {
+            field[modifiedKey] = true;
+        }
+
+        return indicatorsModified;
+    }
+
+    // Shared function to apply color changes from checkboxes to field object
+    function applyColorChanges(field) {
+        return (0,_modules_ui_applyColorChanges_js__WEBPACK_IMPORTED_MODULE_60__.applyColorChanges)({
+            field,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            transferIndicators
+        });
+    }
+    
+    // Apply property changes to a field. Apply Changes button.
+    function applyFieldProperties(field) {
+        return (0,_modules_ui_applyFieldProperties_js__WEBPACK_IMPORTED_MODULE_29__.applyFieldProperties)({
+            field,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            getSelectedField: () => selectedField,
+            setSelectedField: (value) => { selectedField = value; },
+            getFields: () => fields,
+            getCurrentRecord: () => currentRecord,
+            getCurrentDocument: () => currentDocument,
+            setCurrentDocument: (value) => { currentDocument = value; },
+            applyColorChanges,
+            getAttributeCheckboxMap,
+            transferIndicators,
+            KEYWORD_ATTRIBUTE_ALLOW_LIST,
+            updateFieldInDds,
+            parseDspfFields,
+            updateSourceViewUI: _modules_ui_sourceView_js__WEBPACK_IMPORTED_MODULE_20__.updateSourceView,
+            vscode,
+            showFieldProperties,
+            selectField
+        });
+    }
+    
+    // Delete a field
+    function deleteField(field) {
+        if (isReadOnly) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.warn('Cannot delete field in read-only mode');
+            return;
+        }
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Attempting to delete field:', field);
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Field ID:', field.id, 'Type:', field.type, 'Name:', field.name);
+        
+        // Show confirmation modal
+        (0,_modules_ui_deleteConfirmation_js__WEBPACK_IMPORTED_MODULE_33__.showDeleteConfirmation)({
+            field,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            onConfirm: () => (0,_modules_ui_deleteConfirmation_js__WEBPACK_IMPORTED_MODULE_33__.executeDeleteField)({
+                field,
+                Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+                fields,
+                deselectAllFields,
+                removeFieldFromDds
+            })
+        });
+    }
+    
+    // Edit field (double-click handler)
+    // Edit a field (focus properties panel)
+    function editField(field) {
+        return (0,_modules_ui_editField_js__WEBPACK_IMPORTED_MODULE_38__.editField)({
+            field,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            isReadOnly,
+            selectField
+        });
+    }
+    
+    // Move an existing field to a new position
+    function moveField(fieldId, newRow, newCol) {
+        return (0,_modules_ui_moveField_js__WEBPACK_IMPORTED_MODULE_21__.moveField)({
+            fieldId,
+            newRow,
+            newCol,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            fields,
+            getCurrentRecord: () => currentRecord,
+            setCurrentRecord: (value) => { currentRecord = value; },
+            getCurrentDisplaySize: () => currentDisplaySize,
+            getWindowDimensions,
+            renderField,
+            renderWindowField,
+            getSubfileRelationship,
+            getSflpagValue,
+            selectField,
+            updateFieldInDds
+        });
+    }
+    
+    // Save document
+    function saveDocument() {
+        return (0,_modules_ui_saveDocument_js__WEBPACK_IMPORTED_MODULE_24__.saveDocument)({
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            vscode,
+            getCurrentDocument: () => currentDocument,
+            getCurrentRecord: () => currentRecord,
+            showNotification
+        });
+    }
+    
+    // Switch between views
+    function switchToView(viewName) {
+        if (viewName === 'designer') {
+            applyDefaultZoomForDisplaySize(currentDisplaySize, 'designer');
+        } else {
+            setViewZoom(1);
+        }
+
+        return (0,_modules_ui_switchToView_js__WEBPACK_IMPORTED_MODULE_26__.switchToView)({
+            viewName,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            setCurrentView: (value) => { currentView = value; },
+            getSelectedField: () => selectedField,
+            setSelectedField: (value) => { selectedField = value; },
+            getFields: () => fields,
+            getCurrentDocument: () => currentDocument,
+            parseDspfFields,
+            showFieldProperties,
+            updatePreviewView,
+            updateSourceViewUI: _modules_ui_sourceView_js__WEBPACK_IMPORTED_MODULE_20__.updateSourceView,
+            vscode,
+            setCurrentDocument: (value) => { currentDocument = value; },
+            getCurrentRecord: () => currentRecord,
+            setupSourceSearchUI: _modules_ui_sourceSearch_js__WEBPACK_IMPORTED_MODULE_17__.setupSourceSearch,
+            scrollToRecordInSource
+        });
+    }
+    
+    // Scroll to the line where the current record starts in source view
+    function scrollToRecordInSource() {
+        return (0,_modules_ui_scrollToRecordInSource_js__WEBPACK_IMPORTED_MODULE_39__.scrollToRecordInSource)({
+            currentRecord,
+            currentDocument,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+    
+    // Update the preview view with current document
+    function updatePreviewView() {
+        const result = (0,_modules_ui_previewView_js__WEBPACK_IMPORTED_MODULE_34__.updatePreviewView)({
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            ScreenCoordinates: _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates,
+            parseDspfForPreview,
+            generateWindowFieldHtml,
+            generateFieldHtml,
+            setupPreviewDisplaySizeListeners: _modules_ui_previewDisplaySizeListeners_js__WEBPACK_IMPORTED_MODULE_16__.setupPreviewDisplaySizeListeners,
+            updateCanvasSize: (displaySize) => (0,_modules_ui_canvasSize_js__WEBPACK_IMPORTED_MODULE_13__.updateCanvasSize)(displaySize, _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates, _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger),
+            setupRulers,
+            parseDspfFields,
+            getCurrentDocument: () => currentDocument,
+            getCurrentRecord: () => currentRecord,
+            getCurrentDisplaySize: () => currentDisplaySize,
+            setCurrentDisplaySize: (value) => { currentDisplaySize = value; },
+            applyDefaultZoomForDisplaySize,
+            updatePreviewView
+        });
+
+        applyDisplaySizeSettingsFromDocument();
+        return result;
+    }
+    
+    
+    // ============================================================================
+    // Subfile Helper Functions
+    // ============================================================================
+    
+    // Helper: Apply SFLPAG repetition to fields array
+    // Creates visual copies of SFL fields based on SFLPAG value
+    // Returns: Array with original fields + visual copies
+    function applySflpagRepetition(fields, targetRecord, subfileRelationship) {
+        return (0,_modules_ui_subfileControl_js__WEBPACK_IMPORTED_MODULE_31__.applySflpagRepetition)({
+            fields,
+            targetRecord,
+            subfileRelationship,
+            getSflpagValue,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+
+    // Helper: Scan backwards from keyword line to collect all indicator-only lines
+    // Returns: { groups: [{indicators: [...]}], isOr: boolean, scannedLines: [...] }
+    function scanIndicatorsBackward(lines, startIndex, lineOffset, contextLabel = '') {
+        return (0,_modules_ui_scanIndicatorsBackward_js__WEBPACK_IMPORTED_MODULE_69__.scanIndicatorsBackward)({
+            lines,
+            startIndex,
+            lineOffset,
+            contextLabel,
+            IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+
+    // Shared attribute/color scanner to unify Designer and Preview parsing
+    function scanAttributeLinesAfterField(options) {
+        return (0,_modules_ui_scanAttributeLinesAfterField_js__WEBPACK_IMPORTED_MODULE_70__.scanAttributeLinesAfterField)({
+            options,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils,
+            scanIndicatorsBackward,
+            extractAttributes,
+            attributeContentRegex: _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex
+        });
+    }
+    
+    // Parse DSPF content for preview
+    function parseDspfForPreview(content, targetRecord = null) {
+        const lines = content.split('\n');
+        let fields = []; // Changed to let for SFLPAG reassignment
+        let recordName = '';
+        let screenSize = { rows: 24, cols: 80 };
+        let windowDimensions = null;
+        let currentRecordName = null;
+        let inTargetRecord = false;
+        let skipNextLines = 0; // Track lines to skip (for multi-line constants)
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Parsing DSPF for preview, target record:', targetRecord);
+        
+        lines.forEach((line, index) => {
+            // Skip lines that are part of multi-line constants
+            if (skipNextLines > 0) {
+                skipNextLines--;
+                return;
+            }
+            
+            const trimmedLine = line.trim();
+            
+            // Skip comment lines and empty lines
+            if (!trimmedLine || trimmedLine.startsWith('A*')) {
+                return;
+            }
+            
+            // Extract screen size
+            if (trimmedLine.includes('DSPSIZ(')) {
+                const match = trimmedLine.match(/DSPSIZ\((\d+)\s+(\d+)/);
+                if (match) {
+                    screenSize.rows = parseInt(match[1]);
+                    screenSize.cols = parseInt(match[2]);
+                }
+            }
+            
+			// Check for record definition line
+			if (trimmedLine.match(/^A\s+R\s+\w+/)) {
+				const match = trimmedLine.match(/R\s+(\w+)/);
+				if (match) {
+					currentRecordName = match[1];
+					// If no target record specified, use the first non-subfile record found
+					if (!targetRecord && !recordName && !trimmedLine.includes('SFL')) {
+						targetRecord = currentRecordName;
+						_modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`No target record specified, using first found: ${targetRecord}`);
+					}
+					// Check if this is our target record
+					inTargetRecord = (targetRecord === currentRecordName);
+					_modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found record: ${currentRecordName}, target: ${inTargetRecord}`);
+					
+					// Set the main record name if not set and this is our target
+					if (inTargetRecord && !recordName) {
+						recordName = currentRecordName;
+					}
+				}
+				return;
+			}            // Check for WINDOW dimensions matching current display size
+            if (inTargetRecord) {
+                const parsedWindowDimensions = parseWindowDimensionsFromLine(trimmedLine, currentRecordName, windowDimensions);
+                if (parsedWindowDimensions) {
+                    windowDimensions = parsedWindowDimensions;
+                }
+            }
+            
+            // Parse field definitions only if we're in the target record
+            // Align detection with Designer (absolute column 5 = 'A') and skip WINDOW keywords
+                const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
+                if (inTargetRecord && line.length > 6 && line[5] === 'A' && (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) && !trimmedLine.includes('WINDOW(')) {
+                // Check for multi-line constant (ends with '-' or '+' before quote)
+                let lineToProcess = line;
+                if (line.includes("'") && line.match(/'[^']*[-+]\s*$/)) {
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Multi-line constant detected at line ${index + 1}`);
+                    
+                    // Use shared function to process continuation lines
+                    const result = processMultiLineContinuation({
+                        initialLine: line,
+                        getNextLine: (idx) => idx < lines.length ? lines[idx] : null,
+                        startIndex: index + 1,
+                        context: 'PREVIEW'
+                    });
+                    
+                    lineToProcess = result.fullLine;
+                    skipNextLines = result.linesConsumed; // Mark lines to be skipped in main loop
+                }
+                
+                // Use Designer parser for consistent constant handling
+                const field = parseFieldLineForDesigner(lineToProcess);
+                if (field) {
+                    field.recordName = currentRecordName; // Track which record this field belongs to
+                    
+                    // Initialize indicator storage structures
+                    field.attributeIndicators = {};
+                    field.colorIndicators = {};
+
+                    // For all field types (variables, keywords, constants), scan backward to get field-level indicators from previous lines
+                    const groups = [];
+                    let hasOrLogic = false;
+                    
+                    // Scan backward for indicators in previous lines (if index > 0)
+                    if (index > 0) {
+                        let contextLabel = 'PREVIEW-VARIABLE-BACKWARD';
+                        if (field.type === 'keyword' || field.isKeyword) {
+                            contextLabel = 'PREVIEW-KEYWORD-BACKWARD';
+                        } else if (field.type === 'constant') {
+                            contextLabel = 'PREVIEW-CONSTANT-BACKWARD';
+                        }
+                        const backwardScan = scanIndicatorsBackward(lines, 0, index, contextLabel);
+                            
+                        // scanIndicatorsBackward returns groups already properly merged
+                        backwardScan.scannedLines.forEach(scannedLine => {
+                            if (scannedLine.indicators && scannedLine.indicators.length > 0) {
+                                groups.push({ indicators: scannedLine.indicators });
+                                if (scannedLine.isOr) {
+                                    hasOrLogic = true;
+                                }
+                            }
+                        });
+                    }
+                    
+                    // Check for inline indicators (found during parsing in the same line as field)
+                    // All field types (variables, keywords, constants) can have inline indicators
+                    if (field._inlineIndicators && field._inlineIndicators.length > 0) {
+                        const inlineIsOr = field._inlineIsOr || false;
+                        
+                        if (inlineIsOr) {
+                            // Inline indicators are from a line with 'AO' prefix - create new OR group
+                            groups.push({ indicators: field._inlineIndicators });
+                            hasOrLogic = true;
+                        } else {
+                            // Inline indicators from 'A' line - join the last group or create new one
+                            if (groups.length > 0) {
+                                groups[groups.length - 1].indicators.push(...field._inlineIndicators);
+                            } else {
+                                groups.push({ indicators: field._inlineIndicators });
+                            }
+                        }
+                        
+                        // Remove temporary storage
+                        delete field._inlineIndicators;
+                        delete field._inlineIsOr;
+                    }
+                    
+                    // Set field-level indicators with groups structure
+                    if (groups.length > 0) {
+                        // Multiple groups = OR logic, single group = AND logic
+                        field.indicators = {
+                            groups: groups,
+                            isOr: hasOrLogic || groups.length > 1
+                        };
+                    }
+
+                    scanAttributeLinesAfterField({
+                        lines,
+                        startIndex: index,
+                        field,
+                        contextLabel: 'PREVIEW',
+                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(/
+                    });
+                    
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Parsed preview field: ${field.name} (${field.type}) at ${field.row},${field.col} for record ${currentRecordName}`);
+                    fields.push(field);
+                } else {
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.warn(`Failed to parse line: "${trimmedLine.substring(0, 60)}..."`);
+                }
+            }
+        });
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Preview parsed ${fields.length} fields for record ${targetRecord || 'ALL'}`);
+        
+        // Check if target record is part of a subfile (SFL/SFLCTL) relationship
+        if (targetRecord) {
+            const subfileRel = getSubfileRelationship(targetRecord);
+            if (subfileRel && subfileRel.companionRecord) {
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Preview: Parsing companion record: ${subfileRel.companionRecord}`);
+                
+                // Parse fields from companion record
+                let inCompanionRecord = false;
+                let companionRecordName = null;
+                
+                lines.forEach((line, index) => {
+                    if (skipNextLines > 0) {
+                        skipNextLines--;
+                        return;
+                    }
+                    
+                    const trimmedLine = line.trim();
+                    
+                    if (!trimmedLine || trimmedLine.startsWith('A*')) {
+                        return;
+                    }
+                    
+                    // Check for record definition start
+                    if (trimmedLine.match(/^A\s+R\s+\w+/)) {
+                        const match = trimmedLine.match(/R\s+(\w+)/);
+                        if (match) {
+                            companionRecordName = match[1];
+                            inCompanionRecord = (subfileRel.companionRecord === companionRecordName);
+                            if (inCompanionRecord) {
+                                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Preview: Found companion record: ${companionRecordName}`);
+                            }
+                        }
+                    }
+                    
+                    // Parse fields from companion record (align with Designer detection)
+                    const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
+                    if (inCompanionRecord && line.length > 6 && line[5] === 'A' && (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) && !trimmedLine.includes('WINDOW(')) {
+                        // Check for multi-line constant (ends with '-' or '+' before quote)
+                        let lineToProcess = line;
+                        if (line.includes("'") && line.match(/'[^']*[-+]\s*$/)) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Preview: Multi-line constant in companion record detected at line ${index + 1}`);
+                            
+                            // Use shared function to process continuation lines
+                            const result = processMultiLineContinuation({
+                                initialLine: line,
+                                getNextLine: (idx) => idx < lines.length ? lines[idx] : null,
+                                startIndex: index + 1,
+                                context: 'PREVIEW-COMPANION'
+                            });
+                            
+                            lineToProcess = result.fullLine;
+                            skipNextLines = result.linesConsumed; // Mark lines to be skipped in main loop
+                        }
+                        
+                        // Use Designer parser for consistent constant handling
+                        const field = parseFieldLineForDesigner(lineToProcess);
+                        if (field) {
+                            field.isBackgroundRecord = true;
+                            field.recordName = companionRecordName;
+                            
+                            // Initialize indicator storage structures
+                            field.attributeIndicators = {};
+                            field.colorIndicators = {};
+
+                            scanAttributeLinesAfterField({
+                                lines,
+                                startIndex: index,
+                                field,
+                                contextLabel: 'PREVIEW-COMPANION',
+                                includeDftval: true,
+                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(/,
+                                stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|RANGE\()/
+                            });
+                            
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Preview: Parsed companion field: ${field.name} at ${field.row},${field.col} with color=${field.color}, attrs=${field.attributes ? Object.keys(field.attributes).join(',') : 'none'}`);
+                            fields.push(field);
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Use WINDOW dimensions as declared in DDS (no auto-adjustment)
+        if (windowDimensions) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.window(`Using declared window dimensions: ${windowDimensions.height}x${windowDimensions.width} at (${windowDimensions.row},${windowDimensions.col})`);
+        }
+        
+        // Apply SFLPAG repetition for both SFL and SFLCTL records
+        const subfileRelationship = getSubfileRelationship(targetRecord);
+        fields = applySflpagRepetition(fields, targetRecord, subfileRelationship);
+        
+        // CRITICAL: If we're viewing an SFL record and its SFLCTL has WINDOW dimensions,
+        // use the SFLCTL's window dimensions for positioning SFL fields
+        if (subfileRelationship && subfileRelationship.sflRecord === targetRecord) {
+            const sflctlWindowDims = getWindowDimensions(subfileRelationship.sflctlRecord);
+            if (sflctlWindowDims.hasWindow) {
+                const sflctlWindow = currentDisplaySize === 'DS3' ? sflctlWindowDims.ds3 : sflctlWindowDims.ds4;
+                if (sflctlWindow) {
+                    windowDimensions = sflctlWindow;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.window(`SFL ${targetRecord}: Using SFLCTL ${subfileRelationship.sflctlRecord} WINDOW dimensions: ${windowDimensions.height}x${windowDimensions.width} at (${windowDimensions.row},${windowDimensions.col})`);
+                }
+            }
+        }
+        
+        return {
+            recordName,
+            screenSize,
+            fields,
+            windowDimensions
+        };
+    }
+    
+    // ============================================================================
+    // Field Parsing Helper Functions
+    // ============================================================================
+    
+    // Helper: Extract row and column from parts array
+    // Returns: { row, col, nextIndex } or null if invalid
+    function extractRowColFromParts(parts, startIndex) {
+        return (0,_modules_ui_extractRowColFromParts_js__WEBPACK_IMPORTED_MODULE_62__.extractRowColFromParts)({
+            parts,
+            startIndex
+        });
+    }
+    
+    // Helper: Parse DDS type specification (e.g., "10A", "15S", "7P", "3Y", "2F")
+    // Returns: { length, typeChar, dataType } or null if invalid
+    function parseDdsTypeSpecification(typeSpec, hasDecimals = false) {
+        return (0,_modules_ui_parseDdsTypeSpecification_js__WEBPACK_IMPORTED_MODULE_63__.parseDdsTypeSpecification)({
+            typeSpec,
+            hasDecimals
+        });
+    }
+    
+    // Helper: Parse usage and decimals from parts
+    // Returns: { decimals, usage, hasDecimals, nextIndex }
+    function parseUsageAndDecimals(parts, startIndex) {
+        return (0,_modules_ui_parseUsageAndDecimals_js__WEBPACK_IMPORTED_MODULE_64__.parseUsageAndDecimals)({
+            parts,
+            startIndex
+        });
+    }
+    
+    // Helper: Extract FLTPCN precision from line
+    // Returns: 'SINGLE', 'DOUBLE', or null
+    function extractFloatPrecision(line, dataType) {
+        return (0,_modules_ui_extractFloatPrecision_js__WEBPACK_IMPORTED_MODULE_65__.extractFloatPrecision)({
+            line,
+            dataType
+        });
+    }
+    
+    // Helper: Extract shift code from type spec for zoned/double types
+    // Returns: shift code (S/Y/N/D/I for zoned, J/E/O/G for double) or null
+    function extractShiftCode(typeSpec, dataType) {
+        return (0,_modules_ui_extractShiftCode_js__WEBPACK_IMPORTED_MODULE_66__.extractShiftCode)({
+            typeSpec,
+            dataType
+        });
+    }
+    
+    /**
+     * Process multi-line DDS constant continuation lines.
+     * Handles continuation indicators (trailing dashes) and properly concatenates lines.
+     * 
+     * @param {Object} options - Configuration object
+     * @param {string} options.initialLine - The first line containing opening quote and dash
+     * @param {Function} options.getNextLine - Function(index) that returns next line or null
+     * @param {number} options.startIndex - Starting index for continuation lines
+     * @param {string} options.context - Context for logging ('PREVIEW' or 'DESIGNER')
+     * @returns {Object} Result object: { fullLine: string, linesConsumed: number }
+     */
+    function processMultiLineContinuation(options) {
+        return (0,_modules_ui_processMultiLineContinuation_js__WEBPACK_IMPORTED_MODULE_68__.processMultiLineContinuation)({
+            ...options,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+    
+    // Extract display attributes with indicators
+    // Returns: { attrs: {...}, indicators: [], isGroupedFormat: boolean }
+    function extractAttributes(content, fullLine = null) {
+        return (0,_modules_ui_extractAttributes_js__WEBPACK_IMPORTED_MODULE_55__.extractAttributes)({
+            content,
+            fullLine,
+            IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+    
+    // extractColorWithIndicator removed - COLOR now uses unified indicator system in scanAttributeLinesAfterField
+    // extractCheckOptions and applyCheckOptionsFromCodes removed - CHECK now uses unified indicator system like COLOR/DFTVAL
+    
+    // Generate HTML for a single field
+    // windowOffset: optional {row, col} to adjust position for WINDOW-relative fields
+    function generateFieldHtml(field, windowOffset = null) {
+        // IBM i authentic positioning: 20px per row, 8px per column
+        // Position fields to match ruler marks exactly
+        // Using outline instead of border so it doesn't affect child positioning
+        
+        // Calculate absolute position (with window offset if provided)
+        let absoluteRow = field.row;
+        let absoluteCol = field.col;
+        
+        if (windowOffset) {
+            // WINDOW-relative positioning: adjust for window position
+            absoluteRow = windowOffset.row + field.row - 1;
+            absoluteCol = windowOffset.col + field.col + 1;
+        }
+        
+        // Use shared helper to compute display value, color, and classes
+        const { text: displayValue, widthPx, color: colorInline, classes } = computeFieldDisplay(field, 'preview');
+        
+        // Log for window fields
+        if (windowOffset) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.window(`Window field "${field.name}" type=${field.type} at (${field.row},${field.col}) value=[${displayValue}] length=${displayValue.length}`);
+        }
+        
+        // Color handled exclusively by computeFieldDisplay for both views
+        const isKeyword = field.type === 'keyword' || field.isKeyword;
+        const colorStyle = '';
+        
+        // Visual copies render with same opacity as original
+        
+        // Calculate line wrapping for character fields that exceed screen width
+        const segments = _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates.calculateFieldWrapping(field, currentDisplaySize);
+        
+        if (segments.length === 1) {
+            // Single line field - render normally
+            const { top, left } = _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates.toPixels(absoluteRow, absoluteCol);
+            const widthStyle = widthPx ? `width: ${widthPx}px;` : '';
+            const colorInlineStyle = colorInline ? `color: ${colorInline};` : '';
+            const baseClass = (field.type === 'constant' || isKeyword) ? 'constant' : `${field.type}-field`;
+            const extraClasses = classes.length ? ` ${classes.join(' ')}` : '';
+            
+            return `        <div class="field ${baseClass}${extraClasses}" style="top: ${top}px; left: ${left}px; ${widthStyle} ${colorInlineStyle} white-space: pre;">${displayValue}</div>\n`;
+        } else {
+            // Multi-line field - render each segment
+            let html = '';
+            let offset = 0;
+            const baseClass = (field.type === 'constant' || isKeyword) ? 'constant' : `${field.type}-field`;
+            
+            segments.forEach(segment => {
+                const segmentRow = windowOffset ? windowOffset.row + segment.row - 1 : segment.row;
+                const segmentCol = windowOffset ? windowOffset.col + segment.col + 1 : segment.col;
+                const { top, left } = _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates.toPixels(segmentRow, segmentCol);
+                const segmentValue = displayValue.substring(offset, offset + segment.length);
+                const widthStyle = `width: ${_modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates.getWidthInPixels(segment.length)}px;`;
+                
+                html += `        <div class="field ${baseClass}" data-field-segment="true" style="top: ${top}px; left: ${left}px; ${widthStyle} white-space: pre;">${segmentValue}</div>\n`;
+                
+                offset += segment.length;
+            });
+            
+            return html;
+        }
+    }
+    
+    // Generate HTML for fields positioned relative to a window (wrapper for backward compatibility)
+    function generateWindowFieldHtml(field, windowDimensions) {
+        return (0,_modules_ui_generateWindowFieldHtml_js__WEBPACK_IMPORTED_MODULE_51__.generateWindowFieldHtml)({
+            field,
+            windowDimensions,
+            generateFieldHtml
+        });
+    }
+    
+    // Update DDS code from current fields when drag and drop in canvas (Drag and drop)
+    // Add a single field to DDS without regenerating everything
+    function addFieldToDds(field) {
+        const lines = currentDocument.split('\n');
+        const ddsLine = generateDdsLine(field);
+        
+        // Find the current record boundaries - CRITICAL for WINDOW records
+        let recordStartIndex = -1;
+        let recordEndIndex = lines.length;
+        let inTargetRecord = false;
+        
+        for (let i = 0; i < lines.length; i++) {
+            const trimmedLine = lines[i].trim();
+            
+            // Check for record definition: A          R RECORDNAME
+            if (trimmedLine.match(/^A\s+R\s+(\w+)/)) {
+                const match = trimmedLine.match(/^A\s+R\s+(\w+)/);
+                if (match) {
+                    const recordName = match[1];
+                    
+                    // If we find our target record, mark the start
+                    if (recordName === currentRecord) {
+                        recordStartIndex = i;
+                        inTargetRecord = true;
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Found record ${currentRecord} at line ${i + 1}`);
+                    }
+                    // If we were in the target record and found a new one, mark the end
+                    else if (inTargetRecord) {
+                        recordEndIndex = i;
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Record ${currentRecord} ends at line ${recordEndIndex + 1}, next record is ${recordName}`);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (recordStartIndex === -1) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error(`Record ${currentRecord} not found`);
+            return;
+        }
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Record boundaries: ${recordStartIndex + 1} to ${recordEndIndex}`);
+        
+        // Find the correct position to insert within the current record
+        let insertIndex = recordStartIndex + 1; // Default to first line after record header
+        
+        // Search within the record boundaries for where to insert by row/col ordering
+        for (let i = recordEndIndex - 1; i > recordStartIndex; i--) {
+            const line = lines[i];
+            const trimmedLine = line.trim();
+            
+            // Skip empty lines and comments
+            if (!trimmedLine || trimmedLine.startsWith('A*')) {
+                continue;
+            }
+            
+            // Skip attribute-only lines (EDTCDE, COLOR, DSPATR, etc. without row/col)
+            // Check if line has attributes starting from column 44 (index 43)
+            const contentAfter44 = line.length > 43 ? line.substring(43) : '';
+            const isAttributeLine = trimmedLine.startsWith('A ') && _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex.test(contentAfter44);
+            
+            if (isAttributeLine) {
+                continue;
+            }
+            
+            // Skip multiline constant continuation lines (no row/col, but has quotes)
+            // These are A-lines with text in quotes but no row/col position
+            const isContinuationLine = trimmedLine.startsWith('A') && trimmedLine.includes("'") && !trimmedLine.match(/^A\s+\d+\s+\d+/);
+            if (isContinuationLine) {
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping continuation line during search at line ${i + 1}`);
+                continue;
+            }
+            
+            // Parse existing field position (check from column 38 onwards for row/col coordinates)
+            const contentAfter38 = line.length > 38 ? line.substring(38) : '';
+            const posMatch = contentAfter38.match(/^\s*(\d+)\s+(\d+)/);
+            if (posMatch) {
+                const existingRow = parseInt(posMatch[1]);
+                const existingCol = parseInt(posMatch[2]);
+                
+                // If new field should come after this one, insert after it
+                if (field.row > existingRow || (field.row === existingRow && field.col > existingCol)) {
+                    // Insert after this field AND any attribute/continuation lines that follow it
+                    insertIndex = i + 1;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`New field row=${field.row} col=${field.col} comes after existing field at row=${existingRow} col=${existingCol}`);
+                    
+                    // Skip any attribute lines, comments, unknown keywords, and continuation lines that follow this field
+                    while (insertIndex < recordEndIndex) {
+                        const nextLine = lines[insertIndex];
+                        const nextLineTrim = nextLine.trim();
+                        
+                        // Check for comments
+                        const isComment = (nextLine.length > 6 && nextLine[5] === 'A' && nextLine[6] === '*') || 
+                                         nextLineTrim.startsWith('A*') || 
+                                         nextLineTrim.startsWith('*') || 
+                                         nextLineTrim.startsWith('-');
+                        
+                        if (isComment) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping comment line at ${insertIndex + 1}`);
+                            insertIndex++;
+                            continue;
+                        }
+                        
+                        // Stop on blank lines
+                        if (!nextLineTrim || nextLineTrim === 'A') {
+                            break;
+                        }
+                        
+                        const nextLineContentAfter44 = nextLine.length > 43 ? nextLine.substring(43) : '';
+                        const isNextAttr = nextLineTrim.startsWith('A ') && _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex.test(nextLineContentAfter44);
+                        
+                        // Check if next line is a multiline constant continuation (A-line with quotes, no row/col)
+                        const isNextContinuation = nextLineTrim.startsWith('A') && nextLineTrim.includes("'") && !nextLineTrim.match(/^A\s+\d+\s+\d+/);
+                        
+                        // Check if next line has only indicators (no coordinates, no keywords)
+                        // Format: "A  06 43" or "AO 03" with nothing after column 18
+                        const contentAfter18 = nextLine.length > 18 ? nextLine.substring(18).trim() : '';
+                        const contentAfter38ForCoords = nextLine.length > 38 ? nextLine.substring(38) : '';
+                        const hasCoordinatesInPosition = /^\s*\d+\s+\d+/.test(contentAfter38ForCoords);
+                        const isIndicatorOnlyLine = nextLineTrim.startsWith('A') && 
+                                                    !hasCoordinatesInPosition && 
+                                                    contentAfter18 === '' &&
+                                                    nextLineTrim.length > 1;
+                        
+                        // Check if line has unknown keywords (content after column 44 that's not a known attribute)
+                        const contentAfter43 = nextLine.length > 43 ? nextLine.substring(43).trim() : '';
+                        const hasUnknownKeyword = contentAfter43.length > 0 && !_modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex.test(contentAfter44);
+                        
+                        if (isNextAttr) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping attribute line at ${insertIndex + 1}`);
+                            insertIndex++;
+                        } else if (isNextContinuation) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping continuation line at ${insertIndex + 1}: ${nextLineTrim.substring(0, 50)}...`);
+                            insertIndex++;
+                        } else if (isIndicatorOnlyLine) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping indicator-only line at ${insertIndex + 1}`);
+                            insertIndex++;
+                        } else if (hasUnknownKeyword) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping unknown keyword line at ${insertIndex + 1}: ${contentAfter43.substring(0, 30)}...`);
+                            insertIndex++;
+                        } else {
+                            break;
+                        }
+                    }
+                    break;
+                } else {
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`New field row=${field.row} col=${field.col} comes before existing field at row=${existingRow} col=${existingCol}`);
+                }
+            }
+        }
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Inserting field ${field.name} at line ${insertIndex + 1} within record boundaries ${recordStartIndex + 1}-${recordEndIndex}`);
+        
+        // Insert the new line(s) - ddsLine may contain multiple lines for long constants
+        const linesToInsert = ddsLine.split('\n');
+        lines.splice(insertIndex, 0, ...linesToInsert);
+        currentDocument = lines.join('\n');
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`✅ Added field ${field.name} to record ${currentRecord} at line ${insertIndex + 1}`);
+        updateDocumentInEditor();
+    }
+
+    // Parse keyword coordinates and name from DDS content area (after column 18)
+    // DDS fixed format for keywords: row uses 2 positions and column uses 3 positions.
+    // This supports values like " 1 20DATE", "11 20DATE", " 1120DATE", " 2122TIME".
+    function parseKeywordPosition(contentAfter18) {
+        const fixedMatch = contentAfter18.match(/^\s*([ 0-9]{2})([ 0-9]{3})(DATE|TIME|SYSNAME|USER)\b/);
+
+        const extractDateArgs = (text, rowToken, colToken) => {
+            const escapedRow = rowToken.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const escapedCol = colToken.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const dateArgsRegex = new RegExp(`^\\s*${escapedRow}${escapedCol}DATE\\(\\s*([^)]*?)\\s*\\)`, 'i');
+            const dateArgsMatch = text.match(dateArgsRegex);
+            return dateArgsMatch ? dateArgsMatch[1].trim() : null;
+        };
+
+        if (fixedMatch) {
+            const row = parseInt(fixedMatch[1], 10);
+            const col = parseInt(fixedMatch[2], 10);
+            const keyword = fixedMatch[3];
+            const keywordArgs = keyword === 'DATE'
+                ? extractDateArgs(contentAfter18, fixedMatch[1], fixedMatch[2])
+                : null;
+
+            if (!Number.isNaN(row) && !Number.isNaN(col)) {
+                return {
+                    row: String(row),
+                    col: String(col),
+                    keyword,
+                    keywordArgs
+                };
+            }
+        }
+
+        // Fallback for non-fixed formatting variants
+        const fallbackMatch = contentAfter18.trim().match(/^(\d{1,2})\s+(\d{1,3})(DATE|TIME|SYSNAME|USER)\b/);
+        if (!fallbackMatch) {
+            return null;
+        }
+
+        const fallbackKeyword = fallbackMatch[3];
+        const fallbackKeywordArgs = fallbackKeyword === 'DATE'
+            ? (() => {
+                const dateArgsMatch = contentAfter18.trim().match(/^\d{1,2}\s+\d{1,3}DATE\(\s*([^)]*?)\s*\)/i);
+                return dateArgsMatch ? dateArgsMatch[1].trim() : null;
+            })()
+            : null;
+
+        return {
+            row: String(parseInt(fallbackMatch[1], 10)),
+            col: String(parseInt(fallbackMatch[2], 10)),
+            keyword: fallbackKeyword,
+            keywordArgs: fallbackKeywordArgs
+        };
+    }
+    
+    // Remove a field from DDS. After update with updateFieldInDds.
+    function findFieldBlockInDds(field, recordStartLine, recordEndLine) {
+        const lines = currentDocument.split('\n');
+        const targetRecord = field.recordName || currentRecord;
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`findFieldBlockInDds: searching for field ${field.name} (row=${field.row}, col=${field.col}, type=${field.type}) in record ${targetRecord}`);
+        
+        // Find record boundaries if not provided
+        if (recordStartLine === undefined || recordEndLine === undefined) {
+            recordStartLine = -1;
+            recordEndLine = lines.length;
+            
+            if (targetRecord) {
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    const recordMatch = line.match(/^\s*A\s+R\s+(\w+)/);
+                    if (recordMatch && recordMatch[1] === targetRecord) {
+                        recordStartLine = i;
+                    }
+                    if (recordStartLine >= 0 && i > recordStartLine && line.match(/^\s*A\s+R\s+\w+/)) {
+                        recordEndLine = i;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        const startSearch = recordStartLine >= 0 ? recordStartLine : 0;
+        let endSearch = recordEndLine;
+        
+        // Find the field's main line
+        let fieldLineIndex = -1;
+        
+        if (field.type === 'keyword' || field.isKeyword) {
+            const rowStr = field.row.toString();
+            const colStr = field.col.toString();
+            
+            for (let i = startSearch; i < endSearch; i++) {
+                const line = lines[i];
+                // Match keywords with OR without indicators (columns 7-18 can have indicators or spaces)
+                // Format: "     A  03                            19 11DATE" or "     AO 05                            19 11DATE"
+                // We look for the position+keyword pattern regardless of what's in columns 7-18
+                // Extract content after column 18 (position starts around column 39)
+                const contentAfter18 = line.substring(18);
+                const parsedKeyword = parseKeywordPosition(contentAfter18);
+                
+                if (parsedKeyword && parsedKeyword.keyword === field.name && 
+                    parsedKeyword.row === rowStr && parsedKeyword.col === colStr) {
+                    fieldLineIndex = i;
+                    break;
+                }
+            }
+        } else if (field.type === 'constant') {
+            const rowStr = field.row.toString();
+            const colStr = field.col.toString();
+            
+            for (let i = startSearch; i < endSearch; i++) {
+                const line = lines[i];
+                // Search in content after column 18 to handle indicators in columns 7-18
+                // Format: "     A  03                            19 11'TEXT'"
+                const contentAfter18 = line.substring(18);
+                const constMatch = contentAfter18.match(/(\d{1,2})\s+(\d{1,2})'/);
+                
+                if (constMatch && constMatch[1] === rowStr && constMatch[2] === colStr) {
+                    fieldLineIndex = i;
+                    break;
+                }
+            }
+        } else {
+            // Regular field
+            const rowStr = field.row.toString();
+            const colStr = field.col.toString();
+            
+            for (let i = startSearch; i < endSearch; i++) {
+                const line = lines[i];
+                const isConstantLine = line.match(/\d+\s+\d+'/);
+                if (line.includes(field.name) && line.includes(rowStr) && line.includes(colStr) && !isConstantLine) {
+                    fieldLineIndex = i;
+                    break;
+                }
+            }
+        }
+        
+        if (fieldLineIndex === -1) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  ❌ Field ${field.name} NOT FOUND at coordinates (${field.row}, ${field.col})`);
+            return null;
+        }
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  ✅ Found field at line ${fieldLineIndex + 1}`);
+        
+        // Scan BACKWARD for indicator-only lines before the field
+        // USE SAME LOGIC AS scanIndicatorsBackward for consistency
+        let blockStartIndex = fieldLineIndex;
+        let j = fieldLineIndex - 1;
+        
+        while (j >= startSearch) {
+            const prevLine = lines[j];
+            const prevTrim = prevLine.trim();
+            
+            // Stop on blank lines or non-A lines
+            if (prevTrim === '' || prevTrim === 'A' || !prevTrim.startsWith('A')) {
+                break;
+            }
+            
+            // Check if this is a different field/record/constant definition
+            const hasConstant = prevTrim.match(/\d+\s+\d+'/);
+            const isRecordDef = prevTrim.match(/^A\s+R\s+\w+/);
+            const hasFieldName = prevLine.length >= 28 && /^[A-Z_][A-Z0-9_]*$/i.test(prevLine.substring(18, 28).trim());
+            
+            if (isRecordDef || hasConstant || hasFieldName) {
+                // This is a different field - stop
+                break;
+            }
+
+            // Check for attribute keywords or comments that might be part of previous field
+            // Attributes are positioned from column 44 onwards (index 43)
+            const prevContentAfter44 = prevLine.length > 43 ? prevLine.substring(43).trim() : '';
+            const hasAttribute = prevContentAfter44.length > 0 && /^[A-Z]+\s*\(/.test(prevContentAfter44);
+            const isComment = (prevLine.length > 6 && prevLine[5] === 'A' && prevLine[6] === '*') || prevTrim.startsWith('A*');
+            
+            if (hasAttribute || isComment) {
+                // This belongs to a previous field - stop
+                break;
+            }
+
+
+            // Check if this is an indicator-only line
+            // USE SAME LOGIC AS scanIndicatorsBackward for consistency
+            const prevContentAfter18 = prevLine.substring(18).trim();
+            const hasFieldNameAfter18 = /^[A-Z][A-Z0-9_]{2,}\s+\d+/i.test(prevContentAfter18);
+            const indicatorAreaContent = prevLine.substring(6, 18).trim();
+            const hasIndicatorPattern = /^O?\s*[N\d\s]+$/.test(indicatorAreaContent);
+            const isIndicatorOnlyLine = !hasFieldNameAfter18 && hasIndicatorPattern && indicatorAreaContent.length > 0;
+            
+            if (isIndicatorOnlyLine) {
+                // Include this indicator line in the block
+                blockStartIndex = j;
+                j--;
+                continue;
+            }
+            
+            // Unrecognized line - stop
+            break;
+        }
+        
+        if (blockStartIndex < fieldLineIndex) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  ⬆️ Found ${fieldLineIndex - blockStartIndex} indicator line(s) before field`);
+        }
+        
+        // Now find all associated lines (including comments and unknown keywords)
+        let blockEndIndex = fieldLineIndex;
+        let i = fieldLineIndex + 1;
+        
+        while (i < lines.length && i < endSearch) {
+            const nextLine = lines[i];
+            const nextTrim = nextLine.trim();
+            const parsedNextKeyword = parseKeywordPosition(nextLine.substring(18));
+            
+            // Check for comments
+            const isComment = (nextLine.length > 6 && nextLine[5] === 'A' && nextLine[6] === '*') || 
+                             nextTrim.startsWith('A*') || 
+                             nextTrim.startsWith('*') || 
+                             nextTrim.startsWith('-');
+            
+            if (isComment) {
+                blockEndIndex = i;
+                i++;
+                continue;
+            }
+            
+            // Stop on blank lines
+            if (nextTrim === '' || nextTrim === 'A') {
+                break;
+            }
+            
+            // If it doesn't start with 'A', stop
+            if (!nextTrim.startsWith('A')) {
+                break;
+            }
+            
+            // Check if line has a field/constant/record definition
+            const hasConstant = nextTrim.match(/\d+\s+\d+'/);
+            const isRecordDef = nextTrim.match(/^A\s+R\s+\w+/);
+            
+            if (isRecordDef || hasConstant || parsedNextKeyword) {
+                break;
+            }
+            
+            // Check if this line has a field name in columns 19-28 (DDS field name area)
+            // Field names are alphanumeric and typically followed by type specification
+            const fieldNameArea = nextLine.length >= 28 ? nextLine.substring(18, 28).trim() : '';
+            const hasFieldName = fieldNameArea.length > 0 && /^[A-Z_][A-Z0-9_]*$/i.test(fieldNameArea);
+            
+            // If there's a field name AND it's followed by type spec or coordinates, it's a new field
+            if (hasFieldName) {
+                const contentAfter28 = nextLine.length > 28 ? nextLine.substring(28).trim() : '';
+                // Check for type spec pattern (like "10A", "2F 0", etc.) or coordinates
+                const hasTypeOrCoordinates = /^\d+[A-Z]?/.test(contentAfter28) || /^\d+\s+[IOB]?\s*\d+\s+\d+/.test(contentAfter28);
+                if (hasTypeOrCoordinates) {
+                    // This is a new field definition - stop scanning
+                    break;
+                }
+            }
+            
+            // Check for indicator-only lines (lines with indicators but no keyword)
+            // These are lines like "A  01 02 03" or "AO 50" with nothing in columns 19-80
+            const contentAfter18 = nextLine.substring(18).trim();
+            const hasOnlyIndicators = /^A[O\s]\s*[N\d\s]+$/.test(nextTrim) && contentAfter18 === '';
+            
+            if (hasOnlyIndicators) {
+                // This is an indicator-only line - include it in the block
+                blockEndIndex = i;
+                i++;
+                continue;
+            }
+            
+            // Check for content at column 44+ (attributes, unknown keywords)
+            const contentAfter43 = nextLine.length > 43 ? nextLine.substring(43).trim() : '';
+            
+            // Check for known attribute keywords (DSPATR, COLOR, CHECK, DFTVAL, etc.)
+            const knownKeywordMatch = contentAfter43.match(/^([A-Z0-9_]+)\s*\(/i);
+            const hasKnownKeyword = knownKeywordMatch
+                ? _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET.has(knownKeywordMatch[1].toUpperCase())
+                : false;
+            
+            if (contentAfter43.length > 0 || hasKnownKeyword) {
+                // This is an attribute or keyword line - include it in the block
+                blockEndIndex = i;
+                i++;
+                continue;
+            }
+            
+            // Unrecognized line type - stop
+            break;
+        }
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  Block found: lines ${blockStartIndex + 1} to ${blockEndIndex + 1} (${blockEndIndex - blockStartIndex + 1} lines total)`);
+        
+        return {
+            startLine: blockStartIndex,
+            endLine: blockEndIndex,
+            count: blockEndIndex - blockStartIndex + 1
+        };
+    }
+
+    // Borra el campo del archivo source
+    function removeFieldFromDds(field) {
+        const lines = currentDocument.split('\n');
+        
+        // Use the field's recordName if available, otherwise fall back to currentRecord
+        const targetRecord = field.recordName || currentRecord;
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Searching for field to remove:', field, 'in record:', targetRecord);
+        
+        // Find record boundaries first
+        let recordStartLine = -1;
+        let recordEndLine = lines.length;
+        
+        if (targetRecord) {
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                //Primero busca el número de línea del record que contiene el campo
+                const recordMatch = line.match(/^\s*A\s+R\s+(\w+)/);
+                if (recordMatch && recordMatch[1] === targetRecord) {
+                    recordStartLine = i;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Found record start at line', i + 1);
+                }
+                // Check if we found a different record after finding ours
+                if (recordStartLine >= 0 && i > recordStartLine && line.match(/^\s*A\s+R\s+\w+/)) {
+                    recordEndLine = i;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Found record end at line', i);
+                    break;
+                }
+            }
+        }
+        
+        const startSearch = recordStartLine >= 0 ? recordStartLine : 0;
+        let endSearch = recordEndLine;
+        
+        if (field.type === 'keyword' || field.isKeyword) {
+            // For keywords: match by name AND position
+            const rowStr = field.row.toString();
+            const colStr = field.col.toString();
+            
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Looking for keyword "${field.name}" at row=${rowStr} col=${colStr}`);
+            
+            for (let i = startSearch; i < endSearch; i++) {
+                const line = lines[i];
+                // Match keywords with OR without indicators (SAME AS findFieldBlockInDds)
+                // Format: "     A  03                            19 11DATE" or "     AO 05                            19 11DATE"
+                // Extract content after column 18 (position starts around column 39)
+                const contentAfter18 = line.substring(18);
+                const parsedKeyword = parseKeywordPosition(contentAfter18);
+                
+                if (parsedKeyword && parsedKeyword.keyword === field.name && 
+                    parsedKeyword.row === rowStr && parsedKeyword.col === colStr) {
+                    
+                    // SCAN BACKWARD for indicator-only lines before keyword (SAME AS VARIABLES)
+                    let indicatorLinesToRemove = [];
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds('Scanning backward for indicator-only lines before keyword...');
+                    
+                    for (let j = i - 1; j >= startSearch; j--) {
+                        const prevLine = lines[j];
+                        const prevTrim = prevLine.trim();
+                        
+                        // Skip blank lines
+                        if (prevTrim === '' || prevTrim === 'A') {
+                            continue;
+                        }
+                        
+                        // Skip comments
+                        const isComment = (prevLine.length > 6 && prevLine[5] === 'A' && prevLine[6] === '*') || 
+                                         prevTrim.startsWith('A*') || 
+                                         prevTrim.startsWith('*');
+                        if (isComment) {
+                            continue;
+                        }
+                        
+                        // Check if this is an indicator-only line (no keyword/field name, just indicators)
+                        // Format: "A  11 42 54" or "AON03 51 43" or "AO 17"
+                        // BUT NOT: "AO 02 43     FLD002" or "A  03                            19 11DATE"
+                        
+                        // Check if line has a keyword or field name
+                        const hasKeywordOrField = /DATE|TIME|SYSNAME|USER/.test(prevLine) || 
+                                                 (prevLine.length > 15 && /[A-Z_][A-Z0-9_]+/.test(prevLine.substring(15)));
+                        
+                        if (hasKeywordOrField) {
+                            // This line has a field/keyword definition, stop scanning
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  Stopped at line ${j}: has field/keyword`);
+                            break;
+                        }
+                        
+                        // Now check if it's an indicator-only line
+                        const indicatorMatch = prevTrim.match(/^A\s*(O|N\d{2}|AND|\s)*\s*(?:N?\d{2}\s*)*$/);
+                        
+                        if (indicatorMatch) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  Found indicator line at ${j}: "${prevTrim}"`);
+                            indicatorLinesToRemove.push(j);
+                        } else {
+                            // Not an indicator line, stop scanning backward
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  Stopped at line ${j}: not an indicator line`);
+                            break;
+                        }
+                    }
+                    
+                    // Remove indicator lines (they're already in reverse order from the backward scan)
+                    let keywordLineIndex = i; // Track where the keyword line is
+                    if (indicatorLinesToRemove.length > 0) {
+                        // DON'T reverse - array is already bottom-to-top
+                        for (const idx of indicatorLinesToRemove) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  Removing indicator line at index ${idx}`);
+                            lines.splice(idx, 1);
+                            keywordLineIndex--; // Adjust keyword line index since we removed lines before it
+                            endSearch--; // Adjust end boundary
+                        }
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Removed ${indicatorLinesToRemove.length} indicator line(s) before keyword`);
+                    }
+                    
+                    let linesToRemove = 1;
+                    
+                    // Special handling for DATE keyword
+                    if (field.name === 'DATE') {
+                        // Check if next line is EDTCDE (at adjusted index)
+                        if (keywordLineIndex + 1 < lines.length && lines[keywordLineIndex + 1].match(/EDTCDE\(/)) {
+                            linesToRemove = 2; // Remove DATE + EDTCDE
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Removing EDTCDE line for DATE keyword');
+                            
+                            // Check if line after EDTCDE has COLOR
+                            if (keywordLineIndex + 2 < lines.length && lines[keywordLineIndex + 2].match(/COLOR\(/)) {
+                                linesToRemove = 3; // Remove DATE + EDTCDE + COLOR
+                                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds('Removing COLOR line after EDTCDE');
+                            }
+                        }
+                    } else {
+                        // For other keywords, check if next line has COLOR
+                        if (keywordLineIndex + 1 < lines.length && lines[keywordLineIndex + 1].match(/COLOR\(/)) {
+                            linesToRemove = 2; // Remove keyword + COLOR line
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Removing COLOR line');
+                        }
+                    }
+                    
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Removing ${linesToRemove} keyword line(s) starting at adjusted index ${keywordLineIndex}`);
+                    lines.splice(keywordLineIndex, linesToRemove);
+                    let removedCount = linesToRemove + indicatorLinesToRemove.length;
+                    endSearch--; // Adjust end boundary after removing keyword
+                    
+                    // Set i to the adjusted position for comment/keyword cleanup
+                    i = keywordLineIndex;
+                    
+                    // Remove comments and unknown keywords after the keyword (same as variables)
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Starting comment/keyword cleanup at index ${i}, endSearch=${endSearch}, lines.length=${lines.length}`);
+                    while (i < lines.length && i < endSearch) {
+                        const nextLine = lines[i];
+                        const nextTrim = nextLine.trim();
+                        const parsedNextKeyword = parseKeywordPosition(nextLine.substring(18));
+                        
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  Checking line ${i}: "${nextTrim}"`);
+                        
+                        // Check for comments
+                        const isComment = (nextLine.length > 6 && nextLine[5] === 'A' && nextLine[6] === '*') || 
+                                         nextTrim.startsWith('A*') || 
+                                         nextTrim.startsWith('*') || 
+                                         nextTrim.startsWith('-');
+                        
+                        if (isComment) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Removing comment line: ${nextTrim.substring(0, 60)}...`);
+                            lines.splice(i, 1);
+                            removedCount++;
+                            endSearch--;
+                            continue;
+                        }
+                        
+                        // Stop on blank lines
+                        if (nextTrim === '' || nextTrim === 'A') {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: blank line`);
+                            break;
+                        }
+                        
+                        // If it doesn't start with 'A', stop
+                        if (!nextTrim.startsWith('A')) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: doesn't start with A`);
+                            break;
+                        }
+                        
+                        // Check if line has a field/constant/record definition
+                        const hasConstant = nextTrim.match(/\d+\s+\d+'/);
+                        const isRecordDef = nextTrim.match(/^A\s+R\s+\w+/);
+                        
+                        if (isRecordDef || hasConstant || parsedNextKeyword) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: found record def or constant`);
+                            break;
+                        }
+                        
+                        // Check for coordinates (new field)
+                        const coordinateArea = nextLine.length > 39 ? nextLine.substring(39).trim() : '';
+                        const hasCoordinates = /^\d{1,2}\s\d{1,2}/.test(coordinateArea) || /^\d{1,2}\s\d\D/.test(coordinateArea);
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Coordinates check: "${coordinateArea.substring(0, 10)}", hasCoordinates=${hasCoordinates}`);
+                        if (hasCoordinates) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: found new field with coordinates`);
+                            break;
+                        }
+                        
+                        // Check for content at column 44+ (attributes, unknown keywords)
+                        const contentAfter43 = nextLine.length > 43 ? nextLine.substring(43).trim() : '';
+                        
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   contentAfter43: "${contentAfter43}", length: ${contentAfter43.length}`);
+                        
+                        if (contentAfter43.length > 0) {
+                            // Unknown keyword or attribute - remove it
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Removing unknown keyword/attribute line: ${nextTrim.substring(0, 60)}...`);
+                            lines.splice(i, 1);
+                            removedCount++;
+                            endSearch--;
+                            continue;
+                        }
+                        
+                        // If we get here, it's something we don't recognize, stop
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: unrecognized line type`);
+                        break;
+                    }
+                    
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Removed keyword ${field.name} and ${removedCount - linesToRemove} associated line(s)`);
+                    break;
+                }
+            }
+        } else if (field.type === 'constant') {
+            // For constants: search by row + col in content after column 18 (to handle indicators)
+            const rowStr = field.row.toString();
+            const colStr = field.col.toString();
+            const valuePrefix = field.value.substring(0, Math.min(10, field.value.length));
+            
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Looking for constant at row=${rowStr} col=${colStr} starting with "${valuePrefix}"`);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Searching within record boundaries: lines ${startSearch + 1} to ${endSearch}`);
+            
+            let constantLineIndex = -1;
+            let linesToRemove = 0;
+            
+            // Find the constant line
+            for (let i = startSearch; i < endSearch; i++) {
+                const line = lines[i];
+                
+                // Search in content after column 18
+                const contentAfter18 = line.substring(18);
+                const constMatch = contentAfter18.match(/(\d{1,2})\s+(\d{1,2})'/);
+                
+                if (constMatch && constMatch[1] === rowStr && constMatch[2] === colStr) {
+                    // Verify value prefix after first quote
+                    const quoteIndex = line.indexOf("'");
+                    if (quoteIndex > 0) {
+                        const lineValue = line.substring(quoteIndex + 1);
+                        if (lineValue.startsWith(valuePrefix)) {
+                            constantLineIndex = i;
+                            linesToRemove = 1;
+                            
+                            // Multi-line: first line ends with '-'/'+' before closing quote
+                            if (line.match(/'[^']*[-+]\s*$/)) {
+                                let j = constantLineIndex + 1;
+                                while (j < endSearch) {
+                                    const cont = lines[j];
+                                    const contTrim = cont.trim();
+                                    // Stop at record header or new element
+                                    const isRecordHeader = /^A\s+R\s+\w+/.test(contTrim);
+                                    const isNewConstant = /\d+\s+\d+'/.test(contTrim);
+                                    const isNewField = /\b[A-Z][A-Z0-9_]{2,}\s+\d+[A-Z]/i.test(contTrim);
+                                    if (isRecordHeader || isNewConstant || isNewField) {break;}
+                                    
+                                    // Continuation line: 'A' start, has quote, no row/col
+                                    const isContinuation = contTrim.startsWith('A') && contTrim.includes("'") && !contTrim.match(/\d+\s+\d+'/);
+                                    if (!isContinuation) {break;}
+                                    
+                                    linesToRemove++;
+                                    j++;
+                                }
+                            }
+                            
+                            // Now scan backward for indicator-only lines before the constant
+                            const indicatorLinesToRemove = [];
+                            if (constantLineIndex > startSearch) {
+                                for (let k = constantLineIndex - 1; k >= startSearch; k--) {
+                                    const prevLine = lines[k];
+                                    const prevTrimmed = prevLine.trim();
+                                    
+                                    // Check if it's an indicator-only line
+                                    // Format: "     A  03" or "     AO 05" (no position, no field name, no keyword)
+                                    if (prevTrimmed.length < 10) {break;}
+                                    if (!prevTrimmed.startsWith('A')) {break;}
+                                    
+                                    // Check if line has indicators in columns 7-18
+                                    const hasIndicators = /^A(?:O)?\s*(?:N?\d{2}\s*)+$/.test(prevTrimmed);
+                                    if (!hasIndicators) {break;}
+                                    
+                                    // Check that there's NO position or field content after column 18
+                                    const contentAfter18 = prevLine.length > 18 ? prevLine.substring(18).trim() : '';
+                                    if (contentAfter18.length > 0) {break;}
+                                    
+                                    indicatorLinesToRemove.unshift(k); // Add to front to maintain order
+                                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Found indicator-only line before constant at line ${k + 1}: ${prevTrimmed}`);
+                                }
+                            }
+                            
+                            // Remove indicator lines first (in reverse order to avoid index shift)
+                            indicatorLinesToRemove.forEach(idx => {
+                                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Removing indicator line at index ${idx}`);
+                                lines.splice(idx, 1);
+                                constantLineIndex--; // Adjust constant index
+                            });
+                            
+                            // Now remove the constant lines at adjusted index
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Removing ${linesToRemove} constant line(s) starting at adjusted index ${constantLineIndex}`);
+                            lines.splice(constantLineIndex, linesToRemove);
+                            let removedCount = linesToRemove + indicatorLinesToRemove.length;
+                            endSearch--; // Adjust end boundary after removing constant
+                            
+                            // Set cleanupIndex to the adjusted position for comment/keyword cleanup
+                            let cleanupIndex = constantLineIndex;
+                            
+                            // Remove comments and unknown keywords after the constant (same as variables)
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Starting comment/keyword cleanup at index ${cleanupIndex}, endSearch=${endSearch}, lines.length=${lines.length}`);
+                            while (cleanupIndex < lines.length && cleanupIndex < endSearch) {
+                                const nextLine = lines[cleanupIndex];
+                                const nextTrim = nextLine.trim();
+                                
+                                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  Checking line ${cleanupIndex}: "${nextTrim}"`);
+                                
+                                // Check for comments
+                                const isComment = (nextLine.length > 6 && nextLine[5] === 'A' && nextLine[6] === '*') || 
+                                                 nextTrim.startsWith('A*') || 
+                                                 nextTrim.startsWith('*') || 
+                                                 nextTrim.startsWith('-');
+                                
+                                if (isComment) {
+                                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Removing comment line: ${nextTrim.substring(0, 60)}...`);
+                                    lines.splice(cleanupIndex, 1);
+                                    removedCount++;
+                                    endSearch--;
+                                    continue;
+                                }
+                                
+                                // Stop on blank lines
+                                if (nextTrim === '' || nextTrim === 'A') {
+                                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: blank line`);
+                                    break;
+                                }
+                                
+                                // If it doesn't start with 'A', stop
+                                if (!nextTrim.startsWith('A')) {
+                                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: doesn't start with A`);
+                                    break;
+                                }
+                                
+                                // Check if line has a field/constant/record definition
+                                const hasConstant = nextTrim.match(/\d+\s+\d+'/);
+                                const isRecordDef = nextTrim.match(/^A\s+R\s+\w+/);
+                                
+                                if (isRecordDef || hasConstant) {
+                                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: found record def or constant`);
+                                    break;
+                                }
+                                
+                                // Check for coordinates (new field)
+                                const coordinateArea = nextLine.length > 39 ? nextLine.substring(39).trim() : '';
+                                const hasCoordinates = /^\d{1,2}\s\d{1,2}/.test(coordinateArea) || /^\d{1,2}\s\d\D/.test(coordinateArea);
+                                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Coordinates check: "${coordinateArea.substring(0, 10)}", hasCoordinates=${hasCoordinates}`);
+                                if (hasCoordinates) {
+                                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: found new field with coordinates`);
+                                    break;
+                                }
+                                
+                                // Check for content at column 44+ (attributes, unknown keywords)
+                                const contentAfter43 = nextLine.length > 43 ? nextLine.substring(43).trim() : '';
+                                
+                                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   contentAfter43: "${contentAfter43}", length: ${contentAfter43.length}`);
+                                
+                                if (contentAfter43.length > 0) {
+                                    // Unknown keyword or attribute - remove it
+                                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Removing unknown keyword/attribute line: ${nextTrim.substring(0, 60)}...`);
+                                    lines.splice(cleanupIndex, 1);
+                                    removedCount++;
+                                    endSearch--;
+                                    continue;
+                                }
+                                
+                                // If we get here, it's something we don't recognize, stop
+                                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: unrecognized line type`);
+                                break;
+                            }
+                            
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Removed constant and ${removedCount - linesToRemove} associated line(s)`);
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (constantLineIndex === -1) {
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error('Constant line not found in DDS');
+            }
+            
+        } else {
+            // For variables: search by field name + row + col
+            const rowStr = field.row.toString();
+            const colStr = field.col.toString();
+            
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Looking for field "${field.name}" at row=${rowStr} col=${colStr}`);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Searching within record boundaries: lines ${startSearch + 1} to ${endSearch}`);
+            
+            for (let i = startSearch; i < endSearch; i++) {
+                const line = lines[i];
+                
+                // Match field name and position (must not be a constant line)
+                // Some field lines may include inline attributes like VALUES('A' 'B') which contain quotes.
+                // We should detect true constants (quote immediately after col) and avoid treating them as fields,
+                // but still match field lines that include quotes later (attributes).
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Checking line ${i + 1}: includesName=${line.includes(field.name)}, includesRow=${line.includes(rowStr)}, includesCol=${line.includes(colStr)}, hasQuote=${line.includes("'")}`);
+                const isConstantLine = line.match(/\d+\s+\d+'/); // true constant (quotes immediately after col)
+                // Use includes for row/col to allow non-contiguous formatting (e.g., '2Y 0B 22 32')
+                if (line.includes(field.name) && line.includes(rowStr) && line.includes(colStr) && !isConstantLine) {
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds('Found field line at index', i, ':', line);
+                    
+                    // SCAN BACKWARD for indicator-only lines before this field
+                    let indicatorLinesToRemove = [];
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds('Scanning backward for indicator-only lines...');
+                    
+                    for (let j = i - 1; j >= startSearch; j--) {
+                        const prevLine = lines[j];
+                        const prevTrim = prevLine.trim();
+                        
+                        // Skip blank lines
+                        if (prevTrim === '' || prevTrim === 'A') {
+                            continue;
+                        }
+                        
+                        // Skip comments
+                        const isComment = (prevLine.length > 6 && prevLine[5] === 'A' && prevLine[6] === '*') || 
+                                         prevTrim.startsWith('A*') || 
+                                         prevTrim.startsWith('*');
+                        if (isComment) {
+                            continue;
+                        }
+                        
+                        // Check if this is an indicator-only line (no field name, just indicators)
+                        // Format: "A  11 42 54" or "AON03 51 43" or "AO 17"
+                        // BUT NOT: "AO 02 43     FLD002" (has field name after indicators)
+                        
+                        // First check if line has a field name (letters after column 15)
+                        const hasFieldName = prevLine.length > 15 && /[A-Z_][A-Z0-9_]+/.test(prevLine.substring(15));
+                        
+                        if (hasFieldName) {
+                            // This line has a field definition, stop scanning
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  Stopped at line ${j}: has field name`);
+                            break;
+                        }
+                        
+                        // Now check if it's an indicator-only line
+                        const indicatorMatch = prevTrim.match(/^A\s*(O|N\d{2}|AND|\s)*\s*(?:N?\d{2}\s*)*$/);
+                        
+                        if (indicatorMatch) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  Found indicator line at ${j}: "${prevTrim}"`);
+                            indicatorLinesToRemove.push(j);
+                        } else {
+                            // Not an indicator line, stop scanning backward
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  Stopped at line ${j}: not an indicator line`);
+                            break;
+                        }
+                    }
+                    
+                    // Remove indicator lines (they're already in reverse order from the backward scan)
+                    let fieldLineIndex = i; // Track where the field line is
+                    if (indicatorLinesToRemove.length > 0) {
+                        // DON'T reverse - array is already bottom-to-top (e.g., [337, 336, 335])
+                        for (const idx of indicatorLinesToRemove) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  Removing indicator line at index ${idx}`);
+                            lines.splice(idx, 1);
+                            fieldLineIndex--; // Adjust field line index since we removed lines before it
+                            endSearch--; // Adjust end boundary
+                        }
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Removed ${indicatorLinesToRemove.length} indicator line(s) before field`);
+                    }
+                    
+                    // Now remove the field line at the adjusted index
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Removing field line at adjusted index ${fieldLineIndex}: "${lines[fieldLineIndex]}"`);
+                    lines.splice(fieldLineIndex, 1);
+                    let removedCount = 1 + indicatorLinesToRemove.length;
+                    endSearch--; // Adjust end boundary after removing field
+                    
+                    // Set i to the adjusted position for attribute cleanup
+                    i = fieldLineIndex;
+                    
+                    // IMPROVED: Use single loop with same logic as scanAttributeLinesAfterField
+                    // Keep removing lines at position i (which now has the next line after field)
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Starting attribute cleanup at index ${i}, endSearch=${endSearch}, lines.length=${lines.length}`);
+                    while (i < lines.length && i < endSearch) {
+                        const nextLine = lines[i];
+                        const nextTrim = nextLine.trim();
+                        
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`  Checking line ${i}: "${nextTrim}"`);
+                        
+                        // Check for comments (same logic as parser)
+                        const isComment = (nextLine.length > 6 && nextLine[5] === 'A' && nextLine[6] === '*') || 
+                                         nextTrim.startsWith('A*') || 
+                                         nextTrim.startsWith('*') || 
+                                         nextTrim.startsWith('-');
+                        
+                        if (isComment) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Removing comment line: ${nextTrim.substring(0, 60)}...`);
+                            lines.splice(i, 1);
+                            removedCount++;
+                            endSearch--;
+                            continue; // Don't increment i, keep checking same position
+                        }
+                        
+                        // Stop on blank lines
+                        if (nextTrim === '' || nextTrim === 'A') {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: blank line`);
+                            break;
+                        }
+                        
+                        // If it doesn't start with 'A', stop
+                        if (!nextTrim.startsWith('A')) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: doesn't start with A`);
+                            break;
+                        }
+                        
+                        // Check if line has a field/constant/record definition
+                        const hasConstant = nextTrim.match(/\d+\s+\d+'/);
+                        const isRecordDef = nextTrim.match(/^A\s+R\s+\w+/);
+                        
+                        // If there's a record definition or constant, stop
+                        if (isRecordDef || hasConstant) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: found record def or constant`);
+                            break;
+                        }                        
+                        
+                        // CRITICAL: Check if this line has row/col coordinates in columns 38-43 (indices 37-42)
+                        // If it does, it's a NEW FIELD and we must stop
+                        // Example: "A                                 19 30DATE" has "19 30" starting around index 37
+                        const coordinateArea = nextLine.length > 39 ? nextLine.substring(39).trim() : '';
+                        const hasCoordinates = /^\d{1,2}\s\d{1,2}/.test(coordinateArea) || /^\d{1,2}\s\d\D/.test(coordinateArea);
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Coordinates check (raw substring 37+): "${coordinateArea.substring(0, 10)}", hasCoordinates=${hasCoordinates}`);
+                        if (hasCoordinates) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: found new field with coordinates: "${coordinateArea.substring(0, 10)}"`);
+                            break;
+                        }
+                        
+                        // Check for content at column 44+ (attributes, unknown keywords)
+                        const contentAfter43 = nextLine.length > 43 ? nextLine.substring(43).trim() : '';
+                        
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   contentAfter43: "${contentAfter43}", length: ${contentAfter43.length}`);
+                        
+                        if (contentAfter43.length > 0) {
+                            // This line has something in the attribute area - remove it
+                            // Could be: COLOR(WHT), DSPATR(RI), OVERLAY, KEEP, etc.
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Removing attribute/keyword line: ${nextTrim.substring(0, 60)}...`);
+                            lines.splice(i, 1);
+                            removedCount++;
+                            endSearch--;
+                            continue;
+                        }
+
+                        //Validación para saber si la linea solo tienen indicadores
+                        const indicatorAreaContent = nextLine.substring(6, 18).trim();  
+                        const hasIndicatorPattern = /^O?\s*[N\d\s]+$/.test(indicatorAreaContent);
+                        const hasFieldNameAfter18 = nextLine.length >= 28 && /^[A-Z][A-Z0-9_]{2,}\s+\d+/i.test(nextLine.substring(18).trim());
+                        const isIndicatorOnlyLine = !hasFieldNameAfter18 && hasIndicatorPattern && indicatorAreaContent.length > 0;
+                
+                         // Si la línea solo tiene indicadores se debe validar la siguiente linea hasta encontrar una con un campo o atributo.
+                         // Si es un atributo debe continuar con el proceso de eliminacion ya que es parte de la variable que se esta borrando; 
+                         // Si es un campo  (tiene coordenadas) debe detenerse.
+                        if (isIndicatorOnlyLine) {                         
+                          if (i + 1 < lines.length) { 
+                            const lookaheadLine = lines[i + 1];
+                            const lookaheadCoordinatesArea = lookaheadLine.length > 39 ? lookaheadLine.substring(39).trim() : '';
+                            const lookaheadHasCoordinates = /^\d{1,2}\s\d{1,2}/.test(lookaheadCoordinatesArea) || /^\d{1,2}\s\d\D/.test(lookaheadCoordinatesArea);
+                            if (lookaheadHasCoordinates) {
+                              _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: next line indicates new field with coordinates: "${lookaheadCoordinatesArea.substring(0, 10)}"`);
+                              break;
+                            } else {
+                               _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Removing indicator-only line: ${nextTrim.substring(0, 60)}...`);
+                               lines.splice(i, 1);
+                               removedCount++;
+                               endSearch--;    
+                               continue;
+                            }
+                        }                                                      
+                    }
+                        // If we get here, it's something we don't recognize, stop
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: unrecognized line type`);
+                        break;
+                    }
+                    
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Removed field ${field.name} and ${removedCount - 1} associated line(s)`);
+                    break;
+                }
+            }
+        }
+        
+        currentDocument = lines.join('\n');
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Document updated after removal');
+        updateDocumentInEditor();
+    }
+    
+    // Update a field in DDS (more efficient than remove + add) 
+    // Contantes y Keywords separado. Pendiente hacer merge 
+    function updateFieldInDds(field, oldField = null) {
+        const lines = currentDocument.split('\n');
+        
+        const newDdsLine = generateDdsLine(field);
+        let foundLine = false;
+        
+        // Use old field info for searching if provided
+        const searchField = oldField || field;
+        
+        // Use the field's recordName if available, otherwise fall back to currentRecord
+        const targetRecord = field.recordName || currentRecord;
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Looking for field to update:', searchField.name, 'type:', searchField.type, 'in record:', targetRecord);
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('New DDS line will be:', newDdsLine);
+        
+        // Find the target record boundaries first
+        let recordStartLine = -1;
+        let recordEndLine = lines.length;
+        
+        if (targetRecord) {
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                // Check if this is the start of our record (exact match, not just includes)
+                // Match: "     A          R SUBFILE" but not "     A          R PANTALLA  SFLCTL(SUBFILE)"
+                const recordMatch = line.match(/^\s*A\s+R\s+(\w+)/);
+                if (recordMatch && recordMatch[1] === targetRecord) {
+                    recordStartLine = i;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Found record start at line', i + 1);
+                    // Continue to find the end
+                }
+                // Check if we found a different record after finding ours
+                if (recordStartLine >= 0 && i > recordStartLine && line.match(/^\s*A\s+R\s+\w+/)) {
+                    recordEndLine = i;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Found record end at line', i);
+                    break;
+                }
+            }
+        }
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Searching within record boundaries: lines ${recordStartLine + 1} to ${recordEndLine}`);
+        
+        // UNIFIED APPROACH: Use findFieldBlockInDds for ALL field types (variables, constants, keywords)
+        // This eliminates ~150 lines of duplicated detection logic
+        const fieldBlock = findFieldBlockInDds(searchField, recordStartLine, recordEndLine);
+        
+        if (fieldBlock) {
+            const fieldTypeLabel = searchField.type === 'constant' ? 'constant' : 
+                                  (searchField.type === 'keyword' || searchField.isKeyword) ? 'keyword' : 'field';
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found ${fieldTypeLabel} at line ${fieldBlock.startLine + 1}, block ends at line ${fieldBlock.endLine + 1}`);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`${fieldTypeLabel} block contains ${fieldBlock.count} line(s)`);
+            
+            // Preserve only comments and UNKNOWN keywords (e.g., OVERLAY, KEEP) after the field
+            const blockLines = lines.slice(fieldBlock.startLine, fieldBlock.endLine + 1);
+            const preservedExtras = [];
+
+            // Track whether we are inside a multi-line VALUES continuation block
+            let insideValuesContinuation = false;
+            // Keep indicator-only lines pending until we know whether they belong to
+            // a preserved (non-regenerated) keyword line that follows.
+            let pendingIndicatorLines = [];
+
+            blockLines.forEach((line, idx) => {
+                // SKIP INDEX 0: that's the original field declaration that will be regenerated
+                if (idx === 0) {
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping blockLines[0] (original field declaration at line ${fieldBlock.startLine + 1})`);
+                    return;
+                }
+
+                const globalIndex = fieldBlock.startLine + idx;
+                const trimmed = line.trim();
+                const contentAfter43 = line.length > 43 ? line.substring(43).trim() : '';
+                const contentAfter18 = line.length > 18 ? line.substring(18).trim() : '';
+
+                // For constants: do NOT preserve continuation lines
+                if (searchField.type === 'constant') {
+                    const isContinuationLine = trimmed.startsWith('A') && trimmed.includes("'") && !trimmed.match(/\d+\s+\d+'/);
+                    if (isContinuationLine) {
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping constant continuation line ${globalIndex + 1}`);
+                        return;
+                    }
+                }
+
+                // Always keep comments
+                const isComment = trimmed.startsWith('A*') || trimmed.startsWith('*');
+                if (isComment) {
+                    if (pendingIndicatorLines.length > 0) {
+                        preservedExtras.push(...pendingIndicatorLines);
+                        pendingIndicatorLines = [];
+                    }
+                    preservedExtras.push(line);
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Preserving comment line ${globalIndex + 1}`);
+                    return;
+                }
+
+                // Indicator-only lines can belong to the following keyword line.
+                // Buffer them first and decide preservation when we inspect next lines.
+                const indicatorAreaContent = line.length > 6 ? line.substring(6, 18).trim() : '';
+                const hasIndicatorPattern = /^O?\s*[N\d\s]+$/.test(indicatorAreaContent);
+                const hasFieldNameAfter18 = /^[A-Z][A-Z0-9_]{0,9}\s+\d+/i.test(contentAfter18);
+                const isIndicatorOnlyLine =
+                    line.length > 6 &&
+                    line[5] === 'A' &&
+                    hasIndicatorPattern &&
+                    indicatorAreaContent.length > 0 &&
+                    !hasFieldNameAfter18 &&
+                    contentAfter18 === '';
+
+                if (isIndicatorOnlyLine) {
+                    pendingIndicatorLines.push(line);
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Buffering indicator-only line ${globalIndex + 1}`);
+                    return;
+                }
+
+                // Detect VALUES( lines and track multi-line continuation.
+                // A continuation line is one whose DDS line ends with - or + before the newline.
+                // When VALUES( is found on a line that ends with a continuation char, subsequent
+                // lines that are pure quoted-value continuations (no keyword word) must also be skipped.
+                if (/VALUES\(/i.test(contentAfter43)) {
+                    pendingIndicatorLines = [];
+                    insideValuesContinuation = /[+-]\s*$/.test(contentAfter43);
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping known VALUES line ${globalIndex + 1}, continuation=${insideValuesContinuation}`);
+                    return; // regenerated by generateFieldValuesLines
+                }
+
+                // Skip continuation lines that belong to a multi-line VALUES block
+                if (insideValuesContinuation) {
+                    // A pure continuation line has only quoted tokens (and possibly a closing paren)
+                    const isPureValuesContinuation = /^'/.test(contentAfter43) || /^\)/.test(contentAfter43);
+                    if (isPureValuesContinuation) {
+                        pendingIndicatorLines = [];
+                        // If this line does NOT end with a continuation char, the block is closed
+                        insideValuesContinuation = /[+-]\s*$/.test(contentAfter43);
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping VALUES continuation line ${globalIndex + 1}, continuation=${insideValuesContinuation}`);
+                        return;
+                    }
+                    // If it doesn't look like a continuation token, stop tracking
+                    insideValuesContinuation = false;
+                }
+
+                // Unknown keywords: keep them. Known attributes (COLOR, DSPATR, EDTCDE, etc.) are regenerated
+                if (contentAfter43.length > 0) {
+                    const keywordMatch = contentAfter43.match(/^([A-Z0-9_]+)\b/i);
+                    const keywordName = keywordMatch ? keywordMatch[1].toUpperCase() : '';
+                    const isKnown = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.REGENERATED_KEYWORDS_SET.has(keywordName);
+                    if (!isKnown) {
+                        if (pendingIndicatorLines.length > 0) {
+                            preservedExtras.push(...pendingIndicatorLines);
+                            pendingIndicatorLines = [];
+                        }
+                        preservedExtras.push(line);
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Preserving unknown keyword line ${globalIndex + 1}: "${contentAfter43}"`);
+                    } else {
+                        pendingIndicatorLines = [];
+                    }
+                    return;
+                }
+
+                // Fallback safety: preserve non-empty trailing lines that are not regenerated
+                // attributes to avoid dropping field-associated content due format variations.
+                if (trimmed.startsWith('A') && contentAfter18.length > 0) {
+                    if (pendingIndicatorLines.length > 0) {
+                        preservedExtras.push(...pendingIndicatorLines);
+                        pendingIndicatorLines = [];
+                    }
+                    preservedExtras.push(line);
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Preserving trailing associated line ${globalIndex + 1}: "${trimmed}"`);
+                    return;
+                }
+
+                // If line is empty/unrecognized within the block, do not carry pending indicators.
+                pendingIndicatorLines = [];
+            });
+
+            // Preserve dangling indicator-only lines if they reached end of block without
+            // a regenerated keyword to consume them.
+            if (pendingIndicatorLines.length > 0) {
+                preservedExtras.push(...pendingIndicatorLines);
+            }
+
+            // New block: regenerated field lines + preserved extras
+            const linesToInsert = newDdsLine.split('\n').filter(l => l.length > 0);
+            const finalBlock = [...linesToInsert, ...preservedExtras];
+            lines.splice(fieldBlock.startLine, fieldBlock.count, ...finalBlock);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Updated ${fieldTypeLabel}: replaced ${fieldBlock.count} lines with ${finalBlock.length} lines (${preservedExtras.length} preserved extras)`);
+            
+            foundLine = true;
+        }
+        
+        if (!foundLine) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error('Could not find field/constant to update:', field.name);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Available lines in document:');
+            lines.forEach((line, i) => {
+                if (line.trim() && !line.trim().startsWith('A*')) {
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`  ${i + 1}: ${line}`);
+                }
+            });
+            return;
+        }
+        
+        currentDocument = lines.join('\n');
+        updateDocumentInEditor();
+    }
+    
+    // Helper function to update document in editor
+    function updateDocumentInEditor() {
+        return (0,_modules_ui_updateDocumentInEditor_js__WEBPACK_IMPORTED_MODULE_72__.updateDocumentInEditor)({
+            currentRecord,
+            currentDocument,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+    
+    // ============================================================================
+    // DDS Generation Helper Functions
+    // ============================================================================
+    
+    // Centralized DSPATR attribute mapping
+    const DSPATR_ATTRIBUTE_MAP = {
+        'underline': 'UL',
+        'reverse': 'RI',
+        'blink': 'BL',
+        'highlight': 'HI',
+        'cursorPosition': 'PC',
+        'columnSeparator': 'CS',
+        'nonDisplay': 'ND',
+        'modifiedDataTag': 'MDT',
+        'protect': 'PR',
+        'operatorId': 'OID',
+        'selectLightPen': 'SP'
+    };
+    
+    // Helper: Generate a DDS line with optional indicators
+    function generateDdsLineWithIndicators(keyword, indicatorsOrGroups) {
+        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_83__.generateDdsLineWithIndicatorsUI)({
+            keyword,
+            indicatorsOrGroups,
+            IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils
+        });
+    }
+    
+    // Helper: Apply indicator changes from indicatorConfigurations Map back to field object
+    // This ensures that any edits made through the IBM i modal are reflected in DDS generation
+    function applyIndicatorChangesToField(field) {
+        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_84__.applyIndicatorChangesToFieldUI)({
+            field,
+            indicatorConfigurations,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+    
+    // Helper: Generate DSPATR lines for a field
+    function generateFieldDspatrLines(field) {
+        return (0,_modules_ui_generateFieldDspatrLines_js__WEBPACK_IMPORTED_MODULE_75__.generateFieldDspatrLinesUI)({
+            field,
+            DSPATR_ATTRIBUTE_MAP,
+            applyIndicatorChangesToField,
+            generateDdsLineWithIndicators,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+    
+    // Helper: Generate COLOR lines for a field
+    function generateFieldColorLines(field) {
+        return (0,_modules_ui_generateFieldColorLines_js__WEBPACK_IMPORTED_MODULE_76__.generateFieldColorLinesUI)({
+            field,
+            applyIndicatorChangesToField,
+            generateDdsLineWithIndicators,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+
+    // Helper: Generate CHECK keyword lines for a field
+    function generateFieldCheckLines(field) {
+        return (0,_modules_ui_generateFieldCheckLines_js__WEBPACK_IMPORTED_MODULE_77__.generateFieldCheckLinesUI)({
+            field,
+            CHECK_CHAR_CODES: _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.CHECK_CHAR_CODES,
+            CHECK_NUMERIC_CODES: _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.CHECK_NUMERIC_CODES,
+            generateDdsLineWithIndicators,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+
+    // Helper: Generate DFTVAL keyword lines for a field
+    function generateFieldDftvalLines(field) {
+        return (0,_modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_82__.generateFieldDftvalLinesUI)({
+            field,
+            generateDdsLineWithIndicators,
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+
+    // Helper: Generate DFT keyword lines for a field
+    // Helper: Generate VALUES keyword lines for a field
+    function generateFieldValuesLines(field) {
+        return (0,_modules_ui_generateFieldValuesLines_js__WEBPACK_IMPORTED_MODULE_80__.generateFieldValuesLinesUI)({
+            field
+        });
+    }
+
+    // Helper: Generate DFT keyword lines for a field
+    function generateFieldDftLines(field) {
+        return (0,_modules_ui_generateFieldDftLines_js__WEBPACK_IMPORTED_MODULE_81__.generateFieldDftLinesUI)({
+            field
+        });
+    }
+
+    // Helper: Generate EDTCDE keyword lines for a field
+    function generateFieldEdtcdeLines(field) {
+        return (0,_modules_ui_generateFieldEdtcdeLines_js__WEBPACK_IMPORTED_MODULE_78__.generateFieldEdtcdeLinesUI)({
+            field
+        });
+    }
+
+    // Helper: Generate EDTWRD/EDTMSK keyword lines for a field
+    function generateFieldEditKeywordsLines(field) {
+        return (0,_modules_ui_generateFieldEditKeywordsLines_js__WEBPACK_IMPORTED_MODULE_79__.generateFieldEditKeywordsLinesUI)({
+            field
+        });
+    }
+    
+    // Helper: Generate constant field lines with continuation support AND indicators
+    function generateConstantFieldLines(field) {
+        return (0,_modules_ui_generateConstantFieldLines_js__WEBPACK_IMPORTED_MODULE_74__.generateConstantFieldLinesUI)({
+            field,
+            IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils
+        });
+    }
+    
+    // Helper: Build type and usage specification for variable fields
+    function buildVariableTypeAndUsage(field) {
+        return (0,_modules_ui_buildVariableTypeAndUsage_js__WEBPACK_IMPORTED_MODULE_73__.buildVariableTypeAndUsageUI)({
+            field
+        });
+    }
+    
+    // Generate DDS line from field object
+    // Genera DDS (objeto field -> texto) para guardar/actualizar líneas en source.
+    function generateDdsLine(field) {
+        // Apply any pending indicator changes from the Map before generating DDS
+        applyIndicatorChangesToField(field);
+        
+        const rowStr = field.row.toString().padStart(2, ' ');
+        const colStr = field.col.toString().padStart(2, ' ');
+        const rowColSeparator = field.col >= 100 ? '' : ' ';
+        
+        // ========== KEYWORDS (DATE, TIME, SYSNAME, USER) ==========
+        if (field.type === 'keyword' || field.isKeyword) {
+            const lines = [];
+            
+            // Build indicator prefix for the main line and prepended indicator lines (SAME AS VARIABLES)
+            let indicatorPrefix = '            '; // 12 spaces (default, no indicators)
+            const fieldIndicatorLines = []; // For lines BEFORE the keyword line (not after)
+            
+            if (field.indicators && field.indicators.groups && field.indicators.groups.length > 0) {
+                const groups = field.indicators.groups;
+                const isOr = field.indicators.isOr || false;
+                
+                // Check if OR format (multiple groups with isOr=true)
+                if (isOr && groups.length > 1) {
+                    // OR FORMAT: First group uses 'A', subsequent groups use 'AO'
+                    let allLinesBeforeKeyword = [];
+                    
+                    groups.forEach((group, groupIndex) => {
+                        const groupIndicators = group.indicators || [];
+                        if (groupIndicators.length === 0) {return;}
+                        
+                        // Split group into chunks of 3
+                        const numChunks = Math.ceil(groupIndicators.length / 3);
+                        for (let chunkIndex = 0; chunkIndex < numChunks; chunkIndex++) {
+                            const startIdx = chunkIndex * 3;
+                            const chunk = groupIndicators.slice(startIdx, startIdx + 3);
+                            const chunkIndPart = _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils.formatForDds(chunk);
+                            const firstIsNegative = chunk[0]?.not;
+                            
+                            // Determine prefix: 'AO' only for first line of each group (except first group which uses 'A')
+                            // Continuation lines within the same group use 'A'
+                            let prefix, prefixSpaces;
+                            if (chunkIndex === 0) {
+                                // First line of group
+                                prefix = groupIndex === 0 ? 'A' : 'AO';
+                                prefixSpaces = firstIsNegative ? ' ' : '  ';
+                                if (prefix === 'AO') {
+                                    prefixSpaces = firstIsNegative ? '' : ' ';
+                                }
+                            } else {
+                                // Continuation line within same group - always 'A'
+                                prefix = 'A';
+                                prefixSpaces = firstIsNegative ? ' ' : '  ';
+                            }
+                            
+                            allLinesBeforeKeyword.push(`     ${prefix}${prefixSpaces}${chunkIndPart}`);
+                        }
+                    });
+                    
+                    // Last line goes to keyword line, rest go before
+                    if (allLinesBeforeKeyword.length > 1) {
+                        fieldIndicatorLines.push(...allLinesBeforeKeyword.slice(0, -1));
+                        // Parse last line to extract indicator prefix (keep 'O' if AO)
+                        const lastLine = allLinesBeforeKeyword[allLinesBeforeKeyword.length - 1];
+                        const isAO = lastLine.startsWith('     AO');
+                        
+                        // Extract just the indicator part (after 'A' or 'AO')
+                        let indicatorPart;
+                        if (isAO) {
+                            indicatorPart = lastLine.substring(7); // Skip '     AO'
+                        } else {
+                            indicatorPart = lastLine.substring(6); // Skip '     A'
+                        }
+                        
+                        indicatorPart = indicatorPart.trimEnd();
+                        
+                        // For AO lines, prepend 'O' to maintain OR relationship
+                        if (isAO) {
+                            indicatorPrefix = 'O' + indicatorPart;
+                        } else {
+                            indicatorPrefix = indicatorPart;
+                        }
+                        
+                        // Pad to 12 characters
+                        const spacesNeeded = 12 - indicatorPrefix.length;
+                        indicatorPrefix = indicatorPrefix + ' '.repeat(Math.max(0, spacesNeeded));
+                    } else if (allLinesBeforeKeyword.length === 1) {
+                        // Single line - goes to keyword line
+                        const lastLine = allLinesBeforeKeyword[0];
+                        const isAO = lastLine.startsWith('     AO');
+                        
+                        let indicatorPart;
+                        if (isAO) {
+                            indicatorPart = lastLine.substring(7);
+                        } else {
+                            indicatorPart = lastLine.substring(6);
+                        }
+                        
+                        indicatorPart = indicatorPart.trimEnd();
+                        
+                        if (isAO) {
+                            indicatorPrefix = 'O' + indicatorPart;
+                        } else {
+                            indicatorPrefix = indicatorPart;
+                        }
+                        
+                        const spacesNeeded = 12 - indicatorPrefix.length;
+                        indicatorPrefix = indicatorPrefix + ' '.repeat(Math.max(0, spacesNeeded));
+                    }
+                } else {
+                    // AND FORMAT: Single group (or multiple groups but not OR logic)
+                    const allIndicators = groups.length > 0 ? groups[0].indicators : [];
+                    
+                    if (allIndicators.length > 3) {
+                        // More than 3: split into chunks, last chunk goes on keyword line
+                        const numChunks = Math.ceil(allIndicators.length / 3);
+                        
+                        // Generate first chunks (indicator-only lines, before keyword)
+                        for (let chunkIndex = 0; chunkIndex < numChunks - 1; chunkIndex++) {
+                            const startIdx = chunkIndex * 3;
+                            const chunk = allIndicators.slice(startIdx, startIdx + 3);
+                            const chunkIndPart = _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils.formatForDds(chunk);
+                            const chunkFirstIsNegative = chunk[0]?.not;
+                            const chunkPrefixSpaces = chunkFirstIsNegative ? ' ' : '  ';
+                            fieldIndicatorLines.push(`     A${chunkPrefixSpaces}${chunkIndPart}`);
+                        }
+                        
+                        // Last chunk (3 or fewer) goes on keyword line
+                        const lastChunkStart = (numChunks - 1) * 3;
+                        const lastChunk = allIndicators.slice(lastChunkStart);
+                        const indPart = _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils.formatForDds(lastChunk);
+                        const firstIsNegative = lastChunk[0]?.not;
+                        const prefixSpaces = firstIsNegative ? ' ' : '  ';
+                        const spacesNeeded = 12 - prefixSpaces.length - indPart.length;
+                        indicatorPrefix = prefixSpaces + indPart + ' '.repeat(Math.max(0, spacesNeeded));
+                    } else if (allIndicators.length > 0) {
+                        // 3 or fewer: all go on keyword line
+                        const indPart = _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils.formatForDds(allIndicators);
+                        const firstIsNegative = allIndicators[0]?.not;
+                        const prefixSpaces = firstIsNegative ? ' ' : '  ';
+                        const spacesNeeded = 12 - prefixSpaces.length - indPart.length;
+                        indicatorPrefix = prefixSpaces + indPart + ' '.repeat(Math.max(0, spacesNeeded));
+                    }
+                }
+            }
+            
+            // Add field indicator lines BEFORE keyword line
+            if (fieldIndicatorLines.length > 0) {
+                lines.push(...fieldIndicatorLines);
+            }
+            
+            // Build keyword line with indicators (34 spaces = 12 for indicators + 22 for spacing)
+            // Format: "     A  03                            19 11DATE"
+            const spacingAfterIndicators = ' '.repeat(22); // 22 spaces to reach column 39
+            const keywordToken = field.name === 'DATE' && field.keywordArgs
+                ? `DATE(${field.keywordArgs})`
+                : field.name;
+            const keywordLine = `     A${indicatorPrefix}${spacingAfterIndicators}${rowStr}${rowColSeparator}${colStr}${keywordToken}`;
+            lines.push(keywordLine);
+            
+            // Special handling for DATE keyword - add EDTCDE(Y)
+            if (field.name === 'DATE') {
+                lines.push('     A                                      EDTCDE(Y)');
+            }
+
+            // Add DSPATR lines if attributes are set
+            const attrLines = generateFieldDspatrLines(field);
+            if (attrLines.length > 0) {
+                lines.push(...attrLines);
+            }
+            
+            // Add COLOR lines if colors are present (support multiple colors like variables)
+            const colors = field.colors || (field.color ? [field.color] : []);
+            colors.forEach(color => {
+                const colorIndicators = field.colorIndicators && field.colorIndicators[color] ? field.colorIndicators[color] : [];
+                lines.push(generateDdsLineWithIndicators(`COLOR(${color})`, colorIndicators));
+            });
+            
+            return lines.join('\n');
+        }
+        
+        // ========== CONSTANTS ==========
+        if (field.type === 'constant') {
+            const mainLines = generateConstantFieldLines(field);
+            const attrLines = generateFieldDspatrLines(field);
+            const colorLines = generateFieldColorLines(field);
+            
+            // Combine all lines: main + DSPATR + COLOR
+            const allLines = [...mainLines, ...attrLines, ...colorLines];
+            
+            // If single color without indicators, add to single COLOR line
+            if (field.color && colorLines.length === 0) {
+                allLines.push(`     A                                      COLOR(${field.color})`);
+            }
+            
+            return allLines.join('\n');
+        }
+        
+        // ========== VARIABLE FIELDS ==========
+        const fieldNamePadded = field.name.padEnd(10, ' ');
+        const typeAndUsage = buildVariableTypeAndUsage(field);
+        const typePartPadded = typeAndUsage.padStart(9, ' ');
+        
+        // Build inline attributes
+        let attributes = '';
+        if (field.dataType === 'float' && field.precision) {
+            attributes = `FLTPCN(*${field.precision})`;
+        }
+        
+        // Handle COLOR - inline if no indicators, separate line otherwise
+        const colorLines = generateFieldColorLines(field);
+        if (field.color && colorLines.length === 0) {
+            // No indicators - add COLOR inline
+            attributes += `COLOR(${field.color})`;
+        }
+        
+        // Build indicator prefix for the main line and prepended indicator lines
+        let indicatorPrefix = '            '; // 12 spaces (default, no indicators)
+        const fieldIndicatorLines = []; // For lines BEFORE the field line (not after)
+        
+        if (field.indicators && field.indicators.groups && field.indicators.groups.length > 0) {
+            const groups = field.indicators.groups;
+            const isOr = field.indicators.isOr || false;
+            
+            // Check if OR format (multiple groups with isOr=true)
+            if (isOr && groups.length > 1) {
+                // OR FORMAT: First group uses 'A', subsequent groups use 'AO'
+                // Example:
+                //     A  42 44 54
+                //     A  87
+                //     AO 02
+                
+                let allLinesBeforeField = [];
+                
+                groups.forEach((group, groupIndex) => {
+                    const groupIndicators = group.indicators || [];
+                    if (groupIndicators.length === 0) {return;}
+                    
+                    // Split group into chunks of 3
+                    const numChunks = Math.ceil(groupIndicators.length / 3);
+                    for (let chunkIndex = 0; chunkIndex < numChunks; chunkIndex++) {
+                        const startIdx = chunkIndex * 3;
+                        const chunk = groupIndicators.slice(startIdx, startIdx + 3);
+                        const chunkIndPart = _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils.formatForDds(chunk);
+                        const firstIsNegative = chunk[0]?.not;
+                        
+                        // Determine prefix: 'AO' only for first line of each group (except first group which uses 'A')
+                        // Continuation lines within the same group use 'A'
+                        let prefix, prefixSpaces;
+                        if (chunkIndex === 0) {
+                            // First line of group
+                            prefix = groupIndex === 0 ? 'A' : 'AO';
+                            prefixSpaces = firstIsNegative ? ' ' : '  ';
+                            if (prefix === 'AO') {
+                                prefixSpaces = firstIsNegative ? '' : ' ';
+                            }
+                        } else {
+                            // Continuation line within same group - always 'A'
+                            prefix = 'A';
+                            prefixSpaces = firstIsNegative ? ' ' : '  ';
+                        }
+                        
+                        allLinesBeforeField.push(`     ${prefix}${prefixSpaces}${chunkIndPart}`);
+                    }
+                });
+                
+                // Last line goes to field line, rest go before
+                if (allLinesBeforeField.length > 1) {
+                    fieldIndicatorLines.push(...allLinesBeforeField.slice(0, -1));
+                    // Parse last line to extract indicator prefix (keep 'O' if AO)
+                    const lastLine = allLinesBeforeField[allLinesBeforeField.length - 1];
+                    const isAO = lastLine.startsWith('     AO');
+                    
+                    // Extract just the indicator part (after 'A' or 'AO')
+                    // For 'A  42' -> extract ' 42' (with space before if positive)
+                    // For 'AON03' -> extract 'N03' (no space, negative)
+                    // For 'AO 03' -> extract ' 03' (with space, positive)
+                    let indicatorPart;
+                    if (isAO) {
+                        // AO prefix: next char tells us if negative (no space) or positive (space)
+                        indicatorPart = lastLine.substring(7); // Skip '     AO'
+                    } else {
+                        // A prefix: next char is space (positive) or N (negative)
+                        indicatorPart = lastLine.substring(6); // Skip '     A'
+                    }
+                    
+                    // Trim trailing spaces but keep leading space/N
+                    indicatorPart = indicatorPart.trimEnd();
+                    
+                    // For AO lines, prepend 'O' to maintain OR relationship
+                    if (isAO) {
+                        indicatorPrefix = 'O' + indicatorPart;
+                    } else {
+                        indicatorPrefix = indicatorPart;
+                    }
+                    
+                    // Pad to 12 characters
+                    const spacesNeeded = 12 - indicatorPrefix.length;
+                    indicatorPrefix = indicatorPrefix + ' '.repeat(Math.max(0, spacesNeeded));
+                } else if (allLinesBeforeField.length === 1) {
+                    // Single line - goes to field line
+                    const lastLine = allLinesBeforeField[0];
+                    const isAO = lastLine.startsWith('     AO');
+                    
+                    let indicatorPart;
+                    if (isAO) {
+                        indicatorPart = lastLine.substring(7);
+                    } else {
+                        indicatorPart = lastLine.substring(6);
+                    }
+                    
+                    indicatorPart = indicatorPart.trimEnd();
+                    
+                    if (isAO) {
+                        indicatorPrefix = 'O' + indicatorPart;
+                    } else {
+                        indicatorPrefix = indicatorPart;
+                    }
+                    
+                    const spacesNeeded = 12 - indicatorPrefix.length;
+                    indicatorPrefix = indicatorPrefix + ' '.repeat(Math.max(0, spacesNeeded));
+                }
+            } else {
+                // AND FORMAT: Single group (or multiple groups but not OR logic)
+                // Like DSPATR AND - first lines have only indicators, last line has field
+                const allIndicators = groups.length > 0 ? groups[0].indicators : [];
+                
+                if (allIndicators.length > 3) {
+                    // More than 3: split into chunks, last chunk goes on field line
+                    const numChunks = Math.ceil(allIndicators.length / 3);
+                    
+                    // Generate first chunks (indicator-only lines, before field)
+                    for (let chunkIndex = 0; chunkIndex < numChunks - 1; chunkIndex++) {
+                        const startIdx = chunkIndex * 3;
+                        const chunk = allIndicators.slice(startIdx, startIdx + 3);
+                        const chunkIndPart = _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils.formatForDds(chunk);
+                        const chunkFirstIsNegative = chunk[0]?.not;
+                        const chunkPrefixSpaces = chunkFirstIsNegative ? ' ' : '  ';
+                        fieldIndicatorLines.push(`     A${chunkPrefixSpaces}${chunkIndPart}`);
+                    }
+                    
+                    // Last chunk (3 or fewer) goes on field line
+                    const lastChunkStart = (numChunks - 1) * 3;
+                    const lastChunk = allIndicators.slice(lastChunkStart);
+                    const indPart = _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils.formatForDds(lastChunk);
+                    const firstIsNegative = lastChunk[0]?.not;
+                    const prefixSpaces = firstIsNegative ? ' ' : '  ';
+                    const spacesNeeded = 12 - prefixSpaces.length - indPart.length;
+                    indicatorPrefix = prefixSpaces + indPart + ' '.repeat(Math.max(0, spacesNeeded));
+                } else if (allIndicators.length > 0) {
+                    // 3 or fewer: all go on field line
+                    const indPart = _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils.formatForDds(allIndicators);
+                    const firstIsNegative = allIndicators[0]?.not;
+                    const prefixSpaces = firstIsNegative ? ' ' : '  ';
+                    const spacesNeeded = 12 - prefixSpaces.length - indPart.length;
+                    indicatorPrefix = prefixSpaces + indPart + ' '.repeat(Math.max(0, spacesNeeded));
+                }
+            }
+        }
+        
+        // Generate DSPATR lines
+        const attrLines = generateFieldDspatrLines(field);
+        const checkLines = generateFieldCheckLines(field);
+        const edtcdeLines = generateFieldEdtcdeLines(field);
+        const editKeywordLines = generateFieldEditKeywordsLines(field);
+        const valuesLines = generateFieldValuesLines(field);
+        const dftLines = generateFieldDftLines(field);
+        const dftvalLines = generateFieldDftvalLines(field);
+        
+        // Build main line with indicators
+        const mainLine = `     A${indicatorPrefix}${fieldNamePadded} ${typePartPadded} ${rowStr}${rowColSeparator}${colStr}${attributes}`;
+        
+        // Combine: field indicator lines BEFORE main + main + DSPATR + CHECK + DFTVAL + COLOR
+        const fieldIndicatorLinesStr = fieldIndicatorLines.length > 0 ? fieldIndicatorLines.join('\n') + '\n' : '';
+        const attrLinesStr = attrLines.length > 0 ? '\n' + attrLines.join('\n') : '';
+        const checkLinesStr = checkLines.length > 0 ? '\n' + checkLines.join('\n') : '';
+        const edtcdeLinesStr = edtcdeLines.length > 0 ? '\n' + edtcdeLines.join('\n') : '';
+        const editKeywordLinesStr = editKeywordLines.length > 0 ? '\n' + editKeywordLines.join('\n') : '';
+        const valuesLinesStr = valuesLines.length > 0 ? '\n' + valuesLines.join('\n') : '';
+        const dftLinesStr = dftLines.length > 0 ? '\n' + dftLines.join('\n') : '';
+        const dftvalLinesStr = dftvalLines.length > 0 ? '\n' + dftvalLines.join('\n') : '';
+        const colorLinesStr = colorLines.length > 0 ? '\n' + colorLines.join('\n') : '';
+
+        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + valuesLinesStr + dftLinesStr + dftvalLinesStr + colorLinesStr;
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Generated DDS: name="${field.name}" padded="${fieldNamePadded}" type="${typeAndUsage}" padded="${typePartPadded}"`);
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Full line(s): "${result}"`);
+        
+        return result;
+    }
+    
+    // Utility functions
+    function generateId() {
+        return (0,_modules_ui_generateId_js__WEBPACK_IMPORTED_MODULE_52__.generateId)(_modules_utils_idGenerator_js__WEBPACK_IMPORTED_MODULE_4__.IdGenerator);
+    }
+    
+    function getDefaultLength(type) {
+        return (0,_modules_ui_getDefaultLength_js__WEBPACK_IMPORTED_MODULE_53__.getDefaultLength)(type);
+    }
+
+    // lee/parsea el DDS (texto -> objetos field) para renderizar en Designer/Preview.
+    // función principal que parsea (lee/analiza) el contenido DDS y extrae todos los campos para la vista de Designer.
+    // Renderiza cada campo usando renderField o renderWindowField
+    // Si el record actual tiene un companion record (SFL↔SFLCTL), también parsea los campos del companion.
+    // Aplica repetición visual según SFLPAG. 
+    function parseDspfFields(content) {
+        fields = []; // Reset fields array
+        const lines = content.split('\n');
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Parsing DSPF content for record:', currentRecord, 'total lines:', lines.length);
+        
+        if (!currentRecord) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.warn('No current record specified, parsing all fields');
+        }
+        
+        let inTargetRecord = false;
+        let currentRecordName = null;
+        let windowDimensions = null;
+        
+        lines.forEach((line, index) => {
+            const trimmedLine = line.trim();
+            
+            // IMPROVED: Better comment detection - check for A* at position 6-7 (DDS format)
+            // or at the start of trimmed line (could have leading spaces)
+            const isComment = (line.length > 6 && line[5] === 'A' && line[6] === '*') || 
+                             trimmedLine.startsWith('A*');
+            
+            // Skip comment lines and empty lines
+            if (!trimmedLine || isComment) {
+                return;
+            }
+            
+			// Check for record definition start
+			if (trimmedLine.match(/^A\s+R\s+\w+/)) {
+				const match = trimmedLine.match(/^A\s+R\s+(\w+)/);
+				if (match) {
+					currentRecordName = match[1];
+					// Don't auto-change currentRecord during normal parsing
+					// Only set it if it's truly uninitialized (first load)
+					// This prevents the cursor from jumping when editing in source view
+					
+					// Check if this is our target record
+					inTargetRecord = (currentRecord === currentRecordName);
+					_modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found record: ${currentRecordName}, target: ${inTargetRecord}, looking for: ${currentRecord}`);
+				}
+				return;
+			}
+            
+            // Check for WINDOW dimensions matching current display size
+            if (inTargetRecord) {
+                const parsedWindowDimensions = parseWindowDimensionsFromLine(trimmedLine, currentRecordName, windowDimensions);
+                if (parsedWindowDimensions) {
+                    windowDimensions = parsedWindowDimensions;
+                }
+            }
+            
+            // Only parse fields if we're in the target record
+            if (inTargetRecord) {
+                // Parse field definitions for designer view
+                // Check if this is a field line: starts with spaces + A, and has field positioning
+                // Exclude lines that ONLY contain keywords (not field definitions with attributes)
+                // A keyword-only line doesn't have a field name before the keyword
+                const hasFieldName = /A\s+\w+\s+/.test(trimmedLine); // Has "A" followed by a word (field name) and spaces
+                const isKeywordOnlyLine = !hasFieldName && (
+                    trimmedLine.includes('WINDOW(') || 
+                    trimmedLine.includes('CF') || 
+                    trimmedLine.includes('CA') || 
+                    trimmedLine.includes('PAGEDOWN') || 
+                    trimmedLine.includes('PAGEUP') ||
+                    trimmedLine.includes('RTNCSRLOC') ||
+                    trimmedLine.includes('CSRLOC') ||
+                    trimmedLine.includes('OVERLAY') ||
+                    trimmedLine.includes('KEEP')
+                );
+                
+                // A line that ONLY has DSPATR/COLOR/CHECK/VALUES/EDTCDE/DFTVAL is an attribute continuation line
+                // These lines don't have field names like "A FIELDNAME 10A"
+                // Field lines have a recognizable pattern: field name (at least 3 chars) followed by type spec
+                // The type spec can be: "10A", "10", "10Y 0", or with spaces "64   O"
+                const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{0,9}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
+                const hasAttributeKeyword = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex.test(trimmedLine);
+                const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
+                
+                const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
+                const isFieldLine = line.length > 6 && line[5] === 'A' && 
+                    (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) &&
+                    !isKeywordOnlyLine && !isAttributeOnlyLine &&
+                    !trimmedLine.includes('WINDOW('); // Exclude WINDOW dimension lines
+                
+                // Only parse fields that belong to the target record
+                if (isFieldLine && inTargetRecord) {
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Line ${index + 1} (${currentRecordName}): ${line}`);
+                    
+                    // Check if this is a multi-line constant (ends with '-' or '+' before end, allowing trailing spaces)
+                    let fullLine = line;
+                    if (line.includes("'") && line.match(/'[^']*[-+]\s*$/)) {
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Multi-line constant detected at line ${index + 1}`);
+                        
+                        // Use shared function to process continuation lines
+                        const result = processMultiLineContinuation({
+                            initialLine: line,
+                            getNextLine: (idx) => idx < lines.length ? lines[idx] : null,
+                            startIndex: index + 1,
+                            context: 'DESIGNER'
+                        });
+                        
+                        fullLine = result.fullLine;
+                        // Note: linesConsumed is not used here as Designer doesn't need skipNextLines
+                    }
+                    
+                    const field = parseFieldLineForDesigner(fullLine);
+                    if (field) {
+                        field.recordName = currentRecordName; // Track which record this field belongs to
+                        
+                        // Initialize indicator storage structures
+                        field.attributeIndicators = {};
+                        field.colorIndicators = {};
+                        field.checkIndicators = {};
+                        
+                        // For all field types (variables, keywords, constants), scan backward to get field-level indicators from previous lines
+                        const groups = [];
+                        let hasOrLogic = false;
+                        
+                        // Scan backward for indicators in previous lines (if index > 0)
+                        if (index > 0) {
+                            let contextLabel = 'VARIABLE-BACKWARD';
+                            if (field.type === 'keyword' || field.isKeyword) {
+                                contextLabel = 'KEYWORD-BACKWARD';
+                            } else if (field.type === 'constant') {
+                                contextLabel = 'CONSTANT-BACKWARD';
+                            }
+                            const backwardScan = scanIndicatorsBackward(lines, 0, index, contextLabel);
+                            
+                            // scanIndicatorsBackward returns groups already properly merged:
+                            // - Consecutive 'A' lines = one AND group
+                            // - 'AO' line + following 'A' lines = one OR group
+                            // Multiple groups = OR logic between groups
+                            backwardScan.scannedLines.forEach(scannedLine => {
+                                if (scannedLine.indicators && scannedLine.indicators.length > 0) {
+                                    groups.push({ indicators: scannedLine.indicators });
+                                    if (scannedLine.isOr) {
+                                        hasOrLogic = true;
+                                    }
+                                }
+                            });
+                        }
+                        
+                        // Check for inline indicators (found during parsing in the same line as field)
+                        // All field types (variables, keywords, constants) can have inline indicators
+                        if (field._inlineIndicators && field._inlineIndicators.length > 0) {
+                                const inlineIsOr = field._inlineIsOr || false;
+                                
+                                if (inlineIsOr) {
+                                    // Inline indicators are from a line with 'AO' prefix - create new OR group
+                                    groups.push({ indicators: field._inlineIndicators });
+                                    hasOrLogic = true;
+                                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`${field.type} ${field.name}: Inline indicators are OR (from AO line), created separate group`);
+                                } else {
+                                    // Inline indicators from 'A' line - join the last group or create new one
+                                    if (groups.length > 0) {
+                                        groups[groups.length - 1].indicators.push(...field._inlineIndicators);
+                                    } else {
+                                        groups.push({ indicators: field._inlineIndicators });
+                                    }
+                                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`${field.type} ${field.name}: Inline indicators are AND, merged with last group`);
+                                }
+                                
+                            // Remove temporary storage
+                            delete field._inlineIndicators;
+                            delete field._inlineIsOr;
+                        }
+                        
+                        // Set field-level indicators with groups structure
+                        if (groups.length > 0) {
+                            // Multiple groups = OR logic, single group = AND logic
+                            field.indicators = {
+                                groups: groups,
+                                isOr: hasOrLogic || groups.length > 1
+                            };
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`${field.type} ${field.name}: Found ${groups.length} field indicator group(s), isOr=${hasOrLogic || groups.length > 1}`);
+                        }
+                        
+                        scanAttributeLinesAfterField({
+                            lines,
+                            startIndex: index,
+                            field,
+                            contextLabel: 'DESIGNER',
+                            includeChecks: true,
+                            includeDftval: true,
+                            preserveOriginalSpacing: true,
+                            attributeRegex: _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex
+                        });
+                        
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Parsed field: ${field.name} (${field.type}) at ${field.row},${field.col} for record ${currentRecordName}`);
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Final colorIndicators for ${field.name}:`, field.colorIndicators);
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Final attributeIndicators for ${field.name}:`, field.attributeIndicators);
+                        fields.push(field);
+                    } else {
+                        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error(`Failed to parse line: ${line}`);
+                    }
+                } else if (line.length > 6 && line[5] === 'A' && trimmedLine.length > 2 && !isKeywordOnlyLine && !isAttributeOnlyLine) {
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.warn(`Skipped potential field line ${index + 1}: ${line}`);
+                }
+            }
+        });
+        
+        // Check if current record is part of a subfile (SFL/SFLCTL) relationship
+        const subfileRel = getSubfileRelationship(currentRecord);
+        if (subfileRel && subfileRel.companionRecord) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Parsing companion record: ${subfileRel.companionRecord}`);
+            
+            // Parse fields from companion record
+            let inCompanionRecord = false;
+            let companionRecordName = null;
+            
+            lines.forEach((line, index) => {
+                const trimmedLine = line.trim();
+                
+                // Skip comment lines and empty lines
+                if (!trimmedLine || trimmedLine.startsWith('A*')) {
+                    return;
+                }
+                
+                // Check for record definition start
+                if (trimmedLine.match(/^A\s+R\s+\w+/)) {
+                    const match = trimmedLine.match(/^A\s+R\s+(\w+)/);
+                    if (match) {
+                        companionRecordName = match[1];
+                        inCompanionRecord = (subfileRel.companionRecord === companionRecordName);
+                        if (inCompanionRecord) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found companion record: ${companionRecordName}`);
+                        }
+                    }
+                    return;
+                }
+                
+                // Only parse fields if we're in the companion record
+                if (inCompanionRecord) {
+                    const hasFieldName = /A\s+\w+\s+/.test(trimmedLine);
+                    const isKeywordOnlyLine = !hasFieldName && (
+                        trimmedLine.includes('WINDOW(') || 
+                        trimmedLine.includes('CF') || 
+                        trimmedLine.includes('CA') || 
+                        trimmedLine.includes('PAGEDOWN') || 
+                        trimmedLine.includes('PAGEUP') ||
+                        trimmedLine.includes('RTNCSRLOC') ||
+                        trimmedLine.includes('CSRLOC') ||
+                        trimmedLine.includes('OVERLAY') ||
+                        trimmedLine.includes('KEEP') ||
+                        trimmedLine.includes('SFLCTL')
+                    );
+                    
+                    const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{0,9}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
+                    const hasAttributeKeyword = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex.test(trimmedLine);
+                    const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
+                    
+                    const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
+                    const isFieldLine = trimmedLine.startsWith('A ') &&
+                        (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) &&
+                        !isKeywordOnlyLine && !isAttributeOnlyLine &&
+                        !trimmedLine.includes('WINDOW(');
+                    
+                    if (isFieldLine) {
+                        // Check for multi-line constant (ends with '-' or '+' before quote)
+                        let fullLine = line;
+                        if (line.includes("'") && line.match(/'[^']*[-+]\s*$/)) {
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Designer: Multi-line constant in companion record detected at line ${index + 1}`);
+                            
+                            // Use shared function to process continuation lines
+                            const result = processMultiLineContinuation({
+                                initialLine: line,
+                                getNextLine: (idx) => idx < lines.length ? lines[idx] : null,
+                                startIndex: index + 1,
+                                context: 'DESIGNER-COMPANION'
+                            });
+                            
+                            fullLine = result.fullLine;
+                        }
+                        
+                        const field = parseFieldLineForDesigner(fullLine);
+                        if (field) {
+                            field.isBackgroundRecord = true;  // Mark as companion/background record
+                            field.recordName = companionRecordName;
+                            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Parsed companion field: ${field.name} (${field.type}) at ${field.row},${field.col}`);
+                            fields.push(field);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Normalize WINDOW dimensions for the current record/display size.
+        // This avoids stale or first-match dimensions when both DS3 and DS4 are defined.
+        if (currentRecord) {
+            const currentRecordWindowDims = getWindowDimensions(currentRecord);
+            if (currentRecordWindowDims.hasWindow) {
+                const selectedWindow = currentDisplaySize === 'DS3' ? currentRecordWindowDims.ds3 : currentRecordWindowDims.ds4;
+                if (selectedWindow) {
+                    windowDimensions = selectedWindow;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.window(`Designer: Using ${currentDisplaySize} WINDOW dimensions from record ${currentRecord}: ${selectedWindow.height}x${selectedWindow.width} at (${selectedWindow.row},${selectedWindow.col})`);
+                }
+            }
+        }
+        
+        // CRITICAL: If we're viewing an SFL record and its SFLCTL has WINDOW dimensions,
+        // use the SFLCTL's window dimensions for positioning SFL fields
+        const subfileRelationship = getSubfileRelationship(currentRecord);
+        if (subfileRelationship && subfileRelationship.sflRecord === currentRecord) {
+            const sflctlWindowDims = getWindowDimensions(subfileRelationship.sflctlRecord);
+            if (sflctlWindowDims.hasWindow) {
+                const sflctlWindow = currentDisplaySize === 'DS3' ? sflctlWindowDims.ds3 : sflctlWindowDims.ds4;
+                if (sflctlWindow) {
+                    windowDimensions = sflctlWindow;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.window(`Designer: SFL ${currentRecord}: Using SFLCTL ${subfileRelationship.sflctlRecord} WINDOW dimensions: ${windowDimensions.height}x${windowDimensions.width} at (${windowDimensions.row},${windowDimensions.col})`);
+                }
+            }
+        }
+        
+        // Re-render all fields in designer view
+        const canvas = document.getElementById('fields-container');
+        if (canvas) {
+            // Clear existing fields and window frames
+            canvas.querySelectorAll('.dspf-field, .window-frame').forEach(el => el.remove());
+            
+            // Add window frame if this is a WINDOW record
+            if (windowDimensions) {
+                // Use declared WINDOW dimensions (no auto-adjustment)
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.window(`Designer: Using declared window dimensions: ${windowDimensions.height}x${windowDimensions.width}`);
+                
+                const win = windowDimensions;
+                // WINDOW coordinates are absolute screen positions
+                const winPos = _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates.toPixels(win.row, win.col);
+                const winTop = winPos.top;
+                const winLeft = winPos.left;
+                const winHeight = _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates.getHeightInPixels(win.height);
+                // Width includes content + 4 columns for borders and padding (2 left + 2 right)
+                const winWidth = _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates.getWidthInPixels(win.width + 4);
+                
+                const windowFrame = document.createElement('div');
+                windowFrame.className = 'window-frame';
+                windowFrame.style.position = 'absolute';
+                windowFrame.style.top = `${winTop}px`;
+                windowFrame.style.left = `${winLeft}px`;
+                windowFrame.style.width = `${winWidth}px`;
+                windowFrame.style.height = `${winHeight}px`;
+                windowFrame.style.border = '2px dotted #00FF00';
+                windowFrame.style.pointerEvents = 'none';
+                windowFrame.style.zIndex = '5';
+                windowFrame.style.boxSizing = 'border-box';
+                
+                // Store original window dimensions for resizing
+                windowFrame.dataset.row = win.row;
+                windowFrame.dataset.col = win.col;
+                windowFrame.dataset.height = win.height;
+                windowFrame.dataset.width = win.width;
+                
+                // Add resize handles at corners
+                const corners = ['nw', 'ne', 'sw', 'se'];
+                corners.forEach(corner => {
+                    const handle = document.createElement('div');
+                    handle.className = `window-resize-handle ${corner}`;
+                    handle.style.position = 'absolute';
+                    handle.style.width = '10px';
+                    handle.style.height = '10px';
+                    handle.style.backgroundColor = '#00FF00';
+                    handle.style.border = '1px solid #000';
+                    handle.style.pointerEvents = 'auto';
+                    handle.style.cursor = `${corner}-resize`;
+                    handle.style.zIndex = '10';
+                    
+                    // Position handles at corners
+                    if (corner.includes('n')) {handle.style.top = '-5px';}
+                    if (corner.includes('s')) {handle.style.bottom = '-5px';}
+                    if (corner.includes('w')) {handle.style.left = '-5px';}
+                    if (corner.includes('e')) {handle.style.right = '-5px';}
+                    
+                    windowFrame.appendChild(handle);
+                });
+                
+                canvas.appendChild(windowFrame);
+                
+                // Setup resize functionality
+                (0,_modules_ui_windowResize_js__WEBPACK_IMPORTED_MODULE_19__.setupWindowResize)({
+                    windowFrame,
+                    originalDimensions: windowDimensions,
+                    Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+                    ScreenCoordinates: _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates,
+                    getCurrentDisplaySize: () => currentDisplaySize,
+                    getCurrentZoom: () => currentZoom,
+                    updateWindowDimensions
+                });
+                
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.window(`Added window frame in Designer at ${win.row},${win.col} size ${win.height}x${win.width}`);
+            }
+            
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.ui(`Rendering ${fields.length} fields:`, fields.map(f => `${f.name}(${f.row},${f.col})`));
+            
+            // Check if this is a SFL or SFLCTL record to determine repetition count
+            const subfileRelationship = getSubfileRelationship(currentRecord);
+            const sflpagRepeat = subfileRelationship ? getSflpagValue(subfileRelationship.sflctlRecord) : 1;
+            
+            if (sflpagRepeat > 1) {
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.stats(`Subfile detected: Repeating SFL fields ${sflpagRepeat} times (SFLPAG from ${subfileRelationship.sflctlRecord})`);
+            }
+            
+            // Render fields with repetition if needed
+            fields.forEach(field => {
+                // Render first instance (the real field)
+                if (windowDimensions) {
+                    renderWindowField(field, windowDimensions);
+                } else {
+                    renderField(field);
+                }
+                
+                // Render visual copies ONLY for SFL fields (companion record when viewing SFLCTL)
+                // When viewing SFL: repeat the current record fields (!isBackgroundRecord)
+                // When viewing SFLCTL: repeat the companion SFL fields (isBackgroundRecord)
+                const shouldRepeat = sflpagRepeat > 1 && (
+                    (currentRecord === subfileRelationship?.sflRecord && !field.isBackgroundRecord) ||
+                    (currentRecord === subfileRelationship?.sflctlRecord && field.isBackgroundRecord)
+                );
+                
+                if (shouldRepeat) {
+                    for (let repeat = 1; repeat < sflpagRepeat; repeat++) {
+                        const visualCopy = {
+                            ...field,
+                            id: field.id + '_repeat' + repeat,
+                            row: field.row + repeat,
+                            isVisualCopy: true // Mark as visual copy
+                        };
+                        
+                        if (windowDimensions) {
+                            renderWindowField(visualCopy, windowDimensions);
+                        } else {
+                            renderField(visualCopy);
+                        }
+                    }
+                }
+            });
+        } else {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error('Fields container not found for rendering');
+        }
+    }
+    
+    
+    // Update WINDOW dimensions in DDS code
+    function updateWindowDimensions(original, newRow, newCol, newHeight, newWidth) {
+        const lines = currentDocument.split('\n');
+        let updated = false;
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Searching for WINDOW in record: ${currentRecord}`);
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Display size: ${currentDisplaySize}`);
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Original dimensions: WINDOW(${original.row} ${original.col} ${original.height} ${original.width})`);
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`New dimensions: WINDOW(${newRow} ${newCol} ${newHeight} ${newWidth})`);
+        
+        // First, find the record definition line with strict matching
+        // Record definition format: "     A          R RECORDNAME" (after column 5)
+        let recordLineIndex = -1;
+        const recordRegex = new RegExp(`^\\s*A\\s+R\\s+${currentRecord}\\s*(\\s|$)`);
+        
+        for (let i = 0; i < lines.length; i++) {
+            if (recordRegex.test(lines[i])) {
+                recordLineIndex = i;
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found record definition '${currentRecord}' at line ${i}: ${lines[i].trim()}`);
+                break;
+            }
+        }
+        
+        if (recordLineIndex === -1) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error(`Record ${currentRecord} not found`);
+            return;
+        }
+        
+        // Search for WINDOW keyword with matching display size (*DS3 or *DS4)
+        // Look for lines with both WINDOW and the appropriate *DS marker
+        // IMPORTANT: Only search AFTER the record definition and BEFORE the next record definition
+        const displayMarker = currentDisplaySize === 'DS3' ? '*DS3' : '*DS4';
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Looking for ${displayMarker} WINDOW after line ${recordLineIndex}...`);
+        
+        const windowRegex = /WINDOW\(\s*\d+\s+\d+\s+\d+\s+\d+\s*\)/;
+        let nextRecordLineIndex = lines.length; // Default: search until end
+        
+        // Find the next record definition to limit search scope
+        const nextRecordRegex = /^\s*A\s+R\s+\w+/;
+        for (let i = recordLineIndex + 1; i < lines.length; i++) {
+            if (nextRecordRegex.test(lines[i])) {
+                nextRecordLineIndex = i;
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Next record found at line ${i}, limiting search to lines ${recordLineIndex}-${i}`);
+                break;
+            }
+        }
+        
+        // First try to find WINDOW on the record line itself
+        if (windowRegex.test(lines[recordLineIndex])) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found WINDOW on record line ${recordLineIndex}: ${lines[recordLineIndex].trim()}`);
+            
+            const newPattern = `WINDOW(${newRow} ${newCol} ${newHeight} ${newWidth})`;
+            const oldLine = lines[recordLineIndex];
+            lines[recordLineIndex] = lines[recordLineIndex].replace(windowRegex, newPattern);
+            updated = true;
+            
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Updated line ${recordLineIndex}:`);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   OLD: ${oldLine.trim()}`);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   NEW: ${lines[recordLineIndex].trim()}`);
+        } else {
+            // Search in following lines for WINDOW with matching display size marker
+            // IMPORTANT: Only search within the current record (before next record definition)
+            for (let i = recordLineIndex + 1; i < nextRecordLineIndex; i++) {
+                const line = lines[i];
+                
+                // Check if this line has the WINDOW keyword and matches our display size
+                if (windowRegex.test(line) && line.includes(displayMarker)) {
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found ${displayMarker} WINDOW at line ${i}: ${line.trim()}`);
+                    
+                    const newPattern = `WINDOW(${newRow} ${newCol} ${newHeight} ${newWidth})`;
+                    const oldLine = line;
+                    lines[i] = line.replace(windowRegex, newPattern);
+                    updated = true;
+                    
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Updated line ${i}:`);
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   OLD: ${oldLine.trim()}`);
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   NEW: ${lines[i].trim()}`);
+                    break;
+                }
+            }
+        }
+        
+        if (updated) {
+            currentDocument = lines.join('\n');
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds('Sending update message to VS Code...');
+            // Save the updated document
+            vscode.postMessage({
+                type: 'update',
+                content: currentDocument,
+                currentRecord: currentRecord
+            });
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.success('Update message sent');
+        } else {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error('WINDOW line not found or not updated');
+        }
+    }
+    
+    // Llamada por parseDspfFields. Extrae nombre, tipo, posición, etc. 
+    // Para cada campo encontrado llama a scanAttributeLinesAfterField para obtener
+    // atributos (COLOR,DSPATR,CHECK,DFTVAL) e indicadores de las líneas siguientes; y lo
+    // agrega al array fields[]
+    function parseFieldLineForDesigner(line) {
+        // DDS is columnar format - parse by exact column positions
+        // Example: "     A            FLD003        51A  O  5 19"
+        //          "     A            W_DSP_EST      1A  O  8 19"
+        
+        // Check minimum length
+        if (line.length < 40) {
+            return null;
+        }
+        
+        // Column 6 must be 'A'
+        if (line[5] !== 'A') {
+            return null;
+        }
+        
+        // Check for keywords (DATE, TIME, SYSNAME, USER) with optional indicators (SAME AS VARIABLES)
+        // Format with indicators: "     A  03                            19 11DATE"
+        // Format without indicators: "     A                                      19 11DATE"
+        // Indicators are in columns 7-18, position starts at column 39
+        // Check if position 6 has 'O' (OR format)
+        const keywordHasOrPrefix = line.length > 6 && line[6] === 'O';
+        const keywordStartPos = keywordHasOrPrefix ? 7 : 6;
+        
+        // Extract indicator area (columns 7-18) and content after column 18
+        const indicatorArea = line.substring(keywordStartPos, 18).trim();
+        const contentAfter18 = line.substring(18);
+        
+        // Check if content matches keyword pattern: row col KEYWORD
+        const parsedKeyword = parseKeywordPosition(contentAfter18);
+        if (parsedKeyword) {
+            const row = parseInt(parsedKeyword.row, 10);
+            const col = parseInt(parsedKeyword.col, 10);
+            const keywordName = parsedKeyword.keyword;
+            const keywordArgs = parsedKeyword.keywordArgs || null;
+            
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.key(`Found keyword: ${keywordName} at ${row},${col}`);
+            
+            // Extract inline indicators if present (columns 7-18)
+            const inlineIndicators = [];
+            if (indicatorArea.length > 0) {
+                // Parse indicators from the indicator area
+                const indicatorAreaParts = indicatorArea.split(/\s+/).filter(p => p.length > 0);
+                for (const part of indicatorAreaParts) {
+                    if (/^N?\d{2}$/.test(part)) {
+                        const isNegative = part.startsWith('N');
+                        const number = isNegative ? part.substring(1) : part;
+                        inlineIndicators.push({ number: number.padStart(2, '0'), not: isNegative });
+                    }
+                }
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Found ${inlineIndicators.length} inline indicators for keyword ${keywordName}`);
+            }
+            
+            const fieldObj = {
+                id: generateId(),
+                type: 'keyword',
+                name: keywordName,
+                row: row,
+                col: col,
+                dataType: 'keyword',
+                isKeyword: true,
+                keywordArgs,
+                length: null,
+                indicators: { groups: [], isOr: false } // Will be populated by backward scan + inline merge
+            };
+            
+            // Store inline indicators if found (will be merged with backward scan)
+            if (inlineIndicators.length > 0) {
+                fieldObj._inlineIndicators = inlineIndicators;
+                fieldObj._inlineIsOr = keywordHasOrPrefix;
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Stored ${inlineIndicators.length} inline indicators for keyword ${keywordName}, isOr=${keywordHasOrPrefix}`);
+            }
+            
+            return fieldObj;
+        }
+        
+        // Check for constant (contains quotes) - WITH INDICATOR SUPPORT
+        if (line.includes("'")) {
+            // Constants can have indicators just like variables:
+            // Format with indicators: "     A  03                            19 11'TEXT'"
+            // Format without indicators: "     A                                      19 11'TEXT'"
+            // Indicators are in columns 7-18, position starts around column 39
+            
+            // Check if position 6 has 'O' (OR format)
+            const constHasOrPrefix = line.length > 6 && line[6] === 'O';
+            const constStartPos = constHasOrPrefix ? 7 : 6;
+            
+            // Extract indicator area (columns 7-18) and content after column 18
+            const constIndicatorArea = line.substring(constStartPos, 18).trim();
+            const constContentAfter18 = line.substring(18).trim();
+            
+            // Match pattern: ROW COL'text' or ROW COL'text (without closing quote for multi-line)
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`[DESIGNER PARSE] Input line: "${line}"`);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`[DESIGNER PARSE] Input line length: ${line.length}`);
+            const match = constContentAfter18.match(/(\d+)\s+(\d+)'([^']*)/); // Search in content after col 18
+            const compactMatch = constContentAfter18.match(/^(\d{1,2})(\d{3})'([^']*)/);
+            if (match || compactMatch) {
+                const positionMatch = match || compactMatch;
+                const row = parseInt(positionMatch[1]);
+                const col = parseInt(positionMatch[2]);
+                let text = positionMatch[3];
+                
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`[DESIGNER PARSE] Full match[0]: "${positionMatch[0]}"`);
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`[DESIGNER PARSE] Matched text (match[3]): "${text}"`);
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`[DESIGNER PARSE] Matched text length: ${text.length}, first 20 chars: "${text.substring(0, 20)}", last 20 chars: "${text.slice(-20)}"`);
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Parsed constant in Designer at (${row},${col}), value length: ${text.length}, value: "${text}"`);
+                
+                // Extract inline indicators if present (columns 7-18)
+                const constInlineIndicators = [];
+                if (constIndicatorArea.length > 0) {
+                    const constIndicatorParts = constIndicatorArea.split(/\s+/).filter(p => p.length > 0);
+                    for (const part of constIndicatorParts) {
+                        if (/^N?\d{2}$/.test(part)) {
+                            const isNegative = part.startsWith('N');
+                            const number = isNegative ? part.substring(1) : part;
+                            constInlineIndicators.push({ number: number.padStart(2, '0'), not: isNegative });
+                        }
+                    }
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Found ${constInlineIndicators.length} inline indicators for constant at (${row},${col})`);
+                }
+                
+                // Generate a more descriptive name based on content
+                let constantName = text
+                    .replace(/[^a-zA-Z0-9]/g, '_')  // Replace non-alphanumeric with underscore
+                    .replace(/_+/g, '_')             // Replace multiple underscores with single
+                    .replace(/^_|_$/g, '')           // Remove leading/trailing underscores
+                    .toUpperCase();
+                
+                // If name is empty or too short, use position-based name
+                if (!constantName || constantName.length < 2) {
+                    constantName = `CONST_${row}_${col}`;
+                } else {
+                    // Limit length and add position for uniqueness
+                    constantName = constantName.substring(0, 10) + `_${row}_${col}`;
+                }
+                
+                const fieldObj = {
+                    id: generateId(),
+                    type: 'constant',
+                    name: constantName,
+                    row: row,
+                    col: col,
+                    value: text,
+                    length: text.length,
+                    attributes: extractAttributes(line),
+                    color: null,
+                    indicators: { groups: [], isOr: false } // Will be populated by backward scan + inline merge
+                };
+                
+                // Store inline indicators if found (will be merged with backward scan)
+                if (constInlineIndicators.length > 0) {
+                    fieldObj._inlineIndicators = constInlineIndicators;
+                    fieldObj._inlineIsOr = constHasOrPrefix;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Stored ${constInlineIndicators.length} inline indicators for constant ${constantName}, isOr=${constHasOrPrefix}`);
+                }
+                
+                return fieldObj;
+            }
+        }
+        
+        // Parse field line using helper functions - DDS format can vary:
+        // Standard format: A  FIELDNAME  10A  O  5 10
+        // With attributes: A  FIELDNAME  10A  O  5 10 COLOR(BLU)
+        // With indicators: A  01 02 03 FIELDNAME  10A  O  5 10
+        // OR format: AO N03 FIELDNAME  10A  O  5 10
+        
+        // Extract the content after the initial 'A' or 'AO' (at position 5-6)
+        // Check if position 6 has 'O' (OR format)
+        const varHasOrPrefix = line.length > 6 && line[6] === 'O';
+        const startPos = varHasOrPrefix ? 7 : 6; // Skip 'AO ' or 'A '
+        const content = line.substring(startPos).trim();
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Parsing content (hasOrPrefix=${varHasOrPrefix}): "${content}"`);
+        
+        // Split by whitespace and filter empty strings
+        let parts = content.split(/\s+/).filter(p => p.length > 0);
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Parts:`, parts);
+        
+        if (parts.length < 4) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.warn(`Not enough parts: ${parts.length}`);
+            return null;
+        }
+        
+        // Check for optional indicators at the beginning (columns 7-18)
+        // Indicators are 2-digit numbers (or N-prefixed for negative indicators)
+        // Skip indicators and start with field name
+        let partIndex = 0;
+        const indicatorsFound = [];
+        
+        while (partIndex < parts.length - 3) { // Need at least 4 parts left: name, type, row, col
+            const part = parts[partIndex];
+            // Check if this looks like an indicator: 2 digits or N + 2 digits
+            if (/^N?\d{2}$/.test(part)) {
+                indicatorsFound.push(part);
+                partIndex++;
+            } else {
+                // Not an indicator, must be field name
+                break;
+            }
+            
+            // Maximum 3 indicators per line
+            if (indicatorsFound.length >= 3) {
+                break;
+            }
+        }
+        
+        if (indicatorsFound.length > 0) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Found ${indicatorsFound.length} field-level indicators: ${indicatorsFound.join(', ')}`);
+        }
+        
+        // Now parse the field starting from partIndex
+        const fieldName = parts[partIndex];
+        
+        // Validate field name using FieldNameValidator (should be alphanumeric with underscores, no special chars like *)
+        if (!_modules_utils_fieldNameValidator_js__WEBPACK_IMPORTED_MODULE_5__.FieldNameValidator.isValid(fieldName, { mustStartWithLetter: false, allowEmpty: false })) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error(`Invalid field name: "${fieldName}"`);
+            return null;
+        }
+        
+        const typeSpec = parts[partIndex + 1];
+        
+        // Parse usage and decimals using helper (adjust index by partIndex)
+        const usageInfo = parseUsageAndDecimals(parts, partIndex + 2);
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Parsing field: typeSpec="${typeSpec}" hasDecimals=${usageInfo.hasDecimals}`);
+        
+        // Parse type specification using helper (pass hasDecimals for proper type detection)
+        const typeInfo = parseDdsTypeSpecification(typeSpec, usageInfo.hasDecimals);
+        if (!typeInfo) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error(`Invalid type spec: "${typeSpec}"`);
+            return null;
+        }
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.stats(`Mapped typeChar="${typeInfo.typeChar}" hasDecimals=${usageInfo.hasDecimals} to dataType="${typeInfo.dataType}"`);
+        
+        // Extract row and col using helper (adjust index by partIndex for indicators)
+        let positionInfo = extractRowColFromParts(parts, usageInfo.nextIndex);
+        if (!positionInfo) {
+            const fixedPositionArea = line.length > 39 ? line.substring(39) : '';
+            const fixedPositionMatch = fixedPositionArea.match(/^\s*([ 0-9]{2})([ 0-9]{3})/);
+            if (fixedPositionMatch) {
+                const parsedRow = parseInt(fixedPositionMatch[1].trim(), 10);
+                const parsedCol = parseInt(fixedPositionMatch[2].trim(), 10);
+                if (!isNaN(parsedRow) && !isNaN(parsedCol)) {
+                    positionInfo = {
+                        row: parsedRow,
+                        col: parsedCol,
+                        nextIndex: usageInfo.nextIndex + 1
+                    };
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Extracted compact fixed coordinates row=${parsedRow}, col=${parsedCol}`);
+                }
+            }
+        }
+
+        if (!positionInfo) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error(`Missing essentials`);
+            return null;
+        }
+        
+        // Extract float precision using helper
+        const precision = extractFloatPrecision(line, typeInfo.dataType);
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Extracted: name="${fieldName}" type="${typeSpec}" decimals="${usageInfo.decimals}" usage="${usageInfo.usage}" row="${positionInfo.row}" col="${positionInfo.col}" precision="${precision}"`);
+        
+        // Map usage character to internal usage and field type for compatibility
+        // O = Output, I = Input, B = Both, M = Message, P = Program-to-System
+        let fieldType = 'output';
+        if (usageInfo.usage === 'I') {fieldType = 'input';}
+        else if (usageInfo.usage === 'B') {fieldType = 'input';}
+        else if (usageInfo.usage === 'O') {fieldType = 'output';}
+
+        // Normalize unused/legacy usages (e.g., Hidden) to Output for now
+        const normalizedUsage = usageInfo.usage === 'H' ? 'O' : (usageInfo.usage || 'O');
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Parsed: ${fieldName} (${typeInfo.dataType}) at ${positionInfo.row},${positionInfo.col} length=${typeInfo.length}`);
+        
+        const fieldObj = {
+            id: generateId(),
+            type: fieldType,
+            name: fieldName,
+            row: positionInfo.row,
+            col: positionInfo.col,
+            length: typeInfo.dataType === 'date' ? 10 : (typeInfo.dataType === 'time' ? 8 : (typeInfo.dataType === 'timestamp' ? 26 : typeInfo.length)),
+            decimals: usageInfo.decimals,
+            usage: normalizedUsage,
+            dataType: typeInfo.dataType,
+            value: ''
+        };
+        
+        // Store inline indicators if found (these will be merged with backward scan indicators)
+        if (indicatorsFound.length > 0) {
+            const parsedIndicators = indicatorsFound.map(indStr => {
+                const isNegative = indStr.startsWith('N');
+                const number = isNegative ? indStr.substring(1) : indStr;
+                return { number: number.padStart(2, '0'), not: isNegative };
+            });
+            
+            // Store temporarily - will be merged with backward scan in parseDspfFields
+            fieldObj._inlineIndicators = parsedIndicators;
+            fieldObj._inlineIsOr = varHasOrPrefix; // Remember if this line had 'AO' prefix
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Stored ${parsedIndicators.length} inline indicators for field ${fieldName}, isOr=${varHasOrPrefix}`);
+        }
+        
+        // Extract COLOR if present in the line
+        const colorMatch = line.match(/COLOR\((\w+)\)/);
+        if (colorMatch) {
+            fieldObj.color = colorMatch[1];
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline color ${fieldObj.color} for field ${fieldName}`);
+        }
+        
+        // Extract DSPATR attributes if present in the line
+        const attrResult = extractAttributes(line, line);
+        if (attrResult.attrs && Object.keys(attrResult.attrs).length > 0) {
+            fieldObj.attributes = attrResult.attrs;
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline DSPATR attributes for field ${fieldName}:`, attrResult.attrs);
+        }
+
+        // Extract CHECK codes inline (no indicators in single-line extraction)
+        const checkMatch = line.match(/CHECK\(([^)]+)\)/);
+        if (checkMatch) {
+            const codes = checkMatch[1].trim().split(/\s+/);
+            if (!fieldObj.checkOptions) { fieldObj.checkOptions = {}; }
+            codes.forEach(code => {
+                fieldObj.checkOptions[code] = true;
+            });
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline CHECK options for field ${fieldName}:`, codes);
+        }
+
+        const edtcdeMatch = line.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);
+        if (edtcdeMatch) {
+            const edtcdeValue = edtcdeMatch[1].replace(/["']/g, '').trim().toUpperCase();
+            if (edtcdeValue) {
+                const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
+                fieldObj.edtcde = { value: edtcdeValue };
+                if ((replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') && edtcdeValue !== 'Z') {
+                    fieldObj.edtcde.replaceLeadingZerosWith = replaceLeadingZerosWith;
+                }
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for field ${fieldName}`);
+            }
+        }
+
+        const parseInlineKeywordTextArg = (keywordName, lineText) => {
+            const quotedRegex = new RegExp(`${keywordName}\\(\\s*'((?:''|[^'])*)'\\s*\\)`, 'i');
+            const quotedMatch = lineText.match(quotedRegex);
+            if (quotedMatch) {
+                return quotedMatch[1].replace(/''/g, "'");
+            }
+
+            const genericRegex = new RegExp(`${keywordName}\\(\\s*([^)]*?)\\s*\\)`, 'i');
+            const genericMatch = lineText.match(genericRegex);
+            if (!genericMatch) {
+                return '';
+            }
+
+            return genericMatch[1].trim();
+        };
+
+        const edtwrdValue = parseInlineKeywordTextArg('EDTWRD', line);
+        if (edtwrdValue.length > 0) {
+            fieldObj.edtwrd = { value: edtwrdValue };
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline EDTWRD('${edtwrdValue}') for field ${fieldName}`);
+        }
+
+        const edtmskValue = parseInlineKeywordTextArg('EDTMSK', line);
+        if (edtmskValue.length > 0) {
+            fieldObj.edtmsk = { value: edtmskValue };
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline EDTMSK('${edtmskValue}') for field ${fieldName}`);
+        }
+
+        const dftValue = parseInlineKeywordTextArg('DFT', line);
+        if (dftValue.length > 0) {
+            fieldObj.dft = { value: dftValue };
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline DFT(${dftValue}) for field ${fieldName}`);
+        }
+
+            const valuesMatch = line.match(/VALUES\(([^)]*)\)/i);
+            if (valuesMatch) {
+                const rawValues = valuesMatch[1].replace(/\s+/g, ' ').trim();
+                if (rawValues.length > 0) {
+                    fieldObj.values = rawValues;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline VALUES(${rawValues}) for field ${fieldName}`);
+                }
+            }
+
+        // Note: DFTVAL is now extracted by scanAttributeLinesAfterField, not inline
+        
+        // Add precision for float types
+        if (precision) {
+            fieldObj.precision = precision;
+        }
+        
+        // Extract shift codes for zoned/double types using helper
+        const shift = extractShiftCode(typeSpec, typeInfo.dataType);
+        if (shift) {
+            fieldObj.shift = shift;
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Extracted shift="${fieldObj.shift}" from typeSpec="${typeSpec}"`);
+        }
+        
+        return fieldObj;
+    }
+    
+
+    // Handle messages from the extension
+    window.addEventListener('message', event => {
+        const message = event.data;
+        
+        switch (message.type) {
+            case 'documentContent':
+                currentDocument = message.content;
+                currentRecord = message.currentRecord || null;
+                applyDisplaySizeSettingsFromDocument();
+                
+                // Update the record title in the toolbar
+                (0,_modules_ui_navigation_js__WEBPACK_IMPORTED_MODULE_18__.updateRecordTitle)({
+                    Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+                    getCurrentRecord: () => currentRecord
+                });
+                
+                // Update records list if provided
+                if (message.records) {
+                    allRecords = message.records;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Received records list:', allRecords.map(r => r.name));
+                    (0,_modules_ui_navigation_js__WEBPACK_IMPORTED_MODULE_18__.updateNavigationButtons)({
+                        getCurrentRecord: () => currentRecord,
+                        getAllRecords: () => allRecords
+                    });
+                }
+                
+                // Check if we need to preserve/restore a specific view
+                const viewToRestore = message.preserveView || null;
+                
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Message received:', { 
+                    type: message.type, 
+                    hasContent: !!message.content,
+                    currentRecord: message.currentRecord,
+                    isReadOnly: message.isReadOnly,
+                    isReadOnlyUndefined: message.isReadOnly === undefined,
+                    recordsCount: allRecords.length,
+                    preserveView: viewToRestore
+                });
+                
+                // Handle read-only mode ONLY if not preserving a specific view
+                // (otherwise updateReadOnlyMode will force switch to Preview)
+                if (message.isReadOnly !== undefined) {
+                    isReadOnly = message.isReadOnly;
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Document is read-only:', isReadOnly);
+                    // Only update UI if not navigating (navigating will restore view later)
+                    if (!viewToRestore) {
+                        updateReadOnlyMode();
+                    }
+                } else {
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.warn('isReadOnly is undefined in message');
+                }
+                
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Received document content for record:', currentRecord);
+                
+                // Parse fields with current record filter to maintain view consistency
+                // This will automatically re-render the designer view (clearing and redrawing all fields)
+                parseDspfFields(message.content);
+                
+                // Restore the view if navigation requested it
+                if (viewToRestore) {
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Restoring view after navigation:', viewToRestore);
+                    switchToView(viewToRestore);
+                } else {
+                    // Update other views if they're active
+                    const activeView = document.querySelector('.view.active');
+                    if (activeView && activeView.id === 'preview-view') {
+                        updatePreviewView();
+                    } else if (activeView && activeView.id === 'source-view') {
+                        (0,_modules_ui_sourceView_js__WEBPACK_IMPORTED_MODULE_20__.updateSourceView)({
+                            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+                            vscode,
+                            getCurrentDocument: () => currentDocument,
+                            setCurrentDocument: (value) => { currentDocument = value; },
+                            getCurrentRecord: () => currentRecord,
+                            parseDspfFields
+                        });
+                    }
+                    // Note: Designer view is already updated by parseDspfFields() which re-renders all fields
+                }
+                
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.success('Document content updated, fields parsed for record:', currentRecord, 'count:', fields.length);
+                break;
+            
+            case 'saveSuccess':
+                // Document changed - no notification needed
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.success('Document changed successfully');
+                break;
+            
+            case 'saveError':
+                const errorMsg = message.error || 'Unknown error occurred while saving';
+                showNotification('❌ Save failed: ' + errorMsg, 'error');
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error('Save failed:', errorMsg);
+                break;
+        }
+    });
+    
+    // Helper function to show notifications
+    function showNotification(message, type = 'info') {
+        return (0,_modules_ui_showNotification_js__WEBPACK_IMPORTED_MODULE_71__.showNotification)({
+            message,
+            type
+        });
+    }
+    
+    // Add CSS animations for notifications
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // ==================== INDICATOR CONFIGURATION MODAL ====================
+    
+    // Store indicators for each attribute/color
+    let indicatorConfigurations = new Map(); // Key: "attr:blink" or "color:RED", Value: Set of indicators
+    
+    // Create IBM i style indicator input modal
+    function createIBMiStyleModal() {
+        if (document.getElementById('ibmi-indicator-modal')) {
+            return;
+        }
+        
+        const modalHTML = `
+            <div id="ibmi-indicator-modal" style="
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.7);
+                z-index: 10000;
+                justify-content: center;
+                align-items: center;
+            ">
+                <div style="
+                    background: var(--panel-background, #1e1e1e);
+                    border: 1px solid var(--border-color, #3c3c3c);
+                    border-radius: 8px;
+                    padding: 20px;
+                    max-width: 600px;
+                    width: 90%;
+                ">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="margin: 0; color: var(--text-color, #fff);">Select Indicators</h3>
+                        <button id="ibmi-modal-close" style="
+                            background: none;
+                            border: none;
+                            color: var(--text-color, #fff);
+                            font-size: 24px;
+                            cursor: pointer;
+                            padding: 0;
+                            width: 30px;
+                            height: 30px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">×</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 16px; padding: 12px; background: var(--input-background, #333); border-radius: 4px;">
+                        <p style="margin: 0; color: var(--text-color, #fff); font-size: 13px;">
+                            <strong id="ibmi-target-label">Field or keyword . . . . . : SFLDSP</strong>
+                        </p>
+                    </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="color: var(--text-color, #fff); font-size: 13px; display: block; margin-bottom: 8px;">
+                            Type indicators, press Enter.
+                        </label>
+                        <div id="ibmi-indicators-container" style="display: flex; flex-direction: column; gap: 8px;">
+                            <!-- OR indicator rows will be added here -->
+                        </div>
+                        <p style="margin: 8px 0 0 0; color: var(--text-muted, #888); font-size: 11px; font-style: italic;">
+                            (Indicators shown horizontally are under AND condition)
+                        </p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                        <button id="ibmi-modal-cancel" style="
+                            padding: 8px 16px;
+                            background: var(--button-secondary-background, #555);
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        ">Cancel</button>
+                        <button id="ibmi-modal-ok" style="
+                            padding: 8px 16px;
+                            background: var(--primary-color, #007ACC);
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        ">OK</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Event listeners
+        document.getElementById('ibmi-modal-close').addEventListener('click', closeIBMiModal);
+        document.getElementById('ibmi-modal-cancel').addEventListener('click', closeIBMiModal);
+        document.getElementById('ibmi-modal-ok').addEventListener('click', saveIBMiIndicators);
+        
+        document.getElementById('ibmi-indicator-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeIBMiModal();
+            }
+        });
+    }
+    
+    // Create simple indicator picker modal
+    function createIndicatorPickerModal() {
+        if (document.getElementById('indicator-picker-modal')) {
+            return;
+        }
+        
+        const modalHTML = `
+            <div id="indicator-picker-modal" style="
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.7);
+                z-index: 10001;
+                justify-content: center;
+                align-items: center;
+            ">
+                <div style="
+                    background: var(--panel-background, #1e1e1e);
+                    border: 1px solid var(--border-color, #3c3c3c);
+                    border-radius: 8px;
+                    padding: 20px;
+                    max-width: 600px;
+                    width: 90%;
+                ">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="margin: 0; color: var(--text-color, #fff);">Select Indicator</h3>
+                        <button id="picker-modal-close" style="
+                            background: none;
+                            border: none;
+                            color: var(--text-color, #fff);
+                            font-size: 24px;
+                            cursor: pointer;
+                            padding: 0;
+                            width: 30px;
+                            height: 30px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">×</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="color: var(--text-color, #fff); font-size: 13px; font-weight: bold; margin-bottom: 8px; display: block;">Select Indicator (1-99):</label>
+                        <p style="margin: 0 0 12px 0; color: var(--text-muted, #888); font-size: 11px;">
+                            Click to select. Ctrl+Click for NOT (N).
+                        </p>
+                        <div id="picker-indicator-grid" style="
+                            display: grid;
+                            grid-template-columns: repeat(10, 1fr);
+                            gap: 4px;
+                        "></div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 8px; justify-content: space-between;">
+                        <button id="picker-modal-clear" style="
+                            padding: 8px 16px;
+                            background: var(--error-color, #c53520);
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        ">Clear</button>
+                        <button id="picker-modal-cancel" style="
+                            padding: 8px 16px;
+                            background: var(--button-secondary-background, #555);
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        ">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Create indicator grid
+        const grid = document.getElementById('picker-indicator-grid');
+        for (let i = 1; i <= 99; i++) {
+            const cell = document.createElement('button');
+            cell.className = 'picker-indicator-cell';
+            cell.dataset.indicator = i.toString();
+            cell.textContent = i.toString();
+            cell.style.cssText = `
+                padding: 8px 4px;
+                border: 1px solid var(--border-color, #3c3c3c);
+                background: var(--button-background, #333);
+                color: var(--text-color, #fff);
+                cursor: pointer;
+                border-radius: 4px;
+                font-size: 11px;
+                transition: all 0.2s;
+            `;
+            
+            cell.addEventListener('mouseenter', function() {
+                this.style.background = 'var(--list-hover-background, #2a2d2e)';
+            });
+            
+            cell.addEventListener('mouseleave', function() {
+                this.style.background = 'var(--button-background, #333)';
+            });
+            
+            cell.addEventListener('click', function(e) {
+                const isNot = e.ctrlKey || e.metaKey;
+                selectIndicatorFromPicker(this.dataset.indicator, isNot);
+            });
+            
+            grid.appendChild(cell);
+        }
+        
+        // Event listeners
+        document.getElementById('picker-modal-close').addEventListener('click', closeIndicatorPicker);
+        document.getElementById('picker-modal-cancel').addEventListener('click', closeIndicatorPicker);
+        document.getElementById('picker-modal-clear').addEventListener('click', clearIndicatorFromPicker);
+        
+        document.getElementById('indicator-picker-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeIndicatorPicker();
+            }
+        });
+    }
+    
+    let pickerCallback = null; // Function to call when indicator is selected
+    let pickerCurrentValue = null;
+    
+    function openIndicatorPicker(callback, currentValue = null) {
+        createIndicatorPickerModal();
+        pickerCallback = callback;
+        pickerCurrentValue = currentValue;
+        
+        // Clear previous selection highlights
+        document.querySelectorAll('.picker-indicator-cell').forEach(cell => {
+            cell.classList.remove('selected', 'selected-not');
+            cell.style.background = 'var(--button-background, #333)';
+            cell.style.borderColor = 'var(--border-color, #3c3c3c)';
+            cell.textContent = cell.dataset.indicator;
+        });
+        
+        // Highlight current value if exists
+        if (currentValue) {
+            const cellNumber = parseInt(currentValue.number, 10).toString();
+            const cell = document.querySelector(`.picker-indicator-cell[data-indicator="${cellNumber}"]`);
+            if (cell) {
+                if (currentValue.not) {
+                    cell.classList.add('selected-not');
+                    cell.style.background = '#ff6600';
+                    cell.style.borderColor = '#ff9900';
+                    cell.textContent = 'N' + cellNumber;
+                } else {
+                    cell.classList.add('selected');
+                    cell.style.background = 'var(--primary-color, #007ACC)';
+                    cell.style.borderColor = 'var(--primary-color, #007ACC)';
+                }
+            }
+        }
+        
+        document.getElementById('indicator-picker-modal').style.display = 'flex';
+    }
+    
+    function closeIndicatorPicker() {
+        document.getElementById('indicator-picker-modal').style.display = 'none';
+        pickerCallback = null;
+        pickerCurrentValue = null;
+    }
+    
+    function clearIndicatorFromPicker() {
+        if (pickerCallback) {
+            pickerCallback(null, false); // Pass null to clear
+        }
+        closeIndicatorPicker();
+    }
+    
+    function selectIndicatorFromPicker(number, isNot) {
+        if (pickerCallback) {
+            pickerCallback(number, isNot);
+        }
+        closeIndicatorPicker();
+    }
+    
+    // IBM i style modal functions
+    let currentIBMiTarget = null;
+    let ibmiIndicatorGroups = []; // Array of arrays: [[{number, not}], [{number, not}]]
+    
+    function openIBMiModal(type, key, label) {
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`🚀 [MODAL] openIBMiModal called - type: ${type}, key: ${key}, label: ${label}`);
+        createIBMiStyleModal();
+        
+        currentIBMiTarget = { type, key };
+        const configKey = `${type}:${key}`;
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`🚀 [MODAL] configKey: ${configKey}`);
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`🚀 [MODAL] indicatorConfigurations.has(configKey): ${indicatorConfigurations.has(configKey)}`);
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`🚀 [MODAL] selectedField exists: ${!!selectedField}`);
+        
+        // Update label
+        document.getElementById('ibmi-target-label').textContent = label;
+        
+        // Load existing indicators - ALWAYS load from field data first
+        ibmiIndicatorGroups = [];
+        
+        if (selectedField) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`🚀 [MODAL] Loading from selectedField`);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`🚀 [MODAL] selectedField.type: ${selectedField.type}`);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`🚀 [MODAL] selectedField.name: ${selectedField.name}`);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`🚀 [MODAL] selectedField.indicators:`, selectedField.indicators);
+            
+            // Load from field data
+            const fieldData = type === 'color' ? selectedField.colorIndicators?.[key] :
+                            type === 'attr' ? selectedField.attributeIndicators?.[key] :
+                            type === 'dftval' ? selectedField.dftvalIndicators :
+                            type === 'check' ? selectedField.checkIndicators?.[key] :
+                            type === 'field-indicators' ? selectedField.indicators : null;
+            
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[MODAL] Loading indicators for ${type}:${key}`);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[MODAL] fieldData:`, fieldData);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[MODAL] fieldData.groups:`, fieldData?.groups);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[MODAL] fieldData.isOr:`, fieldData?.isOr);
+            
+            if (fieldData && fieldData.groups) {
+                // Load all groups (works for both OR and AND formats)
+                ibmiIndicatorGroups = fieldData.groups.map(g => [...g.indicators]);
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[MODAL] Loaded ${ibmiIndicatorGroups.length} groups:`, ibmiIndicatorGroups);
+            } else {
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.warn(`[MODAL] No groups found in fieldData`);
+            }
+        } else if (indicatorConfigurations.has(configKey)) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`🚀 [MODAL] Loading from indicatorConfigurations (no selectedField)`);
+            const configData = indicatorConfigurations.get(configKey);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[MODAL] configData:`, configData);
+            
+            // For subfile keywords (sfldsp, sfldspctl) or when no selectedField
+            if (configData && configData.groups) {
+                // Load groups structure (works for both OR and AND formats)
+                ibmiIndicatorGroups = configData.groups.map(g => [...g.indicators]);
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[MODAL] Loaded ${ibmiIndicatorGroups.length} groups from Map:`, ibmiIndicatorGroups);
+            } else if (configData instanceof Set) {
+                // Convert Set to single group (backward compatibility)
+                const indicators = [];
+                configData.forEach(indStr => {
+                    try {
+                        indicators.push(JSON.parse(indStr));
+                    } catch (e) {}
+                });
+                if (indicators.length > 0) {
+                    ibmiIndicatorGroups.push(indicators);
+                }
+            }
+        }
+        
+        // Ensure at least one empty row
+        if (ibmiIndicatorGroups.length === 0) {
+            ibmiIndicatorGroups.push([]);
+        }
+        
+        renderIBMiIndicatorRows();
+        document.getElementById('ibmi-indicator-modal').style.display = 'flex';
+    }
+    
+    function closeIBMiModal() {
+        document.getElementById('ibmi-indicator-modal').style.display = 'none';
+        currentIBMiTarget = null;
+    }
+    
+    function renderIBMiIndicatorRows() {
+        const container = document.getElementById('ibmi-indicators-container');
+        container.innerHTML = '';
+        
+        ibmiIndicatorGroups.forEach((group, groupIndex) => {
+            const rowDiv = document.createElement('div');
+            rowDiv.style.cssText = 'display: flex; align-items: center; gap: 4px;';
+            
+            // Add "OR" label for rows after the first
+            if (groupIndex > 0) {
+                const orLabel = document.createElement('span');
+                orLabel.textContent = 'OR';
+                orLabel.style.cssText = 'color: #00CED1; font-weight: bold; width: 30px; font-size: 12px;';
+                rowDiv.appendChild(orLabel);
+            } else {
+                const spacer = document.createElement('span');
+                spacer.style.width = '30px';
+                rowDiv.appendChild(spacer);
+            }
+            
+            // Create indicator input fields (max 9 per IBM i style)
+            for (let i = 0; i < 9; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'ibmi-indicator-input';
+                input.dataset.groupIndex = groupIndex;
+                input.dataset.index = i;
+                input.maxLength = 3;
+                input.placeholder = 'Nnn';
+                input.style.cssText = `
+                    width: 40px;
+                    padding: 4px;
+                    background: var(--input-background, #333);
+                    border: 1px solid var(--border-color, #3c3c3c);
+                    color: var(--text-color, #fff);
+                    border-radius: 3px;
+                    text-align: center;
+                    font-size: 12px;
+                    font-family: monospace;
+                `;
+                
+                // Load value if exists
+                if (group[i]) {
+                    const ind = group[i];
+                    input.value = ind.not ? `N${ind.number.toString().padStart(2, '0')}` : ind.number.toString().padStart(2, '0');
+                }
+                
+                // Click to open picker
+                input.addEventListener('click', function() {
+                    const groupIdx = parseInt(this.dataset.groupIndex);
+                    const idx = parseInt(this.dataset.index);
+                    
+                    // Parse current value to pass to picker
+                    let currentValue = null;
+                    const value = this.value.trim().toUpperCase();
+                    if (value) {
+                        const isNot = value.startsWith('N');
+                        const numStr = isNot ? value.substring(1) : value;
+                        const num = parseInt(numStr);
+                        if (!isNaN(num) && num >= 1 && num <= 99) {
+                            currentValue = { number: num.toString(), not: isNot };
+                        }
+                    }
+                    
+                    openIndicatorPicker((number, isNot) => {
+                        if (number === null) {
+                            // Clear the field
+                            this.value = '';
+                        } else {
+                            this.value = isNot ? `N${number.padStart(2, '0')}` : number.padStart(2, '0');
+                        }
+                        updateIBMiGroupFromInputs(groupIdx);
+                    }, currentValue);
+                });
+                
+                // Manual input
+                input.addEventListener('blur', function() {
+                    const groupIdx = parseInt(this.dataset.groupIndex);
+                    updateIBMiGroupFromInputs(groupIdx);
+                });
+                
+                rowDiv.appendChild(input);
+            }
+            
+            // Delete row button (only if more than 1 row)
+            if (ibmiIndicatorGroups.length > 1) {
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '×';
+                deleteBtn.style.cssText = `
+                    background: var(--error-color, #c53520);
+                    color: white;
+                    border: none;
+                    border-radius: 3px;
+                    width: 24px;
+                    height: 24px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    padding: 0;
+                `;
+                deleteBtn.addEventListener('click', () => {
+                    ibmiIndicatorGroups.splice(groupIndex, 1);
+                    renderIBMiIndicatorRows();
+                });
+                rowDiv.appendChild(deleteBtn);
+            }
+            
+            container.appendChild(rowDiv);
+        });
+        
+        // Add new row button
+        const addRowBtn = document.createElement('button');
+        addRowBtn.textContent = '+ Add OR Group';
+        addRowBtn.style.cssText = `
+            padding: 6px 12px;
+            background: var(--primary-color, #007ACC);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 8px;
+        `;
+        addRowBtn.addEventListener('click', () => {
+            ibmiIndicatorGroups.push([]);
+            renderIBMiIndicatorRows();
+        });
+        container.appendChild(addRowBtn);
+    }
+    
+    function updateIBMiGroupFromInputs(groupIndex) {
+        const inputs = document.querySelectorAll(`input[data-group-index="${groupIndex}"]`);
+        const indicators = [];
+        
+        inputs.forEach(input => {
+            const value = input.value.trim().toUpperCase();
+            if (!value) {return;}
+            
+            const isNot = value.startsWith('N');
+            const numStr = isNot ? value.substring(1) : value;
+            const num = parseInt(numStr);
+            
+            if (!isNaN(num) && num >= 1 && num <= 99) {
+                indicators.push({ number: num.toString(), not: isNot });
+            }
+        });
+        
+        ibmiIndicatorGroups[groupIndex] = indicators;
+    }
+    
+    function saveIBMiIndicators() {
+        if (!currentIBMiTarget){return;}
+        
+        // Update all groups from inputs
+        ibmiIndicatorGroups.forEach((_, index) => {
+            updateIBMiGroupFromInputs(index);
+        });
+        
+        // Filter out empty groups
+        const nonEmptyGroups = ibmiIndicatorGroups.filter(g => g.length > 0);
+        
+        const configKey = `${currentIBMiTarget.type}:${currentIBMiTarget.key}`;
+        const { type, key } = currentIBMiTarget;
+        
+        // Update the field's indicator data structure DIRECTLY (not through Map)
+        if (selectedField) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[SAVE] Updating field ${selectedField.name} ${type}:${key}`);
+            
+            if (type === 'color') {
+                if (!selectedField.colorIndicators) {
+                    selectedField.colorIndicators = {};
+                }
+                
+                if (nonEmptyGroups.length === 0) {
+                    // Remove indicator configuration
+                    delete selectedField.colorIndicators[key];
+                } else if (nonEmptyGroups.length === 1) {
+                    // Single group: store as simple array (AND format)
+                    selectedField.colorIndicators[key] = {
+                        groups: [{ indicators: nonEmptyGroups[0] }],
+                        isOr: false
+                    };
+                } else {
+                    // Multiple groups: store as OR format
+                    selectedField.colorIndicators[key] = {
+                        groups: nonEmptyGroups.map(g => ({ indicators: g })),
+                        isOr: true
+                    };
+                }
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[SAVE] Updated colorIndicators[${key}]:`, selectedField.colorIndicators[key]);
+            } else if (type === 'attr') {
+                if (!selectedField.attributeIndicators) {
+                    selectedField.attributeIndicators = {};
+                }
+                
+                if (nonEmptyGroups.length === 0) {
+                    // Remove indicator configuration
+                    delete selectedField.attributeIndicators[key];
+                } else if (nonEmptyGroups.length === 1) {
+                    // Single group: store as simple array (AND format)
+                    selectedField.attributeIndicators[key] = {
+                        groups: [{ indicators: nonEmptyGroups[0] }],
+                        isOr: false
+                    };
+                } else {
+                    // Multiple groups: store as OR format
+                    selectedField.attributeIndicators[key] = {
+                        groups: nonEmptyGroups.map(g => ({ indicators: g })),
+                        isOr: true
+                    };
+                }
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[SAVE] Updated attributeIndicators[${key}]:`, selectedField.attributeIndicators[key]);
+            } else if (type === 'dftval') {
+                // DFTVAL doesn't use keys like colors/attributes
+                if (nonEmptyGroups.length === 0) {
+                    // Remove indicator configuration
+                    delete selectedField.dftvalIndicators;
+                } else if (nonEmptyGroups.length === 1) {
+                    // Single group: store as AND format
+                    selectedField.dftvalIndicators = {
+                        groups: [{ indicators: nonEmptyGroups[0] }],
+                        isOr: false
+                    };
+                } else {
+                    // Multiple groups: store as OR format
+                    selectedField.dftvalIndicators = {
+                        groups: nonEmptyGroups.map(g => ({ indicators: g })),
+                        isOr: true
+                    };
+                }
+                selectedField.dftvalIndicatorsModified = true;
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[SAVE] Updated dftvalIndicators:`, selectedField.dftvalIndicators);
+            } else if (type === 'check') {
+                // CHECK uses key (ME or ER)
+                if (!selectedField.checkIndicators) {
+                    selectedField.checkIndicators = {};
+                }
+                
+                if (nonEmptyGroups.length === 0) {
+                    // Remove indicator configuration
+                    delete selectedField.checkIndicators[key];
+                } else if (nonEmptyGroups.length === 1) {
+                    // Single group: store as AND format
+                    selectedField.checkIndicators[key] = {
+                        groups: [{ indicators: nonEmptyGroups[0] }],
+                        isOr: false
+                    };
+                } else {
+                    // Multiple groups: store as OR format
+                    selectedField.checkIndicators[key] = {
+                        groups: nonEmptyGroups.map(g => ({ indicators: g })),
+                        isOr: true
+                    };
+                }
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[SAVE] Updated checkIndicators[${key}]:`, selectedField.checkIndicators[key]);
+            } else if (type === 'field-indicators') {
+                // Field-level indicators (variables, constants, keywords)
+                if (nonEmptyGroups.length === 0) {
+                    // Remove indicator configuration
+                    delete selectedField.indicators;
+                } else if (nonEmptyGroups.length === 1) {
+                    // Single group: store as AND format
+                    selectedField.indicators = {
+                        groups: [{ indicators: nonEmptyGroups[0] }],
+                        isOr: false
+                    };
+                } else {
+                    // Multiple groups: store as OR format
+                    selectedField.indicators = {
+                        groups: nonEmptyGroups.map(g => ({ indicators: g })),
+                        isOr: true
+                    };
+                }
+                selectedField.fieldIndicatorsModified = true;
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[SAVE] Updated field.indicators:`, selectedField.indicators);
+            } else if (type === 'sfldsp' || type === 'sfldspctl') {
+                // SFLDSP and SFLDSPCTL are subfile control keywords (no selectedField)
+                // Store directly in indicatorConfigurations Map
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[SAVE] Updating ${type} indicators`);
+            }
+            
+            // Update the field in DDS immediately (if field exists)
+            // NOTE: For field-level indicators, DON'T update DDS here - let applyFieldProperties handle it
+            // so that the "Apply" button can detect changes properly
+            if (type !== 'sfldsp' && type !== 'sfldspctl' && type !== 'field-indicators') {
+                updateFieldInDds(selectedField);
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('[SAVE] DDS updated');
+            }
+        }
+        
+        // Also update the Map for backward compatibility and for subfile keywords
+        if (nonEmptyGroups.length === 0) {
+            indicatorConfigurations.delete(configKey);
+        } else if (nonEmptyGroups.length === 1) {
+            // For subfile keywords, store as groups structure (not Set)
+            if (type === 'sfldsp' || type === 'sfldspctl') {
+                indicatorConfigurations.set(configKey, {
+                    groups: [{ indicators: nonEmptyGroups[0] }],
+                    isOr: false
+                });
+            } else {
+                // For other keywords, maintain backward compatibility with Set
+                const indicatorSet = new Set();
+                nonEmptyGroups[0].forEach(ind => {
+                    indicatorSet.add(JSON.stringify(ind));
+                });
+                indicatorConfigurations.set(configKey, indicatorSet);
+            }
+        } else {
+            indicatorConfigurations.set(configKey, {
+                groups: nonEmptyGroups.map(g => ({ indicators: g })),
+                isOr: true
+            });
+        }
+        
+        // Update button indicator count
+        updateIndicatorButtonCount(currentIBMiTarget.type, currentIBMiTarget.key);
+        
+        closeIBMiModal();
+    }
+    
+    function updateIndicatorButtonCount(type, key) {
+        const configKey = `${type}:${key}`;
+        const config = indicatorConfigurations.get(configKey);
+        
+        let count = 0;
+        if (config instanceof Set) {
+            count = config.size;
+        } else if (config && config.groups) {
+            count = config.groups.reduce((sum, g) => sum + g.indicators.length, 0);
+        }
+        
+        // Find button and update badge
+        const buttonSelector = type === 'color' ? `.color-indicator-btn[data-color="${key}"]` :
+                              type === 'attr' ? `.attr-indicator-btn[data-attr="${key}"]` :
+                              type === 'field-indicators' ? `.indicator-config-btn[data-field-indicators="true"]` :
+                              type === 'sfldsp' ? '#sfldsp-indicators-btn' :
+                              type === 'sfldspctl' ? '#sfldspctl-indicators-btn' : null;
+        
+        if (buttonSelector) {
+            const button = document.querySelector(buttonSelector);
+            if (button) {
+                // For subfile keywords and field indicators, use setIndicatorButtonState
+                if (type === 'sfldsp' || type === 'sfldspctl' || type === 'field-indicators') {
+                    setIndicatorButtonState(button, config);
+                } else {
+                    const badge = button.querySelector('.indicator-count');
+                    if (badge) {
+                        if (count > 0) {
+                            badge.textContent = count;
+                            badge.style.display = 'flex';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // Legacy compatibility - redirect to IBM i style
+    function openIndicatorModal(type, key, label) {
+        openIBMiModal(type, key, label);
+    }  
+    
+    // Redirect old function to new IBM i style modal
+    function openIndicatorModal(type, key, label) {
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Opening indicator modal: type=${type}, key=${key}, label=${label}`);
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Selected field:`, selectedField);
+        if (selectedField) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Field colorIndicators:`, selectedField.colorIndicators);
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Field attributeIndicators:`, selectedField.attributeIndicators);
+        }
+        
+        // Use new IBM i style modal
+        openIBMiModal(type, key, label);
+    }
+    
+    // Setup indicator config buttons
+    // configura los event listeners (los clics en los botones), pero NO actualiza el texto de los botones 
+    // con los números de los indicadores.
+    function setupIndicatorButtons() {
+        return (0,_modules_ui_indicatorButtons_js__WEBPACK_IMPORTED_MODULE_27__.setupIndicatorButtons)({
+            Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
+            openIndicatorModal
+        });
+    }
+    
+    // ==================== END INDICATOR MODAL ====================
+
+// Expose select functions for unit tests running in Node VM and webview test harnesses
+function __setCurrentDocumentForTests(doc) {
+    currentDocument = doc;
+}
+function __getCurrentDocumentForTests() {
+    return currentDocument;
+}
+function __setCurrentRecordForTests(recordName) {
+    currentRecord = recordName;
+}
+function __getCurrentRecordForTests() {
+    return currentRecord;
+}
+
+try {
+    if (typeof window !== 'undefined' && window) {
+        window.__TESTS = window.__TESTS || {};
+        if (typeof removeFieldFromDds !== 'undefined') {window.__TESTS.removeFieldFromDds = removeFieldFromDds;}
+        if (typeof updateFieldInDds !== 'undefined') {window.__TESTS.updateFieldInDds = updateFieldInDds;}
+        if (typeof processMultiLineContinuation !== 'undefined') {window.__TESTS.processMultiLineContinuation = processMultiLineContinuation;}
+        if (typeof _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex !== 'undefined') {window.__TESTS.attributeContentRegex = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex;}
+        if (typeof _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET !== 'undefined') {window.__TESTS.ATTRIBUTE_KEYWORDS_SET = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET;}
+        window.__TESTS.setCurrentDocument = __setCurrentDocumentForTests;
+        window.__TESTS.getCurrentDocument = __getCurrentDocumentForTests;
+        window.__TESTS.setCurrentRecord = __setCurrentRecordForTests;
+        window.__TESTS.getCurrentRecord = __getCurrentRecordForTests;
+    }
+} catch (err) {
+    // ignore
+}
+
+if ( true && module.exports) {
+    try {
+        if (typeof removeFieldFromDds !== 'undefined') {module.exports.removeFieldFromDds = removeFieldFromDds;}
+        if (typeof updateFieldInDds !== 'undefined') {module.exports.updateFieldInDds = updateFieldInDds;}
+        if (typeof processMultiLineContinuation !== 'undefined') {module.exports.processMultiLineContinuation = processMultiLineContinuation;}
+        if (typeof _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex !== 'undefined') {module.exports.attributeContentRegex = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex;}
+        if (typeof _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET !== 'undefined') {module.exports.ATTRIBUTE_KEYWORDS_SET = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET;}
+        module.exports.setCurrentDocument = __setCurrentDocumentForTests;
+        module.exports.getCurrentDocument = __getCurrentDocumentForTests;
+        module.exports.setCurrentRecord = __setCurrentRecordForTests;
+        module.exports.getCurrentRecord = __getCurrentRecordForTests;
+    } catch (err) {
+        // Ignore - test exports are best-effort
+    }
+}
+})();
+
+/***/ }),
+/* 1 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ColorUtils: () => (/* binding */ ColorUtils)
+/* harmony export */ });
+const ColorUtils = {
+    IBM_COLORS: {
+        'WHT': '#FFFFFF',
+        'BLU': '#3B78FF',
+        'RED': '#FF3B3B',
+        'TRQ': '#00FFFF',
+        'YLW': '#FFFF00',
+        'GRN': '#00FF00',
+        'PNK': '#FF00FF'
+    },
+
+    getColor(field, defaultColor = '#00ff00') {
+        if (field && field.color && this.IBM_COLORS[field.color]) {
+            return this.IBM_COLORS[field.color];
+        }
+
+        if (field && field.colorIndicators) {
+            const colorCodes = Object.keys(field.colorIndicators);
+            if (colorCodes.length > 0) {
+                const firstColorCode = colorCodes[0];
+                if (this.IBM_COLORS[firstColorCode]) {
+                    return this.IBM_COLORS[firstColorCode];
+                }
+            }
+        }
+
+        return defaultColor;
+    },
+
+    getColorStyle(field, defaultColor = '#00ff00') {
+        const color = this.getColor(field, defaultColor);
+        return `color: ${color};`;
+    },
+
+    getDefaultForFieldType(fieldType) {
+        const defaults = {
+            'constant': '#00ff00',
+            'input': '#ffff00',
+            'output': '#00ff00',
+            'keyword': '#00ffff',
+            'text': '#00ff00',
+            'number': '#ffff00'
+        };
+        return defaults[fieldType] || '#00ff00';
+    },
+
+    isValidColorCode(colorCode) {
+        return colorCode && this.IBM_COLORS.hasOwnProperty(colorCode);
+    },
+
+    getAllColorCodes() {
+        return Object.keys(this.IBM_COLORS);
+    },
+
+    getColorName(colorCode) {
+        const names = {
+            'WHT': 'White',
+            'BLU': 'Blue',
+            'RED': 'Red',
+            'TRQ': 'Turquoise',
+            'YLW': 'Yellow',
+            'GRN': 'Green',
+            'PNK': 'Pink'
+        };
+        return names[colorCode] || colorCode;
+    }
+};
+
+
+/***/ }),
+/* 2 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ScreenCoordinates: () => (/* binding */ ScreenCoordinates)
+/* harmony export */ });
+const ScreenCoordinates = {
+    CHAR_HEIGHT: 20,
+    CHAR_WIDTH: 8,
+
+    SCREEN_SIZES: {
+        'DS3': { rows: 24, cols: 80 },
+        'DS4': { rows: 27, cols: 132 }
+    },
+
+    toPixels(row, col, offset = { row: 0, col: 0 }) {
+        return {
+            top: (row - 1 - offset.row) * this.CHAR_HEIGHT,
+            left: (col - 1 - offset.col) * this.CHAR_WIDTH
+        };
+    },
+
+    fromPixels(top, left, offset = { row: 0, col: 0 }) {
+        return {
+            row: Math.floor(top / this.CHAR_HEIGHT) + 1 + offset.row,
+            col: Math.floor(left / this.CHAR_WIDTH) + 1 + offset.col
+        };
+    },
+
+    fromClientPoint(clientX, clientY, rect, zoom = 1, offset = { row: 0, col: 0 }) {
+        const left = (clientX - rect.left) / zoom;
+        const top = (clientY - rect.top) / zoom;
+        return this.fromPixels(top, left, offset);
+    },
+
+    sizeFromPixels(height, width, zoom = 1) {
+        return {
+            rows: Math.round((height / zoom) / this.CHAR_HEIGHT),
+            cols: Math.round((width / zoom) / this.CHAR_WIDTH)
+        };
+    },
+
+    getScreenDimensions(displaySize) {
+        return this.SCREEN_SIZES[displaySize] || this.SCREEN_SIZES.DS3;
+    },
+
+    isValidPosition(row, col, displaySize) {
+        const dims = this.getScreenDimensions(displaySize);
+        return row >= 1 && row <= dims.rows &&
+               col >= 1 && col <= dims.cols;
+    },
+
+    getWidthInPixels(length) {
+        return length * this.CHAR_WIDTH;
+    },
+
+    getHeightInPixels(rows) {
+        return rows * this.CHAR_HEIGHT;
+    },
+
+    createWindowOffset(windowDimensions) {
+        if (!windowDimensions) {
+            return { row: 0, col: 0 };
+        }
+        return {
+            row: windowDimensions.row - 1,
+            col: windowDimensions.col - 1
+        };
+    },
+
+    calculateFieldWrapping(field, displaySize = 'DS3') {
+        const dims = this.getScreenDimensions(displaySize);
+        const maxCols = dims.cols;
+
+        if (field.type === 'constant' || field.type === 'keyword' || field.isKeyword) {
+            return [{ row: field.row, col: field.col, length: field.length }];
+        }
+
+        const isNumeric = ['numeric', 'zoned', 'packed', 'float', 'binary', 'double'].includes(field.dataType);
+        if (isNumeric) {
+            return [{ row: field.row, col: field.col, length: field.length }];
+        }
+
+        const startCol = field.col;
+        const fieldLength = field.length || 10;
+        const segments = [];
+
+        let remainingLength = fieldLength;
+        let currentRow = field.row;
+        let currentCol = startCol;
+
+        while (remainingLength > 0) {
+            const availableSpace = maxCols - currentCol + 1;
+            const segmentLength = Math.min(remainingLength, availableSpace);
+
+            segments.push({
+                row: currentRow,
+                col: currentCol,
+                length: segmentLength
+            });
+
+            remainingLength -= segmentLength;
+
+            if (remainingLength > 0) {
+                currentRow++;
+                currentCol = 1;
+            }
+        }
+
+        return segments;
+    }
+};
+
+
+/***/ }),
+/* 3 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   IndicatorUtils: () => (/* binding */ IndicatorUtils)
+/* harmony export */ });
+const IndicatorUtils = {
+    _logParse(message, ...args) {
+        const logger = globalThis.Logger;
+        if (logger && typeof logger.parse === 'function') {
+            logger.parse(message, ...args);
+        }
+    },
+
+    parse(indicatorStr) {
+        if (!indicatorStr || typeof indicatorStr !== 'string') {
+            return [];
+        }
+
+        const tokens = indicatorStr.trim().split(/\s+/);
+        const indicators = [];
+
+        tokens.forEach(token => {
+            const matches = token.match(/N?\d{1,2}/g);
+            if (matches) {
+                matches.forEach(ind => {
+                    const isNegated = ind.startsWith('N');
+                    const number = isNegated ? ind.substring(1) : ind;
+                    indicators.push({
+                        number: number.padStart(2, '0'),
+                        not: isNegated
+                    });
+                });
+            }
+        });
+
+        return indicators;
+    },
+
+    formatForDds(indicators) {
+        if (!indicators || indicators.length === 0) {
+            return '';
+        }
+
+        const tokens = indicators.map(ind => ind.not ? ('N' + String(ind.number).padStart(2, '0')) : String(ind.number).padStart(2, '0'));
+        let result = '';
+        tokens.forEach(token => {
+            if (result === '') {
+                result = token;
+            } else {
+                result += token.startsWith('N') ? token : ' ' + token;
+            }
+        });
+        return result;
+    },
+
+    formatForDisplay(indicators) {
+        if (!indicators || indicators.length === 0) {
+            return '';
+        }
+
+        return indicators.map(ind =>
+            ind.not ? `NOT ${ind.number}` : ind.number
+        ).join(', ');
+    },
+
+    isValid(indicatorStr) {
+        if (!indicatorStr) {
+            return true;
+        }
+        return /^(N?\d{1,2}(\s+N?\d{1,2})*)$/.test(indicatorStr.trim());
+    },
+
+    create(number, not = false) {
+        return {
+            number: String(number).padStart(2, '0'),
+            not: Boolean(not)
+        };
+    },
+
+    extractFromDdsLine(fullLine, debugContext = '') {
+        if (!fullLine || fullLine.length <= 6 || fullLine[5] !== 'A') {
+            return [];
+        }
+
+        const indicatorArea = fullLine.substring(6, 44);
+        const indicatorStr = indicatorArea.trim();
+
+        if (debugContext && indicatorStr) {
+            this._logParse(`${debugContext} indicator area: "${indicatorArea}" from line: "${fullLine}"`);
+        }
+
+        if (!indicatorStr) {
+            return [];
+        }
+
+        const indicators = this.parse(indicatorStr);
+
+        if (debugContext && indicators.length > 0) {
+            this._logParse(`${debugContext} found indicators:`, indicators);
+        }
+
+        return indicators;
+    },
+
+    extractWithOrSupport(lines, startIndex, keyword, debugContext = '') {
+        const result = {
+            groups: [],
+            isOr: false
+        };
+
+        let currentIndex = startIndex;
+        let foundKeyword = false;
+
+        while (currentIndex < lines.length && !foundKeyword) {
+            const line = lines[currentIndex];
+
+            if (!line || line.length <= 6 || line[5] !== 'A') {
+                break;
+            }
+
+            const isOrLine = line[6] === 'O';
+            const hasKeyword = keyword ? line.includes(keyword) : false;
+
+            const indicators = this.extractFromDdsLine(line, debugContext);
+
+            if (indicators.length > 0) {
+                result.groups.push({ indicators: indicators });
+                if (isOrLine) {
+                    result.isOr = true;
+                }
+
+                if (debugContext) {
+                    this._logParse(`${debugContext} line ${currentIndex + 1} (${isOrLine ? 'OR' : 'AND'}): found ${indicators.length} indicators`);
+                }
+            }
+
+            if (hasKeyword) {
+                foundKeyword = true;
+            }
+
+            currentIndex++;
+        }
+
+        if (result.groups.length === 1 && !result.isOr) {
+            return { groups: result.groups, isOr: false };
+        }
+
+        return result;
+    },
+
+    formatGroupsForDds(groups) {
+        if (!groups || groups.length === 0) {
+            return [''];
+        }
+
+        const lines = [];
+        groups.forEach((group, index) => {
+            const formatted = this.formatForDds(group.indicators);
+            const prefix = index === 0 ? '' : 'O';
+            lines.push(prefix + formatted);
+        });
+
+        return lines;
+    },
+
+    flattenGroups(groups) {
+        if (!groups || groups.length === 0) {
+            return [];
+        }
+
+        const allIndicators = [];
+        groups.forEach(group => {
+            if (group.indicators) {
+                allIndicators.push(...group.indicators);
+            }
+        });
+        return allIndicators;
+    }
+};
+
+
+/***/ }),
+/* 4 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DisplaySizeUtils: () => (/* binding */ DisplaySizeUtils)
+/* harmony export */ });
+const DisplaySizeUtils = {
+    getAvailableDisplaySizes(documentContent) {
+        const lines = documentContent.split('\n');
+        let hasDS3 = false;
+        let hasDS4 = false;
+        let inDspsizBlock = false;
+        let currentBlock = '';
+
+        const processDspsizBlock = (blockText) => {
+            const normalizedBlock = (blockText || '').toUpperCase();
+            const blockHasDS3 = normalizedBlock.includes('*DS3');
+            const blockHasDS4 = normalizedBlock.includes('*DS4');
+
+            if (blockHasDS3) {
+                hasDS3 = true;
+            }
+            if (blockHasDS4) {
+                hasDS4 = true;
+            }
+
+            if (!blockHasDS3 && !blockHasDS4) {
+                hasDS3 = true;
+            }
+        };
+
+        for (let line of lines) {
+            const trimmed = line.trim();
+
+            if (!inDspsizBlock && trimmed.includes('DSPSIZ(')) {
+                inDspsizBlock = true;
+                currentBlock = trimmed.substring(trimmed.indexOf('DSPSIZ('));
+
+                if (trimmed.includes(')')) {
+                    processDspsizBlock(currentBlock);
+                    inDspsizBlock = false;
+                    currentBlock = '';
+                }
+
+                continue;
+            }
+
+            if (inDspsizBlock) {
+                currentBlock += ` ${trimmed}`;
+
+                if (trimmed.includes(')')) {
+                    processDspsizBlock(currentBlock);
+                    inDspsizBlock = false;
+                    currentBlock = '';
+                }
+            }
+        }
+
+        if (inDspsizBlock && currentBlock) {
+            processDspsizBlock(currentBlock);
+        }
+
+        let singleSize = null;
+        if (hasDS3 && !hasDS4) {
+            singleSize = 'DS3';
+        } else if (hasDS4 && !hasDS3) {
+            singleSize = 'DS4';
+        }
+
+        return { hasDS3, hasDS4, singleSize };
+    }
+};
+
+
+/***/ }),
+/* 5 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   IdGenerator: () => (/* binding */ IdGenerator)
+/* harmony export */ });
+const IdGenerator = {
+    _counters: {},
+
+    generateFieldId() {
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substr(2, 9);
+        return `field_${timestamp}_${random}`;
+    },
+
+    generateUniqueName(prefix, existingNames = []) {
+        if (!this._counters[prefix]) {
+            this._counters[prefix] = 1;
+        }
+
+        let name;
+        let attempts = 0;
+        const maxAttempts = 1000;
+
+        do {
+            name = prefix + this._counters[prefix];
+            this._counters[prefix]++;
+            attempts++;
+
+            if (attempts > maxAttempts) {
+                name = prefix + Date.now();
+                break;
+            }
+        } while (existingNames.includes(name));
+
+        return name;
+    },
+
+    resetCounter(prefix) {
+        if (this._counters[prefix]) {
+            this._counters[prefix] = 1;
+        }
+    },
+
+    resetAllCounters() {
+        this._counters = {};
+    },
+
+    getCounter(prefix) {
+        return this._counters[prefix] || 0;
+    },
+
+    generateUniqueRecordName(prefix = 'REC', existingNames = []) {
+        return this.generateUniqueName(prefix, existingNames);
+    },
+
+    generateUniqueId(prefix = 'id') {
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substr(2, 9);
+        return `${prefix}-${timestamp}-${random}`;
+    }
+};
+
+
+/***/ }),
+/* 6 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FieldNameValidator: () => (/* binding */ FieldNameValidator)
+/* harmony export */ });
+const FieldNameValidator = {
+    MAX_LENGTH: 10,
+
+    isValid(name, options = {}) {
+        const {
+            allowEmpty = false,
+            mustStartWithLetter = true,
+            maxLength = this.MAX_LENGTH
+        } = options;
+
+        if (!name || name.length === 0) {
+            return allowEmpty;
+        }
+
+        if (name.length > maxLength) {
+            return false;
+        }
+
+        if (mustStartWithLetter) {
+            return /^[A-Z][A-Z0-9_]*$/i.test(name);
+        } else {
+            return /^[A-Z0-9_]+$/i.test(name);
+        }
+    },
+
+    validate(name, options = {}) {
+        if (!this.isValid(name, options)) {
+            const { mustStartWithLetter = true, maxLength = this.MAX_LENGTH } = options;
+
+            if (!name || name.length === 0) {
+                throw new Error('Field name cannot be empty');
+            }
+
+            if (name.length > maxLength) {
+                throw new Error(`Field name cannot exceed ${maxLength} characters`);
+            }
+
+            if (mustStartWithLetter) {
+                throw new Error('Field name must start with a letter and contain only letters, numbers, and underscores');
+            } else {
+                throw new Error('Field name must contain only letters, numbers, and underscores');
+            }
+        }
+
+        return name;
+    },
+
+    sanitize(name, fallback = 'FIELD') {
+        if (!name || name.length === 0) {
+            return fallback;
+        }
+
+        let sanitized = name.toUpperCase();
+        sanitized = sanitized.replace(/[^A-Z0-9_]/g, '');
+
+        if (!/^[A-Z]/.test(sanitized)) {
+            sanitized = 'F' + sanitized;
+        }
+
+        if (sanitized.length > this.MAX_LENGTH) {
+            sanitized = sanitized.substring(0, this.MAX_LENGTH);
+        }
+
+        if (!this.isValid(sanitized)) {
+            return fallback;
+        }
+
+        return sanitized;
+    },
+
+    isReservedKeyword(name) {
+        const reserved = ['DATE', 'TIME', 'SYSNAME', 'USER', 'PAGE'];
+        return reserved.includes(name.toUpperCase());
+    }
+};
+
+
+/***/ }),
+/* 7 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Logger: () => (/* binding */ Logger)
+/* harmony export */ });
+const Logger = {
+    _enabled: true,
+
+    parse(message, ...args) {
+        if (this._enabled) {console.log('🔍', message, ...args);}
+    },
+
+    success(message, ...args) {
+        if (this._enabled) {console.log('✅', message, ...args);}
+    },
+
+    error(message, ...args) {
+        if (this._enabled) {console.error('❌', message, ...args);}
+    },
+
+    warn(message, ...args) {
+        if (this._enabled) {console.warn('⚠️', message, ...args);}
+    },
+
+    stats(message, ...args) {
+        if (this._enabled) {console.log('📊', message, ...args);}
+    },
+
+    ui(message, ...args) {
+        if (this._enabled) {console.log('🎨', message, ...args);}
+    },
+
+    dds(message, ...args) {
+        if (this._enabled) {console.log('📝', message, ...args);}
+    },
+
+    debug(message, ...args) {
+        if (this._enabled) {console.log('🐛', message, ...args);}
+    },
+
+    key(message, ...args) {
+        if (this._enabled) {console.log('🔑', message, ...args);}
+    },
+
+    window(message, ...args) {
+        if (this._enabled) {console.log('🪟', message, ...args);}
+    },
+
+    enable() {
+        this._enabled = true;
+        console.log('✅ Logging enabled');
+    },
+
+    disable() {
+        console.log('⛔ Logging disabled');
+        this._enabled = false;
+    },
+
+    isEnabled() {
+        return this._enabled;
+    },
+
+    group(title, callback) {
+        if (this._enabled) {
+            console.group('📦 ' + title);
+            callback();
+            console.groupEnd();
+        }
+    }
+};
+
+if (!globalThis.Logger) {
+    globalThis.Logger = Logger;
+}
+
+
+
+
+/***/ }),
+/* 8 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ATTRIBUTE_KEYWORDS: () => (/* binding */ ATTRIBUTE_KEYWORDS),
+/* harmony export */   ATTRIBUTE_KEYWORDS_SET: () => (/* binding */ ATTRIBUTE_KEYWORDS_SET),
+/* harmony export */   CHECK_CHAR_CODES: () => (/* binding */ CHECK_CHAR_CODES),
+/* harmony export */   CHECK_NUMERIC_CODES: () => (/* binding */ CHECK_NUMERIC_CODES),
+/* harmony export */   REGENERATED_KEYWORDS: () => (/* binding */ REGENERATED_KEYWORDS),
+/* harmony export */   REGENERATED_KEYWORDS_SET: () => (/* binding */ REGENERATED_KEYWORDS_SET),
+/* harmony export */   attributeContentRegex: () => (/* binding */ attributeContentRegex)
+/* harmony export */ });
+const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE'];
+const ATTRIBUTE_KEYWORDS_SET = new Set(ATTRIBUTE_KEYWORDS);
+const attributeContentRegex = new RegExp(`\\b(?:${ATTRIBUTE_KEYWORDS.join('|')})\\(`);
+
+// Keywords that are fully regenerated from Designer state during DDS updates.
+// Any keyword outside this set should be treated as unknown and preserved.
+const REGENERATED_KEYWORDS = ['COLOR', 'DSPATR', 'CHECK', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'VALUES'];
+const REGENERATED_KEYWORDS_SET = new Set(REGENERATED_KEYWORDS);
+
+const CHECK_CHAR_CODES = ['ME', 'ER', 'MF', 'FE', 'RB', 'RZ', 'RL', 'LC'];
+const CHECK_NUMERIC_CODES = ['ME', 'ER', 'MF', 'FE', 'RB', 'RZ', 'RL'];
+
+
+/***/ }),
+/* 9 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   calibrateCharMetrics: () => (/* binding */ calibrateCharMetrics)
+/* harmony export */ });
+async function calibrateCharMetrics(screenCoordinates, logger) {
+    try {
+        if (document.fonts && document.fonts.ready) {
+            await document.fonts.ready;
+        }
+    } catch (err) {
+        if (logger && typeof logger.warn === 'function') {
+            logger.warn('Font readiness check failed, using immediate metrics', err);
+        }
+    }
+
+    await new Promise(requestAnimationFrame);
+    const probe = document.createElement('span');
+    const sampleText = 'WWWWWWWWWW';
+    probe.textContent = sampleText;
+    probe.style.position = 'absolute';
+    probe.style.visibility = 'hidden';
+    probe.style.whiteSpace = 'pre';
+    probe.style.fontFamily = "'3270', 'IBM Plex Mono', 'Consolas', 'Courier New', monospace";
+    probe.style.fontSize = '15px';
+    probe.style.lineHeight = '20px';
+    document.body.appendChild(probe);
+    const rect = probe.getBoundingClientRect();
+    document.body.removeChild(probe);
+
+    const width = rect.width / sampleText.length;
+    const height = rect.height;
+    if (width && height) {
+        screenCoordinates.CHAR_WIDTH = width;
+        screenCoordinates.CHAR_HEIGHT = height;
+        if (logger && typeof logger.ui === 'function') {
+            logger.ui(`Calibrated char metrics -> width: ${width.toFixed(2)}px, height: ${height.toFixed(2)}px`);
+        }
+        return { width, height };
+    }
+
+    if (logger && typeof logger.warn === 'function') {
+        logger.warn('Could not calibrate char metrics, using defaults');
+    }
+    return null;
+}
+
+
+/***/ }),
+/* 10 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupRulers: () => (/* binding */ setupRulers)
+/* harmony export */ });
+function setupRulers(currentDisplaySize, screenCoordinates, logger) {
+    const horizontalRuler = document.getElementById('horizontal-ruler');
+    const verticalRuler = document.getElementById('vertical-ruler');
+
+    if (!horizontalRuler || !verticalRuler) {
+        if (logger && typeof logger.warn === 'function') {
+            logger.warn('Rulers not found, retrying in 100ms...');
+        }
+        setTimeout(() => setupRulers(currentDisplaySize, screenCoordinates, logger), 100);
+        return;
+    }
+
+    if (logger && typeof logger.ui === 'function') {
+        logger.ui(`Setting up rulers for ${currentDisplaySize}...`);
+    }
+
+    horizontalRuler.innerHTML = '';
+    verticalRuler.innerHTML = '';
+
+    const maxCols = currentDisplaySize === 'DS3' ? 80 : 132;
+    const maxRows = currentDisplaySize === 'DS3' ? 24 : 27;
+
+    for (let col = 1; col <= maxCols; col++) {
+        const leftPos = screenCoordinates.toPixels(1, col).left;
+
+        const tick = document.createElement('div');
+        tick.className = 'ruler-tick';
+        tick.style.left = leftPos + 'px';
+        horizontalRuler.appendChild(tick);
+
+        if (col % 5 === 0 || col === 1) {
+            const marker = document.createElement('div');
+            marker.className = 'ruler-marker';
+            marker.textContent = col.toString();
+            marker.style.left = leftPos + 'px';
+            horizontalRuler.appendChild(marker);
+        }
+    }
+
+    for (let row = 1; row <= maxRows; row++) {
+        const { top: topPos } = screenCoordinates.toPixels(row, 1);
+
+        const tick = document.createElement('div');
+        tick.className = 'ruler-tick';
+        tick.style.top = topPos + 'px';
+        verticalRuler.appendChild(tick);
+
+        if (row % 5 === 0 || row === 1) {
+            const marker = document.createElement('div');
+            marker.className = 'ruler-marker';
+            marker.textContent = row.toString();
+            marker.style.top = topPos + 'px';
+            verticalRuler.appendChild(marker);
+        }
+    }
+
+    if (logger && typeof logger.success === 'function') {
+        logger.success(`Rulers setup complete for ${currentDisplaySize}!`);
+    }
+}
+
+
+/***/ }),
+/* 11 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupCanvasInteraction: () => (/* binding */ setupCanvasInteraction)
+/* harmony export */ });
+function setupCanvasInteraction(deselectAllFields, showScreenProperties) {
+    const canvas = document.getElementById('fields-container');
+
+    canvas.addEventListener('click', function(e) {
+        if (e.target === this) {
+            deselectAllFields();
+            showScreenProperties();
+        }
+    });
+}
+
+
+/***/ }),
+/* 12 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupToolbarButtons: () => (/* binding */ setupToolbarButtons)
+/* harmony export */ });
+function setupToolbarButtons({
+    Logger,
+    vscode,
+    saveDocument,
+    navigateToPreviousRecord,
+    navigateToNextRecord,
+    setViewZoom,
+    getCurrentZoom,
+    switchToView
+}) {
+    document.getElementById('saveBtn').addEventListener('click', function() {
+        Logger.ui('Save button clicked!');
+        saveDocument();
+    });
+
+    // Setup back button (if it exists, for multi-record files)
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', function() {
+            Logger.ui('Back button clicked');
+            vscode.postMessage({ type: 'backToRecordList' });
+        });
+    }
+
+    // Setup navigation buttons
+    const prevRecordBtn = document.getElementById('prevRecordBtn');
+    const nextRecordBtn = document.getElementById('nextRecordBtn');
+
+    if (prevRecordBtn) {
+        prevRecordBtn.addEventListener('click', function() {
+            Logger.ui('Previous Record button clicked');
+            navigateToPreviousRecord();
+        });
+    }
+
+    if (nextRecordBtn) {
+        nextRecordBtn.addEventListener('click', function() {
+            Logger.ui('Next Record button clicked');
+            navigateToNextRecord();
+        });
+    }
+
+    const zoomOutBtn = document.getElementById('zoomOutBtn');
+    const zoomInBtn = document.getElementById('zoomInBtn');
+    const zoomResetBtn = document.getElementById('zoomResetBtn');
+
+    if (zoomOutBtn) {
+        zoomOutBtn.addEventListener('click', function() {
+            setViewZoom(getCurrentZoom() - 0.05);
+        });
+    }
+
+    if (zoomInBtn) {
+        zoomInBtn.addEventListener('click', function() {
+            setViewZoom(getCurrentZoom() + 0.05);
+        });
+    }
+
+    if (zoomResetBtn) {
+        zoomResetBtn.addEventListener('click', function() {
+            setViewZoom(1);
+        });
+    }
+
+    // Setup tab buttons
+    const designerTab = document.getElementById('designerTab');
+    const previewTab = document.getElementById('previewTab');
+    const sourceTab = document.getElementById('sourceTab');
+
+    if (designerTab) {
+        designerTab.addEventListener('click', function(e) {
+            e.preventDefault();
+            Logger.ui('Designer tab clicked');
+            switchToView('designer');
+        });
+    } else {
+        Logger.error('Designer tab not found');
+    }
+
+    if (previewTab) {
+        previewTab.addEventListener('click', function(e) {
+            e.preventDefault();
+            Logger.ui('Preview tab clicked');
+            switchToView('preview');
+        });
+    } else {
+        Logger.error('Preview tab not found');
+    }
+
+    if (sourceTab) {
+        sourceTab.addEventListener('click', function(e) {
+            e.preventDefault();
+            Logger.ui('Source tab clicked');
+            switchToView('source');
+        });
+    } else {
+        Logger.error('Source tab not found');
+    }
+
+    Logger.success('Toolbar buttons setup complete');
+}
+
+
+/***/ }),
+/* 13 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupDisplaySizeSelector: () => (/* binding */ setupDisplaySizeSelector)
+/* harmony export */ });
+function setupDisplaySizeSelector({
+    Logger,
+    getCurrentDisplaySize,
+    setCurrentDisplaySize,
+    updateCanvasSize,
+    setupRulers,
+    parseDspfFields,
+    getCurrentDocument,
+    applyDefaultZoomForDisplaySize,
+    updatePreviewView
+}) {
+    const designerRadioButtons = document.querySelectorAll('input[name="displaySize"]');
+    designerRadioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            setCurrentDisplaySize(this.value);
+            const currentDisplaySize = getCurrentDisplaySize();
+            Logger.ui(`Designer display size changed to: ${currentDisplaySize}`);
+
+            if (applyDefaultZoomForDisplaySize) {
+                applyDefaultZoomForDisplaySize(currentDisplaySize);
+            }
+
+            updateCanvasSize(currentDisplaySize);
+            setupRulers();
+
+            parseDspfFields(getCurrentDocument());
+
+            const previewView = document.getElementById('preview-view');
+            if (previewView && previewView.classList.contains('active')) {
+                updatePreviewView();
+            }
+        });
+    });
+}
+
+
+/***/ }),
+/* 14 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updateCanvasSize: () => (/* binding */ updateCanvasSize)
+/* harmony export */ });
+function updateCanvasSize(displaySize, ScreenCoordinates, Logger) {
+    const canvas = document.getElementById('fields-container');
+    const screenWithRulers = document.getElementById('screen-with-rulers');
+    const horizontalRuler = document.getElementById('horizontal-ruler');
+    const verticalRuler = document.getElementById('vertical-ruler');
+
+    if (!canvas || !screenWithRulers) {return;}
+
+    const dims = ScreenCoordinates.getScreenDimensions(displaySize);
+    const widthPx = ScreenCoordinates.getWidthInPixels(dims.cols);
+    const heightPx = ScreenCoordinates.getHeightInPixels(dims.rows);
+    if (canvas) {
+        canvas.style.width = `${widthPx}px`;
+        canvas.style.height = `${heightPx}px`;
+    }
+    if (horizontalRuler) {
+        horizontalRuler.style.width = `${widthPx + 4}px`;
+        horizontalRuler.style.backgroundSize = `${ScreenCoordinates.CHAR_WIDTH}px 100%`;
+    }
+    if (verticalRuler) {
+        verticalRuler.style.height = `${heightPx + 4}px`;
+        verticalRuler.style.backgroundSize = `100% ${ScreenCoordinates.CHAR_HEIGHT}px`;
+    }
+    if (screenWithRulers) {
+        screenWithRulers.style.width = `${widthPx + 42}px`;
+        screenWithRulers.style.height = `${heightPx + 42}px`;
+    }
+
+    Logger.ui(`Canvas resized for ${displaySize}`);
+}
+
+
+/***/ }),
+/* 15 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupDragAndDrop: () => (/* binding */ setupDragAndDrop)
+/* harmony export */ });
+function setupDragAndDrop({
+    Logger,
+    ScreenCoordinates,
+    getCurrentRecord,
+    getCurrentDisplaySize,
+    getCurrentZoom,
+    getWindowDimensions,
+    moveField,
+    createField
+}) {
+    const toolItems = document.querySelectorAll('.tool-item');
+    const canvas = document.getElementById('fields-container');
+
+    if (!canvas) {
+        Logger.error('Fields container not found, skipping drag and drop setup');
+        return;
+    }
+
+    Logger.ui('Setting up drag and drop for', toolItems.length, 'tool items');
+
+    toolItems.forEach((item, index) => {
+        Logger.debug(`Setting up drag for item ${index}:`, item.dataset.type);
+
+        item.addEventListener('dragstart', function(e) {
+            e.dataTransfer.setData('text/plain', this.dataset.type);
+            e.dataTransfer.effectAllowed = 'copy';
+            this.classList.add('dragging');
+            Logger.debug('Drag started for:', this.dataset.type);
+        });
+
+        item.addEventListener('dragend', function() {
+            this.classList.remove('dragging');
+            Logger.debug('Drag ended for:', this.dataset.type);
+        });
+    });
+
+    canvas.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        this.classList.add('drop-zone');
+    });
+
+    canvas.addEventListener('dragenter', function(e) {
+        e.preventDefault();
+        this.classList.add('drop-zone');
+    });
+
+    canvas.addEventListener('dragleave', function(e) {
+        if (!this.contains(e.relatedTarget)) {
+            this.classList.remove('drop-zone');
+        }
+    });
+
+    canvas.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('drop-zone');
+
+        const data = e.dataTransfer.getData('text/plain');
+        Logger.debug('Drop event triggered with data:', data);
+
+        if (!data) {
+            Logger.error('No data received in drop event');
+            return;
+        }
+
+        const rect = this.getBoundingClientRect();
+        const currentZoom = getCurrentZoom ? getCurrentZoom() : 1;
+
+        const gridPosition = ScreenCoordinates
+            ? ScreenCoordinates.fromClientPoint(e.clientX, e.clientY, rect, currentZoom)
+            : {
+                row: Math.max(1, Math.floor(((e.clientY - rect.top) / currentZoom) / 20) + 1),
+                col: Math.max(1, Math.floor(((e.clientX - rect.left) / currentZoom) / 8) + 1)
+            };
+
+        const x = (e.clientX - rect.left) / currentZoom;
+        const y = (e.clientY - rect.top) / currentZoom;
+
+        let row = Math.max(1, gridPosition.row);
+        let col = Math.max(1, gridPosition.col);
+
+        const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+        const windowDimensions = currentRecord ? getWindowDimensions(currentRecord) : null;
+        if (windowDimensions && windowDimensions.hasWindow) {
+            const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : null;
+            const windowDim = currentDisplaySize === 'DS3' ? windowDimensions.ds3 : windowDimensions.ds4;
+            if (windowDim) {
+                const relRow = row - (windowDim.row - 1);
+                const relCol = col - windowDim.col;
+
+                if (relRow > 0 && relCol > 0) {
+                    row = relRow;
+                    col = relCol;
+                    Logger.window(`🪟 [WINDOW] Converted absolute screen (${row + (windowDim.row - 1)}, ${col + windowDim.col}) to WINDOW-relative (${row}, ${col})`);
+                }
+            }
+        }
+
+        Logger.debug('Drop at pixel:', { x, y, currentZoom }, 'grid:', { row, col });
+
+        try {
+            const dropData = JSON.parse(data);
+            if (dropData.type === 'existing-field') {
+                Logger.debug('Moving existing field:', dropData.fieldId);
+                moveField(dropData.fieldId, row, col);
+            } else {
+                createField(data, row, col);
+            }
+        } catch (e) {
+            Logger.debug('Creating new field type:', data);
+            createField(data, row, col);
+        }
+    });
+
+    Logger.success('Drag and drop setup complete');
+}
+
+
+/***/ }),
+/* 16 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupGridLines: () => (/* binding */ setupGridLines)
+/* harmony export */ });
+function setupGridLines({ Logger, setupRulers }) {
+    const screenGrid = document.getElementById('screen-grid');
+    if (screenGrid) {
+        Logger.success('Grid lines setup complete');
+    }
+    setupRulers();
+}
+
+
+/***/ }),
+/* 17 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupPreviewDisplaySizeListeners: () => (/* binding */ setupPreviewDisplaySizeListeners)
+/* harmony export */ });
+function setupPreviewDisplaySizeListeners({
+    Logger,
+    getCurrentDisplaySize,
+    setCurrentDisplaySize,
+    updateCanvasSize,
+    setupRulers,
+    parseDspfFields,
+    getCurrentDocument,
+    applyDefaultZoomForDisplaySize,
+    updatePreviewView
+}) {
+    const previewRadioButtons = document.querySelectorAll('input[name="preview-display-size"]');
+    previewRadioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const nextDisplaySize = this.value;
+            setCurrentDisplaySize(nextDisplaySize);
+            Logger.debug(`Preview display size changed to: ${nextDisplaySize}`);
+
+            if (applyDefaultZoomForDisplaySize) {
+                applyDefaultZoomForDisplaySize(nextDisplaySize);
+            }
+
+            const designerRadios = document.querySelectorAll('input[name="displaySize"]');
+            designerRadios.forEach(dr => {
+                dr.checked = dr.value === nextDisplaySize;
+            });
+
+            updateCanvasSize(nextDisplaySize);
+            setupRulers();
+
+            parseDspfFields(getCurrentDocument());
+            updatePreviewView();
+        });
+    });
+}
+
+
+/***/ }),
+/* 18 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupSourceSearch: () => (/* binding */ setupSourceSearch)
+/* harmony export */ });
+let searchMatches = [];
+let currentMatchIndex = -1;
+let searchSetupDone = false;
+let hotkeySetupDone = false;
+
+function setupSourceSearchHotkey() {
+    if (hotkeySetupDone) {
+        return;
+    }
+    hotkeySetupDone = true;
+
+    document.addEventListener('keydown', function(e) {
+        const isFindKey = e.key && e.key.toLowerCase() === 'f';
+        if ((e.ctrlKey || e.metaKey) && (isFindKey || e.code === 'KeyF')) {
+            const sourceView = document.getElementById('source-view');
+            const searchBox = document.getElementById('source-search-box');
+            if (sourceView && searchBox && sourceView.classList.contains('active')) {
+                e.preventDefault();
+                e.stopPropagation();
+                searchBox.classList.add('visible');
+                const searchInput = document.getElementById('source-search-input');
+                if (searchInput) {
+                    searchInput.focus();
+                    searchInput.select();
+                }
+            }
+        }
+    }, true);
+}
+
+function setupSourceSearch({ Logger }) {
+    setupSourceSearchHotkey();
+
+    if (searchSetupDone) {
+        return;
+    }
+    searchSetupDone = true;
+
+    const sourceEditor = document.getElementById('source-editor');
+    const searchBox = document.getElementById('source-search-box');
+    const searchInput = document.getElementById('source-search-input');
+    const searchPrevBtn = document.getElementById('search-prev-btn');
+    const searchNextBtn = document.getElementById('search-next-btn');
+    const searchCloseBtn = document.getElementById('search-close-btn');
+    const searchInfo = document.getElementById('search-info');
+    const highlightsContent = document.getElementById('search-highlights-content');
+
+    if (!sourceEditor || !searchBox || !searchInput || !searchPrevBtn || !searchNextBtn || !searchCloseBtn || !searchInfo || !highlightsContent) {
+        Logger.warn('Source search elements not found, skipping setup');
+        return;
+    }
+
+    sourceEditor.addEventListener('scroll', function() {
+        highlightsContent.style.transform = `translate(${-sourceEditor.scrollLeft}px, ${-sourceEditor.scrollTop}px)`;
+    });
+
+    function renderHighlights() {
+        const query = searchInput.value;
+        if (!query || searchMatches.length === 0) {
+            highlightsContent.innerHTML = '';
+            return;
+        }
+
+        const text = sourceEditor.value;
+        let html = '';
+        let lastIndex = 0;
+
+        searchMatches.forEach((matchIndex, i) => {
+            html += escapeHtml(text.substring(lastIndex, matchIndex));
+
+            const isCurrent = i === currentMatchIndex;
+            const className = isCurrent ? 'search-highlight-current' : 'search-highlight';
+            html += `<span class="${className}">${escapeHtml(text.substr(matchIndex, query.length))}</span>`;
+
+            lastIndex = matchIndex + query.length;
+        });
+
+        html += escapeHtml(text.substring(lastIndex));
+        highlightsContent.innerHTML = html;
+        highlightsContent.style.transform = `translate(${-sourceEditor.scrollLeft}px, ${-sourceEditor.scrollTop}px)`;
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function performSearch() {
+        const query = searchInput.value;
+        if (!query) {
+            searchMatches = [];
+            currentMatchIndex = -1;
+            searchInfo.textContent = '';
+            renderHighlights();
+            return;
+        }
+
+        const text = sourceEditor.value;
+        searchMatches = [];
+        const lowerQuery = query.toLowerCase();
+        const lowerText = text.toLowerCase();
+        let index = lowerText.indexOf(lowerQuery);
+
+        while (index !== -1) {
+            searchMatches.push(index);
+            index = lowerText.indexOf(lowerQuery, index + 1);
+        }
+
+        if (searchMatches.length > 0) {
+            currentMatchIndex = 0;
+            highlightMatch();
+            searchInfo.textContent = `${currentMatchIndex + 1} of ${searchMatches.length}`;
+        } else {
+            searchInfo.textContent = 'No results';
+            currentMatchIndex = -1;
+        }
+
+        renderHighlights();
+    }
+
+    function highlightMatch() {
+        if (currentMatchIndex >= 0 && currentMatchIndex < searchMatches.length) {
+            const matchPos = searchMatches[currentMatchIndex];
+            sourceEditor.focus();
+            sourceEditor.setSelectionRange(matchPos, matchPos + searchInput.value.length);
+            sourceEditor.scrollTop = Math.max(0, (matchPos / sourceEditor.value.length) * sourceEditor.scrollHeight - 200);
+            searchInfo.textContent = `${currentMatchIndex + 1} of ${searchMatches.length}`;
+            renderHighlights();
+            setTimeout(() => searchInput.focus(), 0);
+        }
+    }
+
+    searchInput.addEventListener('input', performSearch);
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (e.shiftKey) {
+                searchPrevBtn.click();
+            } else {
+                searchNextBtn.click();
+            }
+        } else if (e.key === 'Escape') {
+            searchCloseBtn.click();
+        }
+    });
+
+    searchPrevBtn.addEventListener('click', function() {
+        if (searchMatches.length > 0) {
+            currentMatchIndex = (currentMatchIndex - 1 + searchMatches.length) % searchMatches.length;
+            highlightMatch();
+        }
+    });
+
+    searchNextBtn.addEventListener('click', function() {
+        if (searchMatches.length > 0) {
+            currentMatchIndex = (currentMatchIndex + 1) % searchMatches.length;
+            highlightMatch();
+        }
+    });
+
+    searchCloseBtn.addEventListener('click', function() {
+        searchBox.classList.remove('visible');
+        searchInput.value = '';
+        searchMatches = [];
+        currentMatchIndex = -1;
+        searchInfo.textContent = '';
+        renderHighlights();
+        sourceEditor.focus();
+    });
+
+    Logger.debug('Source search setup complete');
+}
+
+
+/***/ }),
+/* 19 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updateNavigationButtons: () => (/* binding */ updateNavigationButtons),
+/* harmony export */   updateRecordTitle: () => (/* binding */ updateRecordTitle)
+/* harmony export */ });
+function updateRecordTitle({ Logger, getCurrentRecord }) {
+    const titleElement = document.querySelector('.toolbar-left h2');
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+    if (titleElement && currentRecord) {
+        titleElement.textContent = `DSPF Designer - ${currentRecord}`;
+        Logger.debug(`Updated title to: DSPF Designer - ${currentRecord}`);
+    }
+}
+
+function updateNavigationButtons({ getCurrentRecord, getAllRecords }) {
+    const prevBtn = document.getElementById('prevRecordBtn');
+    const nextBtn = document.getElementById('nextRecordBtn');
+    const allRecords = getAllRecords ? getAllRecords() : null;
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+
+    if (!prevBtn || !nextBtn || !allRecords || allRecords.length === 0) {
+        return;
+    }
+
+    const currentIndex = allRecords.findIndex(r => r.name === currentRecord);
+    prevBtn.disabled = (currentIndex <= 0);
+    nextBtn.disabled = (currentIndex >= allRecords.length - 1);
+}
+
+
+/***/ }),
+/* 20 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupWindowResize: () => (/* binding */ setupWindowResize)
+/* harmony export */ });
+function setupWindowResize({
+    windowFrame,
+    originalDimensions,
+    Logger,
+    ScreenCoordinates,
+    getCurrentDisplaySize,
+    getCurrentZoom,
+    updateWindowDimensions
+}) {
+    const handles = windowFrame.querySelectorAll('.window-resize-handle');
+
+    handles.forEach(handle => {
+        handle.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const corner = this.className.split(' ')[1];
+            const startX = e.clientX;
+            const startY = e.clientY;
+            const startWidth = windowFrame.offsetWidth;
+            const startHeight = windowFrame.offsetHeight;
+            const startLeft = windowFrame.offsetLeft;
+            const startTop = windowFrame.offsetTop;
+
+            function onMouseMove(e) {
+                const currentZoom = getCurrentZoom ? getCurrentZoom() : 1;
+                const deltaX = (e.clientX - startX) / currentZoom;
+                const deltaY = (e.clientY - startY) / currentZoom;
+
+                let newWidth = startWidth;
+                let newHeight = startHeight;
+                let newLeft = startLeft;
+                let newTop = startTop;
+
+                if (corner.includes('e')) {
+                    newWidth = Math.max(80, startWidth + deltaX);
+                }
+                if (corner.includes('w')) {
+                    const widthChange = -deltaX;
+                    newWidth = Math.max(80, startWidth + widthChange);
+                    newLeft = startLeft - (newWidth - startWidth);
+                }
+                if (corner.includes('s')) {
+                    newHeight = Math.max(40, startHeight + deltaY);
+                }
+                if (corner.includes('n')) {
+                    const heightChange = -deltaY;
+                    newHeight = Math.max(40, startHeight + heightChange);
+                    newTop = startTop - (newHeight - startHeight);
+                }
+
+                windowFrame.style.width = `${newWidth}px`;
+                windowFrame.style.height = `${newHeight}px`;
+                windowFrame.style.left = `${newLeft}px`;
+                windowFrame.style.top = `${newTop}px`;
+            }
+
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+
+                const currentZoom = getCurrentZoom ? getCurrentZoom() : 1;
+                const gridPosition = ScreenCoordinates
+                    ? ScreenCoordinates.fromPixels(windowFrame.offsetTop, windowFrame.offsetLeft)
+                    : {
+                        row: Math.round(windowFrame.offsetTop / 20) + 1,
+                        col: Math.round(windowFrame.offsetLeft / 8) + 1
+                    };
+                const gridSize = ScreenCoordinates
+                    ? ScreenCoordinates.sizeFromPixels(windowFrame.offsetHeight, windowFrame.offsetWidth, 1)
+                    : {
+                        rows: Math.round(windowFrame.offsetHeight / 20),
+                        cols: Math.round(windowFrame.offsetWidth / 8)
+                    };
+
+                let newRow = gridPosition.row;
+                let newCol = gridPosition.col;
+                let newHeight = gridSize.rows;
+                let newWidth = gridSize.cols - 4;
+
+                const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : 'DS3';
+                const maxRows = currentDisplaySize === 'DS3' ? 24 : 27;
+                const maxCols = currentDisplaySize === 'DS3' ? 80 : 132;
+
+                newRow = Math.max(1, Math.min(newRow, maxRows));
+                newCol = Math.max(1, Math.min(newCol, maxCols));
+                newHeight = Math.max(1, Math.min(newHeight, maxRows - newRow + 1));
+                newWidth = Math.max(1, Math.min(newWidth, maxCols - newCol + 1));
+
+                Logger.window(`Window resized to: row=${newRow}, col=${newCol}, height=${newHeight}, width=${newWidth}, zoom=${currentZoom}`);
+                Logger.debug(`Validation check - Display: ${currentDisplaySize}, Max rows: ${maxRows}, Max cols: ${maxCols}`);
+
+                updateWindowDimensions(originalDimensions, newRow, newCol, newHeight, newWidth);
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+    });
+}
+
+
+/***/ }),
+/* 21 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updateSourceView: () => (/* binding */ updateSourceView)
+/* harmony export */ });
+let currentDeps = null;
+
+const DDS_KEYWORDS_REGEX = /'(?:''|[^'])*'|\b(?:WINDOW|DSPSIZ|INDARA|CSRINPONLY|VALUES|RANGE|CHECK|COLOR|DSPATR|EDTCDE|EDTWRD|EDTMSK|DFTVAL|DFT|FLTPCN|OVERLAY|RTNCSRLOC|CSRLOC|COMP|TEXT|COLHDG|REFFLD|SFL|SFLCTL|SFLSIZ|SFLPAG|SFLLIN|CA\d+|CF\d+)\b|\*(?:DS3|DS4|JOB|SYS|YY|YMD|MDY|DMY|JUL|ISO|USA|EUR|JIS)|\b\d+\b/gi;
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function wrapToken(text, className) {
+    if (!text) {
+        return '';
+    }
+    return `<span class="${className}">${escapeHtml(text)}</span>`;
+}
+
+function highlightFreeTextSegment(text) {
+    if (!text) {
+        return '';
+    }
+
+    let html = '';
+    let lastIndex = 0;
+    let match;
+
+    DDS_KEYWORDS_REGEX.lastIndex = 0;
+    while ((match = DDS_KEYWORDS_REGEX.exec(text)) !== null) {
+        html += escapeHtml(text.slice(lastIndex, match.index));
+
+        const token = match[0];
+        let className = 'source-token-keyword';
+
+        if (token.startsWith('\'')) {
+            className = 'source-token-string';
+        } else if (token.startsWith('*')) {
+            className = 'source-token-system';
+        } else if (/^\d+$/.test(token)) {
+            className = 'source-token-number';
+        }
+
+        html += wrapToken(token, className);
+        lastIndex = match.index + token.length;
+    }
+
+    html += escapeHtml(text.slice(lastIndex));
+    return html;
+}
+
+function renderHighlightedSourceLine(line) {
+    const trimmed = line.trim();
+    const isComment = (line.length > 6 && line[5] === 'A' && line[6] === '*')
+        || trimmed.startsWith('A*')
+        || trimmed.startsWith('*')
+        || trimmed.startsWith('-');
+
+    if (isComment) {
+        return wrapToken(line, 'source-token-comment');
+    }
+
+    const prefix = line.slice(0, 5);
+    const spec = line.slice(5, 6);
+    const indicatorArea = line.slice(6, 18);
+    const nameArea = line.slice(18, 28);
+    const middleArea = line.slice(28, 38);
+    const tailArea = line.slice(38);
+    const hasFieldName = /^[A-Z_][A-Z0-9_]{0,9}$/i.test(nameArea.trim());
+
+    let html = '';
+    html += escapeHtml(prefix);
+    html += spec ? wrapToken(spec, 'source-token-spec') : '';
+    html += indicatorArea.trim() ? wrapToken(indicatorArea, 'source-token-indicators') : escapeHtml(indicatorArea);
+    html += hasFieldName ? wrapToken(nameArea, 'source-token-name') : escapeHtml(nameArea);
+    html += hasFieldName && middleArea.trim()
+        ? wrapToken(middleArea, 'source-token-type')
+        : highlightFreeTextSegment(middleArea);
+    html += highlightFreeTextSegment(tailArea);
+
+    return html;
+}
+
+function renderSourceSyntaxHighlight(sourceEditor) {
+    const syntaxHighlightsContent = document.getElementById('source-syntax-highlights-content');
+    if (!sourceEditor || !syntaxHighlightsContent) {
+        return;
+    }
+
+    const lines = sourceEditor.value.split('\n');
+    syntaxHighlightsContent.innerHTML = lines.map(renderHighlightedSourceLine).join('\n');
+}
+
+function generateColumnRuler() {
+    const rulerMain = document.querySelector('.ruler-main');
+    if (!rulerMain) {
+        return;
+    }
+    const rulerText = '        .....AAN01N02N03..Name++++++RLen++TDpBLinPosFunctions+++++++++++++++++++++++++++Comments+++++++++++';
+    rulerMain.textContent = rulerText;
+}
+
+function updateLineNumbers(sourceEditor) {
+    const lineNumbers = document.getElementById('source-line-numbers');
+    if (!sourceEditor || !lineNumbers) {
+        return;
+    }
+
+    const lines = sourceEditor.value.split('\n');
+    const lineCount = lines.length;
+
+    let numbersHTML = '';
+    for (let i = 1; i <= lineCount; i++) {
+        numbersHTML += i + '\n';
+    }
+
+    lineNumbers.textContent = numbersHTML;
+}
+
+function syncLineNumbersScroll(event) {
+    const sourceEditor = event.target;
+    const lineNumbers = document.getElementById('source-line-numbers');
+    const rulerContent = document.querySelector('.ruler-content');
+    const syntaxHighlightsContent = document.getElementById('source-syntax-highlights-content');
+    const searchHighlightsContent = document.getElementById('search-highlights-content');
+
+    if (!sourceEditor || !lineNumbers) {
+        return;
+    }
+
+    lineNumbers.scrollTop = sourceEditor.scrollTop;
+
+    if (syntaxHighlightsContent) {
+        syntaxHighlightsContent.style.transform = `translate(${-sourceEditor.scrollLeft}px, ${-sourceEditor.scrollTop}px)`;
+    }
+
+    if (searchHighlightsContent) {
+        searchHighlightsContent.style.transform = `translate(${-sourceEditor.scrollLeft}px, ${-sourceEditor.scrollTop}px)`;
+    }
+
+    if (rulerContent) {
+        rulerContent.scrollLeft = sourceEditor.scrollLeft;
+    }
+}
+
+function handleSourceChange(event) {
+    if (!currentDeps) {
+        return;
+    }
+
+    const { Logger, vscode, setCurrentDocument, getCurrentRecord, parseDspfFields } = currentDeps;
+    const updatedDocument = event.target.value;
+    setCurrentDocument(updatedDocument);
+
+    updateLineNumbers(event.target);
+    renderSourceSyntaxHighlight(event.target);
+
+    vscode.postMessage({
+        type: 'update',
+        content: updatedDocument,
+        currentRecord: getCurrentRecord()
+    });
+
+    parseDspfFields(updatedDocument);
+    Logger.debug('Source editor changed, designer view updated');
+}
+
+function updateSourceView({ Logger, vscode, getCurrentDocument, setCurrentDocument, getCurrentRecord, parseDspfFields }) {
+    const sourceEditor = document.getElementById('source-editor');
+    if (!sourceEditor) {
+        return;
+    }
+
+    currentDeps = {
+        Logger,
+        vscode,
+        setCurrentDocument,
+        getCurrentRecord,
+        parseDspfFields
+    };
+
+    const currentDocument = getCurrentDocument();
+    if (sourceEditor.value !== currentDocument) {
+        const cursorStart = sourceEditor.selectionStart;
+        const cursorEnd = sourceEditor.selectionEnd;
+        const scrollTop = sourceEditor.scrollTop;
+
+        sourceEditor.value = currentDocument;
+
+        sourceEditor.setSelectionRange(cursorStart, cursorEnd);
+        sourceEditor.scrollTop = scrollTop;
+    }
+
+    updateLineNumbers(sourceEditor);
+    generateColumnRuler();
+    renderSourceSyntaxHighlight(sourceEditor);
+
+    sourceEditor.removeEventListener('input', handleSourceChange);
+    sourceEditor.addEventListener('input', handleSourceChange);
+
+    sourceEditor.removeEventListener('scroll', syncLineNumbersScroll);
+    sourceEditor.addEventListener('scroll', syncLineNumbersScroll);
+}
+
+
+/***/ }),
+/* 22 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   moveField: () => (/* binding */ moveField)
+/* harmony export */ });
+function moveField(options) {
+    const {
+        fieldId,
+        newRow,
+        newCol,
+        Logger,
+        fields,
+        getCurrentRecord,
+        setCurrentRecord,
+        getCurrentDisplaySize,
+        getWindowDimensions,
+        renderField,
+        renderWindowField,
+        getSubfileRelationship,
+        getSflpagValue,
+        selectField,
+        updateFieldInDds
+    } = options;
+
+    const field = fields.find(f => f.id === fieldId);
+    if (!field) {
+        Logger.error('Field not found for moving:', fieldId);
+        return;
+    }
+
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+    const oldRow = field.row;
+    const oldCol = field.col;
+
+    Logger.debug(`Moving field ${field.name} from (${oldRow},${oldCol}) to (${newRow},${newCol}) in record: ${currentRecord || 'ALL'}`);
+
+    field.row = newRow;
+    field.col = newCol;
+
+    const oldElement = document.querySelector(`[data-field-id="${fieldId}"]`);
+    if (oldElement) {
+        oldElement.remove();
+    }
+
+    const copyPattern = `${fieldId}_repeat`;
+    const allElements = document.querySelectorAll('[data-field-id]');
+    let removedCopies = 0;
+
+    allElements.forEach(el => {
+        const elFieldId = el.getAttribute('data-field-id');
+        if (elFieldId && elFieldId.includes(copyPattern)) {
+            el.remove();
+            removedCopies++;
+        }
+    });
+
+    if (removedCopies > 0) {
+        Logger.dds(`Removed ${removedCopies} visual copies during move`);
+    }
+
+    const winDimsForMove = currentRecord ? getWindowDimensions(currentRecord) : null;
+    if (winDimsForMove && winDimsForMove.hasWindow) {
+        const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : null;
+        const winDim = currentDisplaySize === 'DS3' ? winDimsForMove.ds3 : winDimsForMove.ds4;
+        if (winDim) {
+            renderWindowField(field, winDim);
+        } else {
+            renderField(field);
+        }
+    } else {
+        renderField(field);
+    }
+
+    const subfileRel = currentRecord ? getSubfileRelationship(currentRecord) : null;
+    if (subfileRel && subfileRel.sflRecord === currentRecord) {
+        const sflpagValue = getSflpagValue(subfileRel.sflctlRecord);
+        if (sflpagValue > 1) {
+            Logger.dds(`Regenerating ${sflpagValue - 1} visual copies for field ${field.name} after move in SFL record`);
+            for (let repeat = 1; repeat < sflpagValue; repeat++) {
+                const visualCopy = {
+                    ...field,
+                    row: field.row + repeat,
+                    isVisualCopy: true,
+                    id: `${fieldId}_repeat${repeat}`
+                };
+
+                if (winDimsForMove && winDimsForMove.hasWindow) {
+                    const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : null;
+                    const winDim = currentDisplaySize === 'DS3' ? winDimsForMove.ds3 : winDimsForMove.ds4;
+                    if (winDim) {
+                        renderWindowField(visualCopy, winDim);
+                    } else {
+                        renderField(visualCopy);
+                    }
+                } else {
+                    renderField(visualCopy);
+                }
+            }
+        }
+    }
+
+    selectField(field);
+
+    const preservedRecord = currentRecord;
+    updateFieldInDds(field, { ...field, row: oldRow, col: oldCol });
+
+    if (preservedRecord && setCurrentRecord) {
+        const currentRecordAfter = getCurrentRecord ? getCurrentRecord() : null;
+        if (currentRecordAfter && preservedRecord !== currentRecordAfter) {
+            Logger.debug('Restoring record context after move:', preservedRecord);
+            setCurrentRecord(preservedRecord);
+        }
+    }
+
+    Logger.success('Field moved and DDS updated, maintaining record filter:', getCurrentRecord ? getCurrentRecord() : currentRecord);
+}
+
+
+/***/ }),
+/* 23 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   applyWindowDimensions: () => (/* binding */ applyWindowDimensions)
+/* harmony export */ });
+function applyWindowDimensions(options) {
+    const {
+        Logger,
+        isReadOnly,
+        getCurrentDocument,
+        setCurrentDocument,
+        getCurrentRecord,
+        updateDocumentInEditor,
+        parseDspfFields
+    } = options;
+
+    if (isReadOnly) {
+        Logger.warn('Cannot apply window dimensions - document is read-only');
+        return;
+    }
+
+    Logger.window('Applying window dimensions changes');
+
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+    if (!currentRecord) {
+        Logger.warn('No current record selected for window update');
+        return;
+    }
+
+    const windowTypeRef = document.getElementById('window-type-ref');
+    const isReference = windowTypeRef && windowTypeRef.checked;
+
+    const currentDocument = getCurrentDocument ? getCurrentDocument() : '';
+    const lines = currentDocument.split('\n');
+    let inTargetRecord = false;
+    let windowLineIndex = -1;
+    let ds3LineIndex = -1;
+    let ds4LineIndex = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        if (line.includes(`R ${currentRecord}`) || line.includes(`R  ${currentRecord}`)) {
+            inTargetRecord = true;
+            continue;
+        }
+
+        if (inTargetRecord && line.match(/^\s*A\s+R\s+\w+/)) {
+            break;
+        }
+
+        if (inTargetRecord && line.includes('WINDOW(')) {
+            if (line.includes('*DS3')) {
+                ds3LineIndex = i;
+            } else if (line.includes('*DS4')) {
+                ds4LineIndex = i;
+            } else {
+                windowLineIndex = i;
+            }
+        }
+    }
+
+    if (isReference) {
+        const refNameInput = document.getElementById('window-reference-name');
+        if (!refNameInput) {
+            Logger.error('Reference name input not found');
+            return;
+        }
+
+        const refName = refNameInput.value.trim().toUpperCase();
+        if (!refName) {
+            Logger.error('Reference name is required');
+            alert('Please enter a window reference name (e.g., WIND1)');
+            return;
+        }
+
+        const newWindowLine = `     A                                      WINDOW(${refName})`;
+
+        if (ds3LineIndex !== -1) {
+            lines[ds3LineIndex] = newWindowLine;
+            if (ds4LineIndex !== -1 && ds4LineIndex > ds3LineIndex) {
+                lines.splice(ds4LineIndex, 1);
+            } else if (ds4LineIndex !== -1 && ds4LineIndex < ds3LineIndex) {
+                lines.splice(ds4LineIndex, 1);
+            }
+            Logger.success(`Updated WINDOW to reference: ${refName}`);
+        } else if (windowLineIndex !== -1) {
+            lines[windowLineIndex] = newWindowLine;
+            Logger.success(`Updated WINDOW to reference: ${refName}`);
+        }
+    } else {
+        const ds3Row = document.getElementById('window-ds3-row');
+        const ds3Col = document.getElementById('window-ds3-col');
+        const ds3Height = document.getElementById('window-ds3-height');
+        const ds3Width = document.getElementById('window-ds3-width');
+
+        if (ds3Row && ds3Col && ds3Height && ds3Width) {
+            const row = parseInt(ds3Row.value);
+            const col = parseInt(ds3Col.value);
+            const height = parseInt(ds3Height.value);
+            const width = parseInt(ds3Width.value);
+
+            if (ds3LineIndex !== -1) {
+                lines[ds3LineIndex] = lines[ds3LineIndex].replace(/WINDOW\([^)]+\)/, `WINDOW(${row} ${col} ${height} ${width})`);
+                Logger.success(`Updated DS3 WINDOW dimensions: (${row},${col}) ${height}x${width}`);
+            } else if (windowLineIndex !== -1) {
+                lines[windowLineIndex] = lines[windowLineIndex].replace(/WINDOW\([^)]+\)/, `WINDOW(${row} ${col} ${height} ${width})`);
+                Logger.success(`Converted WINDOW from reference to coordinates: (${row},${col}) ${height}x${width}`);
+            }
+        }
+
+        const ds4Row = document.getElementById('window-ds4-row');
+        const ds4Col = document.getElementById('window-ds4-col');
+        const ds4Height = document.getElementById('window-ds4-height');
+        const ds4Width = document.getElementById('window-ds4-width');
+
+        if (ds4LineIndex !== -1 && ds4Row && ds4Col && ds4Height && ds4Width) {
+            const row = parseInt(ds4Row.value);
+            const col = parseInt(ds4Col.value);
+            const height = parseInt(ds4Height.value);
+            const width = parseInt(ds4Width.value);
+
+            lines[ds4LineIndex] = lines[ds4LineIndex].replace(/WINDOW\([^)]+\)/, `WINDOW(${row} ${col} ${height} ${width})`);
+            Logger.success(`Updated DS4 WINDOW dimensions: (${row},${col}) ${height}x${width}`);
+        }
+    }
+
+    const updatedDocument = lines.join('\n');
+    if (setCurrentDocument) {
+        setCurrentDocument(updatedDocument);
+    }
+    updateDocumentInEditor();
+
+    parseDspfFields(updatedDocument);
+
+    Logger.window('Window dimensions applied successfully');
+}
+
+
+/***/ }),
+/* 24 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   showScreenProperties: () => (/* binding */ showScreenProperties)
+/* harmony export */ });
+function showScreenProperties(options) {
+    const {
+        Logger,
+        vscode,
+        isReadOnly,
+        getCurrentDocument,
+        setCurrentDocument,
+        getCurrentRecord,
+        getRecordType,
+        IdGenerator,
+        getWindowDimensions,
+        setupPropertiesTabs,
+        loadSubfileControl,
+        applySubfileControl,
+        loadFunctionKeys,
+        createFunctionKeyRow,
+        saveFunctionKeys,
+        updateDocumentInEditor,
+        generateDdsLineWithIndicators,
+        indicatorConfigurations,
+        DisplaySizeUtils,
+        IndicatorUtils,
+        scanIndicatorsBackward,
+        setIndicatorButtonState,
+        openIBMiModal,
+        applyWindowDimensions,
+        showScreenProperties: refreshScreenProperties
+    } = options;
+
+    const propertiesPanel = document.getElementById('field-properties');
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+
+    if (!currentRecord) {
+        propertiesPanel.innerHTML = '<p>No screen selected</p>';
+        return;
+    }
+
+    const recordType = getRecordType(currentRecord);
+    const windowDimensions = getWindowDimensions(currentRecord);
+
+    let windowDimensionsHtml = '';
+    if (windowDimensions.hasWindow) {
+        const isReference = windowDimensions.isReference || false;
+        const referenceName = windowDimensions.referenceName || '';
+
+        windowDimensionsHtml = `
+                <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
+                <h4 style="margin: 12px 0 8px 0; color: var(--text-color); font-size: 14px;">Window</h4>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-color);">Type</label>
+                    <div style="display: flex; gap: 16px; margin-bottom: 12px;">
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <input type="radio" name="window-type" id="window-type-coords" value="coordinates" ${!isReference ? 'checked' : ''} />
+                            <span>Coordinates</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                            <input type="radio" name="window-type" id="window-type-ref" value="reference" ${isReference ? 'checked' : ''} />
+                            <span>Reference</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="window-reference-section" style="display: ${isReference ? 'block' : 'none'}; margin-bottom: 16px;">
+                    <div class="property-group" style="margin: 0;">
+                        <label>Window Reference</label>
+                        <input type="text" id="window-reference-name" value="${referenceName}" placeholder="e.g. WIND1" maxlength="10" style="padding: 6px 8px; text-transform: uppercase;" />
+                    </div>
+                    ${isReference && windowDimensions.ds3 ? `
+                        <div style="margin-top: 8px; padding: 8px; background-color: rgba(0, 122, 204, 0.1); border-left: 3px solid #007ACC; font-size: 11px; color: var(--text-muted);">
+                            <strong>Note:</strong> Resolved coordinates from ${referenceName}:<br/>
+                            Row: ${windowDimensions.ds3.row}, Col: ${windowDimensions.ds3.col}, Height: ${windowDimensions.ds3.height}, Width: ${windowDimensions.ds3.width}
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div id="window-coordinates-section" style="display: ${!isReference ? 'block' : 'none'};">
+                    ${windowDimensions.ds3 ? `
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; margin-bottom: 4px; font-weight: 600; color: #888;">*DS3 (24 x 80)</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Row</label>
+                                <input type="number" id="window-ds3-row" value="${windowDimensions.ds3.row}" min="1" max="24" style="padding: 4px 8px;" />
+                            </div>
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Column</label>
+                                <input type="number" id="window-ds3-col" value="${windowDimensions.ds3.col}" min="1" max="80" style="padding: 4px 8px;" />
+                            </div>
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Height</label>
+                                <input type="number" id="window-ds3-height" value="${windowDimensions.ds3.height}" min="1" max="24" style="padding: 4px 8px;" />
+                            </div>
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Width</label>
+                                <input type="number" id="window-ds3-width" value="${windowDimensions.ds3.width}" min="1" max="80" style="padding: 4px 8px;" />
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${windowDimensions.ds4 ? `
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; margin-bottom: 4px; font-weight: 600; color: #888;">*DS4 (27 x 132)</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Row</label>
+                                <input type="number" id="window-ds4-row" value="${windowDimensions.ds4.row}" min="1" max="27" style="padding: 4px 8px;" />
+                            </div>
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Column</label>
+                                <input type="number" id="window-ds4-col" value="${windowDimensions.ds4.col}" min="1" max="132" style="padding: 4px 8px;" />
+                            </div>
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Height</label>
+                                <input type="number" id="window-ds4-height" value="${windowDimensions.ds4.height}" min="1" max="27" style="padding: 4px 8px;" />
+                            </div>
+                            <div class="property-group" style="margin: 0;">
+                                <label style="font-size: 11px;">Width</label>
+                                <input type="number" id="window-ds4-width" value="${windowDimensions.ds4.width}" min="1" max="132" style="padding: 4px 8px;" />
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <button id="apply-window-dimensions-btn" style="width: 100%; padding: 8px; margin-top: 8px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                    Apply Changes
+                </button>
+            `;
+    }
+
+    propertiesPanel.innerHTML = `
+            <div class="properties-tabs">
+                <button class="properties-tab active" data-tab="basic">Basic</button>
+                ${recordType === 'SFLCTL' ? '<button class="properties-tab" data-tab="subfile-control">Subfile Control</button>' : ''}
+                ${recordType !== 'SFL' ? '<button class="properties-tab" data-tab="function-keys">Function Keys</button>' : ''}
+            </div>
+            
+            <div class="properties-content">
+                <div id="tab-basic" class="tab-panel active">
+                    <div class="property-group">
+                        <label>Name</label>
+                        <input type="text" id="screen-name" value="${currentRecord}" readonly style="background-color: #2d2d2d; cursor: not-allowed;" />
+                    </div>
+                    <div class="property-group">
+                        <label>Type</label>
+                        <input type="text" id="screen-type" value="${recordType}" readonly style="background-color: #2d2d2d; cursor: not-allowed;" />
+                    </div>
+                    ${windowDimensionsHtml}
+                </div>
+                
+                ${recordType === 'SFLCTL' ? `
+                <div id="tab-subfile-control" class="tab-panel">
+                    <div class="subfile-control-section">
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Size (SFLSIZ)</label>
+                        
+                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sflsiz-ds3-enabled" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="sflsiz-ds3-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS3 (24x80):</label>
+                            </div>
+                            <input type="number" id="sflsiz-ds3" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />
+                            
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sflsiz-ds4-enabled" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="sflsiz-ds4-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS4 (27x132):</label>
+                            </div>
+                            <input type="number" id="sflsiz-ds4" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />
+                        </div>
+                        
+                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
+                        
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Page (SFLPAG)</label>
+                        
+                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sflpag-ds3-enabled" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="sflpag-ds3-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS3 (24x80):</label>
+                            </div>
+                            <input type="number" id="sflpag-ds3" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />
+                            
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sflpag-ds4-enabled" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="sflpag-ds4-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS4 (27x132):</label>
+                            </div>
+                            <input type="number" id="sflpag-ds4" placeholder="0000" min="0" max="9999" style="padding: 6px 8px; width: 100px;" disabled />
+                        </div>
+                        
+                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
+                        
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Lines (SFLLIN)</label>
+                        <p style="font-size: 11px; color: var(--vscode-descriptionForeground); margin-bottom: 12px;">Number of lines displayed (without indicators)</p>
+                        
+                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sfllin-ds3-enabled" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="sfllin-ds3-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS3 (24x80):</label>
+                            </div>
+                            <input type="number" id="sfllin-ds3" placeholder="0" min="0" max="99" style="padding: 6px 8px; width: 100px;" disabled />
+                            
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="sfllin-ds4-enabled" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="sfllin-ds4-enabled" style="font-size: 12px; color: var(--vscode-descriptionForeground); margin: 0; cursor: pointer;">*DS4 (27x132):</label>
+                            </div>
+                            <input type="number" id="sfllin-ds4" placeholder="0" min="0" max="99" style="padding: 6px 8px; width: 100px;" disabled />
+                            </div>
+                        </div>
+                        
+                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
+                        
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Display (SFLDSP)</label>
+                        
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                            <input type="checkbox" id="sfldsp-enabled" style="width: 18px; height: 18px; cursor: pointer;">
+                            <label for="sfldsp-enabled" style="margin: 0; cursor: pointer;">Include in code</label>
+                            <button id="sfldsp-indicators-btn" class="indicator-config-btn" disabled>
+                                <span class="indicator-icon">🔢</span>
+                                <span class="indicator-text">No ind.</span>
+                            </button>
+                        </div>
+                        
+                        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;" />
+                        
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-color);">Subfile Display Control (SFLDSPCTL)</label>
+                        
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                            <input type="checkbox" id="sfldspctl-enabled" style="width: 18px; height: 18px; cursor: pointer;">
+                            <label for="sfldspctl-enabled" style="margin: 0; cursor: pointer;">Include in code</label>
+                            <button id="sfldspctl-indicators-btn" class="indicator-config-btn" disabled>
+                                <span class="indicator-icon">🔢</span>
+                                <span class="indicator-text">No ind.</span>
+                            </button>
+                        </div>
+                        
+                        <button id="apply-subfile-control-btn" style="width: 100%; padding: 10px; margin-top: 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                            Apply Changes
+                        </button>
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${recordType !== 'SFL' ? `
+                <div id="tab-function-keys" class="tab-panel">
+                    <div class="function-keys-header" style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">Function Keys</label>
+                        <!-- Column headers -->
+                        <div style="display: grid; grid-template-columns: 70px 240px 70px 1fr; gap: 8px; padding: 4px 8px; font-size: 11px; font-weight: 600; color: var(--vscode-descriptionForeground); border-bottom: 1px solid var(--border-color); margin-bottom: 8px;">
+                            <span>Key</span>
+                            <span>Type</span>
+                            <span>Indicator</span>
+                            <span>Description</span>
+                        </div>
+                    </div>
+                    
+                    <div id="function-keys-list" style="max-height: 400px; overflow-y: auto; overflow-x: auto;">
+                        <!-- Function keys will be populated here -->
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+        `;
+
+    setupPropertiesTabs();
+
+    if (recordType === 'SFLCTL') {
+        const applySubfileControlHandler = () => applySubfileControl({
+            Logger,
+            vscode,
+            getCurrentDocument,
+            setCurrentDocument,
+            getCurrentRecord,
+            getCurrentView: options.getCurrentView,
+            updateDocumentInEditor,
+            generateDdsLineWithIndicators,
+            indicatorConfigurations,
+            showScreenProperties: refreshScreenProperties,
+            parseDspfFields: options.parseDspfFields,
+            updatePreviewView: options.updatePreviewView
+        });
+        loadSubfileControl({
+            Logger,
+            getCurrentDocument,
+            getCurrentRecord,
+            DisplaySizeUtils,
+            IndicatorUtils,
+            scanIndicatorsBackward,
+            indicatorConfigurations,
+            setIndicatorButtonState,
+            openIBMiModal,
+            applySubfileControl: applySubfileControlHandler
+        });
+    }
+
+    if (recordType !== 'SFL') {
+        const saveFunctionKeysHandler = () => saveFunctionKeys({
+            Logger,
+            isReadOnly,
+            getCurrentDocument,
+            setCurrentDocument,
+            getCurrentRecord,
+            updateDocumentInEditor
+        });
+        const createFunctionKeyRowHandler = (args) => createFunctionKeyRow({
+            ...args,
+            IdGenerator,
+            saveFunctionKeys: saveFunctionKeysHandler
+        });
+        loadFunctionKeys({
+            getCurrentDocument,
+            getCurrentRecord,
+            createFunctionKeyRow: createFunctionKeyRowHandler
+        });
+    }
+
+    const applyWindowBtn = document.getElementById('apply-window-dimensions-btn');
+    if (applyWindowBtn) {
+        applyWindowBtn.addEventListener('click', function() {
+            applyWindowDimensions();
+        });
+    }
+
+    const windowTypeCoords = document.getElementById('window-type-coords');
+    const windowTypeRef = document.getElementById('window-type-ref');
+    const coordsSection = document.getElementById('window-coordinates-section');
+    const refSection = document.getElementById('window-reference-section');
+
+    if (windowTypeCoords && windowTypeRef && coordsSection && refSection) {
+        windowTypeCoords.addEventListener('change', function() {
+            if (this.checked) {
+                coordsSection.style.display = 'block';
+                refSection.style.display = 'none';
+            }
+        });
+
+        windowTypeRef.addEventListener('change', function() {
+            if (this.checked) {
+                coordsSection.style.display = 'none';
+                refSection.style.display = 'block';
+            }
+        });
+    }
+}
+
+
+/***/ }),
+/* 25 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   saveDocument: () => (/* binding */ saveDocument)
+/* harmony export */ });
+function saveDocument(options) {
+    const {
+        Logger,
+        vscode,
+        getCurrentDocument,
+        getCurrentRecord,
+        showNotification
+    } = options;
+
+    const currentDocument = getCurrentDocument ? getCurrentDocument() : '';
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+
+    Logger.debug('Save function called, currentDocument:', currentDocument ? currentDocument.substring(0, 100) : 'null');
+
+    vscode.postMessage({
+        type: 'update',
+        content: currentDocument,
+        currentRecord: currentRecord
+    });
+
+    showNotification('✅ Document saved successfully', 'success');
+    Logger.success('Document saved, preserving record context:', currentRecord);
+}
+
+
+/***/ }),
+/* 26 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setViewZoom: () => (/* binding */ setViewZoom)
+/* harmony export */ });
+function setViewZoom(options) {
+    const {
+        zoomValue,
+        setCurrentZoom
+    } = options;
+
+    const clampedZoom = Math.max(0.5, Math.min(2, zoomValue));
+    if (setCurrentZoom) {
+        setCurrentZoom(clampedZoom);
+    }
+
+    const viewsContainer = document.getElementById('views-container');
+    if (viewsContainer) {
+        viewsContainer.style.setProperty('--view-zoom', clampedZoom.toString());
+    }
+
+    const zoomLabel = document.getElementById('zoomLabel');
+    if (zoomLabel) {
+        zoomLabel.textContent = `${Math.round(clampedZoom * 100)}%`;
+    }
+}
+
+
+/***/ }),
+/* 27 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   switchToView: () => (/* binding */ switchToView)
+/* harmony export */ });
+function switchToView({
+    viewName,
+    Logger,
+    setCurrentView,
+    getSelectedField,
+    setSelectedField,
+    getFields,
+    getCurrentDocument,
+    parseDspfFields,
+    showFieldProperties,
+    updatePreviewView,
+    updateSourceViewUI,
+    vscode,
+    setCurrentDocument,
+    getCurrentRecord,
+    setupSourceSearchUI,
+    scrollToRecordInSource
+}) {
+    Logger.ui('Switching to view:', viewName);
+
+    if (setCurrentView) {
+        setCurrentView(viewName);
+    }
+
+    document.querySelectorAll('.view').forEach(view => {
+        view.classList.remove('active');
+        view.style.display = 'none';
+        Logger.debug('Hidden view:', view.id);
+    });
+
+    document.querySelectorAll('.tab-button').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    const propertiesPanel = document.getElementById('properties-panel');
+
+    switch (viewName) {
+        case 'designer': {
+            const designerView = document.getElementById('designer-view');
+            const designerTab = document.getElementById('designerTab');
+            if (designerView && designerTab) {
+                designerView.style.display = 'flex';
+                designerView.classList.add('active');
+                designerTab.classList.add('active');
+                if (propertiesPanel) {
+                    propertiesPanel.classList.remove('hidden');
+                }
+
+                const previouslySelectedField = getSelectedField ? getSelectedField() : null;
+                const previouslySelectedFieldName = previouslySelectedField ? previouslySelectedField.name : null;
+                const currentDocument = getCurrentDocument ? getCurrentDocument() : '';
+
+                parseDspfFields(currentDocument);
+
+                if (previouslySelectedFieldName) {
+                    const currentFields = getFields ? getFields() : [];
+                    const updatedField = currentFields.find(field => field.name === previouslySelectedFieldName);
+                    if (updatedField) {
+                        if (setSelectedField) {
+                            setSelectedField(updatedField);
+                        }
+                        showFieldProperties(updatedField);
+
+                        const fieldElement = document.querySelector(`[data-field-name="${updatedField.name}"]`);
+                        if (fieldElement) {
+                            fieldElement.classList.add('field-updated');
+                            setTimeout(() => {
+                                fieldElement.classList.remove('field-updated');
+                            }, 800);
+                        }
+                        Logger.debug('Auto-updated properties for field:', updatedField.name);
+                    } else {
+                        if (setSelectedField) {
+                            setSelectedField(null);
+                        }
+                        showFieldProperties(null);
+                        Logger.warn('Previously selected field no longer exists, resetting properties');
+                    }
+                } else {
+                    if (setSelectedField) {
+                        setSelectedField(null);
+                    }
+                    showFieldProperties(null);
+                }
+
+                Logger.debug('Designer view activated and visible');
+            } else {
+                Logger.error('Designer elements not found');
+            }
+            break;
+        }
+        case 'preview': {
+            const previewView = document.getElementById('preview-view');
+            const previewTab = document.getElementById('previewTab');
+            if (previewView && previewTab) {
+                previewView.style.display = 'flex';
+                previewView.classList.add('active');
+                previewTab.classList.add('active');
+                if (propertiesPanel) {
+                    propertiesPanel.classList.add('hidden');
+                }
+                updatePreviewView();
+                Logger.debug('Preview view activated and visible');
+            } else {
+                Logger.error('Preview elements not found');
+            }
+            break;
+        }
+        case 'source': {
+            const sourceView = document.getElementById('source-view');
+            const sourceTab = document.getElementById('sourceTab');
+            if (sourceView && sourceTab) {
+                sourceView.style.display = 'flex';
+                sourceView.classList.add('active');
+                sourceTab.classList.add('active');
+                if (propertiesPanel) {
+                    propertiesPanel.classList.add('hidden');
+                }
+                updateSourceViewUI({
+                    Logger,
+                    vscode,
+                    getCurrentDocument,
+                    setCurrentDocument,
+                    getCurrentRecord,
+                    parseDspfFields
+                });
+                setupSourceSearchUI({ Logger });
+                scrollToRecordInSource();
+                Logger.debug('Source view activated and visible');
+            } else {
+                Logger.error('Source elements not found');
+            }
+            break;
+        }
+    }
+
+    document.querySelectorAll('.view').forEach(view => {
+        const isActive = view.classList.contains('active');
+        const displayStyle = window.getComputedStyle(view).display;
+        Logger.debug(`${view.id}: active=${isActive}, display=${displayStyle}`);
+    });
+}
+
+
+/***/ }),
+/* 28 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupIndicatorButtons: () => (/* binding */ setupIndicatorButtons)
+/* harmony export */ });
+function setupIndicatorButtons({ Logger, openIndicatorModal }) {
+    if (!openIndicatorModal) {
+        Logger.warn('setupIndicatorButtons: openIndicatorModal is required');
+        return;
+    }
+
+    // Remove old listeners by cloning nodes (clears all event listeners)
+    document.querySelectorAll('.indicator-config-btn').forEach(btn => {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+    });
+
+    // Keyword indicator buttons
+    document.querySelectorAll('.indicator-config-btn[data-keyword]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const keywordName = this.dataset.keyword;
+            Logger.debug(`Keyword indicator button clicked: ${keywordName}`);
+            openIndicatorModal('keyword', keywordName, `Indicadores para ${keywordName}`);
+        });
+    });
+
+    // Attribute indicator buttons
+    document.querySelectorAll('.indicator-config-btn[data-attr]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const attr = this.dataset.attr;
+            const label = this.previousElementSibling.textContent.trim();
+            Logger.debug(`Attribute indicator button clicked: ${attr}`);
+            openIndicatorModal('attr', attr, `Attribute: ${label}`);
+        });
+    });
+
+    // Color indicator buttons
+    document.querySelectorAll('.indicator-config-btn[data-color]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const color = this.dataset.color;
+            const label = this.closest('.property-group').querySelector('label').textContent.trim();
+            Logger.debug(`Color indicator button clicked: ${color}`);
+            openIndicatorModal('color', color, `Color: ${label}`);
+        });
+    });
+
+    // CHECK indicator buttons (only ME/ER)
+    document.querySelectorAll('.indicator-config-btn[data-check]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const checkCode = this.dataset.check;
+            const label = this.previousElementSibling.textContent.trim();
+            Logger.debug(`CHECK indicator button clicked: ${checkCode}`);
+            openIndicatorModal('check', checkCode, `CHECK ${checkCode} indicators`);
+        });
+    });
+
+    // DFTVAL indicator buttons
+    document.querySelectorAll('.indicator-config-btn[data-dftval]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            Logger.debug('DFTVAL indicator button clicked');
+            openIndicatorModal('dftval', 'enabled', 'DFTVAL indicators');
+        });
+    });
+
+    // Field-level indicator buttons (variables, constants, keywords)
+    document.querySelectorAll('.indicator-config-btn[data-field-indicators]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            Logger.debug('Field-level indicator button clicked');
+            openIndicatorModal('field-indicators', 'field', 'Field-level indicators');
+        });
+    });
+}
+
+
+/***/ }),
+/* 29 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   showFieldProperties: () => (/* binding */ showFieldProperties)
+/* harmony export */ });
+function showFieldProperties({
+    field,
+    Logger,
+    KEYWORD_ATTRIBUTE_ALLOW_LIST,
+    renderAttributeRows,
+    getAttributeCheckboxMap,
+    setupIndicatorButtons,
+    setIndicatorButtonState,
+    indicatorConfigurations,
+    applyFieldProperties,
+    deleteField
+}) {
+    const propertiesPanel = document.getElementById('field-properties');
+
+    if (!field) {
+        propertiesPanel.innerHTML = '<p>Select a field to edit properties</p>';
+        return;
+    }
+
+    if (field.type === 'keyword' || field.isKeyword) {
+        const keywordAttrAllowList = Array.from(KEYWORD_ATTRIBUTE_ALLOW_LIST);
+        propertiesPanel.innerHTML = `
+                <div class="properties-tabs">
+                    <button class="properties-tab active" data-tab="basic">Basic</button>
+                    <button class="properties-tab" data-tab="attributes">Attributes</button>
+                    <button class="properties-tab" data-tab="colors">Colors</button>
+                </div>
+                
+                <div class="properties-content">
+                    <div id="tab-basic" class="tab-panel active">
+                        <div class="property-group">
+                            <label>Field Name</label>
+                            <input type="text" id="prop-name" value="${field.name}" readonly style="background-color: #2d2d2d; cursor: not-allowed;" />
+                        </div>
+                        <div class="property-group">
+                            <label>Row</label>
+                            <input type="number" id="prop-row" value="${field.row}" min="1" max="24" />
+                        </div>
+                        <div class="property-group">
+                            <label>Column</label>
+                            <input type="number" id="prop-col" value="${field.col}" min="1" max="80" />
+                        </div>
+                    </div>
+                    
+                    <div id="tab-attributes" class="tab-panel">
+                        ${renderAttributeRows(keywordAttrAllowList, 'keyword')}
+                    </div>
+
+                    <div id="tab-colors" class="tab-panel">
+                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="color-green" value="green" />
+                                <span class="color-indicator" style="background-color: #00FF00;"></span>
+                                Green
+                            </label>
+                            <button class="indicator-config-btn" data-color="GRN" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                        </div>
+                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="color-white" value="white" />
+                                <span class="color-indicator" style="background-color: #FFFFFF;"></span>
+                                White
+                            </label>
+                            <button class="indicator-config-btn" data-color="WHT" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                        </div>
+                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="color-red" value="red" />
+                                <span class="color-indicator" style="background-color: #FF0000;"></span>
+                                Red
+                            </label>
+                            <button class="indicator-config-btn" data-color="RED" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                        </div>
+                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="color-turquoise" value="turquoise" />
+                                <span class="color-indicator" style="background-color: #00FFFF;"></span>
+                                Turquoise
+                            </label>
+                            <button class="indicator-config-btn" data-color="TRQ" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                        </div>
+                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="color-yellow" value="yellow" />
+                                <span class="color-indicator" style="background-color: #FFFF00;"></span>
+                                Yellow
+                            </label>
+                            <button class="indicator-config-btn" data-color="YLW" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                        </div>
+                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="color-pink" value="pink" />
+                                <span class="color-indicator" style="background-color: #FF00FF;"></span>
+                                Pink
+                            </label>
+                            <button class="indicator-config-btn" data-color="PNK" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                        </div>
+                        <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                            <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="color-blue" value="blue" />
+                                <span class="color-indicator" style="background-color: #0000FF;"></span>
+                                Blue
+                            </label>
+                            <button class="indicator-config-btn" data-color="BLU" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="padding: 16px; border-top: 1px solid var(--border-color); background-color: var(--panel-background);">
+                    <div class="property-group" style="margin-bottom: 8px;">
+                        <button id="apply-properties" style="width: 100%; padding: 8px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">Apply Changes</button>
+                    </div>
+                    <div class="property-group" style="margin: 0;">
+                        <button id="delete-field" style="width: 100%; padding: 8px; background-color: var(--error-color); color: white; border: none; border-radius: 4px; cursor: pointer;">Delete Field</button>
+                    </div>
+                </div>
+            `;
+
+        document.querySelectorAll('.properties-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+
+                document.querySelectorAll('.properties-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+                this.classList.add('active');
+                document.getElementById(`tab-${tabName}`).classList.add('active');
+            });
+        });
+
+        document.getElementById('apply-properties').addEventListener('click', function() {
+            applyFieldProperties(field);
+        });
+
+        document.getElementById('delete-field').addEventListener('click', function() {
+            deleteField(field);
+        });
+
+        const colors = field.colors || (field.color ? [field.color] : []);
+        if (colors.length > 0) {
+            const colorMap = {
+                'GRN': 'color-green',
+                'WHT': 'color-white',
+                'RED': 'color-red',
+                'TRQ': 'color-turquoise',
+                'YLW': 'color-yellow',
+                'PNK': 'color-pink',
+                'BLU': 'color-blue'
+            };
+
+            colors.forEach(colorCode => {
+                const checkboxId = colorMap[colorCode];
+                if (checkboxId) {
+                    const checkbox = document.getElementById(checkboxId);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        Logger.debug(`Pre-selected color ${colorCode} (${checkboxId}) for keyword ${field.name}`);
+                    }
+                }
+            });
+        }
+
+        if (field.attributes) {
+            const attrMap = getAttributeCheckboxMap(keywordAttrAllowList);
+            Object.entries(attrMap).forEach(([attrKey, checkboxId]) => {
+                if (field.attributes[attrKey]) {
+                    const cb = document.getElementById(checkboxId);
+                    if (cb) {cb.checked = true;}
+                }
+            });
+        }
+        if (field.colorIndicators) {
+            for (const [color, indicatorData] of Object.entries(field.colorIndicators)) {
+                const configKey = `color:${color}`;
+                const indicatorSet = new Set();
+
+                if (Array.isArray(indicatorData)) {
+                    indicatorData.forEach(ind => indicatorSet.add(JSON.stringify(ind)));
+                } else if (indicatorData.groups) {
+                    indicatorData.groups.forEach(group => {
+                        group.indicators.forEach(ind => indicatorSet.add(JSON.stringify(ind)));
+                    });
+                }
+
+                indicatorConfigurations.set(configKey, indicatorSet);
+            }
+        }
+
+        if (field.attributeIndicators) {
+            for (const [attrName, indicatorData] of Object.entries(field.attributeIndicators)) {
+                if (!KEYWORD_ATTRIBUTE_ALLOW_LIST.has(attrName)) {continue;}
+                const configKey = `attr:${attrName}`;
+                const indicatorSet = new Set();
+
+                if (Array.isArray(indicatorData)) {
+                    indicatorData.forEach(ind => indicatorSet.add(JSON.stringify(ind)));
+                } else if (indicatorData.groups) {
+                    indicatorData.groups.forEach(group => {
+                        group.indicators.forEach(ind => indicatorSet.add(JSON.stringify(ind)));
+                    });
+                }
+
+                indicatorConfigurations.set(configKey, indicatorSet);
+            }
+        }
+
+        setupIndicatorButtons();
+
+        if (field.colorIndicators) {
+            for (const [color, indicators] of Object.entries(field.colorIndicators)) {
+                const btn = document.querySelector(`.indicator-config-btn[data-color="${color}"]`);
+                setIndicatorButtonState(btn, indicators);
+            }
+        }
+
+        if (field.attributeIndicators) {
+            for (const [attrName, indicators] of Object.entries(field.attributeIndicators)) {
+                if (!KEYWORD_ATTRIBUTE_ALLOW_LIST.has(attrName)) {continue;}
+                const btn = document.querySelector(`.indicator-config-btn[data-attr="${attrName}"]`);
+                setIndicatorButtonState(btn, indicators);
+            }
+        }
+
+        if (field.indicators) {
+            const configKey = `field-indicators:${field.name}`;
+
+            if (field.indicators.groups) {
+                const indicatorData = {
+                    groups: field.indicators.groups.map(g => ({
+                        indicators: g.indicators || []
+                    })),
+                    isOr: field.indicators.isOr || false
+                };
+                indicatorConfigurations.set(configKey, indicatorData);
+
+                const btn = document.querySelector(`.indicator-config-btn[data-field-indicators="true"]`);
+                if (btn) {
+                    Logger.debug(`🔍 [KEYWORD-IND] About to call setIndicatorButtonState for keyword ${field.name}`);
+                    Logger.debug(`🔍 [KEYWORD-IND] field.indicators:`, field.indicators);
+                    Logger.debug(`🔍 [KEYWORD-IND] field.indicators.groups:`, field.indicators.groups);
+
+                    setIndicatorButtonState(btn, field.indicators);
+                    const count = field.indicators.groups.reduce((sum, g) => sum + g.indicators.length, 0);
+                    Logger.debug(`Marked keyword field-level indicator button with ${count} indicators`);
+                }
+            }
+        }
+
+        return;
+    }
+
+    let currentUsage = field.usage || '';
+    const normalizedDataTypeForUi = (field.dataType === 'numeric' || field.dataType === 'binary')
+        ? 'zoned'
+        : field.dataType;
+
+    if (!currentUsage) {
+        if (field.type === 'input') {currentUsage = 'O';}
+        else if (field.type === 'output') {currentUsage = 'I';}
+    }
+
+    const usageOptions = `
+            <option value="I" ${currentUsage === 'I' ? 'selected' : ''}>Input</option>
+            <option value="O" ${currentUsage === 'O' ? 'selected' : ''}>Output</option>
+            <option value="B" ${currentUsage === 'B' ? 'selected' : ''}>Both</option>
+            <!--<option value="M" ${currentUsage === 'M' ? 'selected' : ''}>Message</option>--> 
+            <!--<option value="P" ${currentUsage === 'P' ? 'selected' : ''}>Program-to-System</option>--> 
+        `;
+
+    propertiesPanel.innerHTML = `
+            <div class="properties-tabs">
+                <button class="properties-tab active" data-tab="basic">Basic</button>
+                <button class="properties-tab" data-tab="attributes">Attributes</button>
+                <button class="properties-tab" data-tab="colors">Colors</button>
+                <button class="properties-tab" data-tab="keying-options">Keying options</button>
+                <button class="properties-tab" data-tab="validity-check">Validity check</button>
+            </div>
+            
+            <div class="properties-content">
+                <div id="tab-basic" class="tab-panel active">
+                    ${field.type !== 'constant' ? `
+                    <div class="property-group">
+                        <label>Field Name</label>
+                        <input type="text" id="prop-name" value="${field.name}" maxlength="10" />
+                    </div>
+                    ` : ''}
+                    ${field.type !== 'constant' ? `
+                    <div class="property-group">
+                        <label>Usage</label>
+                        <select id="prop-usage">
+                            ${usageOptions}
+                        </select>
+                    </div>
+                    <div class="property-group">
+                        <label>Type</label>
+                        <select id="prop-type">
+                            <option value="character" ${normalizedDataTypeForUi === 'character' ? 'selected' : ''}>Character</option>
+                            <option value="date" ${normalizedDataTypeForUi === 'date' ? 'selected' : ''}>Date (L)</option>
+                            <option value="time" ${normalizedDataTypeForUi === 'time' ? 'selected' : ''}>Time (T)</option>
+                            <option value="timestamp" ${normalizedDataTypeForUi === 'timestamp' ? 'selected' : ''}>Timestamp (Z)</option>
+                            <option value="packed" ${normalizedDataTypeForUi === 'packed' ? 'selected' : ''}>Packed (Empaquetado)</option>
+                            <option value="zoned" ${normalizedDataTypeForUi === 'zoned' ? 'selected' : ''}>Con Zona</option>
+                            <option value="float" ${normalizedDataTypeForUi === 'float' ? 'selected' : ''}>Coma flotante</option>
+                            <option value="double" ${normalizedDataTypeForUi === 'double' ? 'selected' : ''}>Double Byte</option>
+                        </select>
+                    </div>
+                    <div class="property-group">
+                        <label>Shift</label>
+                        <select id="prop-shift">
+                            <!-- Options will be populated dynamically based on Type -->
+                        </select>
+                    </div>
+                    ` : ''}
+                    <div class="property-group">
+                        <label>Row</label>
+                        <input type="number" id="prop-row" value="${field.row}" min="1" max="24" />
+                    </div>
+                    <div class="property-group">
+                        <label>Column</label>
+                        <input type="number" id="prop-col" value="${field.col}" min="1" max="80" />
+                    </div>
+                    <div class="property-group">
+                        <label>Length</label>
+                        <input type="number" id="prop-length" value="${field.length || ''}" min="1" max="9999" ${(field.type === 'constant' || field.dataType === 'date' || field.dataType === 'time' || field.dataType === 'timestamp') ? 'readonly style="background-color: #2d2d2d; cursor: not-allowed;"' : ''} />
+                    </div>
+                    ${field.type !== 'constant' ? `
+                    <div class="property-group">
+                        <label>Decimals</label>
+                        <input type="number" id="prop-decimals" value="${field.decimals || 0}" min="0" ${(field.dataType === 'character' || field.dataType === 'double' || field.dataType === 'date' || field.dataType === 'time' || field.dataType === 'timestamp') ? 'readonly style="background-color: #2d2d2d; cursor: not-allowed;"' : ''} />
+                    </div>
+                    ` : ''}
+                    ${field.type === 'constant' ? `
+                    <div class="property-group">
+                        <label>Value</label>
+                        <input type="text" id="prop-value" value="${field.value || ''}" />
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <div id="tab-attributes" class="tab-panel">
+                    ${renderAttributeRows(null, field.type)}
+                </div>
+                <div id="tab-colors" class="tab-panel">
+                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="color-green" value="green" />
+                            <span class="color-indicator" style="background-color: #00FF00;"></span>
+                            Green
+                        </label>
+                        <button class="indicator-config-btn" data-color="GRN" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                    </div>
+                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="color-white" value="white" />
+                            <span class="color-indicator" style="background-color: #FFFFFF;"></span>
+                            White
+                        </label>
+                        <button class="indicator-config-btn" data-color="WHT" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                    </div>
+                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="color-red" value="red" />
+                            <span class="color-indicator" style="background-color: #FF0000;"></span>
+                            Red
+                        </label>
+                        <button class="indicator-config-btn" data-color="RED" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                    </div>
+                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="color-turquoise" value="turquoise" />
+                            <span class="color-indicator" style="background-color: #00FFFF;"></span>
+                            Turquoise
+                        </label>
+                        <button class="indicator-config-btn" data-color="TRQ" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                    </div>
+                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="color-yellow" value="yellow" />
+                            <span class="color-indicator" style="background-color: #FFFF00;"></span>
+                            Yellow
+                        </label>
+                        <button class="indicator-config-btn" data-color="YLW" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                    </div>
+                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="color-pink" value="pink" />
+                            <span class="color-indicator" style="background-color: #FF00FF;"></span>
+                            Pink
+                        </label>
+                        <button class="indicator-config-btn" data-color="PNK" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                    </div>
+                    <div class="property-group color-option" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="color-blue" value="blue" />
+                            <span class="color-indicator" style="background-color: #0000FF;"></span>
+                            Blue
+                        </label>
+                        <button class="indicator-config-btn" data-color="BLU" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                    </div>
+                </div>
+
+                <div id="tab-keying-options" class="tab-panel">
+                    <div class="property-group check-char-title" style="margin-bottom: 6px; color: var(--vscode-descriptionForeground); font-weight: 600;">Character (Input/Both)</div>
+                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-me" />
+                            Mandatory entry (ME)
+                        </label>
+                        <button class="indicator-config-btn" data-check="ME" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                    </div>
+                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-er" />
+                            Automatic record advance (ER)
+                        </label>
+                        <button class="indicator-config-btn" data-check="ER" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                    </div>
+                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-mf" />
+                            Mandatory fill (MF)
+                        </label>
+                    </div>
+                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-fe" />
+                            Field exit key required (FE)
+                        </label>
+                    </div>
+                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-rb" />
+                            Right adjust blank fill (RB)
+                        </label>
+                    </div>
+                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-rz" />
+                            Right adjust zero fill (RZ)
+                        </label>
+                    </div>
+                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-rl" />
+                            Move cursor right to left (RL)
+                        </label>
+                    </div>
+                    <div class="property-group check-char" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-lc" />
+                            Lowercase entry allowed (LC)
+                        </label>
+                    </div>
+
+                    <div class="property-group check-num-title" style="margin: 10px 0 6px 0; color: var(--vscode-descriptionForeground); font-weight: 600;">Numeric (Input/Both)</div>
+                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-num-me" />
+                            Mandatory entry (ME)
+                        </label>
+                        <button class="indicator-config-btn" data-check="ME" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                    </div>
+                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-num-er" />
+                            Automatic record advance (ER)
+                        </label>
+                        <button class="indicator-config-btn" data-check="ER" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                    </div>
+                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-num-mf" />
+                            Mandatory fill (MF)
+                        </label>
+                    </div>
+                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-num-fe" />
+                            Field exit key required (FE)
+                        </label>
+                    </div>
+                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-num-rb" />
+                            Right adjust blank fill (RB)
+                        </label>
+                    </div>
+                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-num-rz" />
+                            Right adjust zero fill (RZ)
+                        </label>
+                    </div>
+                    <div class="property-group check-num" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="check-num-rl" />
+                            Move cursor right to left (RL)
+                        </label>
+                    </div>
+                </div>
+
+                <div id="tab-validity-check" class="tab-panel">
+                    <div class="property-group values-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-values-enabled" />
+                            Values (VALUES)
+                        </label>
+                    </div>
+                    <div class="property-group values-value-group" style="display: none;">
+                        <label>Allowed values</label>
+                        <textarea id="prop-values-list" rows="4" placeholder="One value per line"></textarea>
+                    </div>
+                </div>
+
+                <div id="tab-general-keywords" class="tab-panel">
+                    <div class="property-group dft-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-dft-enabled" />
+                            Default (DFT)
+                        </label>
+                    </div>
+                    <div class="property-group dft-value-group" style="display: none;">
+                        <label>Value</label>
+                        <input type="text" id="prop-dft-value" placeholder="e.g. *DATE or 'ABC'" />
+                    </div>
+
+                    <div class="property-group dftval-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-dftval-enabled" />
+                            Default Value (DFTVAL)
+                        </label>
+                        <button class="indicator-config-btn" data-dftval="enabled" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                    </div>
+                    <div class="property-group dftval-value-group" style="display: none;">
+                        <label>Value</label>
+                        <input type="text" id="prop-dftval-value" placeholder="Default value" />
+                    </div>
+                </div>
+
+                <div id="tab-editing-keywords" class="tab-panel">
+                    <div class="property-group" style="margin-top: 4px; margin-bottom: 6px; font-weight: 600; color: var(--vscode-descriptionForeground);">
+                        Edit code (EDTCDE)
+                    </div>
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-edtcde-enabled" />
+                            Enable EDTCDE
+                        </label>
+                    </div>
+                    <div class="property-group edtcde-value-group" style="display: none;">
+                        <label>Code</label>
+                        <select id="prop-edtcde-value">
+                            <option value="">Select code</option>
+                            <option value="1">1 - Comma/period, no sign</option>
+                            <option value="2">2 - Period/comma, no sign</option>
+                            <option value="3">3 - Comma/period, no separator</option>
+                            <option value="4">4 - No separator, no sign</option>
+                            <option value="A">A - Comma/period + CR</option>
+                            <option value="B">B - Period/comma + CR</option>
+                            <option value="C">C - No separator + CR</option>
+                            <option value="D">D - No separator/period + CR</option>
+                            <option value="J">J - Comma/period + minus</option>
+                            <option value="K">K - Period/comma + minus</option>
+                            <option value="L">L - No separator + minus</option>
+                            <option value="M">M - No separator/period + minus</option>
+                            <option value="N">N - Comma/period, leading -</option>
+                            <option value="O">O - Period/comma, leading -</option>
+                            <option value="P">P - No separator, leading -</option>
+                            <option value="Q">Q - No separator/period, leading -</option>
+                            <option value="W">W - Julian date (YY/DDD)</option>
+                            <option value="Y">Y - Date (MM/DD/YY)</option>
+                            <option value="Z">Z - No sign, no separator</option>
+                        </select>
+                    </div>
+
+                    <div class="property-group edtcde-replace-group" style="display: none;">
+                        <label>Replace leading zeros with</label>
+                        <select id="prop-edtcde-replace-leading-zeros-with">
+                            <option value="">(blank)</option>
+                            <option value="*">*</option>
+                            <option value="$">$</option>
+                        </select>
+                    </div>
+
+                    <div class="property-group" style="margin-top: 12px; margin-bottom: 6px; font-weight: 600; color: var(--vscode-descriptionForeground);">
+                        Edit word (EDTWRD)
+                    </div>
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-edtwrd-enabled" />
+                            Enable EDTWRD
+                        </label>
+                    </div>
+                    <div class="property-group edtwrd-value-group" style="display: none;">
+                        <label>Word</label>
+                        <input type="text" id="prop-edtwrd-value" placeholder="e.g. .  " />
+                    </div>
+
+                    <div class="property-group" style="margin-top: 12px; margin-bottom: 6px; font-weight: 600; color: var(--vscode-descriptionForeground);">
+                        Edit mask (EDTMSK)
+                    </div>
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-edtmsk-enabled" />
+                            Enable EDTMSK
+                        </label>
+                    </div>
+                    <div class="property-group edtmsk-value-group" style="display: none;">
+                        <label>Mask</label>
+                        <input type="text" id="prop-edtmsk-value" placeholder="e.g. 000,000.00" />
+                    </div>
+                </div>
+            </div>
+            
+            <div style="padding: 16px; border-top: 1px solid var(--border-color); background-color: var(--panel-background);">
+                <div class="property-group" style="margin-bottom: 8px;">
+                    <button id="apply-properties" style="width: 100%; padding: 8px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">Apply Changes</button>
+                </div>
+                <div class="property-group" style="margin: 0;">
+                    <button id="delete-field" style="width: 100%; padding: 8px; background-color: var(--error-color); color: white; border: none; border-radius: 4px; cursor: pointer;">Delete Field</button>
+                </div>
+            </div>
+        `;
+
+    const tabsContainer = propertiesPanel.querySelector('.properties-tabs');
+    if (tabsContainer) {
+        const generalKeywordsBtn = document.createElement('button');
+        generalKeywordsBtn.className = 'properties-tab';
+        generalKeywordsBtn.setAttribute('data-tab', 'general-keywords');
+        generalKeywordsBtn.textContent = 'General keywords';
+        tabsContainer.appendChild(generalKeywordsBtn);
+
+        const editingKeywordsBtn = document.createElement('button');
+        editingKeywordsBtn.className = 'properties-tab';
+        editingKeywordsBtn.setAttribute('data-tab', 'editing-keywords');
+        editingKeywordsBtn.textContent = 'Editing keywords';
+        tabsContainer.appendChild(editingKeywordsBtn);
+    }
+
+    const usageSelect = document.getElementById('prop-usage');
+    const usageRestrictedGroups = Array.from(document.querySelectorAll('.usage-not-output-attr'));
+    const keyingTabBtn = document.querySelector('.properties-tab[data-tab="keying-options"]');
+    const keyingTabPanel = document.getElementById('tab-keying-options');
+    const validityCheckTabBtn = document.querySelector('.properties-tab[data-tab="validity-check"]');
+    const validityCheckTabPanel = document.getElementById('tab-validity-check');
+    const generalKeywordsTabBtn = document.querySelector('.properties-tab[data-tab="general-keywords"]');
+    const generalKeywordsTabPanel = document.getElementById('tab-general-keywords');
+    const editingKeywordsTabBtn = document.querySelector('.properties-tab[data-tab="editing-keywords"]');
+    const editingKeywordsTabPanel = document.getElementById('tab-editing-keywords');
+    const checkCharGroups = Array.from(document.querySelectorAll('.check-char'));
+    const checkNumGroups = Array.from(document.querySelectorAll('.check-num'));
+    const checkCharTitles = Array.from(document.querySelectorAll('.check-char-title'));
+    const checkNumTitles = Array.from(document.querySelectorAll('.check-num-title'));
+    const valuesGroup = document.querySelector('.values-group');
+    const valuesValueGroup = document.querySelector('.values-value-group');
+    const dftGroup = document.querySelector('.dft-group');
+    const dftValueGroup = document.querySelector('.dft-value-group');
+    const dftvalGroup = document.querySelector('.dftval-group');
+    const dftvalValueGroup = document.querySelector('.dftval-value-group');
+    const shiftSelectElement = document.getElementById('prop-shift');
+    const shiftGroup = shiftSelectElement ? shiftSelectElement.closest('.property-group') : null;
+    const updateUsageRestrictedAttrs = () => {
+        const show = field.type !== 'constant' && usageSelect && usageSelect.value !== 'O';
+        usageRestrictedGroups.forEach(group => {
+            group.style.display = show ? 'flex' : 'none';
+        });
+        const showKeying = field.type !== 'constant' && usageSelect && usageSelect.value !== 'O';
+        if (keyingTabBtn) {
+            keyingTabBtn.style.display = showKeying ? 'inline-flex' : 'none';
+        }
+        if (keyingTabPanel) {
+            keyingTabPanel.style.display = showKeying ? '' : 'none';
+        }
+        if (showKeying) {
+            const typeSelect = document.getElementById('prop-type');
+            const dataType = typeSelect ? typeSelect.value : field.dataType;
+            const isChar = dataType === 'character' || dataType === 'double' || dataType === 'date' || dataType === 'time' || dataType === 'timestamp';
+            const isNumeric = ['packed', 'zoned', 'float'].includes(dataType);
+            checkCharGroups.forEach(g => {g.style.display = isChar ? 'flex' : 'none';});
+            checkNumGroups.forEach(g => {g.style.display = isNumeric ? 'flex' : 'none';});
+            checkCharTitles.forEach(t => {t.style.display = isChar ? '' : 'none';});
+            checkNumTitles.forEach(t => {t.style.display = isNumeric ? '' : 'none';});
+        }
+        if (!showKeying && keyingTabBtn && keyingTabBtn.classList.contains('active')) {
+            keyingTabBtn.classList.remove('active');
+            keyingTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
+        }
+
+        const currentTypeSelect = document.getElementById('prop-type');
+        const selectedType = currentTypeSelect ? currentTypeSelect.value : field.dataType;
+        const isValuesCharType = ['character', 'double'].includes(selectedType);
+        const isValuesNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
+        const showValues = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && usageSelect
+            && usageSelect.value !== 'O'
+            && (isValuesCharType || isValuesNumericType);
+
+        if (valuesGroup) {
+            valuesGroup.style.display = showValues ? 'flex' : 'none';
+        }
+        if (valuesValueGroup) {
+            valuesValueGroup.style.display = showValues ? 'block' : 'none';
+        }
+        if (validityCheckTabBtn) {
+            validityCheckTabBtn.style.display = showValues ? 'inline-flex' : 'none';
+        }
+        if (validityCheckTabPanel) {
+            validityCheckTabPanel.style.display = showValues ? '' : 'none';
+        }
+        if (!showValues && validityCheckTabBtn && validityCheckTabBtn.classList.contains('active')) {
+            validityCheckTabBtn.classList.remove('active');
+            validityCheckTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
+        }
+
+        const isVariableField = field.type !== 'constant' && field.type !== 'keyword' && !field.isKeyword;
+        const showGeneralKeywords = isVariableField;
+        const showDFT = isVariableField;
+        const showDFTVAL = isVariableField && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B');
+        if (dftGroup) {
+            dftGroup.style.display = showDFT ? 'flex' : 'none';
+        }
+        if (dftValueGroup) {
+            dftValueGroup.style.display = showDFT ? 'block' : 'none';
+        }
+        if (dftvalGroup) {
+            dftvalGroup.style.display = showDFTVAL ? 'flex' : 'none';
+        }
+        if (dftvalValueGroup) {
+            dftvalValueGroup.style.display = showDFTVAL ? 'block' : 'none';
+        }
+        if (generalKeywordsTabBtn) {
+            generalKeywordsTabBtn.style.display = showGeneralKeywords ? 'inline-flex' : 'none';
+        }
+        if (generalKeywordsTabPanel) {
+            generalKeywordsTabPanel.style.display = showGeneralKeywords ? '' : 'none';
+        }
+
+        const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
+        const showEditingKeywords = field.type !== 'constant' && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B') && isNumericType;
+
+        const lockShiftForZonedOutputOnly = field.type !== 'constant'
+            && usageSelect
+            && usageSelect.value === 'O'
+            && selectedType === 'zoned';
+
+        if (shiftGroup) {
+            shiftGroup.style.display = '';
+        }
+        if (shiftSelectElement) {
+            shiftSelectElement.disabled = lockShiftForZonedOutputOnly;
+            shiftSelectElement.title = lockShiftForZonedOutputOnly
+                ? 'Shift se controla mediante EDTCDE para campos zoned de salida'
+                : '';
+        }
+
+        if (editingKeywordsTabBtn) {
+            editingKeywordsTabBtn.style.display = showEditingKeywords ? 'inline-flex' : 'none';
+        }
+        if (editingKeywordsTabPanel) {
+            editingKeywordsTabPanel.style.display = showEditingKeywords ? '' : 'none';
+        }
+        if (!showEditingKeywords && editingKeywordsTabBtn && editingKeywordsTabBtn.classList.contains('active')) {
+            editingKeywordsTabBtn.classList.remove('active');
+            editingKeywordsTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
+        }
+    };
+    updateUsageRestrictedAttrs();
+    if (usageSelect) {
+        usageSelect.addEventListener('change', updateUsageRestrictedAttrs);
+    }
+    const typeSelect = document.getElementById('prop-type');
+    if (typeSelect) {
+        typeSelect.addEventListener('change', updateUsageRestrictedAttrs);
+    }
+
+    document.querySelectorAll('.properties-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabName = this.dataset.tab;
+
+            document.querySelectorAll('.properties-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+            this.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        });
+    });
+
+    function updateShiftOptions(type) {
+        const shiftSelect = document.getElementById('prop-shift');
+        if (!shiftSelect) {return;}
+
+        let options = '';
+        switch(type) {
+            case 'character':
+                options = `
+                        <option value="A">A - Alphanumeric</option>
+                        <option value="X">X - Alphabetic</option>
+                        <option value="N">N - Numeric Character Shift</option>
+                        <option value="I">I - Inhibit Keyboard</option>
+                        <option value="D">D - Digits Only</option>
+                        <option value="M">M - Numeric Character Only</option>
+                        <option value="W">W - Katakana</option>
+                    `;
+                break;
+            case 'zoned':
+                options = `
+                        <option value="">None</option>
+                        <option value="Y">Y - Numeric Only</option>
+                        <option value="S">S - Signed Numeric</option>
+                        <option value="N">N - Numeric Character Shift</option>
+                        <option value="I">I - Inhibit Keyboard</option>
+                        <option value="D">D - Digits Only</option>
+                    `;
+                break;
+            case 'float':
+                options = `
+                        <option value="SINGLE">Sencilla</option>
+                        <option value="DOUBLE">Doble</option>
+                    `;
+                break;
+            case 'double':
+                options = `
+                        <option value="J">J - DBCS Only</option>
+                        <option value="E">E - DBCS Either</option>
+                        <option value="O">O - DBCS Open</option>
+                        <option value="G">G - Graphic DBCS</option>
+                    `;
+                break;
+            case 'date':
+            case 'time':
+            case 'timestamp':
+                options = '<option value="">None</option>';
+                break;
+            default:
+                options = '<option value="">None</option>';
+        }
+        shiftSelect.innerHTML = options;
+    }
+
+    function updateLengthState(type) {
+        const lengthInput = document.getElementById('prop-length');
+        if (!lengthInput) {return;}
+
+        const shouldLockLength = field.type === 'constant' || type === 'date' || type === 'time' || type === 'timestamp';
+        lengthInput.readOnly = shouldLockLength;
+
+        if (shouldLockLength) {
+            lengthInput.style.backgroundColor = '#2d2d2d';
+            lengthInput.style.cursor = 'not-allowed';
+        } else {
+            lengthInput.style.backgroundColor = '';
+            lengthInput.style.cursor = '';
+        }
+
+        if (type === 'date') {
+            lengthInput.value = '10';
+        } else if (type === 'time') {
+            lengthInput.value = '8';
+        } else if (type === 'timestamp') {
+            lengthInput.value = '26';
+        }
+    }
+
+    if (field.type !== 'constant') {
+        const typeSelect = document.getElementById('prop-type');
+        const shiftSelect = document.getElementById('prop-shift');
+        if (typeSelect && shiftSelect) {
+            updateShiftOptions(typeSelect.value);
+            updateLengthState(typeSelect.value);
+
+            if (field.dataType === 'float' && field.precision) {
+                shiftSelect.value = field.precision;
+            } else if (field.shift) {
+                shiftSelect.value = field.shift;
+            }
+
+            typeSelect.addEventListener('change', function() {
+                updateShiftOptions(this.value);
+                updateLengthState(this.value);
+            });
+        }
+    } else {
+        updateLengthState(field.dataType);
+    }
+
+    document.getElementById('apply-properties').addEventListener('click', function() {
+        applyFieldProperties(field);
+    });
+
+    document.getElementById('delete-field').addEventListener('click', function() {
+        Logger.ui('Delete button clicked for field:', field.name);
+        deleteField(field);
+    });
+
+    if (field.type !== 'constant') {
+        const nameInput = document.getElementById('prop-name');
+        if (nameInput && field.name.startsWith(field.type.toUpperCase())) {
+            setTimeout(() => {
+                nameInput.focus();
+                nameInput.select();
+            }, 100);
+        }
+    }
+
+    if (field.colors && field.colors.length > 0) {
+        const colorMap = {
+            'GRN': 'color-green',
+            'WHT': 'color-white',
+            'RED': 'color-red',
+            'TRQ': 'color-turquoise',
+            'YLW': 'color-yellow',
+            'PNK': 'color-pink',
+            'BLU': 'color-blue'
+        };
+
+        field.colors.forEach(color => {
+            const checkboxId = colorMap[color];
+            if (checkboxId) {
+                const checkbox = document.getElementById(checkboxId);
+                if (checkbox) {
+                    checkbox.checked = true;
+                    Logger.debug(`Pre-selected color ${color} (${checkboxId}) for field ${field.name}`);
+                }
+            }
+        });
+    } else if (field.color) {
+        const colorMap = {
+            'GRN': 'color-green',
+            'WHT': 'color-white',
+            'RED': 'color-red',
+            'TRQ': 'color-turquoise',
+            'YLW': 'color-yellow',
+            'PNK': 'color-pink',
+            'BLU': 'color-blue'
+        };
+
+        const checkboxId = colorMap[field.color];
+        if (checkboxId) {
+            const checkbox = document.getElementById(checkboxId);
+            if (checkbox) {
+                checkbox.checked = true;
+                Logger.debug(`Pre-selected color ${field.color} (${checkboxId}) for field ${field.name}`);
+            }
+        }
+    }
+
+    const setCheckState = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) {el.checked = Boolean(value);}
+    };
+    const dataTypeForChecks = field.dataType;
+    const isCharCheck = dataTypeForChecks === 'character' || dataTypeForChecks === 'double' || dataTypeForChecks === 'date' || dataTypeForChecks === 'time' || dataTypeForChecks === 'timestamp';
+    const isNumericCheck = ['packed', 'zoned', 'float'].includes(dataTypeForChecks);
+    const checkOptions = field.checkOptions || {};
+    if (isCharCheck) {
+        setCheckState('check-me', checkOptions.ME);
+        setCheckState('check-er', checkOptions.ER);
+        setCheckState('check-mf', checkOptions.MF);
+        setCheckState('check-fe', checkOptions.FE);
+        setCheckState('check-rb', checkOptions.RB);
+        setCheckState('check-rz', checkOptions.RZ);
+        setCheckState('check-rl', checkOptions.RL);
+        setCheckState('check-lc', checkOptions.LC);
+    }
+    if (isNumericCheck) {
+        setCheckState('check-num-me', checkOptions.ME);
+        setCheckState('check-num-er', checkOptions.ER);
+        setCheckState('check-num-mf', checkOptions.MF);
+        setCheckState('check-num-fe', checkOptions.FE);
+        setCheckState('check-num-rb', checkOptions.RB);
+        setCheckState('check-num-rz', checkOptions.RZ);
+        setCheckState('check-num-rl', checkOptions.RL);
+    }
+
+    if (field.attributes) {
+        Logger.parse('Field has attributes:', field.attributes);
+        if (field.attributes.underline) {
+            const underlineCheckbox = document.getElementById('attr-underline');
+            if (underlineCheckbox) {
+                underlineCheckbox.checked = true;
+                Logger.debug('Checked underline checkbox');
+            }
+        }
+        if (field.attributes.reverse) {
+            const reverseCheckbox = document.getElementById('attr-reverse-image');
+            if (reverseCheckbox) {
+                reverseCheckbox.checked = true;
+                Logger.debug('Checked reverse checkbox');
+            }
+        }
+        if (field.attributes.blink) {
+            const blinkCheckbox = document.getElementById('attr-blink');
+            if (blinkCheckbox) {
+                blinkCheckbox.checked = true;
+                Logger.debug('Checked blink checkbox');
+            }
+        }
+        if (field.attributes.highlight) {
+            const highlightCheckbox = document.getElementById('attr-high-intensity');
+            if (highlightCheckbox) {
+                highlightCheckbox.checked = true;
+                Logger.debug('Checked highlight checkbox');
+            }
+        }
+        if (field.attributes.cursorPosition) {
+            const cursorCheckbox = document.getElementById('attr-cursor-position');
+            if (cursorCheckbox) {
+                cursorCheckbox.checked = true;
+                Logger.debug('Checked cursor position checkbox');
+            }
+        }
+        if (field.attributes.columnSeparator) {
+            const columnCheckbox = document.getElementById('attr-column-separator');
+            if (columnCheckbox) {
+                columnCheckbox.checked = true;
+                Logger.debug('Checked column separator checkbox');
+            }
+        }
+        if (field.attributes.nonDisplay) {
+            const nonDisplayCheckbox = document.getElementById('attr-non-display');
+            if (nonDisplayCheckbox) {
+                nonDisplayCheckbox.checked = true;
+                Logger.debug('Checked non-display checkbox');
+            }
+        }
+        if (field.attributes.modifiedDataTag) {
+            const mdtCheckbox = document.getElementById('attr-mdt');
+            if (mdtCheckbox) {
+                mdtCheckbox.checked = true;
+                Logger.debug('Checked modified data tag checkbox');
+            }
+        }
+        if (field.attributes.protect) {
+            const protectCheckbox = document.getElementById('attr-protect');
+            if (protectCheckbox) {
+                protectCheckbox.checked = true;
+                Logger.debug('Checked protect checkbox');
+            }
+        }
+        if (field.attributes.operatorId) {
+            const oidCheckbox = document.getElementById('attr-oid');
+            if (oidCheckbox) {
+                oidCheckbox.checked = true;
+                Logger.debug('Checked operator ID checkbox');
+            }
+        }
+        if (field.attributes.selectLightPen) {
+            const spCheckbox = document.getElementById('attr-select-pen');
+            if (spCheckbox) {
+                spCheckbox.checked = true;
+                Logger.debug('Checked select by light pen checkbox');
+            }
+        }
+    } else {
+        Logger.debug('Field has no attributes object');
+    }
+
+    if (field.colorIndicators) {
+        Logger.debug('Loading colorIndicators:', field.colorIndicators);
+        for (const [color, indicatorData] of Object.entries(field.colorIndicators)) {
+            const configKey = `color:${color}`;
+
+            Logger.debug(`Processing color ${color}, indicatorData type:`, typeof indicatorData, indicatorData);
+
+            if (Array.isArray(indicatorData)) {
+                Logger.debug(`Color ${color} has old array format with ${indicatorData.length} indicators`);
+                const indicatorSet = new Set();
+                indicatorData.forEach(ind => {
+                    indicatorSet.add(JSON.stringify(ind));
+                });
+                indicatorConfigurations.set(configKey, indicatorSet);
+                Logger.debug(`Loaded ${indicatorSet.size} indicators (array format) for color ${color} into config`);
+            } else if (indicatorData.groups) {
+                Logger.debug(`Color ${color} has groups format with ${indicatorData.groups.length} groups`);
+                const isOr = indicatorData.isOr === true && indicatorData.groups.length > 1;
+
+                if (isOr) {
+                    indicatorConfigurations.set(configKey, {
+                        groups: indicatorData.groups,
+                        isOr: true
+                    });
+                    Logger.debug(`Loaded ${indicatorData.groups.length} groups (OR format) for color ${color} into config`);
+                } else {
+                    const indicatorSet = new Set();
+                    indicatorData.groups.forEach((group, idx) => {
+                        Logger.debug(`  Group ${idx}: ${group.indicators.length} indicators`);
+                        group.indicators.forEach(ind => {
+                            Logger.debug(`    Adding indicator:`, ind);
+                            indicatorSet.add(JSON.stringify(ind));
+                        });
+                    });
+                    indicatorConfigurations.set(configKey, indicatorSet);
+                    Logger.debug(`Loaded ${indicatorSet.size} indicators (AND format) for color ${color} into config`);
+                }
+            } else {
+                Logger.warn(`Color ${color} has unexpected format:`, indicatorData);
+            }
+        }
+    }
+
+    if (field.attributeIndicators) {
+        if (field.hasGroupedDspatr) {
+            const firstAttr = Object.keys(field.attributeIndicators)[0];
+            const sharedIndicatorData = field.attributeIndicators[firstAttr] || [];
+
+            const isOrFormat = !Array.isArray(sharedIndicatorData) && 
+                               sharedIndicatorData.groups && 
+                               sharedIndicatorData.isOr === true && 
+                               sharedIndicatorData.groups.length > 1;
+
+            const attrNames = ['underline', 'reverse', 'blink', 'highlight', 'cursorPosition', 'columnSeparator', 'nonDisplay'];
+
+            if (isOrFormat) {
+                attrNames.forEach(attrName => {
+                    if (field.attributes && field.attributes[attrName]) {
+                        const configKey = `attr:${attrName}`;
+                        indicatorConfigurations.set(configKey, {
+                            groups: sharedIndicatorData.groups,
+                            isOr: true
+                        });
+                    }
+                });
+                Logger.debug(`Loaded ${sharedIndicatorData.groups.length} groups (OR format) for grouped DSPATR`);
+            } else {
+                const flatIndicators = [];
+                if (Array.isArray(sharedIndicatorData)) {
+                    flatIndicators.push(...sharedIndicatorData);
+                } else if (sharedIndicatorData.groups) {
+                    sharedIndicatorData.groups.forEach(group => {
+                        flatIndicators.push(...group.indicators);
+                    });
+                }
+
+                attrNames.forEach(attrName => {
+                    if (field.attributes && field.attributes[attrName]) {
+                        const configKey = `attr:${attrName}`;
+                        const indicatorSet = new Set();
+                        flatIndicators.forEach(ind => {
+                            indicatorSet.add(JSON.stringify(ind));
+                        });
+                        indicatorConfigurations.set(configKey, indicatorSet);
+                    }
+                });
+                Logger.debug(`Loaded ${flatIndicators.length} shared indicators (AND format) for grouped DSPATR`);
+            }
+        } else {
+            for (const [attrName, indicatorData] of Object.entries(field.attributeIndicators)) {
+                const configKey = `attr:${attrName}`;
+
+                if (Array.isArray(indicatorData)) {
+                    const indicatorSet = new Set();
+                    indicatorData.forEach(ind => {
+                        indicatorSet.add(JSON.stringify(ind));
+                    });
+                    indicatorConfigurations.set(configKey, indicatorSet);
+                    Logger.debug(`Loaded ${indicatorSet.size} indicators (array format) for attribute ${attrName} into config`);
+                } else if (indicatorData.groups) {
+                    Logger.debug(`    Checking OR format for ${attrName}: isOr=${indicatorData.isOr}, groups.length=${indicatorData.groups.length}`);
+                    const isOr = indicatorData.isOr === true && indicatorData.groups.length > 1;
+                    Logger.debug(`    Result: isOr=${isOr}`);
+
+                    if (isOr) {
+                        indicatorConfigurations.set(configKey, {
+                            groups: indicatorData.groups,
+                            isOr: true
+                        });
+                        Logger.debug(`Loaded ${indicatorData.groups.length} groups (OR format) for attribute ${attrName} into config`);
+                    } else {
+                        const indicatorSet = new Set();
+                        indicatorData.groups.forEach(group => {
+                            group.indicators.forEach(ind => {
+                                indicatorSet.add(JSON.stringify(ind));
+                            });
+                        });
+                        indicatorConfigurations.set(configKey, indicatorSet);
+                        Logger.debug(`Loaded ${indicatorSet.size} indicators (AND format) for attribute ${attrName} into config`);
+                    }
+                }
+            }
+        }
+    }
+
+    if (field.checkIndicators) {
+        Logger.debug('Loading checkIndicators:', field.checkIndicators);
+        for (const [code, indicatorData] of Object.entries(field.checkIndicators)) {
+            const configKey = `check:${code}`;
+
+            Logger.debug(`Processing CHECK ${code}, indicatorData type:`, typeof indicatorData, indicatorData);
+
+            if (Array.isArray(indicatorData)) {
+                Logger.debug(`CHECK ${code} has old array format with ${indicatorData.length} indicators`);
+                const indicatorSet = new Set();
+                indicatorData.forEach(ind => {
+                    indicatorSet.add(JSON.stringify(ind));
+                });
+                indicatorConfigurations.set(configKey, indicatorSet);
+                Logger.debug(`Loaded ${indicatorSet.size} indicators (array format) for CHECK ${code} into config`);
+            } else if (indicatorData.groups) {
+                Logger.debug(`CHECK ${code} has groups format with ${indicatorData.groups.length} groups`);
+                const isOr = indicatorData.isOr === true && indicatorData.groups.length > 1;
+
+                if (isOr) {
+                    indicatorConfigurations.set(configKey, {
+                        groups: indicatorData.groups,
+                        isOr: true
+                    });
+                    Logger.debug(`Loaded ${indicatorData.groups.length} groups (OR format) for CHECK ${code} into config`);
+                } else {
+                    const indicatorSet = new Set();
+                    indicatorData.groups.forEach(group => {
+                        group.indicators.forEach(ind => {
+                            indicatorSet.add(JSON.stringify(ind));
+                        });
+                    });
+                    indicatorConfigurations.set(configKey, indicatorSet);
+                    Logger.debug(`Loaded ${indicatorSet.size} indicators (AND format) for CHECK ${code} into config`);
+                }
+            }
+        }
+    }
+
+    const valuesEnabledCheckbox = document.getElementById('prop-values-enabled');
+    const valuesListInput = document.getElementById('prop-values-list');
+        if ((Array.isArray(field.values) && field.values.length > 0) || (typeof field.values === 'string' && field.values.trim().length > 0)) {
+        if (valuesEnabledCheckbox) {
+            valuesEnabledCheckbox.checked = true;
+        }
+        if (valuesListInput) {
+                if (Array.isArray(field.values)) {
+                    valuesListInput.value = field.values.join('\n');
+                } else {
+                    const tokens = field.values.match(/'(?:''|[^'])*'/g) || [];
+                    if (tokens.length > 0) {
+                        valuesListInput.value = tokens
+                            .map(token => token.substring(1, token.length - 1).replace(/''/g, "'"))
+                            .join('\n');
+                    } else {
+                        valuesListInput.value = field.values;
+                    }
+                }
+            valuesListInput.parentElement.style.display = 'block';
+        }
+    }
+
+    if (valuesEnabledCheckbox) {
+        valuesEnabledCheckbox.addEventListener('change', function() {
+            if (valuesValueGroup) {
+                valuesValueGroup.style.display = this.checked ? 'block' : 'none';
+                if (this.checked && valuesListInput) {
+                    valuesListInput.focus();
+                }
+            }
+        });
+    }
+
+    const dftEnabledCheckbox = document.getElementById('prop-dft-enabled');
+    const dftValueInput = document.getElementById('prop-dft-value');
+    if (field.dft) {
+        if (dftEnabledCheckbox) {
+            dftEnabledCheckbox.checked = true;
+        }
+        if (dftValueInput && field.dft.value) {
+            dftValueInput.value = field.dft.value;
+            dftValueInput.parentElement.style.display = 'block';
+        }
+
+    }
+
+    if (dftEnabledCheckbox) {
+        dftEnabledCheckbox.addEventListener('change', function() {
+            if (dftValueGroup) {
+                dftValueGroup.style.display = this.checked ? 'block' : 'none';
+                if (this.checked && dftValueInput) {
+                    dftValueInput.focus();
+                }
+            }
+        });
+    }
+
+    const dftvalEnabledCheckbox = document.getElementById('prop-dftval-enabled');
+    const dftvalValueInput = document.getElementById('prop-dftval-value');
+    if (field.dftval) {
+        if (dftvalEnabledCheckbox) {
+            dftvalEnabledCheckbox.checked = true;
+        }
+        if (dftvalValueInput && field.dftval.value) {
+            dftvalValueInput.value = field.dftval.value;
+            dftvalValueInput.parentElement.style.display = 'block';
+        }
+
+        if (field.dftvalIndicators) {
+            const configKey = 'dftval:enabled';
+            const indicatorData = field.dftvalIndicators;
+
+            Logger.debug('Processing DFTVAL indicatorData type:', typeof indicatorData, indicatorData);
+
+            if (Array.isArray(indicatorData)) {
+                Logger.debug(`DFTVAL has old array format with ${indicatorData.length} indicators`);
+                const indicatorSet = new Set();
+                indicatorData.forEach(ind => {
+                    indicatorSet.add(JSON.stringify(ind));
+                });
+                indicatorConfigurations.set(configKey, indicatorSet);
+                Logger.debug(`Loaded ${indicatorSet.size} indicators (array format) for DFTVAL into config`);
+            } else if (indicatorData.groups) {
+                Logger.debug(`DFTVAL has groups format with ${indicatorData.groups.length} groups`);
+                const isOr = indicatorData.isOr === true && indicatorData.groups.length > 1;
+
+                if (isOr) {
+                    indicatorConfigurations.set(configKey, {
+                        groups: indicatorData.groups,
+                        isOr: true
+                    });
+                    Logger.debug(`Loaded ${indicatorData.groups.length} groups (OR format) for DFTVAL into config`);
+                } else {
+                    const indicatorSet = new Set();
+                    indicatorData.groups.forEach((group, idx) => {
+                        Logger.debug(`  DFTVAL Group ${idx}: ${group.indicators.length} indicators`);
+                        group.indicators.forEach(ind => {
+                            Logger.debug('    Adding DFTVAL indicator:', ind);
+                            indicatorSet.add(JSON.stringify(ind));
+                        });
+                    });
+                    indicatorConfigurations.set(configKey, indicatorSet);
+                    Logger.debug(`Loaded ${indicatorSet.size} indicators (AND format) for DFTVAL into config`);
+                }
+            } else {
+                Logger.warn('DFTVAL has unexpected format:', indicatorData);
+            }
+        }
+    }
+
+    if (dftvalEnabledCheckbox) {
+        dftvalEnabledCheckbox.addEventListener('change', function() {
+            if (dftvalValueGroup) {
+                dftvalValueGroup.style.display = this.checked ? 'block' : 'none';
+                if (this.checked && dftvalValueInput) {
+                    dftvalValueInput.focus();
+                }
+            }
+        });
+    }
+
+    const edtcdeEnabledCheckbox = document.getElementById('prop-edtcde-enabled');
+    const edtcdeValueSelect = document.getElementById('prop-edtcde-value');
+    const edtcdeValueGroup = document.querySelector('.edtcde-value-group');
+    const edtcdeReplaceGroup = document.querySelector('.edtcde-replace-group');
+    const edtcdeReplaceSelect = document.getElementById('prop-edtcde-replace-leading-zeros-with');
+    const edtwrdEnabledCheckbox = document.getElementById('prop-edtwrd-enabled');
+    const edtwrdValueInput = document.getElementById('prop-edtwrd-value');
+    const edtwrdValueGroup = document.querySelector('.edtwrd-value-group');
+    const edtmskEnabledCheckbox = document.getElementById('prop-edtmsk-enabled');
+    const edtmskValueInput = document.getElementById('prop-edtmsk-value');
+    const edtmskValueGroup = document.querySelector('.edtmsk-value-group');
+
+    const updateEdtcdeReplaceVisibility = () => {
+        if (!edtcdeReplaceGroup) {
+            return;
+        }
+
+        const isEnabled = Boolean(edtcdeEnabledCheckbox && edtcdeEnabledCheckbox.checked);
+        const selectedCode = edtcdeValueSelect ? edtcdeValueSelect.value.trim().toUpperCase() : '';
+        const allowReplacement = isEnabled && !['Z', 'Y', 'W'].includes(selectedCode);
+
+        edtcdeReplaceGroup.style.display = allowReplacement ? 'block' : 'none';
+
+        if (!allowReplacement && edtcdeReplaceSelect) {
+            edtcdeReplaceSelect.value = '';
+        }
+    };
+
+    if (field.edtcde && field.edtcde.value) {
+        if (edtcdeEnabledCheckbox) {
+            edtcdeEnabledCheckbox.checked = true;
+        }
+        if (edtcdeValueGroup) {
+            edtcdeValueGroup.style.display = 'block';
+        }
+        if (edtcdeValueSelect) {
+            const parsedValue = String(field.edtcde.value).trim().toUpperCase();
+            const hasOption = Array.from(edtcdeValueSelect.options).some(option => option.value === parsedValue);
+            if (!hasOption) {
+                const extraOption = document.createElement('option');
+                extraOption.value = parsedValue;
+                extraOption.textContent = parsedValue;
+                edtcdeValueSelect.appendChild(extraOption);
+            }
+            edtcdeValueSelect.value = parsedValue;
+        }
+
+        if (edtcdeReplaceSelect) {
+            const replacement = field.edtcde.replaceLeadingZerosWith ? String(field.edtcde.replaceLeadingZerosWith).trim() : '';
+            if ((replacement === '*' || replacement === '$') && String(field.edtcde.value).trim().toUpperCase() !== 'Z') {
+                edtcdeReplaceSelect.value = replacement;
+            } else {
+                edtcdeReplaceSelect.value = '';
+            }
+        }
+
+        updateEdtcdeReplaceVisibility();
+    }
+
+    if (edtcdeEnabledCheckbox) {
+        edtcdeEnabledCheckbox.addEventListener('change', function() {
+            if (edtcdeValueGroup) {
+                edtcdeValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            updateEdtcdeReplaceVisibility();
+            if (this.checked && edtcdeValueSelect) {
+                edtcdeValueSelect.focus();
+            }
+        });
+    }
+
+    if (edtcdeValueSelect) {
+        edtcdeValueSelect.addEventListener('change', updateEdtcdeReplaceVisibility);
+    }
+
+    updateEdtcdeReplaceVisibility();
+
+    const resolveKeywordTextValue = (keywordData) => {
+        if (!keywordData) {
+            return '';
+        }
+
+        if (typeof keywordData === 'string') {
+            return keywordData;
+        }
+
+        if (typeof keywordData.value === 'string') {
+            return keywordData.value;
+        }
+
+        return '';
+    };
+
+    const edtwrdValue = resolveKeywordTextValue(field.edtwrd);
+    if (edtwrdValue.length > 0) {
+        if (edtwrdEnabledCheckbox) {
+            edtwrdEnabledCheckbox.checked = true;
+        }
+        if (edtwrdValueGroup) {
+            edtwrdValueGroup.style.display = 'block';
+        }
+        if (edtwrdValueInput) {
+            edtwrdValueInput.value = edtwrdValue;
+        }
+    }
+
+    if (edtwrdEnabledCheckbox) {
+        edtwrdEnabledCheckbox.addEventListener('change', function() {
+            if (edtwrdValueGroup) {
+                edtwrdValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (this.checked && edtwrdValueInput) {
+                edtwrdValueInput.focus();
+            }
+        });
+    }
+
+    const edtmskValue = resolveKeywordTextValue(field.edtmsk);
+    if (edtmskValue.length > 0) {
+        if (edtmskEnabledCheckbox) {
+            edtmskEnabledCheckbox.checked = true;
+        }
+        if (edtmskValueGroup) {
+            edtmskValueGroup.style.display = 'block';
+        }
+        if (edtmskValueInput) {
+            edtmskValueInput.value = edtmskValue;
+        }
+    }
+
+    if (edtmskEnabledCheckbox) {
+        edtmskEnabledCheckbox.addEventListener('change', function() {
+            if (edtmskValueGroup) {
+                edtmskValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (this.checked && edtmskValueInput) {
+                edtmskValueInput.focus();
+            }
+        });
+    }
+
+    setupIndicatorButtons();
+
+    if (field.colorIndicators) {
+        for (const [color, indicators] of Object.entries(field.colorIndicators)) {
+            const hasIndicators = (Array.isArray(indicators) && indicators.length > 0) || 
+                                 (indicators && indicators.groups && indicators.groups.length > 0);
+            if (hasIndicators) {
+                const btn = document.querySelector(`.indicator-config-btn[data-color="${color}"]`);
+                setIndicatorButtonState(btn, indicators);
+                const count = Array.isArray(indicators) ? indicators.length : 
+                             indicators.groups.reduce((sum, g) => sum + g.indicators.length, 0);
+                Logger.debug(`Marked color button for ${color} with ${count} indicators`);
+            }
+        }
+    }
+
+    if (field.attributeIndicators) {
+        const attrToDataAttr = {
+            'underline': 'underline',
+            'reverse': 'reverse',
+            'blink': 'blink',
+            'highlight': 'highlight',
+            'cursorPosition': 'cursorPosition',
+            'columnSeparator': 'columnSeparator',
+            'nonDisplay': 'nonDisplay',
+            'modifiedDataTag': 'modifiedDataTag',
+            'protect': 'protect',
+            'operatorId': 'operatorId',
+            'selectLightPen': 'selectLightPen'
+        };
+
+        for (const [attrName, indicators] of Object.entries(field.attributeIndicators)) {
+            const hasIndicators = (Array.isArray(indicators) && indicators.length > 0) || 
+                                 (indicators && indicators.groups && indicators.groups.length > 0);
+            if (hasIndicators) {
+                const dataAttr = attrToDataAttr[attrName];
+                if (dataAttr) {
+                    const btn = document.querySelector(`.indicator-config-btn[data-attr="${dataAttr}"]`);
+                    setIndicatorButtonState(btn, indicators);
+                    const count = Array.isArray(indicators) ? indicators.length : 
+                                 indicators.groups.reduce((sum, g) => sum + g.indicators.length, 0);
+                    Logger.debug(`Marked attribute button for ${attrName} with ${count} indicators`);
+                }
+            }
+        }
+    }
+
+    if (field.checkIndicators) {
+        ['ME', 'ER'].forEach(code => {
+            const indicators = field.checkIndicators[code];
+            if (indicators && indicators.groups && indicators.groups.length > 0) {
+                const btn = document.querySelector(`.indicator-config-btn[data-check="${code}"]`);
+                setIndicatorButtonState(btn, indicators);
+                const count = indicators.groups.reduce((sum, g) => sum + g.indicators.length, 0);
+                Logger.debug(`Marked CHECK(${code}) button with ${count} indicators`);
+            }
+        });
+    }
+
+    if (field.dftvalIndicators) {
+        const hasIndicators = (Array.isArray(field.dftvalIndicators) && field.dftvalIndicators.length > 0) || 
+                             (field.dftvalIndicators && field.dftvalIndicators.groups && field.dftvalIndicators.groups.length > 0);
+        if (hasIndicators) {
+            const btn = document.querySelector(`.indicator-config-btn[data-dftval="enabled"]`);
+            setIndicatorButtonState(btn, field.dftvalIndicators);
+            const count = Array.isArray(field.dftvalIndicators) ? field.dftvalIndicators.length : 
+                         field.dftvalIndicators.groups.reduce((sum, g) => sum + g.indicators.length, 0);
+            Logger.debug(`Marked DFTVAL button with ${count} indicators`);
+        }
+    }
+
+    if (field.indicators) {
+        const configKey = `field-indicators:${field.name}`;
+
+        Logger.debug(`🔍 [${field.type.toUpperCase()}-IND-LOAD] Loading field indicators for ${field.name}`);
+        Logger.debug(`🔍 [${field.type.toUpperCase()}-IND-LOAD] field.indicators:`, field.indicators);
+
+        if (field.indicators.groups) {
+            const indicatorData = {
+                groups: field.indicators.groups.map(g => ({
+                    indicators: g.indicators || []
+                })),
+                isOr: field.indicators.isOr || false
+            };
+            indicatorConfigurations.set(configKey, indicatorData);
+
+            const btn = document.querySelector(`.indicator-config-btn[data-field-indicators="true"]`);
+            if (btn) {
+                Logger.debug('🔍 [FIELD-IND] About to call setIndicatorButtonState');
+                Logger.debug('🔍 [FIELD-IND] field.indicators:', field.indicators);
+                Logger.debug('🔍 [FIELD-IND] field.indicators.groups:', field.indicators.groups);
+
+                if (field.indicators.groups.length > 0 && field.indicators.groups[0].indicators.length > 0) {
+                    const firstInd = field.indicators.groups[0].indicators[0];
+                    Logger.debug('🔍 [FIELD-IND] First indicator:', firstInd);
+                    Logger.debug(`🔍 [FIELD-IND] First indicator.number type: ${typeof firstInd.number}`);
+                    Logger.debug(`🔍 [FIELD-IND] First indicator.number value: "${firstInd.number}"`);
+                }
+
+                setIndicatorButtonState(btn, field.indicators);
+                const count = field.indicators.groups.reduce((sum, g) => sum + g.indicators.length, 0);
+                Logger.debug(`Marked field-level indicator button with ${count} indicators`);
+            }
+        }
+    }
+}
+
+
+/***/ }),
+/* 30 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   applyFieldProperties: () => (/* binding */ applyFieldProperties)
+/* harmony export */ });
+function applyFieldProperties({
+    field,
+    Logger,
+    getSelectedField,
+    setSelectedField,
+    getFields,
+    getCurrentRecord,
+    getCurrentDocument,
+    setCurrentDocument,
+    applyColorChanges,
+    getAttributeCheckboxMap,
+    transferIndicators,
+    KEYWORD_ATTRIBUTE_ALLOW_LIST,
+    updateFieldInDds,
+    parseDspfFields,
+    updateSourceViewUI,
+    vscode,
+    showFieldProperties,
+    selectField
+}) {
+    try {
+        const selectedField = getSelectedField ? getSelectedField() : null;
+        const fields = getFields ? getFields() : [];
+        const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+
+        if (selectedField && selectedField.id === field.id) {
+            if (selectedField.indicators) {
+                field.indicators = selectedField.indicators;
+            }
+            if (selectedField.fieldIndicatorsModified) {
+                field.fieldIndicatorsModified = selectedField.fieldIndicatorsModified;
+            }
+            if (selectedField.colorIndicatorsModified) {
+                field.colorIndicatorsModified = selectedField.colorIndicatorsModified;
+            }
+            if (selectedField.attributeIndicatorsModified) {
+                field.attributeIndicatorsModified = selectedField.attributeIndicatorsModified;
+            }
+            if (selectedField.dftvalIndicatorsModified) {
+                field.dftvalIndicatorsModified = selectedField.dftvalIndicatorsModified;
+            }
+        }
+
+        const oldField = {
+            ...field,
+            attributes: field.attributes ? { ...field.attributes } : undefined,
+            colorIndicators: field.colorIndicators ? JSON.parse(JSON.stringify(field.colorIndicators)) : undefined,
+            attributeIndicators: field.attributeIndicators ? JSON.parse(JSON.stringify(field.attributeIndicators)) : undefined,
+            checkOptions: field.checkOptions ? { ...field.checkOptions } : undefined,
+            checkIndicators: field.checkIndicators ? JSON.parse(JSON.stringify(field.checkIndicators)) : undefined,
+            keywordIndicators: field.keywordIndicators ? JSON.parse(JSON.stringify(field.keywordIndicators)) : undefined,
+            edtcde: field.edtcde ? { ...field.edtcde } : undefined,
+            edtwrd: field.edtwrd ? { ...field.edtwrd } : undefined,
+            edtmsk: field.edtmsk ? { ...field.edtmsk } : undefined,
+            dft: field.dft ? { ...field.dft } : undefined,
+                values: field.values,
+            dftval: field.dftval ? { ...field.dftval } : undefined,
+            dftvalIndicators: field.dftvalIndicators ? JSON.parse(JSON.stringify(field.dftvalIndicators)) : undefined
+        };
+
+        Logger.debug('Applying properties to field:', oldField.name);
+
+        if (field.type === 'keyword' || field.isKeyword) {
+            field.row = parseInt(document.getElementById('prop-row').value);
+            field.col = parseInt(document.getElementById('prop-col').value);
+
+            applyColorChanges(field);
+
+            const attributeMap = getAttributeCheckboxMap(KEYWORD_ATTRIBUTE_ALLOW_LIST);
+
+            if (!field.attributes) {
+                field.attributes = {};
+            }
+
+            const selectedKeywordAttrs = [];
+            for (const [attrName, checkboxId] of Object.entries(attributeMap)) {
+                const checkbox = document.getElementById(checkboxId);
+                if (checkbox && checkbox.checked) {
+                    field.attributes[attrName] = true;
+                    selectedKeywordAttrs.push(attrName);
+                } else {
+                    delete field.attributes[attrName];
+                    Logger.debug(`Attribute ${attrName} removed from keyword ${field.name}`);
+                }
+            }
+
+            transferIndicators({
+                kind: 'attr',
+                keys: selectedKeywordAttrs,
+                field: field,
+                fieldType: 'keyword',
+                attrFormat: 'individual'
+            });
+
+            if (Object.keys(field.attributes).length === 0) {
+                delete field.attributes;
+            }
+
+            transferIndicators({
+                kind: 'keyword',
+                keys: [field.name],
+                field: field,
+                fieldType: 'keyword'
+            });
+
+            Logger.debug('Old keyword:', oldField);
+            Logger.debug('New keyword:', field);
+
+            updateFieldInDds(field, oldField);
+
+            const latestDocument = getCurrentDocument ? getCurrentDocument() : '';
+            parseDspfFields(latestDocument);
+
+            const updatedField = fields.find(f => f.name === field.name && f.record === currentRecord);
+            if (updatedField) {
+                if (setSelectedField) {
+                    setSelectedField(updatedField);
+                }
+                selectField(updatedField);
+                showFieldProperties(updatedField);
+                Logger.debug('Re-selected keyword after re-parse:', updatedField.name);
+            }
+
+            updateSourceViewUI({
+                Logger,
+                vscode,
+                getCurrentDocument,
+                setCurrentDocument,
+                getCurrentRecord,
+                parseDspfFields
+            });
+            Logger.debug('Source view synchronized after keyword update');
+
+            vscode.postMessage({
+                type: 'applyChangesSuccess',
+                message: `Keyword "${field.name}" updated successfully`
+            });
+
+            showFieldProperties(field);
+
+            Logger.success('Keyword properties applied and DDS updated');
+            return;
+        }
+
+        if (field.type !== 'constant') {
+            const nameInput = document.getElementById('prop-name');
+            if (nameInput) {
+                const newName = nameInput.value.trim().toUpperCase();
+
+                Logger.debug('Name validation - Field ID:', field.id, 'Old name:', oldField.name, 'New name:', newName, 'Current record:', currentRecord);
+
+                if (!newName) {
+                    alert('Field name cannot be empty.');
+                    return;
+                }
+
+                if (newName !== oldField.name) {
+                    Logger.debug('Name changed, checking for duplicates...');
+                    Logger.debug('Current record:', currentRecord);
+                    Logger.debug('All fields:', fields.map(f => `${f.name} (record: ${f.record || 'undefined'})`));
+
+                    const fieldsInCurrentRecord = fields.filter(f => {
+                        return f.record === currentRecord || (!f.record && currentRecord);
+                    });
+
+                    const duplicateField = fieldsInCurrentRecord.find(f =>
+                        f.id !== field.id &&
+                        f.name === newName
+                    );
+
+                    Logger.debug('Duplicate field found:', duplicateField);
+
+                    if (duplicateField) {
+                        vscode.postMessage({
+                            type: 'error',
+                            message: `A field with the name "${newName}" already exists in record "${currentRecord}".`
+                        });
+
+                        nameInput.value = oldField.name;
+                        return;
+                    }
+                }
+
+                field.name = newName;
+            }
+        }
+
+        field.row = parseInt(document.getElementById('prop-row').value);
+        field.col = parseInt(document.getElementById('prop-col').value);
+        field.length = parseInt(document.getElementById('prop-length').value) || null;
+
+        if (field.type !== 'constant') {
+            const decimalsInput = document.getElementById('prop-decimals');
+            if (decimalsInput) {
+                field.decimals = (field.dataType === 'double') ? 0 : (parseInt(decimalsInput.value) || 0);
+            }
+        }
+
+        if (field.type !== 'constant') {
+            const usageSelect = document.getElementById('prop-usage');
+            if (usageSelect) {
+                field.usage = usageSelect.value;
+                Logger.debug('Usage updated to:', field.usage);
+            }
+
+            const typeSelect = document.getElementById('prop-type');
+            if (typeSelect) {
+                field.dataType = typeSelect.value;
+                Logger.debug('Data type updated to:', field.dataType);
+                if (field.dataType === 'date') {
+                    field.length = 10;
+                    field.decimals = 0;
+                    delete field.shift;
+                    delete field.precision;
+                } else if (field.dataType === 'time') {
+                    field.length = 8;
+                    field.decimals = 0;
+                    delete field.shift;
+                    delete field.precision;
+                } else if (field.dataType === 'timestamp') {
+                    field.length = 26;
+                    field.decimals = 0;
+                    delete field.shift;
+                    delete field.precision;
+                }
+            }
+
+            const shiftSelect = document.getElementById('prop-shift');
+            const isShiftReadOnlyForZonedOutputOnly = field.dataType === 'zoned' && field.usage === 'O';
+
+            if (shiftSelect) {
+                if (field.dataType === 'float') {
+                    field.precision = shiftSelect.value;
+                    Logger.debug('Precision updated to:', field.precision);
+                } else if (field.dataType === 'zoned' || field.dataType === 'double') {
+                    if (isShiftReadOnlyForZonedOutputOnly) {
+                        Logger.debug('Shift not updated from UI because it is controlled by EDTCDE for zoned Output fields');
+                    } else {
+                        const selectedShift = shiftSelect.value ? shiftSelect.value.trim() : '';
+                        if (selectedShift) {
+                            field.shift = selectedShift;
+                        } else {
+                            delete field.shift;
+                        }
+                        Logger.debug('Shift updated to:', field.shift || '(none)');
+                    }
+                }
+            }
+        }
+
+        if (field.type === 'constant') {
+            field.value = document.getElementById('prop-value').value;
+        }
+
+        applyColorChanges(field);
+
+        if (field.type === 'constant' || field.type !== 'keyword') {
+            const attributeMap = getAttributeCheckboxMap();
+
+            if (!field.attributes) {
+                field.attributes = {};
+            }
+
+            const selectedAttrs = [];
+            for (const [attrName, checkboxId] of Object.entries(attributeMap)) {
+                const checkbox = document.getElementById(checkboxId);
+                if (checkbox && checkbox.checked) {
+                    field.attributes[attrName] = true;
+                    selectedAttrs.push(attrName);
+                } else {
+                    delete field.attributes[attrName];
+                    Logger.debug(`Attribute ${attrName} removed from field ${field.name}`);
+                }
+            }
+
+            const attrFormat = field.hasGroupedDspatr ? 'grouped' : 'individual';
+            const attrIndicatorsModified = transferIndicators({
+                kind: 'attr',
+                keys: selectedAttrs,
+                field: field,
+                fieldType: 'field',
+                attrFormat: attrFormat
+            });
+
+            if (Object.keys(field.attributes).length === 0) {
+                delete field.attributes;
+            }
+
+            if (field.hasGroupedDspatr && !attrIndicatorsModified) {
+                const oldAttrSet = new Set(Object.keys(oldField.attributes || {}).filter(k => oldField.attributes[k]));
+                const newAttrSet = new Set(Object.keys(field.attributes || {}).filter(k => field.attributes[k]));
+
+                const setsAreDifferent = oldAttrSet.size !== newAttrSet.size ||
+                    [...oldAttrSet].some(attr => !newAttrSet.has(attr));
+
+                if (setsAreDifferent) {
+                    field.attributeIndicatorsModified = true;
+                    Logger.debug('Grouped DSPATR format detected attribute changes, will regenerate line');
+                }
+            }
+        }
+
+        if (field.type !== 'constant' && field.usage !== 'O') {
+            const dataTypeForChecks = field.dataType;
+            const isCharCheck = dataTypeForChecks === 'character' || dataTypeForChecks === 'double';
+            const isNumericCheck = ['packed', 'zoned', 'float'].includes(dataTypeForChecks);
+            const newCheckOptions = {};
+            const applyCheckValue = (id, code) => {
+                const el = document.getElementById(id);
+                if (el && el.checked) {newCheckOptions[code] = true;}
+            };
+            if (isCharCheck) {
+                applyCheckValue('check-me', 'ME');
+                applyCheckValue('check-er', 'ER');
+                applyCheckValue('check-mf', 'MF');
+                applyCheckValue('check-fe', 'FE');
+                applyCheckValue('check-rb', 'RB');
+                applyCheckValue('check-rz', 'RZ');
+                applyCheckValue('check-rl', 'RL');
+                applyCheckValue('check-lc', 'LC');
+            }
+            if (isNumericCheck) {
+                applyCheckValue('check-num-me', 'ME');
+                applyCheckValue('check-num-er', 'ER');
+                applyCheckValue('check-num-mf', 'MF');
+                applyCheckValue('check-num-fe', 'FE');
+                applyCheckValue('check-num-rb', 'RB');
+                applyCheckValue('check-num-rz', 'RZ');
+                applyCheckValue('check-num-rl', 'RL');
+            }
+
+            if (Object.keys(newCheckOptions).length > 0) {
+                field.checkOptions = newCheckOptions;
+            } else {
+                delete field.checkOptions;
+            }
+
+            const allowedIndicatorCodes = ['ME', 'ER'];
+            let checkIndicatorsModified = false;
+            if (!field.checkIndicators) {field.checkIndicators = {};}
+            allowedIndicatorCodes.forEach(code => {
+                if (selectedField && selectedField.checkIndicators && selectedField.checkIndicators[code]) {
+                    field.checkIndicators[code] = selectedField.checkIndicators[code];
+                    checkIndicatorsModified = true;
+                    Logger.debug(`Transferred CHECK(${code}) indicators from selectedField:`, field.checkIndicators[code]);
+                } else if (field.checkIndicators[code] && !(newCheckOptions && newCheckOptions[code])) {
+                    delete field.checkIndicators[code];
+                    checkIndicatorsModified = true;
+                }
+            });
+            Object.keys(field.checkIndicators).forEach(code => {
+                if (!newCheckOptions[code]) {delete field.checkIndicators[code];}
+            });
+            if (Object.keys(field.checkIndicators).length === 0) {
+                delete field.checkIndicators;
+            }
+            if (checkIndicatorsModified) {
+                field.checkIndicatorsModified = true;
+            }
+        } else {
+            delete field.checkOptions;
+            delete field.checkIndicators;
+        }
+
+        const valuesEnabledCheckbox = document.getElementById('prop-values-enabled');
+        const valuesListInput = document.getElementById('prop-values-list');
+        const valuesIsCharType = ['character', 'double'].includes(field.dataType);
+        const valuesIsNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(field.dataType);
+        const canUseValues = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && (field.usage === 'I' || field.usage === 'B')
+            && (valuesIsCharType || valuesIsNumericType);
+
+        if (canUseValues && valuesEnabledCheckbox && valuesEnabledCheckbox.checked && valuesListInput) {
+            const rawInput = valuesListInput.value.trim();
+            if (rawInput) {
+                const hasQuotedTokens = /'(?:''|[^'])*'/.test(rawInput);
+                if (hasQuotedTokens) {
+                    const quotedTokens = rawInput.match(/'(?:''|[^'])*'/g) || [];
+                    field.values = quotedTokens.join(' ');
+                } else {
+                    const lines = rawInput
+                        .split(/\r?\n/)
+                        .map(value => value.trim())
+                        .filter(value => value.length > 0)
+                        .map(value => `'${value.replace(/'/g, "''")}'`);
+
+                    if (lines.length > 0) {
+                        field.values = lines.join(' ');
+                    } else {
+                        delete field.values;
+                    }
+                }
+            } else {
+                delete field.values;
+            }
+        } else {
+            delete field.values;
+        }
+
+        if (field.type !== 'constant') {
+            const dftCheckbox = document.getElementById('prop-dft-enabled');
+            const dftValueInput = document.getElementById('prop-dft-value');
+
+            if (dftCheckbox && dftCheckbox.checked && dftValueInput) {
+                const dftValue = dftValueInput.value.trim();
+                if (dftValue) {
+                    field.dft = { value: dftValue };
+                    Logger.debug(`DFT set to '${dftValue}' for field ${field.name}`);
+                } else {
+                    delete field.dft;
+                }
+            } else {
+                delete field.dft;
+            }
+        } else {
+            delete field.dft;
+        }
+
+        if (field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B')) {
+            const dftvalCheckbox = document.getElementById('prop-dftval-enabled');
+            const dftvalValueInput = document.getElementById('prop-dftval-value');
+
+            if (dftvalCheckbox && dftvalCheckbox.checked && dftvalValueInput) {
+                const dftvalValue = dftvalValueInput.value.trim();
+                if (dftvalValue) {
+                    field.dftval = { value: dftvalValue };
+                    Logger.debug(`DFTVAL set to '${dftvalValue}' for field ${field.name}`);
+
+                    if (selectedField && selectedField.dftvalIndicators) {
+                        field.dftvalIndicators = selectedField.dftvalIndicators;
+                        Logger.debug('Transferred DFTVAL indicators from selectedField:', field.dftvalIndicators);
+                    }
+                } else {
+                    delete field.dftval;
+                    delete field.dftvalIndicators;
+                }
+            } else {
+                delete field.dftval;
+                delete field.dftvalIndicators;
+            }
+        } else {
+            delete field.dftval;
+            delete field.dftvalIndicators;
+        }
+
+        const edtcdeEnabledCheckbox = document.getElementById('prop-edtcde-enabled');
+        const edtcdeValueSelect = document.getElementById('prop-edtcde-value');
+        const edtcdeReplaceSelect = document.getElementById('prop-edtcde-replace-leading-zeros-with');
+        const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(field.dataType);
+        const canUseEdtcde = field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B') && isNumericType;
+
+        if (canUseEdtcde && edtcdeEnabledCheckbox && edtcdeEnabledCheckbox.checked && edtcdeValueSelect) {
+            const selectedEdtcde = edtcdeValueSelect.value.trim().toUpperCase();
+            if (selectedEdtcde) {
+                const replacement = edtcdeReplaceSelect ? edtcdeReplaceSelect.value.trim() : '';
+                field.edtcde = { value: selectedEdtcde };
+                if ((replacement === '*' || replacement === '$') && selectedEdtcde !== 'Z') {
+                    field.edtcde.replaceLeadingZerosWith = replacement;
+                } else {
+                    delete field.edtcde.replaceLeadingZerosWith;
+                }
+            } else {
+                delete field.edtcde;
+            }
+        } else {
+            delete field.edtcde;
+        }
+
+        const edtwrdEnabledCheckbox = document.getElementById('prop-edtwrd-enabled');
+        const edtwrdValueInput = document.getElementById('prop-edtwrd-value');
+        const edtmskEnabledCheckbox = document.getElementById('prop-edtmsk-enabled');
+        const edtmskValueInput = document.getElementById('prop-edtmsk-value');
+
+        const canUseEditKeywords = field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B') && isNumericType;
+
+        if (canUseEditKeywords && edtwrdEnabledCheckbox && edtwrdEnabledCheckbox.checked && edtwrdValueInput) {
+            const edtwrdValue = edtwrdValueInput.value;
+            if (edtwrdValue.length > 0) {
+                field.edtwrd = { value: edtwrdValue };
+            } else {
+                delete field.edtwrd;
+            }
+        } else {
+            delete field.edtwrd;
+        }
+
+        if (canUseEditKeywords && edtmskEnabledCheckbox && edtmskEnabledCheckbox.checked && edtmskValueInput) {
+            const edtmskValue = edtmskValueInput.value;
+            if (edtmskValue.length > 0) {
+                field.edtmsk = { value: edtmskValue };
+            } else {
+                delete field.edtmsk;
+            }
+        } else {
+            delete field.edtmsk;
+        }
+
+        const edtcdeForShift = field.edtcde && field.edtcde.value
+            ? String(field.edtcde.value).trim().toUpperCase()
+            : '';
+        const edtcdeCodesThatForceYShift = ['1', '2', '3', 'A', 'B', 'C', 'D', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q'];
+        const appliesAutoShiftRule = field.type !== 'constant'
+            && field.dataType === 'zoned'
+            && (field.usage === 'O' || field.usage === 'B');
+
+        if (appliesAutoShiftRule) {
+            if (edtcdeForShift === 'Z') {
+                delete field.shift;
+                Logger.debug('Shift cleared for EDTCDE(Z) on zoned Output/Both field');
+            } else if (edtcdeCodesThatForceYShift.includes(edtcdeForShift)) {
+                field.shift = 'Y';
+                Logger.debug(`Shift forced to Y for EDTCDE(${edtcdeForShift}) on zoned Output/Both field`);
+            } else if (field.usage === 'B' && !field.shift) {
+                field.shift = 'S';
+                Logger.debug('Shift defaulted to S for zoned Both field without EDTCDE override');
+            } else if (field.usage === 'O') {
+                delete field.shift;
+                Logger.debug('Shift cleared by default for zoned Output field without EDTCDE override');
+            }
+        }
+
+        Logger.debug('Old field:', oldField);
+        Logger.debug('New field:', field);
+
+        const positionChanged = oldField.row !== field.row || oldField.col !== field.col;
+        const nameChanged = oldField.name !== field.name;
+        const indicatorsModified = Boolean(
+            field.colorIndicatorsModified ||
+            field.attributeIndicatorsModified ||
+            field.keywordIndicatorsModified ||
+            field.fieldIndicatorsModified ||
+            field.dftvalIndicatorsModified
+        );
+
+        const oldColors = JSON.stringify(oldField.colors || [oldField.color].filter(Boolean));
+        const newColors = JSON.stringify(field.colors || [field.color].filter(Boolean));
+        const colorChanged = oldColors !== newColors;
+
+        const oldAttrs = JSON.stringify(oldField.attributes || {});
+        const newAttrs = JSON.stringify(field.attributes || {});
+        const attributesChanged = oldAttrs !== newAttrs;
+
+        const usageChanged = oldField.usage !== field.usage;
+
+        const dataTypeChanged = oldField.dataType !== field.dataType;
+        const lengthChanged = oldField.length !== field.length;
+        const decimalsChanged = oldField.decimals !== field.decimals;
+        const shiftChanged = (field.dataType === 'zoned' || field.dataType === 'double') && oldField.shift !== field.shift;
+        const precisionChanged = field.dataType === 'float' && oldField.precision !== field.precision;
+        const checkOptionsChanged = JSON.stringify(oldField.checkOptions || {}) !== JSON.stringify(field.checkOptions || {});
+        const checkIndicatorsModified = Boolean(field.checkIndicatorsModified);
+        const dftChanged = JSON.stringify(oldField.dft || null) !== JSON.stringify(field.dft || null);
+        const valuesChanged = JSON.stringify(oldField.values || null) !== JSON.stringify(field.values || null);
+        const dftvalChanged = JSON.stringify(oldField.dftval || null) !== JSON.stringify(field.dftval || null);
+        const dftvalIndicatorsChanged = JSON.stringify(oldField.dftvalIndicators || null) !== JSON.stringify(field.dftvalIndicators || null);
+        const edtcdeChanged = JSON.stringify(oldField.edtcde || null) !== JSON.stringify(field.edtcde || null);
+        const edtwrdChanged = JSON.stringify(oldField.edtwrd || null) !== JSON.stringify(field.edtwrd || null);
+        const edtmskChanged = JSON.stringify(oldField.edtmsk || null) !== JSON.stringify(field.edtmsk || null);
+
+        const valueChanged = field.type === 'constant' && oldField.value !== field.value;
+
+        const shouldUpdateDds = Boolean(
+            indicatorsModified ||
+            positionChanged ||
+            nameChanged ||
+            colorChanged ||
+            attributesChanged ||
+            usageChanged ||
+            dataTypeChanged ||
+            lengthChanged ||
+            decimalsChanged ||
+            shiftChanged ||
+            precisionChanged ||
+            valueChanged ||
+            checkOptionsChanged ||
+            checkIndicatorsModified ||
+            dftChanged ||
+            valuesChanged ||
+            dftvalChanged ||
+            dftvalIndicatorsChanged ||
+            edtcdeChanged ||
+            edtwrdChanged ||
+            edtmskChanged
+        );
+
+        if (shouldUpdateDds) {
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            updateFieldInDds(field, oldField);
+            delete field.colorIndicatorsModified;
+            delete field.attributeIndicatorsModified;
+            delete field.checkIndicatorsModified;
+            delete field.keywordIndicatorsModified;
+            delete field.dftvalIndicatorsModified;
+
+            const latestDocument = getCurrentDocument ? getCurrentDocument() : '';
+            parseDspfFields(latestDocument);
+
+            const updatedField = fields.find(f => f.name === field.name && f.record === currentRecord);
+            if (updatedField) {
+                if (setSelectedField) {
+                    setSelectedField(updatedField);
+                }
+                selectField(updatedField);
+                showFieldProperties(updatedField);
+                Logger.debug('Re-selected field after re-parse:', updatedField.name);
+            }
+
+            updateSourceViewUI({
+                Logger,
+                vscode,
+                getCurrentDocument,
+                setCurrentDocument,
+                getCurrentRecord,
+                parseDspfFields
+            });
+            Logger.debug('Source view synchronized after field update');
+
+            vscode.postMessage({
+                type: 'applyChangesSuccess',
+                message: `Changes applied to field "${field.name}"`
+            });
+        } else {
+            Logger.debug('Skipping DDS update - no relevant changes detected');
+
+            vscode.postMessage({
+                type: 'applyChangesSuccess',
+                message: `No changes detected for field "${field.name}"`
+            });
+        }
+
+        showFieldProperties(field);
+
+        Logger.success('Field properties applied');
+    } catch (error) {
+        Logger.error('Error applying field properties:', error);
+        vscode.postMessage({
+            type: 'applyChangesError',
+            message: `Error applying changes: ${error.message}`
+        });
+    }
+}
+
+
+/***/ }),
+/* 31 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupPropertiesTabs: () => (/* binding */ setupPropertiesTabs)
+/* harmony export */ });
+function setupPropertiesTabs() {
+    const tabs = document.querySelectorAll('.properties-tab');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+
+            // Remove active class from all tabs and panels
+            tabs.forEach(t => t.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding panel
+            this.classList.add('active');
+            const panel = document.getElementById(`tab-${tabName}`);
+            if (panel) {
+                panel.classList.add('active');
+            }
+        });
+    });
+}
+
+
+/***/ }),
+/* 32 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   applySflpagRepetition: () => (/* binding */ applySflpagRepetition),
+/* harmony export */   applySubfileControl: () => (/* binding */ applySubfileControl),
+/* harmony export */   getSflpagValue: () => (/* binding */ getSflpagValue),
+/* harmony export */   getSubfileRelationship: () => (/* binding */ getSubfileRelationship),
+/* harmony export */   loadSubfileControl: () => (/* binding */ loadSubfileControl)
+/* harmony export */ });
+// Funciones para cargar y aplicar cambios en los subfile
+function loadSubfileControl(options) {
+    const {
+        Logger,
+        getCurrentDocument,
+        getCurrentRecord,
+        DisplaySizeUtils,
+        IndicatorUtils,
+        scanIndicatorsBackward,
+        indicatorConfigurations,
+        setIndicatorButtonState,
+        openIBMiModal,
+        applySubfileControl
+    } = options;
+
+    const currentDocument = getCurrentDocument();
+    const currentRecord = getCurrentRecord();
+
+    Logger.stats('Loading subfile control keywords for record:', currentRecord);
+
+    const lines = currentDocument.split('\n');
+    let inTargetRecord = false;
+    const subfileControl = {
+        sflsiz: { ds3: '', ds4: '' },
+        sflpag: { ds3: '', ds4: '' },
+        sfllin: { ds3: '', ds4: '' },
+        sfldsp: { indicators: null },
+        sfldspctl: { indicators: null }
+    };
+
+    const displayConfig = DisplaySizeUtils.getAvailableDisplaySizes(currentDocument);
+
+    for (let index = 0; index < lines.length; index++) {
+        const line = lines[index];
+        if (line.includes(`R ${currentRecord}`) || line.includes(`R  ${currentRecord}`)) {
+            inTargetRecord = true;
+            continue;
+        }
+
+        if (inTargetRecord && line.match(/^\s*A\s+R\s+\w+/)) {
+            break;
+        }
+
+        if (inTargetRecord) {
+            const trimmed = line.trim();
+
+            if (trimmed.includes('SFLSIZ(')) {
+                const match = trimmed.match(/SFLSIZ\((\d{1,4})\)/);
+                if (match) {
+                    const value = match[1];
+                    if (trimmed.includes('*DS3')) {
+                        subfileControl.sflsiz.ds3 = value;
+                        Logger.stats(`Found SFLSIZ DS3: ${value}`);
+                    } else if (trimmed.includes('*DS4')) {
+                        subfileControl.sflsiz.ds4 = value;
+                        Logger.stats(`Found SFLSIZ DS4: ${value}`);
+                    } else if (displayConfig.singleSize) {
+                        if (displayConfig.singleSize === 'DS3') {
+                            subfileControl.sflsiz.ds3 = value;
+                            Logger.stats(`Found SFLSIZ (single size DS3): ${value}`);
+                        } else if (displayConfig.singleSize === 'DS4') {
+                            subfileControl.sflsiz.ds4 = value;
+                            Logger.stats(`Found SFLSIZ (single size DS4): ${value}`);
+                        }
+                    }
+                }
+            }
+
+            if (trimmed.includes('SFLPAG(')) {
+                const match = trimmed.match(/SFLPAG\((\d{1,4})\)/);
+                if (match) {
+                    const value = match[1];
+                    if (trimmed.includes('*DS3')) {
+                        subfileControl.sflpag.ds3 = value;
+                        Logger.stats(`Found SFLPAG DS3: ${value}`);
+                    } else if (trimmed.includes('*DS4')) {
+                        subfileControl.sflpag.ds4 = value;
+                        Logger.stats(`Found SFLPAG DS4: ${value}`);
+                    } else if (displayConfig.singleSize) {
+                        if (displayConfig.singleSize === 'DS3') {
+                            subfileControl.sflpag.ds3 = value;
+                            Logger.stats(`Found SFLPAG (single size DS3): ${value}`);
+                        } else if (displayConfig.singleSize === 'DS4') {
+                            subfileControl.sflpag.ds4 = value;
+                            Logger.stats(`Found SFLPAG (single size DS4): ${value}`);
+                        }
+                    }
+                }
+            }
+
+            if (trimmed.includes('SFLLIN(')) {
+                const match = trimmed.match(/SFLLIN\((\d+)\)/);
+                if (match) {
+                    const value = match[1];
+                    if (trimmed.includes('*DS3')) {
+                        subfileControl.sfllin.ds3 = value;
+                        Logger.stats(`Found SFLLIN DS3: ${value}`);
+                    } else if (trimmed.includes('*DS4')) {
+                        subfileControl.sfllin.ds4 = value;
+                        Logger.stats(`Found SFLLIN DS4: ${value}`);
+                    }
+                }
+            }
+
+            if (trimmed.includes('SFLDSP') && !trimmed.includes('SFLDSPCTL')) {
+                Logger.debug(`[SFLDSP PARSE] Found SFLDSP at line ${index}`);
+
+                const currentLineIndicators = IndicatorUtils.extractFromDdsLine(line, 'SFLDSP-PARSE');
+                const isOrLine = line.length > 6 && line[6] === 'O';
+
+                let backwardScan = { scannedLines: [], hasOrLines: false };
+                if (index > 0) {
+                    backwardScan = scanIndicatorsBackward(lines, 0, index, 'SFLDSP-BACKWARD');
+                }
+                const scannedLines = backwardScan.scannedLines;
+                let hasOrLines = backwardScan.hasOrLines;
+
+                if (currentLineIndicators && currentLineIndicators.length > 0) {
+                    if (isOrLine) {
+                        scannedLines.push({ indicators: currentLineIndicators, isOr: true });
+                        hasOrLines = true;
+                    } else {
+                        if (scannedLines.length > 0) {
+                            scannedLines[scannedLines.length - 1].indicators.push(...currentLineIndicators);
+                        } else {
+                            scannedLines.push({ indicators: currentLineIndicators, isOr: false });
+                        }
+                    }
+                }
+
+                if (scannedLines.length > 0) {
+                    if (hasOrLines) {
+                        const groups = [];
+                        scannedLines.forEach(lineItem => {
+                            if (lineItem.isOr) {
+                                groups.push({ indicators: [...lineItem.indicators] });
+                            } else {
+                                if (groups.length > 0) {
+                                    groups[groups.length - 1].indicators.push(...lineItem.indicators);
+                                } else {
+                                    groups.push({ indicators: [...lineItem.indicators] });
+                                }
+                            }
+                        });
+                        subfileControl.sfldsp.indicators = { groups: groups, isOr: true };
+                    } else {
+                        const allIndicators = [];
+                        scannedLines.forEach(lineItem => {
+                            allIndicators.push(...lineItem.indicators);
+                        });
+                        subfileControl.sfldsp.indicators = { groups: [{ indicators: allIndicators }], isOr: false };
+                    }
+                    Logger.stats(`Found SFLDSP with ${subfileControl.sfldsp.indicators.groups.length} group(s), isOr=${subfileControl.sfldsp.indicators.isOr}`);
+                }
+            }
+
+            if (trimmed.includes('SFLDSPCTL')) {
+                Logger.debug(`[SFLDSPCTL PARSE] Found SFLDSPCTL at line ${index}`);
+
+                const currentLineIndicators = IndicatorUtils.extractFromDdsLine(line, 'SFLDSPCTL-PARSE');
+                const isOrLine = line.length > 6 && line[6] === 'O';
+
+                let backwardScan = { scannedLines: [], hasOrLines: false };
+                if (index > 0) {
+                    backwardScan = scanIndicatorsBackward(lines, 0, index, 'SFLDSPCTL-BACKWARD');
+                }
+                const scannedLines = backwardScan.scannedLines;
+                let hasOrLines = backwardScan.hasOrLines;
+
+                if (currentLineIndicators && currentLineIndicators.length > 0) {
+                    if (isOrLine) {
+                        scannedLines.push({ indicators: currentLineIndicators, isOr: true });
+                        hasOrLines = true;
+                    } else {
+                        if (scannedLines.length > 0) {
+                            scannedLines[scannedLines.length - 1].indicators.push(...currentLineIndicators);
+                        } else {
+                            scannedLines.push({ indicators: currentLineIndicators, isOr: false });
+                        }
+                    }
+                }
+
+                if (scannedLines.length > 0) {
+                    if (hasOrLines) {
+                        const groups = [];
+                        scannedLines.forEach(lineItem => {
+                            if (lineItem.isOr) {
+                                groups.push({ indicators: [...lineItem.indicators] });
+                            } else {
+                                if (groups.length > 0) {
+                                    groups[groups.length - 1].indicators.push(...lineItem.indicators);
+                                } else {
+                                    groups.push({ indicators: [...lineItem.indicators] });
+                                }
+                            }
+                        });
+                        subfileControl.sfldspctl.indicators = { groups: groups, isOr: true };
+                    } else {
+                        const allIndicators = [];
+                        scannedLines.forEach(lineItem => {
+                            allIndicators.push(...lineItem.indicators);
+                        });
+                        subfileControl.sfldspctl.indicators = { groups: [{ indicators: allIndicators }], isOr: false };
+                    }
+                    Logger.stats(`Found SFLDSPCTL with ${subfileControl.sfldspctl.indicators.groups.length} group(s), isOr=${subfileControl.sfldspctl.indicators.isOr}`);
+                }
+            }
+        }
+    }
+
+    const sflsizDs3Input = document.getElementById('sflsiz-ds3');
+    const sflsizDs4Input = document.getElementById('sflsiz-ds4');
+    const sflpagDs3Input = document.getElementById('sflpag-ds3');
+    const sflpagDs4Input = document.getElementById('sflpag-ds4');
+    const sfllinDs3Input = document.getElementById('sfllin-ds3');
+    const sfllinDs4Input = document.getElementById('sfllin-ds4');
+
+    const sflsizDs3Enabled = document.getElementById('sflsiz-ds3-enabled');
+    const sflsizDs4Enabled = document.getElementById('sflsiz-ds4-enabled');
+    const sflpagDs3Enabled = document.getElementById('sflpag-ds3-enabled');
+    const sflpagDs4Enabled = document.getElementById('sflpag-ds4-enabled');
+    const sfllinDs3Enabled = document.getElementById('sfllin-ds3-enabled');
+    const sfllinDs4Enabled = document.getElementById('sfllin-ds4-enabled');
+
+    if (sflsizDs3Input && sflsizDs3Enabled) {
+        sflsizDs3Input.value = subfileControl.sflsiz.ds3;
+        sflsizDs3Enabled.checked = subfileControl.sflsiz.ds3 !== '';
+        sflsizDs3Input.disabled = !sflsizDs3Enabled.checked;
+    }
+    if (sflsizDs4Input && sflsizDs4Enabled) {
+        sflsizDs4Input.value = subfileControl.sflsiz.ds4;
+        sflsizDs4Enabled.checked = subfileControl.sflsiz.ds4 !== '';
+        sflsizDs4Input.disabled = !sflsizDs4Enabled.checked;
+    }
+    if (sflpagDs3Input && sflpagDs3Enabled) {
+        sflpagDs3Input.value = subfileControl.sflpag.ds3;
+        sflpagDs3Enabled.checked = subfileControl.sflpag.ds3 !== '';
+        sflpagDs3Input.disabled = !sflpagDs3Enabled.checked;
+    }
+    if (sflpagDs4Input && sflpagDs4Enabled) {
+        sflpagDs4Input.value = subfileControl.sflpag.ds4;
+        sflpagDs4Enabled.checked = subfileControl.sflpag.ds4 !== '';
+        sflpagDs4Input.disabled = !sflpagDs4Enabled.checked;
+    }
+    if (sfllinDs3Input && sfllinDs3Enabled) {
+        sfllinDs3Input.value = subfileControl.sfllin.ds3;
+        sfllinDs3Enabled.checked = subfileControl.sfllin.ds3 !== '';
+        sfllinDs3Input.disabled = !sfllinDs3Enabled.checked;
+    }
+    if (sfllinDs4Input && sfllinDs4Enabled) {
+        sfllinDs4Input.value = subfileControl.sfllin.ds4;
+        sfllinDs4Enabled.checked = subfileControl.sfllin.ds4 !== '';
+        sfllinDs4Input.disabled = !sfllinDs4Enabled.checked;
+    }
+
+    if (sflsizDs3Enabled && sflsizDs3Input) {
+        sflsizDs3Enabled.addEventListener('change', function() {
+            sflsizDs3Input.disabled = !this.checked;
+            if (!this.checked) {sflsizDs3Input.value = '';}
+        });
+    }
+    if (sflsizDs4Enabled && sflsizDs4Input) {
+        sflsizDs4Enabled.addEventListener('change', function() {
+            sflsizDs4Input.disabled = !this.checked;
+            if (!this.checked) {sflsizDs4Input.value = '';}
+        });
+    }
+    if (sflpagDs3Enabled && sflpagDs3Input) {
+        sflpagDs3Enabled.addEventListener('change', function() {
+            sflpagDs3Input.disabled = !this.checked;
+            if (!this.checked) {sflpagDs3Input.value = '';}
+        });
+    }
+    if (sflpagDs4Enabled && sflpagDs4Input) {
+        sflpagDs4Enabled.addEventListener('change', function() {
+            sflpagDs4Input.disabled = !this.checked;
+            if (!this.checked) {sflpagDs4Input.value = '';}
+        });
+    }
+    if (sfllinDs3Enabled && sfllinDs3Input) {
+        sfllinDs3Enabled.addEventListener('change', function() {
+            sfllinDs3Input.disabled = !this.checked;
+            if (!this.checked) {sfllinDs3Input.value = '';}
+        });
+    }
+    if (sfllinDs4Enabled && sfllinDs4Input) {
+        sfllinDs4Enabled.addEventListener('change', function() {
+            sfllinDs4Input.disabled = !this.checked;
+            if (!this.checked) {sfllinDs4Input.value = '';}
+        });
+    }
+
+    const sfldspEnabled = document.getElementById('sfldsp-enabled');
+    const sfldspBtn = document.getElementById('sfldsp-indicators-btn');
+
+    if (sfldspEnabled && sfldspBtn) {
+        const hasIndicators = subfileControl.sfldsp.indicators &&
+                             subfileControl.sfldsp.indicators.groups &&
+                             subfileControl.sfldsp.indicators.groups.length > 0;
+
+        sfldspEnabled.checked = hasIndicators;
+        sfldspBtn.disabled = !sfldspEnabled.checked;
+
+        if (hasIndicators) {
+            const key = 'sfldsp:enabled';
+            indicatorConfigurations.set(key, subfileControl.sfldsp.indicators);
+            setIndicatorButtonState(sfldspBtn, subfileControl.sfldsp.indicators);
+        }
+
+        sfldspEnabled.addEventListener('change', function() {
+            sfldspBtn.disabled = !this.checked;
+            if (!this.checked) {
+                indicatorConfigurations.delete('sfldsp:enabled');
+                setIndicatorButtonState(sfldspBtn, null);
+            }
+        });
+
+        sfldspBtn.addEventListener('click', function() {
+            openIBMiModal('sfldsp', 'enabled', 'SFLDSP indicators');
+        });
+    }
+
+    const sfldspctlEnabled = document.getElementById('sfldspctl-enabled');
+    const sfldspctlBtn = document.getElementById('sfldspctl-indicators-btn');
+
+    if (sfldspctlEnabled && sfldspctlBtn) {
+        const hasIndicators = subfileControl.sfldspctl.indicators &&
+                             subfileControl.sfldspctl.indicators.groups &&
+                             subfileControl.sfldspctl.indicators.groups.length > 0;
+
+        sfldspctlEnabled.checked = hasIndicators;
+        sfldspctlBtn.disabled = !sfldspctlEnabled.checked;
+
+        if (hasIndicators) {
+            const key = 'sfldspctl:enabled';
+            indicatorConfigurations.set(key, subfileControl.sfldspctl.indicators);
+            setIndicatorButtonState(sfldspctlBtn, subfileControl.sfldspctl.indicators);
+        }
+
+        sfldspctlEnabled.addEventListener('change', function() {
+            sfldspctlBtn.disabled = !this.checked;
+            if (!this.checked) {
+                indicatorConfigurations.delete('sfldspctl:enabled');
+                setIndicatorButtonState(sfldspctlBtn, null);
+            }
+        });
+
+        sfldspctlBtn.addEventListener('click', function() {
+            openIBMiModal('sfldspctl', 'enabled', 'SFLDSPCTL indicators');
+        });
+    }
+
+    const applyBtn = document.getElementById('apply-subfile-control-btn');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', applySubfileControl);
+    }
+
+    Logger.success('Subfile control keywords loaded');
+}
+
+function applySubfileControl(options) {
+    const {
+        Logger,
+        vscode,
+        getCurrentDocument,
+        setCurrentDocument,
+        getCurrentRecord,
+        getCurrentView,
+        updateDocumentInEditor,
+        generateDdsLineWithIndicators,
+        indicatorConfigurations,
+        showScreenProperties,
+        parseDspfFields,
+        updatePreviewView
+    } = options;
+
+    Logger.dds('Applying subfile control changes...');
+
+    try {
+        const currentDocument = getCurrentDocument();
+        const currentRecord = getCurrentRecord();
+
+        const sflsizDs3Enabled = document.getElementById('sflsiz-ds3-enabled')?.checked || false;
+        const sflsizDs4Enabled = document.getElementById('sflsiz-ds4-enabled')?.checked || false;
+        const sflpagDs3Enabled = document.getElementById('sflpag-ds3-enabled')?.checked || false;
+        const sflpagDs4Enabled = document.getElementById('sflpag-ds4-enabled')?.checked || false;
+        const sfllinDs3Enabled = document.getElementById('sfllin-ds3-enabled')?.checked || false;
+        const sfllinDs4Enabled = document.getElementById('sfllin-ds4-enabled')?.checked || false;
+
+        const sflsizDs3Value = sflsizDs3Enabled ? document.getElementById('sflsiz-ds3').value : '';
+        const sflsizDs4Value = sflsizDs4Enabled ? document.getElementById('sflsiz-ds4').value : '';
+        const sflpagDs3Value = sflpagDs3Enabled ? document.getElementById('sflpag-ds3').value : '';
+        const sflpagDs4Value = sflpagDs4Enabled ? document.getElementById('sflpag-ds4').value : '';
+        const sfllinDs3Value = sfllinDs3Enabled ? document.getElementById('sfllin-ds3').value : '';
+        const sfllinDs4Value = sfllinDs4Enabled ? document.getElementById('sfllin-ds4').value : '';
+
+        const sfldspEnabled = document.getElementById('sfldsp-enabled').checked;
+        const sfldspctlEnabled = document.getElementById('sfldspctl-enabled').checked;
+
+        const lines = currentDocument.split('\n');
+        let inTargetRecord = false;
+        let recordStartIndex = -1;
+        let recordEndIndex = -1;
+
+        for (let i = 0; i < lines.length; i++) {
+            const trimmed = lines[i].trim();
+
+            if (trimmed.includes(`R ${currentRecord}`) || trimmed.includes(`R  ${currentRecord}`)) {
+                recordStartIndex = i;
+                inTargetRecord = true;
+                continue;
+            }
+
+            if (inTargetRecord && trimmed.match(/^A\s+R\s+\w+/)) {
+                recordEndIndex = i;
+                break;
+            }
+        }
+
+        if (recordStartIndex === -1) {
+            Logger.error('Could not find record start');
+            vscode.postMessage({
+                type: 'applyChangesError',
+                message: 'Error: Could not find record definition'
+            });
+            return;
+        }
+
+        if (recordEndIndex === -1) {
+            recordEndIndex = lines.length;
+        }
+
+        const keywordPositions = {
+            sflsizDs3: -1,
+            sflsizDs4: -1,
+            sflpagDs3: -1,
+            sflpagDs4: -1,
+            sfllinDs3: -1,
+            sfllinDs4: -1,
+            sfldsp: -1,
+            sfldspctl: -1
+        };
+
+        for (let i = recordStartIndex + 1; i < recordEndIndex; i++) {
+            const trimmed = lines[i].trim();
+
+            if (trimmed.includes('SFLSIZ(') && trimmed.includes('*DS3')) {
+                keywordPositions.sflsizDs3 = i;
+            } else if (trimmed.includes('SFLSIZ(') && trimmed.includes('*DS4')) {
+                keywordPositions.sflsizDs4 = i;
+            } else if (trimmed.includes('SFLPAG(') && trimmed.includes('*DS3')) {
+                keywordPositions.sflpagDs3 = i;
+            } else if (trimmed.includes('SFLPAG(') && trimmed.includes('*DS4')) {
+                keywordPositions.sflpagDs4 = i;
+            } else if (trimmed.includes('SFLLIN(') && trimmed.includes('*DS3')) {
+                keywordPositions.sfllinDs3 = i;
+            } else if (trimmed.includes('SFLLIN(') && trimmed.includes('*DS4')) {
+                keywordPositions.sfllinDs4 = i;
+            } else if (trimmed.includes('SFLDSPCTL')) {
+                keywordPositions.sfldspctl = i;
+            } else if (trimmed.includes('SFLDSP')) {
+                keywordPositions.sfldsp = i;
+            }
+        }
+
+        let changesCount = 0;
+        let lastInsertPosition = recordStartIndex;
+
+        if (sflsizDs3Value) {
+            const padded = sflsizDs3Value.padStart(4, '0');
+            const newLine = `     A  *DS3                                SFLSIZ(${padded})`;
+            if (keywordPositions.sflsizDs3 !== -1) {
+                lines[keywordPositions.sflsizDs3] = newLine;
+                Logger.dds(`Updated SFLSIZ DS3 at line ${keywordPositions.sflsizDs3}`);
+                lastInsertPosition = keywordPositions.sflsizDs3;
+                changesCount++;
+            } else {
+                lastInsertPosition++;
+                lines.splice(lastInsertPosition, 0, newLine);
+                Logger.dds(`Inserted SFLSIZ DS3 at line ${lastInsertPosition}`);
+                Object.keys(keywordPositions).forEach(key => {
+                    if (keywordPositions[key] >= lastInsertPosition) {keywordPositions[key]++;}
+                });
+                recordEndIndex++;
+                changesCount++;
+            }
+        } else if (keywordPositions.sflsizDs3 !== -1) {
+            lines.splice(keywordPositions.sflsizDs3, 1);
+            Logger.dds('Removed SFLSIZ DS3');
+            Object.keys(keywordPositions).forEach(key => {
+                if (keywordPositions[key] > keywordPositions.sflsizDs3) {keywordPositions[key]--;}
+            });
+            recordEndIndex--;
+            changesCount++;
+        }
+
+        if (sflsizDs4Value) {
+            const padded = sflsizDs4Value.padStart(4, '0');
+            const newLine = `     A  *DS4                                SFLSIZ(${padded})`;
+            if (keywordPositions.sflsizDs4 !== -1) {
+                lines[keywordPositions.sflsizDs4] = newLine;
+                Logger.dds(`Updated SFLSIZ DS4 at line ${keywordPositions.sflsizDs4}`);
+                lastInsertPosition = keywordPositions.sflsizDs4;
+                changesCount++;
+            } else {
+                lastInsertPosition++;
+                lines.splice(lastInsertPosition, 0, newLine);
+                Logger.dds(`Inserted SFLSIZ DS4 at line ${lastInsertPosition}`);
+                Object.keys(keywordPositions).forEach(key => {
+                    if (keywordPositions[key] >= lastInsertPosition) {keywordPositions[key]++;}
+                });
+                recordEndIndex++;
+                changesCount++;
+            }
+        } else if (keywordPositions.sflsizDs4 !== -1) {
+            lines.splice(keywordPositions.sflsizDs4, 1);
+            Logger.dds('Removed SFLSIZ DS4');
+            Object.keys(keywordPositions).forEach(key => {
+                if (keywordPositions[key] > keywordPositions.sflsizDs4) {keywordPositions[key]--;}
+            });
+            recordEndIndex--;
+            changesCount++;
+        }
+
+        if (sflpagDs3Value) {
+            const padded = sflpagDs3Value.padStart(4, '0');
+            const newLine = `     A  *DS3                                SFLPAG(${padded})`;
+            if (keywordPositions.sflpagDs3 !== -1) {
+                lines[keywordPositions.sflpagDs3] = newLine;
+                Logger.dds(`Updated SFLPAG DS3 at line ${keywordPositions.sflpagDs3}`);
+                lastInsertPosition = keywordPositions.sflpagDs3;
+                changesCount++;
+            } else {
+                lastInsertPosition++;
+                lines.splice(lastInsertPosition, 0, newLine);
+                Logger.dds(`Inserted SFLPAG DS3 at line ${lastInsertPosition}`);
+                Object.keys(keywordPositions).forEach(key => {
+                    if (keywordPositions[key] >= lastInsertPosition) {keywordPositions[key]++;}
+                });
+                recordEndIndex++;
+                changesCount++;
+            }
+        } else if (keywordPositions.sflpagDs3 !== -1) {
+            lines.splice(keywordPositions.sflpagDs3, 1);
+            Logger.dds('Removed SFLPAG DS3');
+            Object.keys(keywordPositions).forEach(key => {
+                if (keywordPositions[key] > keywordPositions.sflpagDs3) {keywordPositions[key]--;}
+            });
+            recordEndIndex--;
+            changesCount++;
+        }
+
+        if (sflpagDs4Value) {
+            const padded = sflpagDs4Value.padStart(4, '0');
+            const newLine = `     A  *DS4                                SFLPAG(${padded})`;
+            if (keywordPositions.sflpagDs4 !== -1) {
+                lines[keywordPositions.sflpagDs4] = newLine;
+                Logger.dds(`Updated SFLPAG DS4 at line ${keywordPositions.sflpagDs4}`);
+                lastInsertPosition = keywordPositions.sflpagDs4;
+                changesCount++;
+            } else {
+                lastInsertPosition++;
+                lines.splice(lastInsertPosition, 0, newLine);
+                Logger.dds(`Inserted SFLPAG DS4 at line ${lastInsertPosition}`);
+                Object.keys(keywordPositions).forEach(key => {
+                    if (keywordPositions[key] >= lastInsertPosition) {keywordPositions[key]++;}
+                });
+                recordEndIndex++;
+                changesCount++;
+            }
+        } else if (keywordPositions.sflpagDs4 !== -1) {
+            lines.splice(keywordPositions.sflpagDs4, 1);
+            Logger.dds('Removed SFLPAG DS4');
+            Object.keys(keywordPositions).forEach(key => {
+                if (keywordPositions[key] > keywordPositions.sflpagDs4) {keywordPositions[key]--;}
+            });
+            recordEndIndex--;
+            changesCount++;
+        }
+
+        if (sfllinDs3Value) {
+            const newLine = `     A  *DS3                                SFLLIN(${sfllinDs3Value})`;
+            if (keywordPositions.sfllinDs3 !== -1) {
+                lines[keywordPositions.sfllinDs3] = newLine;
+                Logger.dds(`Updated SFLLIN DS3 at line ${keywordPositions.sfllinDs3}`);
+                lastInsertPosition = keywordPositions.sfllinDs3;
+                changesCount++;
+            } else {
+                lastInsertPosition++;
+                lines.splice(lastInsertPosition, 0, newLine);
+                Logger.dds(`Inserted SFLLIN DS3 at line ${lastInsertPosition}`);
+                Object.keys(keywordPositions).forEach(key => {
+                    if (keywordPositions[key] >= lastInsertPosition) {keywordPositions[key]++;}
+                });
+                recordEndIndex++;
+                changesCount++;
+            }
+        } else if (keywordPositions.sfllinDs3 !== -1) {
+            lines.splice(keywordPositions.sfllinDs3, 1);
+            Logger.dds('Removed SFLLIN DS3');
+            Object.keys(keywordPositions).forEach(key => {
+                if (keywordPositions[key] > keywordPositions.sfllinDs3) {keywordPositions[key]--;}
+            });
+            recordEndIndex--;
+            changesCount++;
+        }
+
+        if (sfllinDs4Value) {
+            const newLine = `     A  *DS4                                SFLLIN(${sfllinDs4Value})`;
+            if (keywordPositions.sfllinDs4 !== -1) {
+                lines[keywordPositions.sfllinDs4] = newLine;
+                Logger.dds(`Updated SFLLIN DS4 at line ${keywordPositions.sfllinDs4}`);
+                lastInsertPosition = keywordPositions.sfllinDs4;
+                changesCount++;
+            } else {
+                lastInsertPosition++;
+                lines.splice(lastInsertPosition, 0, newLine);
+                Logger.dds(`Inserted SFLLIN DS4 at line ${lastInsertPosition}`);
+                Object.keys(keywordPositions).forEach(key => {
+                    if (keywordPositions[key] >= lastInsertPosition) {keywordPositions[key]++;}
+                });
+                recordEndIndex++;
+                changesCount++;
+            }
+        } else if (keywordPositions.sfllinDs4 !== -1) {
+            lines.splice(keywordPositions.sfllinDs4, 1);
+            Logger.dds('Removed SFLLIN DS4');
+            Object.keys(keywordPositions).forEach(key => {
+                if (keywordPositions[key] > keywordPositions.sfllinDs4) {keywordPositions[key]--;}
+            });
+            recordEndIndex--;
+            changesCount++;
+        }
+
+        if (sfldspEnabled) {
+            const indicatorData = indicatorConfigurations.get('sfldsp:enabled');
+
+            if (indicatorData && indicatorData.groups && indicatorData.groups.length > 0) {
+                const generated = generateDdsLineWithIndicators('SFLDSP', indicatorData);
+                const newLines = generated.split('\n');
+
+                if (keywordPositions.sfldsp !== -1) {
+                    let linesToRemove = 1;
+                    let j = keywordPositions.sfldsp - 1;
+                    while (j >= recordStartIndex) {
+                        const prevLine = lines[j];
+                        const prevTrimmed = prevLine.trim();
+                        const isIndicatorOnly = /^A[O\s]\s*[N\d\s]+$/.test(prevTrimmed) && prevLine.substring(18).trim() === '';
+                        if (!isIndicatorOnly) { break; }
+                        linesToRemove++;
+                        j--;
+                    }
+
+                    lines.splice(keywordPositions.sfldsp - (linesToRemove - 1), linesToRemove, ...newLines);
+                    Logger.dds(`Updated SFLDSP: removed ${linesToRemove} lines, inserted ${newLines.length} lines`);
+                    lastInsertPosition = keywordPositions.sfldsp;
+
+                    const delta = newLines.length - linesToRemove;
+                    Object.keys(keywordPositions).forEach(key => {
+                        if (keywordPositions[key] > keywordPositions.sfldsp) {keywordPositions[key] += delta;}
+                    });
+                    recordEndIndex += delta;
+                    changesCount++;
+                } else {
+                    lastInsertPosition++;
+                    lines.splice(lastInsertPosition, 0, ...newLines);
+                    Logger.dds(`Inserted SFLDSP: ${newLines.length} line(s)`);
+                    Object.keys(keywordPositions).forEach(key => {
+                        if (keywordPositions[key] >= lastInsertPosition) {keywordPositions[key] += newLines.length;}
+                    });
+                    recordEndIndex += newLines.length;
+                    changesCount++;
+                }
+            }
+        } else if (keywordPositions.sfldsp !== -1) {
+            let linesToRemove = 1;
+            let j = keywordPositions.sfldsp - 1;
+            while (j >= recordStartIndex) {
+                const prevLine = lines[j];
+                const prevTrimmed = prevLine.trim();
+                const isIndicatorOnly = /^A[O\s]\s*[N\d\s]+$/.test(prevTrimmed) && prevLine.substring(18).trim() === '';
+                if (!isIndicatorOnly) { break; }
+                linesToRemove++;
+                j--;
+            }
+
+            lines.splice(keywordPositions.sfldsp - (linesToRemove - 1), linesToRemove);
+            Logger.dds(`Removed SFLDSP (${linesToRemove} line(s))`);
+            Object.keys(keywordPositions).forEach(key => {
+                if (keywordPositions[key] > keywordPositions.sfldsp) {keywordPositions[key] -= linesToRemove;}
+            });
+            recordEndIndex -= linesToRemove;
+            changesCount++;
+        }
+
+        if (sfldspctlEnabled) {
+            const indicatorData = indicatorConfigurations.get('sfldspctl:enabled');
+
+            if (indicatorData && indicatorData.groups && indicatorData.groups.length > 0) {
+                const generated = generateDdsLineWithIndicators('SFLDSPCTL', indicatorData);
+                const newLines = generated.split('\n');
+
+                if (keywordPositions.sfldspctl !== -1) {
+                    let linesToRemove = 1;
+                    let j = keywordPositions.sfldspctl - 1;
+                    while (j >= recordStartIndex) {
+                        const prevLine = lines[j];
+                        const prevTrimmed = prevLine.trim();
+                        const isIndicatorOnly = /^A[O\s]\s*[N\d\s]+$/.test(prevTrimmed) && prevLine.substring(18).trim() === '';
+                        if (!isIndicatorOnly) { break; }
+                        linesToRemove++;
+                        j--;
+                    }
+
+                    lines.splice(keywordPositions.sfldspctl - (linesToRemove - 1), linesToRemove, ...newLines);
+                    Logger.dds(`Updated SFLDSPCTL: removed ${linesToRemove} lines, inserted ${newLines.length} lines`);
+
+                    const delta = newLines.length - linesToRemove;
+                    Object.keys(keywordPositions).forEach(key => {
+                        if (keywordPositions[key] > keywordPositions.sfldspctl) {keywordPositions[key] += delta;}
+                    });
+                    recordEndIndex += delta;
+                    changesCount++;
+                } else {
+                    lastInsertPosition++;
+                    lines.splice(lastInsertPosition, 0, ...newLines);
+                    Logger.dds(`Inserted SFLDSPCTL: ${newLines.length} line(s)`);
+                    recordEndIndex += newLines.length;
+                    changesCount++;
+                }
+            }
+        } else if (keywordPositions.sfldspctl !== -1) {
+            let linesToRemove = 1;
+            let j = keywordPositions.sfldspctl - 1;
+            while (j >= recordStartIndex) {
+                const prevLine = lines[j];
+                const prevTrimmed = prevLine.trim();
+                const isIndicatorOnly = /^A[O\s]\s*[N\d\s]+$/.test(prevTrimmed) && prevLine.substring(18).trim() === '';
+                if (!isIndicatorOnly) { break; }
+                linesToRemove++;
+                j--;
+            }
+
+            lines.splice(keywordPositions.sfldspctl - (linesToRemove - 1), linesToRemove);
+            Logger.dds(`Removed SFLDSPCTL (${linesToRemove} line(s))`);
+            Object.keys(keywordPositions).forEach(key => {
+                if (keywordPositions[key] > keywordPositions.sfldspctl) {keywordPositions[key] -= linesToRemove;}
+            });
+            recordEndIndex -= linesToRemove;
+            changesCount++;
+        }
+
+        const nextDocument = lines.join('\n');
+        setCurrentDocument(nextDocument);
+        updateDocumentInEditor();
+
+        Logger.success('Subfile control keywords applied successfully');
+
+        const message = changesCount === 0
+            ? 'No changes were made'
+            : `Successfully updated ${changesCount} subfile control keyword${changesCount > 1 ? 's' : ''}`;
+        vscode.postMessage({
+            type: 'applyChangesSuccess',
+            message: message
+        });
+
+        showScreenProperties();
+        requestAnimationFrame(() => {
+            const subfileTab = document.querySelector('.properties-tab[data-tab="subfile-control"]');
+            if (subfileTab) {
+                subfileTab.click();
+            }
+        });
+
+        const activeView = getCurrentView ? getCurrentView() : 'designer';
+        if (activeView === 'preview' && updatePreviewView) {
+            updatePreviewView();
+        } else if (activeView === 'designer' && parseDspfFields) {
+            parseDspfFields(nextDocument);
+        }
+    } catch (error) {
+        Logger.error('Error applying subfile control:', error);
+        vscode.postMessage({
+            type: 'applyChangesError',
+            message: 'Error updating subfile control: ' + error.message
+        });
+    }
+}
+
+function applySflpagRepetition(options) {
+    const {
+        fields,
+        targetRecord,
+        subfileRelationship,
+        getSflpagValue,
+        Logger
+    } = options;
+
+    if (!subfileRelationship) {
+        return fields;
+    }
+
+    const sflctlRecord = subfileRelationship.sflctlRecord;
+    const sflpagValue = getSflpagValue(sflctlRecord);
+
+    if (sflpagValue <= 1) {
+        return fields;
+    }
+
+    Logger.debug(`Applying SFLPAG repetition: ${sflpagValue} times for ${targetRecord} (from ${sflctlRecord})`);
+
+    const originalFields = [...fields];
+    const resultFields = [...fields];
+
+    for (let repeat = 1; repeat < sflpagValue; repeat++) {
+        originalFields.forEach(field => {
+            const shouldRepeat = (
+                (targetRecord === subfileRelationship.sflRecord && !field.isBackgroundRecord) ||
+                (targetRecord === subfileRelationship.sflctlRecord && field.isBackgroundRecord)
+            );
+
+            if (shouldRepeat) {
+                const visualCopy = {
+                    ...field,
+                    row: field.row + repeat,
+                    isVisualCopy: true
+                };
+                resultFields.push(visualCopy);
+            }
+        });
+    }
+
+    return resultFields;
+}
+
+function getSflpagValue(options) {
+    const {
+        sflctlRecordName,
+        currentDocument,
+        currentDisplaySize,
+        DisplaySizeUtils,
+        Logger
+    } = options;
+
+    if (!sflctlRecordName) {
+        return 0;
+    }
+
+    const lines = currentDocument.split('\n');
+    let inSflctlRecord = false;
+    let sflpagValue = 0;
+    const displayMarker = currentDisplaySize === 'DS3' ? '*DS3' : '*DS4';
+
+    const displayConfig = DisplaySizeUtils.getAvailableDisplaySizes(currentDocument);
+
+    for (let i = 0; i < lines.length; i++) {
+        const trimmed = lines[i].trim();
+
+        if (trimmed.includes(`R ${sflctlRecordName}`) || trimmed.includes(`R  ${sflctlRecordName}`)) {
+            if (trimmed.includes('SFLCTL(')) {
+                inSflctlRecord = true;
+                continue;
+            }
+
+            for (let j = i + 1; j < lines.length; j++) {
+                const nextLine = lines[j].trim();
+                if (nextLine.match(/^A\s+R\s+\w+/)) {
+                    break;
+                }
+                if (nextLine.includes('SFLCTL(')) {
+                    inSflctlRecord = true;
+                    break;
+                }
+            }
+            continue;
+        }
+
+        if (inSflctlRecord && trimmed.match(/^A\s+R\s+\w+/)) {
+            break;
+        }
+
+        if (inSflctlRecord && trimmed.includes('SFLPAG(')) {
+            const match = trimmed.match(/SFLPAG\((\d+)\)/);
+            if (match) {
+                if (trimmed.includes(displayMarker)) {
+                    sflpagValue = parseInt(match[1], 10);
+                    Logger.stats(`Found SFLPAG for ${displayMarker}: ${sflpagValue}`);
+                    break;
+                } else if (displayConfig.singleSize) {
+                    if (displayConfig.singleSize === currentDisplaySize) {
+                        sflpagValue = parseInt(match[1], 10);
+                        Logger.stats(`Found SFLPAG (single size ${displayConfig.singleSize}): ${sflpagValue}`);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    return sflpagValue;
+}
+
+function getSubfileRelationship(options) {
+    const {
+        recordName,
+        currentDocument,
+        getRecordType,
+        Logger
+    } = options;
+
+    const lines = currentDocument.split('\n');
+    const recordType = getRecordType(recordName);
+
+    if (recordType === 'SFLCTL') {
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.includes(`R ${recordName}`) || line.includes(`R  ${recordName}`)) {
+                if (line.includes('SFLCTL(')) {
+                    const match = line.match(/SFLCTL\((\w+)\)/);
+                    if (match) {
+                        const sflRecord = match[1];
+                        Logger.debug(`Found SFLCTL relationship (same line): ${recordName} controls ${sflRecord}`);
+                        return {
+                            sflRecord: sflRecord,
+                            sflctlRecord: recordName,
+                            companionRecord: sflRecord
+                        };
+                    }
+                }
+
+                for (let j = i + 1; j < lines.length; j++) {
+                    const nextLine = lines[j];
+                    if (nextLine.match(/^\s{5}A\s+R\s+\w+/)) {
+                        break;
+                    }
+                    if (nextLine.includes('SFLCTL(')) {
+                        const match = nextLine.match(/SFLCTL\((\w+)\)/);
+                        if (match) {
+                            const sflRecord = match[1];
+                            Logger.debug(`Found SFLCTL relationship (next line): ${recordName} controls ${sflRecord}`);
+                            return {
+                                sflRecord: sflRecord,
+                                sflctlRecord: recordName,
+                                companionRecord: sflRecord
+                            };
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    if (recordType === 'SFL') {
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const recordMatch = line.match(/^\s{5}A\s+R\s+(\w+)/);
+            if (recordMatch) {
+                const ctlRecordName = recordMatch[1];
+
+                const sflctlMatch = line.match(/SFLCTL\((\w+)\)/);
+                if (sflctlMatch && sflctlMatch[1] === recordName) {
+                    Logger.debug(`Found SFL relationship (same line): ${recordName} is controlled by ${ctlRecordName}`);
+                    return {
+                        sflRecord: recordName,
+                        sflctlRecord: ctlRecordName,
+                        companionRecord: ctlRecordName
+                    };
+                }
+
+                for (let j = i + 1; j < lines.length; j++) {
+                    const nextLine = lines[j];
+                    if (nextLine.match(/^\s{5}A\s+R\s+\w+/)) {
+                        break;
+                    }
+                    const nextMatch = nextLine.match(/SFLCTL\((\w+)\)/);
+                    if (nextMatch && nextMatch[1] === recordName) {
+                        Logger.debug(`Found SFL relationship (next line): ${recordName} is controlled by ${ctlRecordName}`);
+                        return {
+                            sflRecord: recordName,
+                            sflctlRecord: ctlRecordName,
+                            companionRecord: ctlRecordName
+                        };
+                    }
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+
+/***/ }),
+/* 33 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createFunctionKeyRow: () => (/* binding */ createFunctionKeyRow),
+/* harmony export */   loadFunctionKeys: () => (/* binding */ loadFunctionKeys),
+/* harmony export */   saveFunctionKeys: () => (/* binding */ saveFunctionKeys)
+/* harmony export */ });
+function loadFunctionKeys(options) {
+    const { getCurrentDocument, getCurrentRecord, createFunctionKeyRow } = options;
+    const container = document.getElementById('function-keys-list');
+    if (!container) {return;}
+
+    const currentDocument = getCurrentDocument();
+    const currentRecord = getCurrentRecord();
+
+    const lines = currentDocument.split('\n');
+    let inTargetRecord = false;
+    const functionKeysMap = {};
+
+    for (let line of lines) {
+        if (line.includes(`R ${currentRecord}`) || line.includes(`R  ${currentRecord}`)) {
+            inTargetRecord = true;
+            continue;
+        }
+
+        if (inTargetRecord && line.match(/^\s*A\s+R\s+\w+/)) {
+            break;
+        }
+
+        if (inTargetRecord) {
+            const cfMatch = line.match(/CF(\d+)\((\d+)(?:\s+'([^']*)')?\)/i);
+            const caMatch = line.match(/CA(\d+)\((\d+)(?:\s+'([^']*)')?\)/i);
+
+            if (cfMatch) {
+                functionKeysMap[`F${parseInt(cfMatch[1])}`] = {
+                    type: 'CF',
+                    indicator: cfMatch[2],
+                    description: cfMatch[3] || ''
+                };
+            } else if (caMatch) {
+                functionKeysMap[`F${parseInt(caMatch[1])}`] = {
+                    type: 'CA',
+                    indicator: caMatch[2],
+                    description: caMatch[3] || ''
+                };
+            }
+        }
+    }
+
+    container.innerHTML = '';
+
+    for (let i = 1; i <= 24; i++) {
+        const key = `F${i}`;
+        const fkData = functionKeysMap[key] || { type: '', indicator: '', description: '' };
+        container.appendChild(createFunctionKeyRow({ fk: { key, ...fkData } }));
+    }
+}
+
+function createFunctionKeyRow(options) {
+    const { fk = null, key, type, indicator, description, index = null, IdGenerator, saveFunctionKeys } = options;
+    const row = document.createElement('div');
+    row.className = 'function-key-row';
+    const rowId = IdGenerator.generateUniqueId('fk-row');
+    row.dataset.rowId = rowId;
+    row.style.cssText = 'display: grid; grid-template-columns: 70px 240px 70px 1fr; gap: 8px; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 8px; align-items: center; min-width: 600px;';
+
+    const resolvedFk = fk || { key, type, indicator, description };
+    const resolvedKey = resolvedFk && resolvedFk.key ? resolvedFk.key : 'F1';
+    const resolvedType = resolvedFk && resolvedFk.type ? resolvedFk.type : '';
+    const resolvedIndicator = resolvedFk && resolvedFk.indicator ? resolvedFk.indicator : '';
+    const resolvedDescription = resolvedFk && resolvedFk.description ? resolvedFk.description : '';
+
+    row.innerHTML = `
+        <select class="fk-key" style="width: 100%; padding: 4px;">
+            ${generateFunctionKeyOptions(resolvedKey)}
+        </select>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">
+                <input type="radio" name="type-${rowId}" value="" ${resolvedType === '' ? 'checked' : ''} />
+                <span style="font-size: 12px;">Unspecified</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">
+                <input type="radio" name="type-${rowId}" value="CA" ${resolvedType === 'CA' ? 'checked' : ''} />
+                <span style="font-size: 12px;">Attention</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">
+                <input type="radio" name="type-${rowId}" value="CF" ${resolvedType === 'CF' ? 'checked' : ''} />
+                <span style="font-size: 12px;">Function</span>
+            </label>
+        </div>
+        <input type="number" class="fk-indicator" value="${resolvedIndicator}" placeholder="Ind" min="1" max="99" style="width: 100%; padding: 4px; text-align: center;" />
+        <input type="text" class="fk-description" value="${resolvedDescription}" placeholder="Description" style="width: 100%; padding: 4px; min-width: 150px;" />
+    `;
+
+    row.querySelectorAll('select, input').forEach(el => {
+        el.addEventListener('change', saveFunctionKeys);
+        el.addEventListener('blur', saveFunctionKeys);
+    });
+
+    return row;
+}
+
+function saveFunctionKeys(options) {
+    const {
+        Logger,
+        isReadOnly,
+        getCurrentDocument,
+        setCurrentDocument,
+        getCurrentRecord,
+        updateDocumentInEditor
+    } = options;
+
+    if (isReadOnly) {
+        Logger.warn('Cannot save function keys in read-only mode');
+        return;
+    }
+
+    Logger.ui('Saving function keys...');
+
+    const container = document.getElementById('function-keys-list');
+    if (!container) {return;}
+
+    const configuredKeys = [];
+    const rows = container.querySelectorAll('.function-key-row');
+
+    rows.forEach(row => {
+        const keySelect = row.querySelector('.fk-key');
+        const typeRadios = row.querySelectorAll('input[type="radio"]');
+        const indicatorInput = row.querySelector('.fk-indicator');
+        const descriptionInput = row.querySelector('.fk-description');
+
+        const key = keySelect.value;
+        let type = '';
+        typeRadios.forEach(radio => {
+            if (radio.checked) {
+                type = radio.value;
+            }
+        });
+        const indicator = indicatorInput.value.trim();
+        const description = descriptionInput.value.trim();
+
+        if (type && indicator) {
+            configuredKeys.push({ key, type, indicator, description });
+        }
+    });
+
+    const currentDocument = getCurrentDocument();
+    const currentRecord = getCurrentRecord();
+    const lines = currentDocument.split('\n');
+    let inTargetRecord = false;
+    let recordLineIndex = -1;
+    let insertIndex = -1;
+    let recordStartIndex = -1;
+    const linesToRemove = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        if (line.includes(`R ${currentRecord}`) || line.includes(`R  ${currentRecord}`)) {
+            inTargetRecord = true;
+            recordStartIndex = i;
+            recordLineIndex = i;
+            continue;
+        }
+
+        if (inTargetRecord && line.match(/^\s*A\s+R\s+\w+/)) {
+            insertIndex = i;
+            break;
+        }
+
+        if (inTargetRecord) {
+            if (line.match(/CF\d+\(/) || line.match(/CA\d+\(/) ||
+                line.includes('PAGEDOWN(') || line.includes('PAGEUP(')) {
+                linesToRemove.push(i);
+            }
+        }
+    }
+
+    if (recordLineIndex !== -1) {
+        insertIndex = recordLineIndex + 1;
+    } else if (insertIndex === -1) {
+        insertIndex = lines.length;
+    }
+
+    for (let i = linesToRemove.length - 1; i >= 0; i--) {
+        const removedIndex = linesToRemove[i];
+        lines.splice(removedIndex, 1);
+
+        if (removedIndex < insertIndex) {
+            insertIndex--;
+        }
+    }
+
+    const newLines = [];
+    configuredKeys.forEach(fk => {
+        let keyword = '';
+
+        if (fk.key === 'PAGEDOWN' || fk.key === 'PAGEUP') {
+            keyword = fk.key;
+        } else {
+            const fNum = fk.key.substring(1).padStart(2, '0');
+            keyword = `${fk.type}${fNum}`;
+        }
+
+        const indicator = fk.indicator.padStart(2, '0');
+        const desc = fk.description ? ` '${fk.description}'` : '';
+        const line = `     A                                      ${keyword}(${indicator}${desc})`;
+        newLines.push(line);
+    });
+
+    lines.splice(insertIndex, 0, ...newLines);
+
+    const nextDocument = lines.join('\n');
+    setCurrentDocument(nextDocument);
+    updateDocumentInEditor();
+
+    Logger.success(`Saved ${configuredKeys.length} function keys to DDS`);
+}
+
+function generateFunctionKeyOptions(selectedKey) {
+    const keys = [];
+    for (let i = 1; i <= 24; i++) {
+        keys.push(`F${i}`);
+    }
+
+    return keys.map(k => `<option value="${k}" ${k === selectedKey ? 'selected' : ''}>${k}</option>`).join('');
+}
+
+
+/***/ }),
+/* 34 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   executeDeleteField: () => (/* binding */ executeDeleteField),
+/* harmony export */   showDeleteConfirmation: () => (/* binding */ showDeleteConfirmation)
+/* harmony export */ });
+function showDeleteConfirmation(options) {
+    const { field, Logger, onConfirm } = options;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'confirmation-modal-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    `;
+
+    const modal = document.createElement('div');
+    modal.className = 'confirmation-modal';
+    modal.style.cssText = `
+        background: #2d2d30;
+        border: 1px solid #454545;
+        border-radius: 6px;
+        padding: 20px;
+        min-width: 400px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        color: #cccccc;
+    `;
+
+    let fieldTypeLabel = 'Field';
+    if (field.type === 'keyword') {
+        fieldTypeLabel = 'Keyword';
+    } else if (field.type === 'constant') {
+        fieldTypeLabel = 'Constant';
+    }
+
+    modal.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+            <span style="font-size: 20px; color: #f48771;">⚠</span>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #f48771;">Delete ${fieldTypeLabel}</h3>
+        </div>
+        <p style="margin: 0 0 8px 0; font-size: 13px; line-height: 1.5; color: #cccccc;">
+            Are you sure you want to delete the ${fieldTypeLabel.toLowerCase()} <strong>"${field.name}"</strong>?
+        </p>
+        <p style="margin: 0 0 20px 0; font-size: 12px; font-style: italic; color: #999999;">
+            This action cannot be undone.
+        </p>
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button id="confirm-delete-no" style="
+                padding: 6px 14px;
+                background-color: #3c3c3c;
+                color: #cccccc;
+                border: 1px solid #555555;
+                border-radius: 2px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 400;
+                min-width: 70px;
+                transition: background-color 0.15s;
+            ">No</button>
+            <button id="confirm-delete-yes" style="
+                padding: 6px 14px;
+                background-color: #c74e39;
+                color: white;
+                border: none;
+                border-radius: 2px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 400;
+                min-width: 70px;
+                transition: background-color 0.15s;
+            ">Yes</button>
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    const noButton = document.getElementById('confirm-delete-no');
+    const yesButton = document.getElementById('confirm-delete-yes');
+
+    setTimeout(() => {
+        noButton.focus();
+    }, 100);
+
+    noButton.addEventListener('mouseenter', function() {
+        this.style.backgroundColor = '#505050';
+    });
+    noButton.addEventListener('mouseleave', function() {
+        this.style.backgroundColor = '#3c3c3c';
+    });
+
+    yesButton.addEventListener('mouseenter', function() {
+        this.style.backgroundColor = '#a84233';
+    });
+    yesButton.addEventListener('mouseleave', function() {
+        this.style.backgroundColor = '#c74e39';
+    });
+
+    const cleanup = () => {
+        overlay.remove();
+        document.removeEventListener('keydown', handleKeyDown);
+    };
+
+    noButton.addEventListener('click', function() {
+        cleanup();
+        Logger.debug('Delete cancelled by user');
+    });
+
+    yesButton.addEventListener('click', function() {
+        cleanup();
+        onConfirm();
+    });
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+            cleanup();
+        } else if (e.key === 'Enter') {
+            cleanup();
+            onConfirm();
+        }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            cleanup();
+        }
+    });
+}
+
+function executeDeleteField(options) {
+    const { field, Logger, fields, deselectAllFields, removeFieldFromDds } = options;
+
+    const originalElement = document.querySelector(`[data-field-id="${field.id}"]`);
+    if (originalElement) {
+        originalElement.remove();
+        Logger.debug('Removed original field element from DOM');
+    }
+
+    const copyPattern = `${field.id}_repeat`;
+    const allElements = document.querySelectorAll('[data-field-id]');
+    let removedCopies = 0;
+
+    allElements.forEach(el => {
+        if (el.dataset.fieldId.startsWith(copyPattern)) {
+            el.remove();
+            removedCopies++;
+            Logger.debug(`Removed visual copy: ${el.dataset.fieldId}`);
+        }
+    });
+
+    Logger.success(`Removed field from DOM: 1 original + ${removedCopies} visual copies`);
+
+    const index = fields.findIndex(f => f.id === field.id);
+    Logger.debug('Finding field in array, index:', index);
+    if (index > -1) {
+        fields.splice(index, 1);
+        Logger.success('Field removed from fields array, remaining:', fields.length);
+    } else {
+        Logger.error('Field not found in fields array with id:', field.id);
+        Logger.debug('All fields in array:', fields.map(f => ({ id: f.id, name: f.name, type: f.type })));
+    }
+
+    deselectAllFields();
+
+    removeFieldFromDds(field);
+
+    Logger.success('Field deletion process completed');
+}
+
+
+/***/ }),
+/* 35 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updatePreviewView: () => (/* binding */ updatePreviewView)
+/* harmony export */ });
+function updatePreviewView(options) {
+    const {
+        Logger,
+        ScreenCoordinates,
+        parseDspfForPreview,
+        generateWindowFieldHtml,
+        generateFieldHtml,
+        setupPreviewDisplaySizeListeners,
+        updateCanvasSize,
+        setupRulers,
+        parseDspfFields,
+        getCurrentDocument,
+        getCurrentRecord,
+        getCurrentDisplaySize,
+        setCurrentDisplaySize,
+        applyDefaultZoomForDisplaySize,
+        updatePreviewView: updatePreviewViewHandler
+    } = options;
+
+    const previewContainer = document.getElementById('preview-container');
+    if (!previewContainer) {return;}
+
+    const currentDocument = getCurrentDocument();
+    const currentRecord = getCurrentRecord();
+    const currentDisplaySize = getCurrentDisplaySize();
+
+    const parsedScreen = parseDspfForPreview(currentDocument, currentRecord);
+
+    const rows = currentDisplaySize === 'DS3' ? 24 : 27;
+    const cols = currentDisplaySize === 'DS3' ? 80 : 132;
+
+    let html = `
+        <div class="header">
+            <h2>DSPF Preview - ${currentRecord || parsedScreen.recordName || 'DISPLAY'} (${currentDisplaySize})</h2>
+            <!-- Display Size Selection for Preview -->
+            <div style="display: flex; align-items: center; gap: 15px; border: 1px solid #555; padding: 5px 10px; border-radius: 3px; margin: 10px auto; width: fit-content; background-color: #1e1e1e;">
+                <label style="margin: 0; color: #cccccc; cursor: pointer;">
+                    <input type="radio" name="preview-display-size" value="DS3" ${currentDisplaySize === 'DS3' ? 'checked' : ''}>
+                    <span style="margin-left: 5px;">24 x 80 (*DS3)</span>
+                </label>
+                <label style="margin: 0; color: #cccccc; cursor: pointer;">
+                    <input type="radio" name="preview-display-size" value="DS4" ${currentDisplaySize === 'DS4' ? 'checked' : ''}>
+                    <span style="margin-left: 5px;">27 x 132 (*DS4)</span>
+                </label>
+            </div>
+        </div>
+        <div class="screen" style="width: ${ScreenCoordinates.getWidthInPixels(cols)}px; height: ${ScreenCoordinates.getHeightInPixels(rows)}px;">
+    `;
+
+    for (let line = 1; line <= rows; line++) {
+        const lineContent = ''.padEnd(cols, ' ');
+        const lineTop = ScreenCoordinates.toPixels(line, 1).top;
+        html += `<div class="screen-line" style="top: ${lineTop}px; width: ${ScreenCoordinates.getWidthInPixels(cols)}px;">${lineContent}</div>\n`;
+    }
+
+    if (parsedScreen.windowDimensions) {
+        const win = parsedScreen.windowDimensions;
+        const winPos = ScreenCoordinates.toPixels(win.row, win.col);
+        const winTop = winPos.top;
+        const winLeft = winPos.left;
+        const winHeight = ScreenCoordinates.getHeightInPixels(win.height);
+        const winWidth = ScreenCoordinates.getWidthInPixels(win.width + 4);
+
+        html += `<div class="window-frame" style="
+            position: absolute;
+            top: ${winTop}px;
+            left: ${winLeft}px;
+            width: ${winWidth}px;
+            height: ${winHeight}px;
+            border: 2px dotted #00FF00;
+            pointer-events: none;
+            z-index: 5;
+        "></div>`;
+
+        Logger.window(`Adding window frame at ${win.row},${win.col} size ${win.height}x${win.width}`);
+    }
+
+    parsedScreen.fields.forEach(field => {
+        if (parsedScreen.windowDimensions) {
+            html += generateWindowFieldHtml(field, parsedScreen.windowDimensions);
+        } else {
+            html += generateFieldHtml(field);
+        }
+    });
+
+    html += `</div>`;
+
+    previewContainer.innerHTML = html;
+
+    setupPreviewDisplaySizeListeners({
+        Logger,
+        getCurrentDisplaySize,
+        setCurrentDisplaySize,
+        updateCanvasSize,
+        setupRulers,
+        parseDspfFields,
+        getCurrentDocument,
+        applyDefaultZoomForDisplaySize,
+        updatePreviewView: updatePreviewViewHandler
+    });
+
+    previewContainer.querySelectorAll('.input-field').forEach(field => {
+        field.addEventListener('click', function() {
+            this.contentEditable = true;
+            this.focus();
+        });
+
+        field.addEventListener('blur', function() {
+            this.contentEditable = false;
+        });
+    });
+}
+
+
+/***/ }),
+/* 36 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updateReadOnlyMode: () => (/* binding */ updateReadOnlyMode)
+/* harmony export */ });
+function updateReadOnlyMode({
+    Logger,
+    isReadOnly,
+    setCurrentView,
+    updatePreviewView
+}) {
+    Logger.debug('updateReadOnlyMode called, isReadOnly:', isReadOnly);
+
+    const designerTab = document.getElementById('designerTab');
+    const designerView = document.getElementById('designer-view');
+    const previewTab = document.getElementById('previewTab');
+    const previewView = document.getElementById('preview-view');
+    const saveBtn = document.getElementById('saveBtn');
+    const addRecordBtn = document.querySelector('.add-record-btn');
+    const sourceEditor = document.getElementById('source-editor');
+
+    if (isReadOnly) {
+        if (designerTab) {
+            designerTab.style.display = 'none';
+        }
+
+        if (designerView) {
+            designerView.style.display = 'none';
+        }
+
+        if (saveBtn) {
+            saveBtn.style.display = 'none';
+        }
+
+        if (addRecordBtn) {
+            addRecordBtn.style.display = 'none';
+        }
+
+        if (sourceEditor) {
+            sourceEditor.readOnly = true;
+            sourceEditor.style.cursor = 'not-allowed';
+        }
+
+        if (previewTab && previewView) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+
+            previewTab.classList.add('active');
+            previewView.classList.add('active');
+            if (setCurrentView) {
+                setCurrentView('preview');
+            }
+            updatePreviewView();
+        }
+
+        const header = document.querySelector('.header h1');
+        if (header && !header.querySelector('.readonly-badge')) {
+            const badge = document.createElement('span');
+            badge.className = 'readonly-badge';
+            badge.textContent = ' [READ ONLY]';
+            badge.style.color = '#ff6b6b';
+            badge.style.fontSize = '0.8em';
+            badge.style.fontWeight = 'normal';
+            header.appendChild(badge);
+        }
+
+        Logger.key('Read-only mode enabled - Designer tab hidden, Preview/Source only');
+    } else {
+        if (designerTab) {
+            designerTab.style.display = 'inline-block';
+        }
+
+        if (designerView) {
+            designerView.style.display = 'block';
+        }
+
+        if (saveBtn) {
+            saveBtn.style.display = 'inline-block';
+        }
+
+        if (addRecordBtn) {
+            addRecordBtn.style.display = 'inline-block';
+        }
+
+        if (sourceEditor) {
+            sourceEditor.readOnly = false;
+            sourceEditor.style.cursor = 'text';
+        }
+
+        const badge = document.querySelector('.readonly-badge');
+        if (badge) {
+            badge.remove();
+        }
+
+        Logger.key('Edit mode enabled');
+    }
+}
+
+
+/***/ }),
+/* 37 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getFreshFieldFromDds: () => (/* binding */ getFreshFieldFromDds),
+/* harmony export */   selectField: () => (/* binding */ selectField)
+/* harmony export */ });
+function getFreshFieldFromDds({
+    field,
+    Logger,
+    getCurrentDocument,
+    getCurrentRecord,
+    parseDspfForPreview,
+    getFields,
+    updateFieldAtIndex
+}) {
+    if (!field || !getCurrentDocument) {
+        return field;
+    }
+
+    const currentDocument = getCurrentDocument();
+    if (!currentDocument) {
+        return field;
+    }
+
+    Logger.debug(`Re-parsing field ${field.name} from DDS to get fresh indicator data`);
+
+    const parsedData = parseDspfForPreview(currentDocument, getCurrentRecord ? getCurrentRecord() : null);
+
+    const freshField = parsedData.fields.find(f =>
+        f.name === field.name &&
+        f.row === field.row &&
+        f.col === field.col &&
+        f.type === field.type
+    );
+
+    if (freshField) {
+        freshField.id = field.id;
+        const fields = getFields ? getFields() : [];
+        const fieldIndex = fields.findIndex(f => f.id === field.id);
+        if (fieldIndex >= 0 && updateFieldAtIndex) {
+            updateFieldAtIndex(fieldIndex, freshField);
+        }
+        Logger.debug(`Fresh field data obtained with ${Object.keys(freshField.colorIndicators || {}).length} color indicators, ${Object.keys(freshField.attributeIndicators || {}).length} attribute indicators`);
+        return freshField;
+    }
+
+    Logger.warn(`Could not find fresh data for field ${field.name}, using cached data`);
+    return field;
+}
+
+function selectField({
+    field,
+    Logger,
+    deselectAllFields,
+    getSelectedField,
+    setSelectedField,
+    indicatorConfigurations,
+    getFreshFieldFromDds,
+    showFieldProperties
+}) {
+    Logger.ui(`[SELECT] Attempting to select field: ${field.name} (id: ${field.id})`);
+    Logger.ui(`[SELECT] Field isVisualCopy: ${field.isVisualCopy || false}`);
+
+    if (deselectAllFields) {
+        deselectAllFields();
+    }
+
+    const previousSelectedField = getSelectedField ? getSelectedField() : null;
+    if (previousSelectedField && previousSelectedField.id !== field.id) {
+        Logger.debug('Clearing indicatorConfigurations when switching fields');
+        indicatorConfigurations.clear();
+    }
+
+    if (setSelectedField) {
+        setSelectedField(field);
+    }
+    Logger.ui(`[SELECT] selectedField set to: ${field.name}`);
+
+    const fieldElement = document.querySelector(`[data-field-id="${field.id}"]`);
+    Logger.ui(`[SELECT] Found element with selector [data-field-id="${field.id}"]: ${fieldElement ? 'YES' : 'NO'}`);
+
+    if (fieldElement) {
+        Logger.ui(`[SELECT] Element classes before: ${fieldElement.className}`);
+        fieldElement.classList.add('selected');
+        Logger.ui(`[SELECT] Element classes after: ${fieldElement.className}`);
+        Logger.ui(`[SELECT] Element display: ${window.getComputedStyle(fieldElement).display}`);
+        Logger.ui(`[SELECT] Element visibility: ${window.getComputedStyle(fieldElement).visibility}`);
+    } else {
+        Logger.error(`[SELECT] Could not find element with data-field-id="${field.id}"`);
+        const allFields = document.querySelectorAll('[data-field-id]');
+        Logger.ui(`[SELECT] Total fields in DOM: ${allFields.length}`);
+        allFields.forEach((el, idx) => {
+            if (idx < 5) {
+                Logger.ui(`[SELECT]   - ${el.dataset.fieldId} (${el.className})`);
+            }
+        });
+    }
+
+    const freshField = getFreshFieldFromDds ? getFreshFieldFromDds(field) : null;
+    if (showFieldProperties) {
+        showFieldProperties(freshField || field);
+    }
+}
+
+
+/***/ }),
+/* 38 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   deselectAllFields: () => (/* binding */ deselectAllFields)
+/* harmony export */ });
+function deselectAllFields({
+    Logger,
+    indicatorConfigurations,
+    setSelectedField,
+    showFieldProperties
+}) {
+    document.querySelectorAll('.dspf-field.selected').forEach(el => {
+        el.classList.remove('selected');
+    });
+
+    Logger.debug('Clearing indicatorConfigurations when deselecting all fields');
+    indicatorConfigurations.clear();
+
+    if (setSelectedField) {
+        setSelectedField(null);
+    }
+    if (showFieldProperties) {
+        showFieldProperties(null);
+    }
+}
+
+
+/***/ }),
+/* 39 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   editField: () => (/* binding */ editField)
+/* harmony export */ });
+function editField({
+    field,
+    Logger,
+    isReadOnly,
+    selectField
+}) {
+    if (isReadOnly) {
+        Logger.warn('Cannot edit field in read-only mode');
+        return;
+    }
+
+    if (selectField) {
+        selectField(field);
+    }
+
+    if (field.type !== 'constant') {
+        const nameInput = document.getElementById('prop-name');
+        if (nameInput) {
+            setTimeout(() => {
+                nameInput.focus();
+                nameInput.select();
+            }, 100);
+        }
+    }
+
+    Logger.debug('Field selected for editing in properties panel');
+}
+
+
+/***/ }),
+/* 40 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   scrollToRecordInSource: () => (/* binding */ scrollToRecordInSource)
+/* harmony export */ });
+function scrollToRecordInSource(options) {
+    const {
+        currentRecord,
+        currentDocument,
+        Logger
+    } = options;
+
+    if (!currentRecord) {
+        if (Logger) {
+            Logger.warn('No current record to scroll to');
+        }
+        return;
+    }
+
+    const sourceEditor = document.getElementById('source-editor');
+    if (!sourceEditor) {
+        if (Logger) {
+            Logger.error('Source editor not found');
+        }
+        return;
+    }
+
+    const lines = currentDocument.split('\n');
+    let recordLineIndex = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const recordMatch = line.match(/^\s*A\*?\s+R\s+(\w+)/i);
+        if (recordMatch && recordMatch[1].toUpperCase() === currentRecord.toUpperCase()) {
+            recordLineIndex = i;
+            break;
+        }
+    }
+
+    if (recordLineIndex === -1) {
+        if (Logger) {
+            Logger.warn(`Record ${currentRecord} not found in source`);
+        }
+        return;
+    }
+
+    if (Logger) {
+        Logger.debug(`Scrolling to record ${currentRecord} at line ${recordLineIndex + 1}`);
+    }
+
+    const lineHeight = 21;
+    const scrollPosition = recordLineIndex * lineHeight;
+    const offset = 100;
+    sourceEditor.scrollTop = Math.max(0, scrollPosition - offset);
+}
+
+
+/***/ }),
+/* 41 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   navigateToNextRecord: () => (/* binding */ navigateToNextRecord),
+/* harmony export */   navigateToPreviousRecord: () => (/* binding */ navigateToPreviousRecord)
+/* harmony export */ });
+function navigateToPreviousRecord({
+    Logger,
+    vscode,
+    getAllRecords,
+    getCurrentRecord,
+    getCurrentView
+}) {
+    const allRecords = getAllRecords ? getAllRecords() : [];
+    if (!allRecords || allRecords.length === 0) {
+        Logger.warn('No records available for navigation');
+        return;
+    }
+
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+    const currentIndex = allRecords.findIndex(r => r.name === currentRecord);
+    if (currentIndex > 0) {
+        const prevRecord = allRecords[currentIndex - 1];
+        Logger.ui('Navigating to previous record:', prevRecord.name, 'preserving view:', getCurrentView ? getCurrentView() : undefined);
+        vscode.postMessage({
+            type: 'navigateToRecord',
+            recordName: prevRecord.name,
+            preserveView: getCurrentView ? getCurrentView() : undefined
+        });
+    } else {
+        Logger.info('Already at first record');
+    }
+}
+
+function navigateToNextRecord({
+    Logger,
+    vscode,
+    getAllRecords,
+    getCurrentRecord,
+    getCurrentView
+}) {
+    const allRecords = getAllRecords ? getAllRecords() : [];
+    if (!allRecords || allRecords.length === 0) {
+        Logger.warn('No records available for navigation');
+        return;
+    }
+
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+    const currentIndex = allRecords.findIndex(r => r.name === currentRecord);
+    if (currentIndex < allRecords.length - 1) {
+        const nextRecord = allRecords[currentIndex + 1];
+        Logger.ui('Navigating to next record:', nextRecord.name, 'preserving view:', getCurrentView ? getCurrentView() : undefined);
+        vscode.postMessage({
+            type: 'navigateToRecord',
+            recordName: nextRecord.name,
+            preserveView: getCurrentView ? getCurrentView() : undefined
+        });
+    } else {
+        Logger.info('Already at last record');
+    }
+}
+
+
+/***/ }),
+/* 42 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createField: () => (/* binding */ createField)
+/* harmony export */ });
+// Función para crear los campos desde el toolbox
+function createField({
+    type,
+    row,
+    col,
+    Logger,
+    fields,
+    generateUniqueFieldName,
+    generateId,
+    getDefaultLength,
+    getWindowDimensions,
+    getCurrentRecord,
+    getCurrentDisplaySize,
+    renderField,
+    renderWindowField,
+    getSubfileRelationship,
+    getSflpagValue,
+    selectField,
+    addFieldToDds,
+    showFieldProperties
+}) {
+    let fieldName;
+    let ddsType;
+    let usage;
+    let dataType;
+    let decimals;
+    let shift;
+    let isKeyword = false;
+
+    if (type === 'text') {
+        fieldName = generateUniqueFieldName('TXT_');
+        ddsType = 'A';
+        usage = 'O';
+        dataType = 'character';
+        decimals = 0;
+    } else if (type === 'number') {
+        fieldName = generateUniqueFieldName('NUM_');
+        ddsType = 'Y';
+        usage = 'I';
+        dataType = 'zoned';
+        decimals = 0;
+        shift = 'S';
+    } else if (type === 'keyword-date') {
+        fieldName = 'DATE';
+        ddsType = '';
+        usage = '';
+        dataType = 'keyword';
+        decimals = 0;
+        isKeyword = true;
+    } else if (type === 'keyword-time') {
+        fieldName = 'TIME';
+        ddsType = '';
+        usage = '';
+        dataType = 'keyword';
+        decimals = 0;
+        isKeyword = true;
+    } else if (type === 'keyword-sysname') {
+        fieldName = 'SYSNAME';
+        ddsType = '';
+        usage = '';
+        dataType = 'keyword';
+        decimals = 0;
+        isKeyword = true;
+    } else if (type === 'keyword-user') {
+        fieldName = 'USER';
+        ddsType = '';
+        usage = '';
+        dataType = 'keyword';
+        decimals = 0;
+        isKeyword = true;
+    } else if (type === 'field-date') {
+        fieldName = generateUniqueFieldName('DATE_');
+        ddsType = 'L';
+        usage = 'O';
+        dataType = 'date';
+        decimals = 0;
+    } else if (type === 'field-time') {
+        fieldName = generateUniqueFieldName('TIME_');
+        ddsType = 'T';
+        usage = 'O';
+        dataType = 'time';
+        decimals = 0;
+    } else if (type === 'field-timestamp') {
+        fieldName = generateUniqueFieldName('TS_');
+        ddsType = 'Z';
+        usage = 'O';
+        dataType = 'timestamp';
+        decimals = 0;
+    } else {
+        fieldName = generateUniqueFieldName(type === 'constant' ? 'CONST_' : `${type.toUpperCase()}_`);
+        ddsType = type === 'constant' ? '' : 'A';
+        usage = 'O';
+        dataType = type === 'constant' ? 'constant' : 'character';
+        decimals = 0;
+    }
+
+    const field = {
+        id: generateId(),
+        name: fieldName,
+        type: type === 'number' ? 'input' : (isKeyword ? 'keyword' : (type === 'field-date' || type === 'field-time' || type === 'field-timestamp' ? 'output' : type)),
+        ddsType: ddsType,
+        usage: usage,
+        dataType: dataType,
+        row: row,
+        col: col,
+        length: isKeyword ? null : getDefaultLength(type),
+        decimals: decimals,
+        value: type === 'constant' ? 'TEXT' : '',
+        isKeyword: isKeyword
+    };
+
+    if (shift) {
+        field.shift = shift;
+    }
+
+    fields.push(field);
+
+    const currentRecord = getCurrentRecord ? getCurrentRecord() : null;
+    const winDimsForCreate = getWindowDimensions ? getWindowDimensions(currentRecord) : null;
+    const currentDisplaySize = getCurrentDisplaySize ? getCurrentDisplaySize() : null;
+    if (winDimsForCreate && winDimsForCreate.hasWindow) {
+        const winDim = currentDisplaySize === 'DS3' ? winDimsForCreate.ds3 : winDimsForCreate.ds4;
+        if (winDim) {
+            renderWindowField(field, winDim);
+        } else {
+            renderField(field);
+        }
+    } else {
+        renderField(field);
+    }
+
+    Logger.ui(`[CREATE] Field created: ${field.name} (id: ${field.id}) at row ${field.row}, col ${field.col}`);
+    Logger.ui(`[CREATE] Field pushed to array, total fields: ${fields.length}`);
+
+    const subfileRelationship = getSubfileRelationship ? getSubfileRelationship(currentRecord) : null;
+    const sflpagRepeat = subfileRelationship ? getSflpagValue(subfileRelationship.sflctlRecord) : 1;
+
+    Logger.ui(`[CREATE] Checking SFLPAG: subfileRelationship=${!!subfileRelationship}, sflpagRepeat=${sflpagRepeat}`);
+
+    if (sflpagRepeat > 1) {
+        const shouldRepeat = (
+            (currentRecord === subfileRelationship.sflRecord && !field.isBackgroundRecord) ||
+            (currentRecord === subfileRelationship.sflctlRecord && field.isBackgroundRecord)
+        );
+
+        if (shouldRepeat) {
+            Logger.debug(`Creating ${sflpagRepeat - 1} visual copies for new field in SFL`);
+            for (let repeat = 1; repeat < sflpagRepeat; repeat++) {
+                const visualCopy = {
+                    ...field,
+                    id: field.id + '_repeat' + repeat,
+                    row: field.row + repeat,
+                    isVisualCopy: true
+                };
+                if (winDimsForCreate && winDimsForCreate.hasWindow) {
+                    const winDim = currentDisplaySize === 'DS3' ? winDimsForCreate.ds3 : winDimsForCreate.ds4;
+                    if (winDim) {
+                        renderWindowField(visualCopy, winDim);
+                    } else {
+                        renderField(visualCopy);
+                    }
+                } else {
+                    renderField(visualCopy);
+                }
+            }
+        }
+    }
+
+    if (selectField) {
+        selectField(field);
+    }
+
+    if (addFieldToDds) {
+        addFieldToDds(field);
+    }
+
+    Logger.success('New field created:', fieldName, 'at', { row, col });
+
+    if (showFieldProperties) {
+        showFieldProperties(field);
+    }
+}
+
+
+/***/ }),
+/* 43 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateUniqueFieldName: () => (/* binding */ generateUniqueFieldName)
+/* harmony export */ });
+function generateUniqueFieldName(options) {
+    const { prefix, fields, IdGenerator } = options;
+
+    const existingNames = fields.map(field => field.name);
+    return IdGenerator.generateUniqueName(prefix, existingNames);
+}
+
+
+/***/ }),
+/* 44 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   applyAttributeClasses: () => (/* binding */ applyAttributeClasses)
+/* harmony export */ });
+function applyAttributeClasses(options) {
+    const { fieldElement, attributes } = options;
+
+    if (!attributes) {
+        return;
+    }
+
+    if (attributes.underline) {
+        fieldElement.classList.add('underline');
+    }
+    if (attributes.blink) {
+        fieldElement.classList.add('blink');
+    }
+    if (attributes.reverse) {
+        fieldElement.classList.add('reverse');
+    }
+}
+
+
+/***/ }),
+/* 45 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   computeFieldDisplay: () => (/* binding */ computeFieldDisplay)
+/* harmony export */ });
+function computeFieldDisplay(options) {
+    const {
+        field,
+        mode = 'designer',
+        ColorUtils,
+        ScreenCoordinates,
+        getKeywordDisplay,
+        getFieldDisplayText
+    } = options;
+
+    const isPreview = mode === 'preview';
+    let text = '';
+    let color = '';
+    let classes = [];
+
+    // Constants
+    if (field.type === 'constant') {
+        text = field.value || '';
+        classes.push('constant');
+        let effectiveColorCode = field.color;
+        if (!effectiveColorCode && field.colors && field.colors.length > 0) {
+            effectiveColorCode = field.colors[0];
+        }
+        if (effectiveColorCode && ColorUtils.isValidColorCode(effectiveColorCode)) {
+            color = ColorUtils.IBM_COLORS[effectiveColorCode];
+        }
+    }
+    // Keywords shown like constants
+    else if (field.type === 'keyword' || field.isKeyword) {
+        text = getKeywordDisplay(field.name, field.keywordArgs);
+        classes.push('constant');
+        let effectiveColorCode = field.color;
+        if (!effectiveColorCode && field.colors && field.colors.length > 0) {
+            effectiveColorCode = field.colors[0];
+        }
+        // If a color code exists, use it; otherwise let CSS default (green) apply
+        if (effectiveColorCode && ColorUtils.isValidColorCode(effectiveColorCode)) {
+            color = ColorUtils.IBM_COLORS[effectiveColorCode];
+        }
+    }
+    // Variables
+    else {
+        const fieldLength = field.length || 1;
+        text = getFieldDisplayText(field, fieldLength);
+
+        // Type class
+        if (field.type === 'input') {classes.push('input-field');}
+        else if (field.type === 'output') {classes.push('output-field');}
+        else {classes.push(`${field.type}-field`);} // fallback
+
+        // Color
+        color = ColorUtils.getColorStyle(field, '#00ffff').replace('color: ', '').replace(';', '') || '#00ffff';
+    }
+
+    // Attributes -> classes
+    if (field.attributes) {
+        if (field.attributes.underline) {classes.push('underline');}
+        if (field.attributes.reverse) {classes.push('reverse');}
+        if (isPreview && field.attributes.blink) {classes.push('blink');}
+        if (isPreview && field.attributes.nonDisplay) {classes.push('non-display');}
+    }
+
+    // Also check attributeIndicators (when attributes have indicators with OR groups)
+    if (field.attributeIndicators) {
+        if (field.attributeIndicators.underline) {classes.push('underline');}
+        if (field.attributeIndicators.reverse) {classes.push('reverse');}
+        if (isPreview && field.attributeIndicators.blink) {classes.push('blink');}
+        if (isPreview && field.attributeIndicators.nonDisplay) {classes.push('non-display');}
+        if (field.attributeIndicators.highlight) {classes.push('highlight');}
+    }
+
+    // Width in pixels
+    const widthPx = ScreenCoordinates.getWidthInPixels(text.length || field.length || 1);
+
+    return { text, widthPx, color, classes };
+}
+
+
+/***/ }),
+/* 46 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setFieldContent: () => (/* binding */ setFieldContent)
+/* harmony export */ });
+function setFieldContent(options) {
+    const { fieldElement, field, computeFieldDisplay } = options;
+
+    const { text, widthPx, color, classes } = computeFieldDisplay(field, 'designer');
+    fieldElement.textContent = text || '';
+    fieldElement.style.padding = '0';
+    fieldElement.style.minWidth = 'auto';
+    fieldElement.style.backgroundColor = 'transparent';
+    fieldElement.style.border = 'none';
+    fieldElement.style.whiteSpace = 'pre';
+    if (widthPx) { fieldElement.style.width = `${widthPx}px`; }
+    if (color) { fieldElement.style.color = color; }
+    classes.forEach(cls => fieldElement.classList.add(cls));
+}
+
+
+/***/ }),
+/* 47 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupFieldElement: () => (/* binding */ setupFieldElement)
+/* harmony export */ });
+function setupFieldElement(options) {
+    const {
+        fieldElement,
+        field,
+        Logger,
+        applyAttributeClasses,
+        setFieldContent,
+        selectField,
+        isReadOnly,
+        editField
+    } = options;
+
+    fieldElement.className = `dspf-field ${field.type}-field`;
+    fieldElement.dataset.fieldId = field.id;
+
+    if (field.isBackgroundRecord) {
+        fieldElement.classList.add('field-background');
+    }
+
+    if (field.isVisualCopy) {
+        fieldElement.classList.add('field-visual-copy');
+        fieldElement.style.pointerEvents = 'none';
+        fieldElement.style.zIndex = '1';
+        Logger.debug(`[VISUAL COPY] Created copy with id: ${field.id}, row: ${field.row}`);
+    } else {
+        Logger.debug(`[ORIGINAL] Created original field with id: ${field.id}, row: ${field.row}`);
+    }
+
+    applyAttributeClasses(fieldElement, field.attributes);
+
+    // Also apply attributes from attributeIndicators (when attributes have indicators)
+    if (field.attributeIndicators) {
+        if (field.attributeIndicators.underline) { fieldElement.classList.add('underline'); }
+        if (field.attributeIndicators.reverse) { fieldElement.classList.add('reverse'); }
+        if (field.attributeIndicators.blink) { fieldElement.classList.add('blink'); }
+        if (field.attributeIndicators.highlight) { fieldElement.classList.add('highlight'); }
+    }
+
+    setFieldContent(fieldElement, field);
+
+    fieldElement.draggable = true;
+    fieldElement.style.cursor = 'move';
+
+    fieldElement.addEventListener('click', function(e) {
+        Logger.ui(`[CLICK] Field clicked: ${field.name} (id: ${field.id}, isVisualCopy: ${field.isVisualCopy || false})`);
+        Logger.ui(`[CLICK] Element dataset.fieldId: ${fieldElement.dataset.fieldId}`);
+        Logger.ui(`[CLICK] Element classes: ${fieldElement.className}`);
+        Logger.ui(`[CLICK] Element zIndex: ${fieldElement.style.zIndex || 'default'}`);
+        Logger.ui(`[CLICK] Element pointerEvents: ${fieldElement.style.pointerEvents || 'auto'}`);
+        e.stopPropagation();
+        selectField(field);
+    });
+
+    fieldElement.addEventListener('dblclick', function() {
+        if (!isReadOnly) {
+            editField(field);
+        }
+    });
+
+    fieldElement.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('text/plain', JSON.stringify({
+            type: 'existing-field',
+            fieldId: field.id
+        }));
+        fieldElement.style.opacity = '0.5';
+        Logger.debug('Started dragging field:', field.name);
+    });
+
+    fieldElement.addEventListener('dragend', function() {
+        fieldElement.style.opacity = '1';
+        Logger.debug('Ended dragging field:', field.name);
+    });
+}
+
+
+/***/ }),
+/* 48 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   renderField: () => (/* binding */ renderField)
+/* harmony export */ });
+function renderField(options) {
+    const {
+        field,
+        Logger,
+        ScreenCoordinates,
+        getCurrentDisplaySize,
+        setupFieldElement,
+        getFieldDisplayText
+    } = options;
+
+    const canvas = document.getElementById('fields-container');
+    if (!canvas) {
+        Logger.error('Fields container not found');
+        return;
+    }
+
+    // Calculate line wrapping for character fields that exceed screen width
+    const segments = ScreenCoordinates.calculateFieldWrapping(field, getCurrentDisplaySize());
+
+    if (segments.length === 1) {
+        // Single line field - render normally
+        const fieldElement = document.createElement('div');
+        setupFieldElement(fieldElement, field);
+
+        // Position fields to match ruler marks exactly
+        const { left, top } = ScreenCoordinates.toPixels(field.row, field.col);
+        fieldElement.style.left = `${left}px`;
+        fieldElement.style.top = `${top}px`;
+
+        canvas.appendChild(fieldElement);
+        Logger.success(`Rendered field: ${field.name} at (${field.row}, ${field.col}) -> (${top}px, ${left}px)`);
+    } else {
+        // Multi-line field - render each segment
+        segments.forEach((segment, index) => {
+            const fieldElement = document.createElement('div');
+            setupFieldElement(fieldElement, field);
+
+            // Mark as segment and store segment info
+            fieldElement.dataset.fieldSegment = index;
+            fieldElement.dataset.segmentLength = segment.length;
+
+            const { left, top } = ScreenCoordinates.toPixels(segment.row, segment.col);
+            fieldElement.style.left = `${left}px`;
+            fieldElement.style.top = `${top}px`;
+
+            // Override width for this segment
+            fieldElement.style.width = `${segment.length * 8}px`;
+
+            // Update content to show only this segment
+            const fieldLength = field.length || 10;
+            const fullDisplayValue = getFieldDisplayText(field, fieldLength);
+            const startOffset = segments.slice(0, index).reduce((sum, seg) => sum + seg.length, 0);
+            const segmentValue = fullDisplayValue.substring(startOffset, startOffset + segment.length);
+            fieldElement.textContent = segmentValue;
+
+            canvas.appendChild(fieldElement);
+            Logger.success(`Rendered field segment ${index + 1}/${segments.length}: ${field.name} at (${segment.row}, ${segment.col})`);
+        });
+    }
+}
+
+
+/***/ }),
+/* 49 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   renderWindowField: () => (/* binding */ renderWindowField)
+/* harmony export */ });
+function renderWindowField(options) {
+    const {
+        field,
+        windowDimensions,
+        Logger,
+        ScreenCoordinates,
+        getCurrentDisplaySize,
+        setupFieldElement,
+        getFieldDisplayText
+    } = options;
+
+    const canvas = document.getElementById('fields-container');
+    if (!canvas) {
+        Logger.error('Fields container not found');
+        return;
+    }
+
+    Logger.window(`RENDER START: ${field.name} has field.length=${field.length}`);
+
+    // Calculate line wrapping for character fields that exceed screen width
+    const segments = ScreenCoordinates.calculateFieldWrapping(field, getCurrentDisplaySize());
+
+    if (segments.length === 1) {
+        // Single line field - render normally
+        const fieldElement = document.createElement('div');
+        setupFieldElement(fieldElement, field);
+
+        // Calculate absolute screen position from WINDOW + field coordinates
+        const absoluteRow = windowDimensions.row + field.row - 1;
+        const absoluteCol = windowDimensions.col + field.col + 1;
+        const { top: relativeTop, left: relativeLeft } = ScreenCoordinates.toPixels(absoluteRow, absoluteCol);
+
+        // Ensure fields don't go outside reasonable bounds
+        const maxTop = relativeTop + 500;
+        const maxLeft = relativeLeft + 800;
+
+        fieldElement.style.left = `${Math.min(relativeLeft, maxLeft)}px`;
+        fieldElement.style.top = `${Math.min(relativeTop, maxTop)}px`;
+
+        canvas.appendChild(fieldElement);
+        Logger.window(`Rendered window field: ${field.name} at window-relative (${field.row},${field.col}) -> absolute (${relativeTop},${relativeLeft});`);
+    } else {
+        // Multi-line field - render each segment with window offset
+        segments.forEach((segment, index) => {
+            const fieldElement = document.createElement('div');
+            setupFieldElement(fieldElement, field);
+
+            // Mark as segment
+            fieldElement.dataset.fieldSegment = index;
+            fieldElement.dataset.segmentLength = segment.length;
+
+            const absoluteRow = windowDimensions.row + segment.row - 1;
+            const absoluteCol = windowDimensions.col + segment.col + 1;
+            const { top: relativeTop, left: relativeLeft } = ScreenCoordinates.toPixels(absoluteRow, absoluteCol);
+
+            fieldElement.style.left = `${relativeLeft}px`;
+            fieldElement.style.top = `${relativeTop}px`;
+            fieldElement.style.width = `${segment.length * 8}px`;
+
+            // Update content to show only this segment
+            const fieldLength = field.length || 10;
+            const fullDisplayValue = getFieldDisplayText(field, fieldLength);
+            const startOffset = segments.slice(0, index).reduce((sum, seg) => sum + seg.length, 0);
+            const segmentValue = fullDisplayValue.substring(startOffset, startOffset + segment.length);
+            fieldElement.textContent = segmentValue;
+
+            canvas.appendChild(fieldElement);
+            Logger.window(`Rendered window field segment ${index + 1}/${segments.length}: ${field.name} at (${segment.row}, ${segment.col})`);
+        });
+    }
+}
+
+
+/***/ }),
+/* 50 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getFieldCharForDisplay: () => (/* binding */ getFieldCharForDisplay)
+/* harmony export */ });
+// Function to get display character for a field
+function getFieldCharForDisplay(options) {
+    const { field } = options;
+
+    let fieldChar = '_';
+
+    if (field.dataType === 'numeric' || field.dataType === 'zoned' || field.dataType === 'packed' || field.dataType === 'float' || field.dataType === 'binary') {
+        if (field.usage === 'O') {
+            fieldChar = '6';
+        } else if (field.usage === 'I') {
+            fieldChar = '3';
+        } else if (field.usage === 'B') {
+            fieldChar = '9';
+        } else {
+            fieldChar = '6';
+        }
+    } else {
+        if (field.usage === 'I') {
+            fieldChar = 'I';
+        } else if (field.usage === 'B') {
+            fieldChar = 'B';
+        } else if (field.usage === 'O') {
+            fieldChar = 'O';
+        } else {
+            fieldChar = 'O';
+        }
+    }
+
+    return fieldChar;
+}
+
+
+/***/ }),
+/* 51 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getFieldDisplayText: () => (/* binding */ getFieldDisplayText)
+/* harmony export */ });
+// Muestra como se debe mostrar un campo en la interfaz de usuario, dependiendo de su tipo y longitud. 
+// Para campos numéricos, se muestra una representación con caracteres específicos para indicar la longitud 
+// y el formato del número. Para otros tipos de campos, se muestra una repetición del carácter correspondiente 
+// a la longitud del campo.
+function getFieldDisplayText(options) {
+    const { field, fieldLength, getFieldCharForDisplay } = options;
+
+    // EDTWRD: plantilla IBM i de edición de palabra.
+    // Estructura de la plantilla (después de quitar comillas externas):
+    //   - Posición 1 (índice 0): carácter de supresión/relleno de ceros.
+    //       Si es '0' → suprimir ceros a la izquierda (reemplazar por espacios).
+    //       Si es otro char → usarlo como relleno. En el Designer lo mostramos
+    //       como digitChar para indicar que ahí va un dígito.
+    //   - Posiciones 2..N: cada ' ' (espacio) = posición de dígito (→ digitChar).
+    //       '&' = espacio literal forzado (→ ' ').
+    //       Cualquier otro carácter = literal fijo (se muestra tal cual).
+    function applyEdtwrdFormatting(digitChar) {
+        const rawTemplate = field.edtwrd && typeof field.edtwrd === 'object'
+            ? (field.edtwrd.value || '')
+            : (field.edtwrd || '');
+
+        // Quitar comillas externas: '0(   )   -    ' → 0(   )   -
+        const template = String(rawTemplate).replace(/^'(.*)'$/, '$1');
+
+        if (!template) {
+            return null;
+        }
+
+        // Posición 0: carácter de supresión. En el Designer lo mostramos como digitChar
+        // porque indica dónde irá el dígito más significativo del número.
+        const suppressChar = template[0];
+        const suppressDisplay = digitChar; // siempre mostramos digitChar en pos 0
+
+        // Posiciones 1..N: espacio → dígito, & → espacio literal, resto → literal
+        let result = suppressDisplay;
+        for (let i = 1; i < template.length; i++) {
+            const ch = template[i];
+            if (ch === ' ') {
+                result += digitChar;  // posición de dígito
+            } else if (ch === '&') {
+                result += ' ';        // espacio forzado literal
+            } else {
+                result += ch;         // carácter literal (separator)
+            }
+        }
+        return result;
+    }
+
+    // EDTMSK: máscara de edición IBM i.
+    // Estructura de la máscara (después de quitar comillas):
+    //   - ' ' (espacio) → posición de dígito (→ digitChar)
+    //   - '&' → espacio literal forzado (→ ' ')
+    //   - cualquier otro carácter → literal fijo (se muestra tal cual)
+    function applyEdtmskFormatting(digitChar) {
+        const rawMask = field.edtmsk && typeof field.edtmsk === 'object'
+            ? (field.edtmsk.value || '')
+            : (field.edtmsk || '');
+
+        const mask = String(rawMask).replace(/^'(.*)'$/, '$1');
+
+        if (!mask) {
+            return null;
+        }
+
+        let result = '';
+        for (let i = 0; i < mask.length; i++) {
+            const ch = mask[i];
+            if (ch === ' ') {
+                result += digitChar;  // posición de dígito
+            } else if (ch === '&') {
+                result += ' ';        // espacio literal forzado
+            } else {
+                result += ch;         // literal fijo (-, /, etc.)
+            }
+        }
+        return result;
+    }
+
+    function applyEdtcdeDisplayReplacement(baseText, digitChar) {
+        const edtcdeCode = field.edtcde && field.edtcde.value
+            ? String(field.edtcde.value).trim().toUpperCase()
+            : '';
+
+        if (edtcdeCode === 'Z') {
+            return baseText;
+        }
+
+        const replacement = field.edtcde && field.edtcde.replaceLeadingZerosWith
+            ? String(field.edtcde.replaceLeadingZerosWith).trim()
+            : '';
+
+        if (!replacement || (replacement !== '*' && replacement !== '$')) {
+            return baseText;
+        }
+
+        const firstDigitIndex = baseText.indexOf(digitChar);
+        if (firstDigitIndex === -1) {
+            return baseText;
+        }
+
+        return `${baseText.substring(0, firstDigitIndex)}${replacement}${baseText.substring(firstDigitIndex + 1)}`;
+    }
+
+    if (field.dataType === 'date') {
+        return 'yyyy-mm-dd';
+    }
+
+    if (field.dataType === 'time') {
+        return 'hh.mm.ss';
+    }
+
+    if (field.dataType === 'timestamp') {
+        return 'yyyy-mm-dd-hh.mm.ss.mmmmmm';
+    }
+
+    const length = fieldLength || field.length || 1;
+    const isNumeric = field.dataType === 'numeric' || field.dataType === 'zoned' || field.dataType === 'packed' || field.dataType === 'float' || field.dataType === 'binary';
+    if (isNumeric) {
+        const digitChar = getFieldCharForDisplay(field);
+
+        const edtcdeCode = field.edtcde && field.edtcde.value
+            ? String(field.edtcde.value).trim().toUpperCase()
+            : '';
+
+        const formatThousandsInDigitRuns = (baseText) => {
+            const escapedDigit = digitChar.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const digitRunRegex = new RegExp(`${escapedDigit}{4,}`, 'g');
+
+            return baseText.replace(digitRunRegex, (run) => run.replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+        };
+
+        const applyEdtcdeCodeFormatting = (baseText) => {
+            if (!edtcdeCode) {
+                return baseText;
+            }
+
+            let formattedText = baseText;
+
+            if (['1', '2', 'A', 'B', 'J', 'K', 'N', 'O'].includes(edtcdeCode)) {
+                formattedText = formatThousandsInDigitRuns(formattedText);
+            }
+
+            if (['A', 'B', 'C', 'D'].includes(edtcdeCode) && !formattedText.endsWith('CR')) {
+                formattedText = `${formattedText}CR`;
+            }
+
+            if (['J', 'K', 'L', 'M'].includes(edtcdeCode) && !formattedText.endsWith('-')) {
+                formattedText = `${formattedText}-`;
+            }
+
+            if (['N', 'O', 'P', 'Q'].includes(edtcdeCode)) {
+                formattedText = formattedText.replace(/-$/, '');
+                if (!formattedText.startsWith('-')) {
+                    formattedText = `-${formattedText}`;
+                }
+            }
+
+            if (['3', 'Z'].includes(edtcdeCode)) {
+                formattedText = formattedText.replace(/\./g, '');
+                formattedText = formattedText.replace(/-/g, '');
+            }
+
+            // Y: fecha con separadores → MM-DD-YY (6 dígitos) o MM-DD-YYYY (8 dígitos)
+            // El separador de fecha IBM i por defecto es '-' (Mas adelante se debería leer del sysval QDATSEP).
+            if (edtcdeCode === 'Y') {
+                const len = baseText.length;
+                if (len === 6) {
+                    formattedText = `${digitChar.repeat(2)}-${digitChar.repeat(2)}-${digitChar.repeat(2)}`;
+                } else if (len === 8) {
+                    formattedText = `${digitChar.repeat(2)}-${digitChar.repeat(2)}-${digitChar.repeat(4)}`;
+                } else {
+                    // Insertar '-' cada 2 dígitos como mejor aproximación
+                    let r = '';
+                    for (let i = 0; i < len; i++) {
+                        if (i > 0 && i % 2 === 0 && i < len - 1) { r += '-'; }
+                        r += digitChar;
+                    }
+                    formattedText = r;
+                }
+            }
+
+            // W: fecha juliana → YY-DDD (5 dígitos) o YYYY-DDD (7 dígitos)
+            if (edtcdeCode === 'W') {
+                const len = baseText.length;
+                if (len === 5) {
+                    formattedText = `${digitChar.repeat(2)}-${digitChar.repeat(3)}`;
+                } else if (len === 7) {
+                    formattedText = `${digitChar.repeat(4)}-${digitChar.repeat(3)}`;
+                } else {
+                    formattedText = `${digitChar.repeat(Math.max(1, len - 3))}-${digitChar.repeat(3)}`;
+                }
+            }
+
+            return formattedText;
+        };
+
+        let baseNumericText;
+        const isSignedInputOrBoth = (field.usage === 'I' || field.usage === 'B') && field.shift === 'S';
+        const hasEdtcdePriorityOnBoth = field.usage === 'B' && Boolean(edtcdeCode);
+        const decimals = Number.isInteger(field.decimals) ? field.decimals : 0;
+
+        const buildDecimalDisplay = (totalDigits, decimalDigits) => {
+            if (decimalDigits <= 0) {
+                return digitChar.repeat(totalDigits);
+            }
+
+            const integerDigits = Math.max(1, totalDigits - decimalDigits);
+            return `${digitChar.repeat(integerDigits)},${digitChar.repeat(decimalDigits)}`;
+        };
+
+        if (field.dataType === 'float') {
+            const integerDigits = Math.max(1, length - decimals);
+            const mantissa = decimals > 0
+                ? `${digitChar.repeat(integerDigits)},${digitChar.repeat(decimals)}`
+                : digitChar.repeat(length);
+            const precisionChar = field.precision === 'DOUBLE' ? 'D' : 'E';
+            baseNumericText = `-${mantissa}${precisionChar}-${digitChar.repeat(3)}`;
+        } else if (isSignedInputOrBoth && !hasEdtcdePriorityOnBoth) {
+            baseNumericText = `${buildDecimalDisplay(length, decimals)}-`;
+        } else {
+            baseNumericText = buildDecimalDisplay(length, decimals);
+        }
+
+        // Prioridad de keywords de edición (en IBM i son mutuamente excluyentes,
+        // pero si coexisten en el DDS, EDTCDE tiene precedencia sobre EDTMSK/EDTWRD):
+        // 1. EDTWRD (si existe y no hay EDTCDE)
+        // 2. EDTMSK (si existe y no hay EDTCDE ni EDTWRD)
+        // 3. EDTCDE (siempre que exista, gana sobre los anteriores)
+        if (edtcdeCode) {
+            const edtcdeFormatted = applyEdtcdeCodeFormatting(baseNumericText);
+            return applyEdtcdeDisplayReplacement(edtcdeFormatted, digitChar);
+        }
+
+        const edtwrdResult = applyEdtwrdFormatting(digitChar);
+        if (edtwrdResult !== null) {
+            return edtwrdResult;
+        }
+
+        const edtmskResult = applyEdtmskFormatting(digitChar);
+        if (edtmskResult !== null) {
+            return edtmskResult;
+        }
+
+        const edtcdeFormatted = applyEdtcdeCodeFormatting(baseNumericText);
+        return applyEdtcdeDisplayReplacement(edtcdeFormatted, digitChar);
+    }
+    const fieldChar = getFieldCharForDisplay(field);
+    return fieldChar.repeat(length);
+}
+
+
+/***/ }),
+/* 52 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateWindowFieldHtml: () => (/* binding */ generateWindowFieldHtml)
+/* harmony export */ });
+function generateWindowFieldHtml(options) {
+    const { field, windowDimensions, generateFieldHtml } = options;
+
+    return generateFieldHtml(field, { row: windowDimensions.row, col: windowDimensions.col });
+}
+
+
+/***/ }),
+/* 53 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateId: () => (/* binding */ generateId)
+/* harmony export */ });
+function generateId(IdGenerator) {
+    return IdGenerator.generateFieldId();
+}
+
+
+/***/ }),
+/* 54 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getDefaultLength: () => (/* binding */ getDefaultLength)
+/* harmony export */ });
+function getDefaultLength(type) {
+    switch (type) {
+        case 'text':
+            return 10;
+        case 'number':
+            return 6;
+        case 'constant':
+            return null;
+        case 'field-date':
+            return 10;
+        case 'field-time':
+            return 8;
+        case 'field-timestamp':
+            return 26;
+        default:
+            return 10;
+    }
+}
+
+
+/***/ }),
+/* 55 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getKeywordDisplay: () => (/* binding */ getKeywordDisplay)
+/* harmony export */ });
+function getKeywordDisplay(options) {
+    const { keywordName, keywordArgs = null } = options;
+
+    if (keywordName === 'DATE') {
+        const normalizedArgs = String(keywordArgs || '')
+            .replace(/[()]/g, '')
+            .replace(/\s+/g, '')
+            .toUpperCase();
+
+        if (normalizedArgs === '*SYS*YY' || normalizedArgs === '*JOB*YY') {
+            return 'MM/DD/YYYY';
+        }
+
+        return 'MM/DD/YY';
+    }
+
+    const displays = {
+        'TIME': 'HH:MM:SS',
+        'SYSNAME': 'SSSSSSSS',
+        'USER': 'UUUUUUUUUU'
+    };
+    return displays[keywordName] || keywordName;
+}
+
+
+/***/ }),
+/* 56 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   extractAttributes: () => (/* binding */ extractAttributes)
+/* harmony export */ });
+// Extract display attributes with indicators
+// Returns: { attrs: {...}, indicators: [], isGroupedFormat: boolean }
+function extractAttributes({ content, fullLine = null, IndicatorUtils, Logger }) {
+    const attrs = {};
+    const result = { attrs: attrs, indicators: [], isGroupedFormat: false };
+
+    // Extract ALL indicators from DDS line
+    // Format: "A  41 43                                  DSPATR(BL)"
+    if (fullLine) {
+        result.indicators = IndicatorUtils.extractFromDdsLine(fullLine, 'extractAttributes');
+    }
+
+    // Check for grouped format: DSPATR(HI RI UL)
+    const groupedMatch = content.match(/DSPATR\(([A-Z]{2}(?:\s+[A-Z]{2})+)\)/);
+    if (groupedMatch) {
+        result.isGroupedFormat = true;
+        // Split the grouped attributes by spaces
+        const attrCodes = groupedMatch[1].split(/\s+/);
+        Logger.parse(`Found grouped DSPATR format with codes:`, attrCodes);
+
+        attrCodes.forEach(code => {
+            switch (code) {
+                case 'UL': attrs.underline = true; break;
+                case 'BL': attrs.blink = true; break;
+                case 'HI': attrs.highlight = true; break;
+                case 'RI': attrs.reverse = true; break;
+                case 'PC': attrs.cursorPosition = true; break;
+                case 'CS': attrs.columnSeparator = true; break;
+                case 'ND': attrs.nonDisplay = true; break;
+                case 'MDT': attrs.modifiedDataTag = true; break;
+                case 'PR': attrs.protect = true; break;
+                case 'OID': attrs.operatorId = true; break;
+                case 'SP': attrs.selectLightPen = true; break;
+            }
+        });
+    } else {
+        // Individual format: DSPATR(UL) or DSPATR(BL) etc.
+        if (content.includes('DSPATR(UL)')) {attrs.underline = true;}
+        if (content.includes('DSPATR(BL)')) {attrs.blink = true;}
+        if (content.includes('DSPATR(HI)')) {attrs.highlight = true;}
+        if (content.includes('DSPATR(RI)')) {attrs.reverse = true;}
+        if (content.includes('DSPATR(PC)')) {attrs.cursorPosition = true;}
+        if (content.includes('DSPATR(CS)')) {attrs.columnSeparator = true;}
+        if (content.includes('DSPATR(ND)')) {attrs.nonDisplay = true;}
+        if (content.includes('DSPATR(MDT)')) {attrs.modifiedDataTag = true;}
+        if (content.includes('DSPATR(PR)')) {attrs.protect = true;}
+        if (content.includes('DSPATR(OID)')) {attrs.operatorId = true;}
+        if (content.includes('DSPATR(SP)')) {attrs.selectLightPen = true;}
+    }
+
+    return result;
+}
+
+
+/***/ }),
+/* 57 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   renderAttributeRows: () => (/* binding */ renderAttributeRows)
+/* harmony export */ });
+// Arma el HTML de las filas de atributos en el panel de propiedades.
+function renderAttributeRows(options) {
+    const { allowedKeys = null, fieldType = 'variable', attributeUiDefs } = options;
+    const allowSet = allowedKeys ? new Set(allowedKeys) : null;
+
+    // Determine label based on field type
+    let indicatorLabel = 'Variable Indicators';
+
+    // First row: field-level indicators (WITHOUT checkbox, only label and button)
+    const fieldIndicatorRow = `
+        <div class="property-group" style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color, #3c3c3c); padding-bottom: 8px; margin-bottom: 8px;">
+            <label style="flex: 1;">
+                ${indicatorLabel}
+            </label>
+            <button class="indicator-config-btn" data-field-indicators="true" title="Configure field indicators"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+        </div>
+    `;
+
+    // Rest of attribute rows
+    const attributeRows = attributeUiDefs
+        .filter(def => !allowSet || allowSet.has(def.key))
+        .map(def => `
+            <div class="property-group ${def.extraClass}" style="display: flex; align-items: center; gap: 8px;">
+                <label style="flex: 1;">
+                    <input type="checkbox" id="${def.checkboxId}" />
+                    ${def.label}
+                </label>
+                <button class="indicator-config-btn" data-attr="${def.dataAttr}" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+            </div>
+        `)
+        .join('');
+
+    return fieldIndicatorRow + attributeRows;
+}
+
+
+/***/ }),
+/* 58 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getAttributeCheckboxMap: () => (/* binding */ getAttributeCheckboxMap)
+/* harmony export */ });
+// construye un objeto que mapea cada atributo (por ejemplo underline, blink, etc.) 
+// al id del checkbox correspondiente en el panel de propiedades.
+// Si se pasa allowedKeys, filtra el mapa para incluir solo esos atributos permitidos.
+function getAttributeCheckboxMap(options) {
+    const { allowedKeys = null, attributeUiDefs } = options;
+    const allowSet = allowedKeys ? new Set(allowedKeys) : null;
+    const map = {};
+
+    attributeUiDefs.forEach(def => {
+        if (!allowSet || allowSet.has(def.key)) {
+            map[def.key] = def.checkboxId;
+        }
+    });
+
+    return map;
+}
+
+
+/***/ }),
+/* 59 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   formatIndicatorLabel: () => (/* binding */ formatIndicatorLabel)
+/* harmony export */ });
+// Convierte un array de indicadores en texto como "02 43 11" o "N03 51"
+function formatIndicatorLabel(list) {
+    if (!Array.isArray(list) || list.length === 0) {
+        return 'No ind.';
+    }
+
+    return list
+        .map(ind => (ind.not ? `N${ind.number.padStart(2, '0')}` : ind.number.padStart(2, '0')))
+        .join(' ');
+}
+
+
+/***/ }),
+/* 60 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setIndicatorButtonState: () => (/* binding */ setIndicatorButtonState)
+/* harmony export */ });
+// Actualiza el botón con el texto generado por formatIndicatorLabel
+function setIndicatorButtonState({ btn, indicators, formatIndicatorLabel }) {
+    if (!btn) {
+        return;
+    }
+
+    if (!formatIndicatorLabel) {
+        throw new Error('setIndicatorButtonState: formatIndicatorLabel is required');
+    }
+
+    // Support both old format (array) and new format (groups)
+    let flatIndicators = [];
+    if (Array.isArray(indicators)) {
+        flatIndicators = indicators;
+    } else if (indicators && indicators.groups) {
+        // Flatten all groups into single array
+        indicators.groups.forEach(group => {
+            flatIndicators.push(...group.indicators);
+        });
+    }
+
+    const has = flatIndicators.length > 0;
+    btn.classList.toggle('has-indicators', has);
+    const textEl = btn.querySelector('.indicator-text');
+    if (textEl) {
+        textEl.textContent = formatIndicatorLabel(flatIndicators);
+    }
+    btn.title = has ? formatIndicatorLabel(flatIndicators) : 'Configurar indicadores';
+}
+
+
+/***/ }),
+/* 61 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   applyColorChanges: () => (/* binding */ applyColorChanges)
+/* harmony export */ });
+// Shared function to apply color changes from checkboxes to field object
+function applyColorChanges({ field, Logger, transferIndicators }) {
+    const colorMap = {
+        'color-green': 'GRN',
+        'color-white': 'WHT',
+        'color-red': 'RED',
+        'color-turquoise': 'TRQ',
+        'color-yellow': 'YLW',
+        'color-pink': 'PNK',
+        'color-blue': 'BLU'
+    };
+
+    // Collect all selected colors
+    const selectedColors = [];
+    for (const [checkboxId, colorCode] of Object.entries(colorMap)) {
+        const checkbox = document.getElementById(checkboxId);
+        if (checkbox && checkbox.checked) {
+            selectedColors.push(colorCode);
+        }
+    }
+
+    // Update field colors
+    if (selectedColors.length > 0) {
+        // Set the first color as the primary color (for backward compatibility)
+        field.color = selectedColors[0];
+        // Store all colors in the colors array
+        field.colors = selectedColors;
+        Logger.debug(`Colors set to [${selectedColors.join(', ')}] for field ${field.name}`);
+
+        // Initialize colorIndicators if needed
+        if (!field.colorIndicators) {
+            field.colorIndicators = {};
+        }
+
+        // Use unified indicator transfer helper
+        transferIndicators({
+            kind: 'color',
+            keys: selectedColors,
+            field: field,
+            fieldType: 'field'
+        });
+    } else {
+        // Remove colors if no checkbox is selected
+        delete field.color;
+        delete field.colors;
+        delete field.colorIndicators;
+        Logger.debug(`Colors removed for field ${field.name}`);
+    }
+}
+
+
+/***/ }),
+/* 62 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getRecordType: () => (/* binding */ getRecordType)
+/* harmony export */ });
+// Get the type of the current record (SFLCTL, SFL, or SCREEN)
+function getRecordType({ recordName, currentDocument }) {
+    const lines = currentDocument.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.includes(`R ${recordName}`) || line.includes(`R  ${recordName}`)) {
+            // Check keywords on the same line first
+            if (line.includes('SFLCTL')) {return 'SFLCTL';}
+            if (line.includes('SFL')) {return 'SFL';}
+            if (line.includes('WINDOW(')) {return 'WINDOW';}
+
+            // If not found on same line, check following lines within this record
+            for (let j = i + 1; j < lines.length; j++) {
+                const nextLine = lines[j];
+                // Stop if we hit another record declaration
+                if (nextLine.match(/^\s{5}A\s+R\s+\w+/)) {
+                    break;
+                }
+                // Check for keywords in continuation lines (any keyword that determines record type)
+                if (nextLine.includes('SFLCTL')) {return 'SFLCTL';}
+                if (nextLine.includes('SFL') && !nextLine.includes('SFLCTL')) {return 'SFL';}
+                if (nextLine.includes('WINDOW(')) {return 'WINDOW';}
+            }
+
+            return 'SCREEN';
+        }
+    }
+    return 'SCREEN';
+}
+
+
+/***/ }),
+/* 63 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   extractRowColFromParts: () => (/* binding */ extractRowColFromParts)
+/* harmony export */ });
+// Extract row and column from parts array
+// Returns: { row, col, nextIndex } or null if invalid
+function extractRowColFromParts({ parts, startIndex }) {
+    if (startIndex >= parts.length) {
+        return null;
+    }
+
+    const rowStr = parts[startIndex];
+    const row = parseInt(rowStr);
+
+    if (isNaN(row)) {
+        return null;
+    }
+
+    // Check for col
+    if (startIndex + 1 < parts.length) {
+        const colStr = parts[startIndex + 1];
+        const col = parseInt(colStr);
+
+        if (!isNaN(col)) {
+            return {
+                row: row,
+                col: col,
+                nextIndex: startIndex + 2
+            };
+        }
+    }
+
+    // Compact fixed format support when col has 3 digits and no separator exists,
+    // e.g. "6118" => row=6, col=118 or "20118" => row=20, col=118
+    const compactMatch = rowStr.match(/^(\d{1,2})(\d{3})$/);
+    if (!compactMatch) {
+        return null;
+    }
+
+    const compactRow = parseInt(compactMatch[1], 10);
+    const compactCol = parseInt(compactMatch[2], 10);
+    if (isNaN(compactRow) || isNaN(compactCol)) {
+        return null;
+    }
+
+    return {
+        row: compactRow,
+        col: compactCol,
+        nextIndex: startIndex + 1
+    };
+}
+
+
+/***/ }),
+/* 64 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   parseDdsTypeSpecification: () => (/* binding */ parseDdsTypeSpecification)
+/* harmony export */ });
+// Parse DDS type specification (e.g., "10A", "15S", "7P", "3Y", "2F")
+// Returns: { length, typeChar, dataType } or null if invalid
+function parseDdsTypeSpecification({ typeSpec, hasDecimals = false }) {
+    const normalized = (typeSpec || '').trim().toUpperCase();
+    if (normalized === 'L') {
+        return {
+            length: 10,
+            typeChar: 'L',
+            dataType: 'date'
+        };
+    }
+    if (normalized === 'T') {
+        return {
+            length: 8,
+            typeChar: 'T',
+            dataType: 'time'
+        };
+    }
+    if (normalized === 'Z') {
+        return {
+            length: 26,
+            typeChar: 'Z',
+            dataType: 'timestamp'
+        };
+    }
+
+    const typeMatch = normalized.match(/(\d+)([A-Z])?/);
+    if (!typeMatch) {
+        return null;
+    }
+
+    const length = parseInt(typeMatch[1]);
+    const typeChar = typeMatch[2]; // May be undefined
+    let dataType = 'character'; // Default
+
+    // Map DDS type to internal type
+    if (!typeChar) {
+        // No type letter specified
+        if (hasDecimals) {
+            dataType = 'zoned';
+        } else {
+            dataType = 'character';
+        }
+    } else if (typeChar === 'A') {
+        dataType = 'character';
+    } else if (typeChar === 'F') {
+        dataType = 'float';
+    } else if (typeChar === 'P') {
+        dataType = 'packed';
+    } else if (typeChar === 'S' || typeChar === 'Y' || typeChar === 'N' || typeChar === 'D' || typeChar === 'I') {
+        // These are shift codes for Zoned type
+        dataType = 'zoned';
+    } else if (typeChar === 'J' || typeChar === 'E' || typeChar === 'O' || typeChar === 'G') {
+        // These are shift codes for Double Byte type
+        dataType = 'double';
+    }
+
+    return {
+        length: length,
+        typeChar: typeChar,
+        dataType: dataType
+    };
+}
+
+
+/***/ }),
+/* 65 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   parseUsageAndDecimals: () => (/* binding */ parseUsageAndDecimals)
+/* harmony export */ });
+// Parse usage and decimals from parts
+// Returns: { decimals, usage, hasDecimals, nextIndex }
+function parseUsageAndDecimals({ parts, startIndex }) {
+    let decimals = 0;
+    let usage = 'O';
+    let hasDecimals = false;
+    let currentIndex = startIndex;
+
+    if (currentIndex >= parts.length) {
+        return { decimals, usage, hasDecimals, nextIndex: currentIndex };
+    }
+
+    const nextPart = parts[currentIndex];
+
+    // Check for decimals (and possibly usage attached to decimals)
+    const decimalMatch = nextPart.match(/^(\d+)([OIBHMP]?)$/);
+    if (decimalMatch) {
+        hasDecimals = true;
+        decimals = parseInt(decimalMatch[1]);
+        // Check if usage is attached to decimals (e.g., "2I", "0O")
+        if (decimalMatch[2]) {
+            usage = decimalMatch[2];
+            currentIndex++; // Move to next part (should be row)
+        } else {
+            // Decimals alone, check next part for usage or row
+            currentIndex++;
+            if (currentIndex < parts.length) {
+                const afterDecimal = parts[currentIndex];
+                // Check if it's a single letter usage
+                if (afterDecimal.length === 1 && /[OIBHMP]/.test(afterDecimal)) {
+                    usage = afterDecimal;
+                    currentIndex++;
+                }
+                // Otherwise it's the row number
+            }
+        }
+    } else if (nextPart.length === 1 && /[OIBHMP]/.test(nextPart)) {
+        // It's just a usage letter (no decimals)
+        usage = nextPart;
+        currentIndex++;
+    }
+    // Otherwise it's the row number (no decimals, no usage)
+
+    return {
+        decimals: decimals,
+        usage: usage,
+        hasDecimals: hasDecimals,
+        nextIndex: currentIndex
+    };
+}
+
+
+/***/ }),
+/* 66 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   extractFloatPrecision: () => (/* binding */ extractFloatPrecision)
+/* harmony export */ });
+// Extract FLTPCN precision from line
+// Returns: 'SINGLE', 'DOUBLE', or null
+function extractFloatPrecision({ line, dataType }) {
+    if (dataType !== 'float') {
+        return null;
+    }
+
+    if (line.includes('FLTPCN')) {
+        if (line.includes('*SINGLE')) {
+            return 'SINGLE';
+        } else if (line.includes('*DOUBLE')) {
+            return 'DOUBLE';
+        }
+    }
+
+    return null;
+}
+
+
+/***/ }),
+/* 67 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   extractShiftCode: () => (/* binding */ extractShiftCode)
+/* harmony export */ });
+// Extract shift code from type spec for zoned/double types
+// Returns: shift code (S/Y/N/D/I for zoned, J/E/O/G for double) or null
+function extractShiftCode({ typeSpec, dataType }) {
+    if (dataType === 'zoned') {
+        // Extract shift from typeChar (S/Y/N/D/I)
+        const typeMatch = typeSpec.match(/\d+([SYNDI])/);
+        if (typeMatch) {
+            return typeMatch[1];
+        }
+        return null;
+    } else if (dataType === 'double') {
+        // Extract shift from typeChar (J/E/O/G)
+        const typeMatch = typeSpec.match(/\d+([JEOG])/);
+        if (typeMatch) {
+            return typeMatch[1];
+        }
+        return 'J';
+    }
+
+    return null;
+}
+
+
+/***/ }),
+/* 68 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   parseWindowDimensionsFromLine: () => (/* binding */ parseWindowDimensionsFromLine)
+/* harmony export */ });
+function parseWindowDimensionsFromLine(options) {
+    const {
+        trimmedLine,
+        currentRecordName,
+        currentWindowDimensions,
+        currentDisplaySize,
+        DisplaySizeUtils,
+        currentDocument,
+        getWindowDimensions,
+        Logger
+    } = options;
+
+    if (currentWindowDimensions) {
+        return currentWindowDimensions;
+    }
+
+    if (!trimmedLine.includes('WINDOW(')) {
+        return null;
+    }
+
+    const displayMarker = currentDisplaySize === 'DS3' ? '*DS3' : '*DS4';
+
+    const windowRefMatch = trimmedLine.match(/WINDOW\(([A-Z0-9_]+)\)/);
+    if (windowRefMatch && !/\d+\s+\d+/.test(windowRefMatch[0])) {
+        const referencedRecord = windowRefMatch[1];
+        Logger.parse(`Found WINDOW reference to ${referencedRecord} in record ${currentRecordName}`);
+        const refDimensions = getWindowDimensions(referencedRecord);
+        if (refDimensions.hasWindow) {
+            const dimensions = currentDisplaySize === 'DS3' ? refDimensions.ds3 : refDimensions.ds4;
+            if (dimensions) {
+                Logger.parse(`Resolved window dimensions from ${referencedRecord}:`, dimensions);
+                return dimensions;
+            }
+        }
+        return null;
+    }
+
+    const windowMatch = trimmedLine.match(/WINDOW\((\d+)\s+(\d+)\s+(\d+)\s+(\d+)\)/);
+    if (windowMatch) {
+        const displayConfig = DisplaySizeUtils.getAvailableDisplaySizes(currentDocument);
+
+        let appliesTo = false;
+        if (trimmedLine.includes(displayMarker)) {
+            appliesTo = true;
+        } else if (displayConfig.singleSize) {
+            appliesTo = true;
+        }
+
+        if (appliesTo) {
+            const dimensions = {
+                row: parseInt(windowMatch[1], 10),
+                col: parseInt(windowMatch[2], 10),
+                height: parseInt(windowMatch[3], 10),
+                width: parseInt(windowMatch[4], 10)
+            };
+            const marker = trimmedLine.includes(displayMarker) ? displayMarker : '(single size)';
+            Logger.parse(`Found ${marker} window dimensions for ${currentRecordName}:`, dimensions);
+            return dimensions;
+        }
+    }
+
+    return null;
+}
+
+
+/***/ }),
+/* 69 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   processMultiLineContinuation: () => (/* binding */ processMultiLineContinuation)
+/* harmony export */ });
+/**
+ * Process multi-line DDS constant continuation lines.
+ * Handles continuation indicators (trailing dashes) and properly concatenates lines.
+ * 
+ * @param {Object} options - Configuration object
+ * @param {string} options.initialLine - The first line containing opening quote and dash
+ * @param {Function} options.getNextLine - Function(index) that returns next line or null
+ * @param {number} options.startIndex - Starting index for continuation lines
+ * @param {string} options.context - Context for logging ('PREVIEW' or 'DESIGNER')
+ * @param {Object} options.Logger - Logger instance
+ * @returns {Object} Result object: { fullLine: string, linesConsumed: number }
+ */
+function processMultiLineContinuation({ initialLine, getNextLine, startIndex, context, Logger }) {
+    let fullLine = initialLine;
+    let linesConsumed = 0;
+    let currentIndex = startIndex;
+    const isStringContinuation = initialLine.includes("'");
+
+    // Process continuation lines
+    while (true) {
+        const nextLine = getNextLine(currentIndex);
+        if (!nextLine) {break;}
+
+        // Check if next line is a continuation
+        // A continuation line starts with 'A' at position 5, has spaces/empty where row/col would be,
+        // and the trimmed content starts with content (not another row/col position)
+        const fullAfterA = nextLine.length > 6 ? nextLine.substring(6) : '';
+        const afterA = fullAfterA.trim();
+        const contentAfter18 = nextLine.length > 18 ? nextLine.substring(18).trim() : '';
+        const indicatorAreaContent = nextLine.length > 6 ? nextLine.substring(6, 18).trim() : '';
+        const isIndicatorOnlyLine = indicatorAreaContent.length > 0 &&
+                                    /^O?\s*[N\d\s]+$/.test(indicatorAreaContent) &&
+                                    contentAfter18 === '';
+        const isContinuation = nextLine.length > 6 &&
+                             nextLine[5] === 'A' &&
+                             !isIndicatorOnlyLine &&
+                             !/^\d+\s+\d+/.test(afterA) &&
+                             (afterA.length > 0 || (isStringContinuation && fullAfterA.length > 0)); // Allow blank continuation lines in string constants
+
+        if (!isContinuation) {break;}
+
+        Logger.parse(`Continuation found at index ${currentIndex}: ${nextLine}`);
+
+        // For continuation lines, skip position 0-5 (DDS format)
+        // In DDS, string constant continuations start at a fixed column (typically 45)
+        // We must preserve ALL characters including leading spaces in the constant
+        // For string constants, content typically starts at column 45 (index 38 after substring(6))
+        // But we need to handle cases where it might be at different positions
+        // The key is: if this is a continuation of a string constant, preserve ALL spaces
+
+        // Check if this looks like a string constant continuation
+        // (has a quote somewhere in the line)
+        const hasQuote = fullAfterA.includes("'");
+
+        let continuationContent;
+        let contentStart;
+
+        if (isStringContinuation || hasQuote) {
+            // This is a string constant continuation
+            // Take content from column 45 (index 38 after substring(6)) to preserve spacing
+            // This is the standard DDS position for constant continuation
+            const ddsConstantColumn = 38; // Column 45 in original line
+
+            // If the line is long enough, take from the standard column
+            // Otherwise take from the beginning (in case of non-standard formatting)
+            if (fullAfterA.length > ddsConstantColumn) {
+                continuationContent = fullAfterA.substring(ddsConstantColumn);
+                contentStart = ddsConstantColumn;
+            } else {
+                // Line is shorter, take everything
+                continuationContent = fullAfterA;
+                contentStart = 0;
+            }
+        } else {
+            // Not a string constant, skip leading spaces as before
+            contentStart = fullAfterA.search(/\S/);
+            continuationContent = contentStart >= 0 ? fullAfterA.substring(contentStart) : '';
+        }
+
+        // Determine if continuation line has leading spaces (indentation)
+        // substring(6) removes columns 1-6, so remaining index maps to: contentStart + 7 = real column
+        // Column 45 → contentStart 38, Column 46 → contentStart 39
+        // If contentStart > 38, content is beyond column 45, so needs space
+        const hasLeadingSpaces = contentStart > 38;
+        Logger.parse(`[${context}] contentStart: ${contentStart}, column: ${contentStart + 7}, hasLeadingSpaces: ${hasLeadingSpaces}`);
+
+        // Check if this is the last line (has closing quote)
+        const isLastLine = continuationContent.includes("'");
+
+        // If it's the last line, also remove the trailing continuation char ('-' or '+') from continuationContent
+        // before the closing quote (it's also a continuation indicator). Allow spaces after '-'/'+'.
+        if (isLastLine && continuationContent.length > 1) {
+            const beforeQuote = continuationContent.substring(0, continuationContent.length - 1);
+            const lastContMatch = beforeQuote.match(/[-+]\s*$/);
+            if (lastContMatch) {
+                const trimmedBefore = beforeQuote.substring(0, beforeQuote.length - lastContMatch[0].length);
+                continuationContent = trimmedBefore + "'";
+                Logger.parse(`[${context}] Removed trailing continuation sequence from last continuation line: "${continuationContent}"`);
+            }
+        }
+
+        // Before concatenating, check if fullLine's constant value ends with a continuation char ('-' or '+')
+        // Extract the content between quotes from fullLine to check
+        const constantMatch = fullLine.match(/'([^']*)$/);
+        if (constantMatch) {
+            const currentConstantValue = constantMatch[1];
+            const contMatch = currentConstantValue.match(/[-+]\s*$/);
+            const hasContinuation = !!contMatch;
+            Logger.parse(`[${context}] Before concat: constant value ends with: "${currentConstantValue.slice(-10)}", hasContinuation: ${hasContinuation}, isLastLine: ${isLastLine}`);
+
+            // Always remove trailing continuation sequence (including trailing spaces) from current line
+            if (hasContinuation) {
+                const removeLen = contMatch[0].length;
+                if (hasLeadingSpaces) {
+                    Logger.parse(`[${context}] Removing trailing continuation sequence and replacing with space (has indentation)`);
+                    fullLine = fullLine.substring(0, fullLine.length - removeLen) + ' ';
+                } else {
+                    Logger.parse(`[${context}] Removing trailing continuation sequence without space (no indentation)`);
+                    fullLine = fullLine.substring(0, fullLine.length - removeLen);
+                }
+            }
+        }
+
+        fullLine = fullLine + continuationContent;
+        Logger.parse(`[${context}] After concat: fullLine length: ${fullLine.length}, last 10 chars: "${fullLine.slice(-10)}"`);
+
+        currentIndex++;
+        linesConsumed++;
+
+        // If this continuation line has the closing quote, we're done
+        if (isLastLine) {
+            break;
+        }
+    }
+
+    Logger.parse(`Completed multi-line constant, full line length: ${fullLine.length}`);
+    Logger.parse(`Complete constant last 40 chars: "${fullLine.slice(-40)}"`);
+
+    return {
+        fullLine: fullLine,
+        linesConsumed: linesConsumed
+    };
+}
+
+
+/***/ }),
+/* 70 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   scanIndicatorsBackward: () => (/* binding */ scanIndicatorsBackward)
+/* harmony export */ });
+// Helper: Scan backwards from keyword line to collect all indicator-only lines
+// Returns: { scannedLines: [{indicators: [...], isOr: boolean}], hasOrLines: boolean }
+function scanIndicatorsBackward({ lines, startIndex, lineOffset, contextLabel = '', IndicatorUtils, Logger }) {
+    const scannedLines = [];
+    let hasOrLines = false;
+    let backOffset = lineOffset - 1;
+    let currentGroup = null; // Track current group being built (scanning backwards)
+
+    while (backOffset > 0) {
+        const prevLine = lines[startIndex + backOffset];
+
+        // Check if previous line has only indicators
+        // A line has ONLY indicators if:
+        // 1. Starts with 'A' or 'AO' at position 5-6
+        // 2. Has indicators in columns 7-18 (positions after 'A'/'AO')
+        // 3. Does NOT have a field name after position 18
+
+        // Check if line starts with 'A' at position 5 (column 6)
+        if (prevLine.length < 6 || prevLine[5] !== 'A') {
+            break; // Not a DDS line starting with A
+        }
+
+        // Check for field name pattern after position 18 (field names start around column 19)
+        // Field names are typically followed by type spec like "10A" or "2F 0"
+        const prevContentAfter18 = prevLine.substring(18).trim();
+        const hasFieldName = /^[A-Z][A-Z0-9_]{2,}\s+\d+/i.test(prevContentAfter18);
+
+        // Check if line has a keyword (from column 44 onwards) - if so, stop scanning
+        // These indicators belong to a different attribute
+        const prevContentAfter44 = prevLine.length > 43 ? prevLine.substring(43).trim() : '';
+        const hasKeyword = prevContentAfter44.length > 0 && /^[A-Z]+\s*\(/.test(prevContentAfter44);
+        if (hasKeyword) {
+            Logger.debug(`[${contextLabel}] scanIndicatorsBackward stopping - found keyword at backOffset ${backOffset}`);
+            break;
+        }
+
+        // A line has ONLY indicators if:
+        // - No field name after position 18
+        // - Has indicator pattern (numbers with optional N prefix) in positions 6-18
+        const indicatorAreaContent = prevLine.substring(6, 18).trim();
+        const hasIndicatorPattern = /^O?\s*[N\d\s]+$/.test(indicatorAreaContent);
+
+        const prevHasOnlyIndicators = !hasFieldName && hasIndicatorPattern && indicatorAreaContent.length > 0;
+
+        if (!prevHasOnlyIndicators) {
+            break; // Stop if not an indicator-only line
+        }
+
+        // Check if this line starts a new OR group (has 'O' at position 6)
+        const startsOrGroup = prevLine.length > 6 && prevLine[6] === 'O';
+
+        // Extract indicators from this line
+        const prevIndicators = IndicatorUtils.extractFromDdsLine(prevLine, contextLabel);
+
+        if (prevIndicators && prevIndicators.length > 0) {
+            if (startsOrGroup) {
+                // When scanning BACKWARDS, finding 'AO' means:
+                // - Everything AFTER this (currentGroup) is a continuation of this OR group
+                // - Everything BEFORE this is a DIFFERENT group
+                hasOrLines = true;
+
+                if (currentGroup) {
+                    // currentGroup has indicators from lines AFTER this AO line
+                    // Those are continuations (A lines after AO), so they're part of this OR group
+                    // Prepend current line's indicators to currentGroup
+                    currentGroup.indicators.unshift(...prevIndicators);
+                    currentGroup.isOr = true; // Mark as OR group
+                } else {
+                    // No currentGroup yet - this AO line starts the group we'll build
+                    currentGroup = { indicators: [...prevIndicators], isOr: true };
+                }
+
+                // Save this complete OR group and reset for next group (scanning further back)
+                scannedLines.unshift({ indicators: currentGroup.indicators, isOr: currentGroup.isOr });
+                currentGroup = null;
+            } else {
+                // Line without 'O' - continuation of current group OR new AND group
+                if (currentGroup === null) {
+                    // Start new group (will be AND unless we find AO later)
+                    currentGroup = { indicators: [...prevIndicators], isOr: false };
+                } else {
+                    // Add to current group (prepend because scanning backwards)
+                    currentGroup.indicators.unshift(...prevIndicators);
+                }
+            }
+        }
+
+        backOffset--;
+    }
+
+    // Add remaining group if any (this is the first/topmost group)
+    if (currentGroup && currentGroup.indicators.length > 0) {
+        scannedLines.unshift({ indicators: currentGroup.indicators, isOr: currentGroup.isOr });
+    }
+
+    return { scannedLines, hasOrLines };
+}
+
+
+/***/ }),
+/* 71 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   scanAttributeLinesAfterField: () => (/* binding */ scanAttributeLinesAfterField)
+/* harmony export */ });
+// Shared attribute/color scanner to unify Designer and Preview parsing
+function scanAttributeLinesAfterField({
+    options,
+    Logger,
+    IndicatorUtils,
+    scanIndicatorsBackward,
+    extractAttributes,
+    attributeContentRegex
+}) {
+    const {
+        lines,
+        startIndex,
+        field,
+        contextLabel = 'PARSER',
+        includeChecks = false,
+        preserveOriginalSpacing = false,
+        stopOnFieldKeywordsRegex = null,
+        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(/,
+    } = options;
+
+    let lineOffset = 1;
+
+    while (startIndex + lineOffset < lines.length) {
+        const nextLine = lines[startIndex + lineOffset];
+        const nextTrimmed = nextLine.trim();
+
+        // IMPROVED: Better comment detection - check for A* at position 6-7 (DDS format)
+        // or at the start of trimmed line (could have leading spaces)
+        const isComment = (nextLine.length > 6 && nextLine[5] === 'A' && nextLine[6] === '*') ||
+                         nextTrimmed.startsWith('A*') ||
+                         nextTrimmed.startsWith('*') ||
+                         nextTrimmed.startsWith('-');
+
+        if (isComment) {
+            Logger.debug(`[${contextLabel}] Skipping comment line at offset ${lineOffset}: "${nextTrimmed}"`);
+            lineOffset++;
+            continue;
+        }
+
+        // Check if this is an indicator-only line (belongs to next field)
+        // Format: "A  11 42 54" or "AO 50" with NO field name after column 18
+        const contentAfterColumn18 = nextLine.length > 18 ? nextLine.substring(18).trim() : '';
+        const hasFieldNameAfter18 = /^[A-Z][A-Z0-9_]{0,9}\s+\d+/i.test(contentAfterColumn18);
+        const indicatorAreaContent = nextLine.length > 6 ? nextLine.substring(6, 18).trim() : '';
+        const hasIndicatorPattern = /^O?\s*[N\d\s]+$/.test(indicatorAreaContent);
+        const isIndicatorOnlyLine = nextLine.length > 6 &&
+                                    nextLine[5] === 'A' &&
+                                   !hasFieldNameAfter18 &&
+                                    hasIndicatorPattern &&
+                                    indicatorAreaContent.length > 0 &&
+                                    contentAfterColumn18 === '';
+
+        const hasFieldName = /^[A-Z_][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(contentAfterColumn18);
+        const hasConstant = nextTrimmed.match(/\d+\s+\d+'/);
+        const isRecordDef = nextTrimmed.match(/^A\s+R\s+\w+/);
+        const isBlank = nextTrimmed === '' || nextTrimmed === 'A';
+        // Check for keywords (DATE, TIME, SYSNAME, USER) - must stop before processing another field's keyword
+        const hasKeyword = /\d{1,2}\s+\d{1,2}(DATE|TIME|SYSNAME|USER)/.test(nextTrimmed);
+        // Check if this is a const continuation line (value with quotes but no row/col)
+        // BUT: exclude lines with known keywords (COLOR, DSPATR, DFTVAL, etc.)
+        const isConstContinuation = nextTrimmed.startsWith('A') &&
+                                   nextTrimmed.includes("'") &&
+                                   !nextTrimmed.match(/\d+\s+\d+'/) &&
+                                   !attributeRegex.test(nextTrimmed);
+        const hasFieldKeyword = stopOnFieldKeywordsRegex ? stopOnFieldKeywordsRegex.test(nextTrimmed) : false;
+
+        // Stop scanning if we hit a field, constant, record, blank line, or field keyword
+        if (hasFieldName || hasConstant || isRecordDef || isBlank || hasKeyword || hasFieldKeyword) {
+            Logger.debug(`[${contextLabel}] Stopping scan - found ${hasFieldName ? 'field' : hasConstant ? 'constant' : isRecordDef ? 'record' : hasKeyword ? 'keyword' : hasFieldKeyword ? 'field keyword' : 'blank'}`);
+            break;
+        }
+
+        // If this is an indicator-only line, skip it and continue (indicators will be picked up by backward scan)
+        if (isIndicatorOnlyLine) {
+            Logger.debug(`[${contextLabel}] Skipping indicator-only line at offset ${lineOffset}, continuing...`);
+            lineOffset++;
+            continue;
+        }
+
+        if (isConstContinuation) {
+            lineOffset++;
+            continue;
+        }
+
+        const hasAttribute = attributeRegex.test(nextTrimmed);
+
+        // DEBUG: Log attribute detection
+        Logger.debug(`[${contextLabel}] Line ${startIndex + lineOffset + 1}: hasAttribute=${hasAttribute}, nextTrimmed="${nextTrimmed}"`);
+
+        // Check if this line has only indicators (no keyword yet)
+        // Format: "A  01 02 03" or "AO 50" or "A N10 12"
+        // If columns 19-80 (indices 18-79) are empty, it's only indicators
+        const contentAfter18 = nextLine.substring(18).trim();
+        Logger.debug(`[${contextLabel}] Line ${startIndex + lineOffset + 1}: contentAfter18="${contentAfter18}"`);
+        const hasOnlyIndicators = !hasAttribute &&
+                                 nextTrimmed.match(/^A[O\s]\s*[N\d\s]+$/) &&
+                                 contentAfter18 === '' &&
+                                 !hasFieldName;
+        Logger.debug(`[${contextLabel}] Line ${startIndex + lineOffset + 1}: hasOnlyIndicators=${hasOnlyIndicators}`);
+
+        if (!hasAttribute && !hasOnlyIndicators) {
+            // IMPROVED: Check if this looks like an unknown keyword starting at column 44 (index 43)
+            // Unknown keywords can have or not have parentheses: OVERLAY, KEEP, FLTPCN(...), etc.
+            // If content starts at column 44+ and doesn't match known attributes, ignore it
+            const contentAfter43 = nextLine.length > 43 ? nextLine.substring(43).trim() : '';
+            const looksLikeUnknownKeyword = nextTrimmed.startsWith('A') && contentAfter43.length > 0 && !hasFieldName;
+
+            if (looksLikeUnknownKeyword) {
+                Logger.debug(`[${contextLabel}] Skipping unknown keyword at column 44+: "${contentAfter43}"`);
+                lineOffset++;
+                continue;
+            }
+            Logger.debug(`[${contextLabel}] Stopping - unknown line type at offset ${lineOffset}`);
+            break;
+        }
+
+        // If line has only indicators, skip it and continue to find the keyword line
+        if (hasOnlyIndicators) {
+            Logger.debug(`[${contextLabel}] Found indicator-only line at offset ${lineOffset}, continuing...`);
+            lineOffset++;
+            continue;
+        }
+
+        // ============================================================================
+        // UNIFIED INDICATOR PROCESSING FOR ALL KEYWORDS
+        // Process COLOR, DSPATR, EDTCDE, CHECK, DFTVAL, etc. with same logic
+        // ============================================================================
+
+        // Check if this is an OR line (position 6 = 'O')
+        const isOrLine = nextLine.length > 6 && nextLine[6] === 'O';
+
+        // Extract indicators from current line
+        const currentLineIndicators = IndicatorUtils.extractFromDdsLine(nextLine, `${contextLabel}-CURRENT`);
+
+        // Scan backwards to find all indicator-only lines
+        const backwardScan = scanIndicatorsBackward(lines, startIndex, lineOffset, `${contextLabel}-BACKWARD`);
+        const scannedLines = backwardScan.scannedLines;
+        let hasOrLines = backwardScan.hasOrLines;
+
+        // Add current line indicators if any
+        // The current line with keyword (COLOR/DSPATR) can also have indicators
+        if (currentLineIndicators && currentLineIndicators.length > 0) {
+            if (isOrLine) {
+                // This line starts a NEW OR group
+                scannedLines.push({ indicators: currentLineIndicators, isOr: true });
+                hasOrLines = true;
+            } else {
+                // This line is not OR, so add to last group (continuation)
+                if (scannedLines.length > 0) {
+                    // Add to the last group
+                    scannedLines[scannedLines.length - 1].indicators.push(...currentLineIndicators);
+                } else {
+                    // First group (no previous groups from backward scan)
+                    scannedLines.push({ indicators: currentLineIndicators, isOr: false });
+                }
+            }
+        }
+
+        // Build indicator groups structure
+        const buildIndicatorGroups = () => {
+            if (scannedLines.length === 0) {return null;}
+
+            if (hasOrLines) {
+                // OR format: scannedLines already contains properly grouped data
+                // Each element with isOr:true starts a new group
+                // Lines with isOr:false after isOr:true are continuations (AND within OR)
+                const groups = [];
+
+                scannedLines.forEach(line => {
+                    if (line.isOr) {
+                        // Start new OR group
+                        groups.push({ indicators: [...line.indicators] });
+                    } else {
+                        // Continuation of previous group (AND within OR)
+                        if (groups.length > 0) {
+                            groups[groups.length - 1].indicators.push(...line.indicators);
+                        } else {
+                            // First group is not OR (should not happen, but handle it)
+                            groups.push({ indicators: [...line.indicators] });
+                        }
+                    }
+                });
+
+                return {
+                    groups: groups,
+                    isOr: true
+                };
+            }
+
+            // AND format: combine all indicators into single group
+            const allIndicators = [];
+            scannedLines.forEach(line => {
+                allIndicators.push(...line.indicators);
+            });
+            return {
+                groups: [{ indicators: allIndicators }],
+                isOr: false
+            };
+        };
+
+        // Extract COLOR with indicators (with OR support)
+        const colorMatch = nextLine.match(/COLOR\((\w+)\)/);
+        if (colorMatch) {
+            const color = colorMatch[1];
+
+            if (!field.color) {
+                field.color = color;
+                Logger.parse(`Found color ${field.color} for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+            }
+
+            if (!field.colors) {
+                field.colors = [];
+            }
+            if (!field.colors.includes(color)) {
+                field.colors.push(color);
+            }
+
+            if (preserveOriginalSpacing) {
+                field.originalColorLines = field.originalColorLines || {};
+                // Store all lines for this color (for regeneration)
+                if (!field.originalColorLines[color]) {
+                    field.originalColorLines[color] = [];
+                }
+                field.originalColorLines[color].push(nextLine);
+            }
+
+            // Store indicators using unified structure
+            const indicatorData = buildIndicatorGroups();
+            if (indicatorData) {
+                if (!field.colorIndicators) {
+                    field.colorIndicators = {};
+                }
+
+                // If color already exists AND we're not in a modification state, accumulate groups
+                // Otherwise replace (to avoid duplicating lines after user modifications)
+                const shouldAccumulate = field.colorIndicators[color] && !field.colorIndicatorsModified;
+
+                if (shouldAccumulate) {
+                    field.colorIndicators[color].groups.push(...indicatorData.groups);
+                    // Update isOr flag if any group is OR
+                    field.colorIndicators[color].isOr = field.colorIndicators[color].isOr || indicatorData.isOr;
+                    Logger.debug(`[${contextLabel}] COLOR ${color}: Accumulated ${indicatorData.groups.length} more group(s), total=${field.colorIndicators[color].groups.length}`);
+                } else {
+                    field.colorIndicators[color] = indicatorData;
+                    Logger.debug(`[${contextLabel}] COLOR ${color}: Stored ${indicatorData.groups.length} group(s), isOr=${indicatorData.isOr}`);
+                }
+
+                indicatorData.groups.forEach((g, i) => {
+                    Logger.debug(`[${contextLabel}]   Group ${i}: ${g.indicators.length} indicators:`, g.indicators.map(ind => ind.number + (ind.not ? 'N' : '')).join(', '));
+                });
+            }
+        }
+
+        // Extract DSPATR attributes with indicators (with OR support)
+        const attrResult = extractAttributes(nextLine, nextLine);
+        if (attrResult.attrs && Object.keys(attrResult.attrs).length > 0) {
+            field.attributes = { ...field.attributes, ...attrResult.attrs };
+
+            if (preserveOriginalSpacing) {
+                field.originalAttrLines = field.originalAttrLines || {};
+            }
+
+            if (attrResult.isGroupedFormat) {
+                field.hasGroupedDspatr = true;
+                if (preserveOriginalSpacing) {
+                    field.groupedDspatrLine = nextLine;
+                }
+            }
+
+            for (const [attrName, attrValue] of Object.entries(attrResult.attrs)) {
+                if (attrValue && preserveOriginalSpacing) {
+                    // Store all lines for this attribute
+                    if (!field.originalAttrLines[attrName]) {
+                        field.originalAttrLines[attrName] = [];
+                    }
+                    field.originalAttrLines[attrName].push(nextLine);
+                }
+            }
+
+            // Store indicators using unified structure
+            const indicatorData = buildIndicatorGroups();
+            if (indicatorData) {
+                for (const [attrName, attrValue] of Object.entries(attrResult.attrs)) {
+                    if (attrValue) {
+                        if (!field.attributeIndicators) {
+                            field.attributeIndicators = {};
+                        }
+
+                        // If attribute already exists AND we're not in a modification state, accumulate groups
+                        // Otherwise replace (to avoid duplicating lines after user modifications)
+                        const shouldAccumulate = field.attributeIndicators[attrName] && !field.attributeIndicatorsModified;
+
+                        if (shouldAccumulate) {
+                            field.attributeIndicators[attrName].groups.push(...indicatorData.groups);
+                            // Update isOr flag if any group is OR
+                            field.attributeIndicators[attrName].isOr = field.attributeIndicators[attrName].isOr || indicatorData.isOr;
+                            Logger.debug(`[${contextLabel}] DSPATR ${attrName}: Accumulated ${indicatorData.groups.length} more group(s), total=${field.attributeIndicators[attrName].groups.length}`);
+                        } else {
+                            field.attributeIndicators[attrName] = indicatorData;
+                            Logger.debug(`[${contextLabel}] DSPATR ${attrName}: Stored ${indicatorData.groups.length} group(s), isOr=${indicatorData.isOr}`);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Extract DFTVAL with indicators (same pattern as COLOR/DSPATR)
+        const dftvalMatch = nextLine.match(/DFTVAL\('([^']*)'\)/);
+        Logger.debug(`[${contextLabel}] Checking line ${startIndex + lineOffset + 1} for DFTVAL: ${nextTrimmed.substring(0, 50)}`);
+        Logger.debug(`[${contextLabel}] DFTVAL match result:`, dftvalMatch ? `YES (value='${dftvalMatch[1]}')` : 'NO');
+        if (dftvalMatch) {
+            const value = dftvalMatch[1];
+            field.dftval = { value: value };
+
+            Logger.parse(`Found DFTVAL='${value}' for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+
+            Logger.debug(`[${contextLabel}] DFTVAL processing - scannedLines count: ${scannedLines.length}`);
+            Logger.debug(`[${contextLabel}] DFTVAL processing - currentLineIndicators:`, currentLineIndicators);
+            scannedLines.forEach((sl, idx) => {
+                Logger.debug(`[${contextLabel}]   DFTVAL scannedLine ${idx}: ${sl.indicators.length} indicators, isOr=${sl.isOr}`, sl.indicators.map(i => i.number).join(','));
+            });
+
+            // Store indicators using unified structure (same as COLOR/DSPATR)
+            const indicatorData = buildIndicatorGroups();
+            if (indicatorData && indicatorData.groups && indicatorData.groups.length > 0) {
+                field.dftvalIndicators = indicatorData;
+                Logger.debug(`[${contextLabel}] DFTVAL: Stored ${indicatorData.groups.length} group(s), isOr=${indicatorData.isOr}`);
+                indicatorData.groups.forEach((g, i) => {
+                    Logger.debug(`[${contextLabel}]   DFTVAL Group ${i}: ${g.indicators.length} indicators:`, g.indicators.map(ind => ind.number + (ind.not ? 'N' : '')).join(', '));
+                });
+            } else {
+                Logger.debug(`[${contextLabel}] DFTVAL: No indicator groups built (no indicators present)`);
+            }
+        }
+
+        const parseKeywordTextArg = (keywordName, lineText) => {
+            const quotedRegex = new RegExp(`${keywordName}\\(\\s*'((?:''|[^'])*)'\\s*\\)`, 'i');
+            const quotedMatch = lineText.match(quotedRegex);
+            if (quotedMatch) {
+                return quotedMatch[1].replace(/''/g, "'");
+            }
+
+            const genericRegex = new RegExp(`${keywordName}\\(\\s*([^)]*?)\\s*\\)`, 'i');
+            const genericMatch = lineText.match(genericRegex);
+            if (!genericMatch) {
+                return '';
+            }
+
+            return genericMatch[1].trim();
+        };
+
+        const edtcdeMatch = nextLine.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);
+        if (edtcdeMatch) {
+            const edtcdeValue = edtcdeMatch[1].replace(/["']/g, '').trim().toUpperCase();
+            if (edtcdeValue) {
+                const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
+                field.edtcde = { value: edtcdeValue };
+                if ((replaceLeadingZerosWith === '*' || replaceLeadingZerosWith === '$') && edtcdeValue !== 'Z') {
+                    field.edtcde.replaceLeadingZerosWith = replaceLeadingZerosWith;
+                }
+                Logger.parse(`Found EDTCDE(${edtcdeValue}${replaceLeadingZerosWith ? ` ${replaceLeadingZerosWith}` : ''}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+            }
+        }
+
+        const edtwrdValue = parseKeywordTextArg('EDTWRD', nextLine);
+        if (edtwrdValue.length > 0) {
+            field.edtwrd = { value: edtwrdValue };
+            Logger.parse(`Found EDTWRD('${edtwrdValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
+
+        const edtmskValue = parseKeywordTextArg('EDTMSK', nextLine);
+        if (edtmskValue.length > 0) {
+            field.edtmsk = { value: edtmskValue };
+            Logger.parse(`Found EDTMSK('${edtmskValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
+
+        const dftValue = parseKeywordTextArg('DFT', nextLine);
+        if (dftValue.length > 0) {
+            field.dft = { value: dftValue };
+            Logger.parse(`Found DFT(${dftValue}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
+
+            // Parse VALUES('A' 'B' ...), including DDS continuation lines
+            if (/VALUES\(/i.test(nextLine)) {
+                let valuesText = nextLine;
+                let lookaheadOffset = lineOffset;
+
+                // Keep appending continuation lines until closing ')' is found
+                while (!/\)/.test(valuesText) && (startIndex + lookaheadOffset + 1) < lines.length) {
+                    const continuationLine = lines[startIndex + lookaheadOffset + 1];
+                    const continuationTrimmed = continuationLine.trim();
+
+                    // Stop if we reached a probable new field/record/comment boundary
+                    const continuationIsComment = (continuationLine.length > 6 && continuationLine[5] === 'A' && continuationLine[6] === '*') ||
+                        continuationTrimmed.startsWith('A*') ||
+                        continuationTrimmed.startsWith('*');
+                    const continuationHasFieldName = /\b[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(continuationTrimmed);
+                    const continuationIsRecordDef = continuationTrimmed.match(/^A\s+R\s+\w+/);
+
+                    if (continuationIsComment || continuationHasFieldName || continuationIsRecordDef) {
+                        break;
+                    }
+
+                    valuesText += ' ' + continuationTrimmed;
+                    lookaheadOffset++;
+                }
+
+                const valuesMatch = valuesText.match(/VALUES\(([^)]*)\)/i);
+                if (valuesMatch) {
+                    const rawValues = valuesMatch[1]
+                        // Remove DDS line-continuation chars (- or +) that appear between tokens
+                        // when continuation lines are joined, e.g.: 'G' -  'H' → 'G' 'H'
+                        .replace(/\s*[+-]\s*/g, ' ')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+
+                    if (rawValues.length > 0) {
+                        field.values = rawValues;
+                        Logger.parse(`Found VALUES(${rawValues}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+                    }
+
+                    // Advance scanner to the last consumed continuation line
+                    if (lookaheadOffset > lineOffset) {
+                        lineOffset = lookaheadOffset;
+                    }
+                }
+            }
+
+        if (includeChecks) {
+            const checkMatch = nextLine.match(/CHECK\(([^)]+)\)/);
+            if (checkMatch) {
+                Logger.debug(`[${contextLabel}] ===== FOUND CHECK LINE =====`);
+                Logger.debug(`[${contextLabel}] nextLine: "${nextLine}"`);
+                Logger.debug(`[${contextLabel}] lineOffset: ${lineOffset}`);
+                Logger.debug(`[${contextLabel}] scannedLines.length: ${scannedLines.length}`);
+                Logger.debug(`[${contextLabel}] hasOrLines: ${hasOrLines}`);
+                Logger.debug(`[${contextLabel}] scannedLines:`, JSON.stringify(scannedLines));
+
+                const codes = checkMatch[1].trim().split(/\s+/);
+                Logger.debug(`[${contextLabel}] CHECK codes found: ${codes.join(', ')}`);
+
+                // Store enabled check options
+                if (!field.checkOptions) { field.checkOptions = {}; }
+                codes.forEach(code => {
+                    field.checkOptions[code] = true;
+                });
+
+                if (preserveOriginalSpacing) {
+                    field.originalCheckLines = field.originalCheckLines || {};
+                    codes.forEach(code => {
+                        field.originalCheckLines[code] = nextLine;
+                    });
+                }
+
+                // For ME and ER codes, store indicators using unified structure (same as COLOR)
+                codes.forEach(code => {
+                    if (['ME', 'ER'].includes(code)) {
+                        Logger.debug(`[${contextLabel}] Processing CHECK(${code}) - calling buildIndicatorGroups()`);
+                        const indicatorData = buildIndicatorGroups();
+                        Logger.debug(`[${contextLabel}] CHECK(${code}): buildIndicatorGroups returned:`, JSON.stringify(indicatorData));
+                        if (indicatorData && indicatorData.groups && indicatorData.groups.length > 0) {
+                            if (!field.checkIndicators) { field.checkIndicators = {}; }
+                            field.checkIndicators[code] = indicatorData;
+                            Logger.debug(`[${contextLabel}] CHECK(${code}): Stored ${indicatorData.groups.length} group(s), isOr=${indicatorData.isOr}`);
+                            indicatorData.groups.forEach((g, idx) => {
+                                Logger.debug(`[${contextLabel}]   CHECK(${code}) Group ${idx}: ${g.indicators.length} indicators: ${g.indicators.map(i => (i.not ? 'N' : '') + i.number).join(', ')}`);
+                            });
+                        } else {
+                            Logger.debug(`[${contextLabel}] CHECK(${code}): No indicators stored (indicatorData is null or empty)`);
+                        }
+                    } else {
+                        Logger.debug(`[${contextLabel}] Skipping indicators for CHECK(${code}) - not ME/ER`);
+                    }
+                });
+
+                Logger.debug(`[${contextLabel}] Stored CHECK options for field ${field.name}`);
+                Logger.debug(`[${contextLabel}] field.checkIndicators:`, JSON.stringify(field.checkIndicators));
+            }
+        }
+
+        lineOffset++;
+    }
+}
+
+
+/***/ }),
+/* 72 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   showNotification: () => (/* binding */ showNotification)
+/* harmony export */ });
+function showNotification(options) {
+    const { message, type = 'info' } = options;
+
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+
+    const styles = {
+        success: { background: '#4caf50', color: 'white' },
+        error: { background: '#f44336', color: 'white' },
+        info: { background: '#2196F3', color: 'white' }
+    };
+
+    const style = styles[type] || styles.info;
+    Object.assign(notification.style, {
+        position: 'fixed',
+        top: '70px',
+        right: '20px',
+        padding: '12px 20px',
+        borderRadius: '4px',
+        backgroundColor: style.background,
+        color: style.color,
+        fontSize: '14px',
+        fontWeight: '500',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+        zIndex: '10001',
+        animation: 'slideIn 0.3s ease-out'
+    });
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
+
+/***/ }),
+/* 73 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updateDocumentInEditor: () => (/* binding */ updateDocumentInEditor)
+/* harmony export */ });
+function updateDocumentInEditor(options) {
+    const {
+        currentRecord,
+        currentDocument,
+        Logger
+    } = options;
+
+    const preservedRecord = currentRecord;
+
+    const sourceTextarea = document.getElementById('source-content');
+    if (sourceTextarea) {
+        sourceTextarea.value = currentDocument;
+    }
+
+    if (Logger) {
+        Logger.dds('Document updated internally, waiting for Save. Record context:', preservedRecord);
+    }
+}
+
+
+/***/ }),
+/* 74 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   buildVariableTypeAndUsageUI: () => (/* binding */ buildVariableTypeAndUsageUI)
+/* harmony export */ });
+function buildVariableTypeAndUsageUI({
+    field
+}) {
+    const isDate = field.dataType === 'date';
+    const isTime = field.dataType === 'time';
+    const isTimestamp = field.dataType === 'timestamp';
+    const length = isDate ? 10 : (isTime ? 8 : (isTimestamp ? 26 : (field.length || 10)));
+    const decimals = field.decimals || 0;
+
+    // Map dataType to DDS type character
+    let typeChar = 'A';
+    if (field.dataType === 'character') {
+        typeChar = 'A';
+    } else if (field.dataType === 'zoned') {
+        const hasExplicitShift = typeof field.shift === 'string' && field.shift.trim() !== '';
+        if (hasExplicitShift) {
+            typeChar = field.shift.trim();
+        } else if (field.usage === 'I' || field.usage === 'B') {
+            typeChar = 'S';
+        } else {
+            typeChar = '';
+        }
+    } else if (field.dataType === 'float') {
+        typeChar = 'F';
+    } else if (field.dataType === 'double') {
+        typeChar = field.shift || 'J';
+    } else if (field.dataType === 'date') {
+        typeChar = 'L';
+    } else if (field.dataType === 'time') {
+        typeChar = 'T';
+    } else if (field.dataType === 'timestamp') {
+        typeChar = 'Z';
+    }
+
+    const typeSpec = isDate ? 'L' : (isTime ? 'T' : (isTimestamp ? 'Z' : `${length}${typeChar}`));
+    const isNumeric = ['zoned', 'float', 'double'].includes(field.dataType);
+
+    // Determine usage character
+    let usageChar = 'O';
+    if (field.usage === 'I') {
+        usageChar = 'I';
+    } else if (field.usage === 'O') {
+        usageChar = 'O';
+    } else if (field.usage === 'B') {
+        usageChar = 'B';
+    } else {
+        // Fallback to old field.type
+        if (field.type === 'input') {
+            usageChar = 'I';
+        } else if (field.type === 'output') {
+            usageChar = 'O';
+        } else {
+            usageChar = 'O';
+        }
+    }
+
+    // Build type and usage string
+    let typeAndUsage = '';
+    if (field.dataType === 'double') {
+        typeAndUsage = `${typeSpec}  ${usageChar}`;
+    } else if (isNumeric && decimals > 0) {
+        typeAndUsage = `${typeSpec} ${decimals}${usageChar}`;
+    } else if (isNumeric) {
+        typeAndUsage = `${typeSpec} 0${usageChar}`;
+    } else {
+        typeAndUsage = `${typeSpec}  ${usageChar}`;
+    }
+
+    return typeAndUsage;
+}
+
+
+/***/ }),
+/* 75 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateConstantFieldLinesUI: () => (/* binding */ generateConstantFieldLinesUI)
+/* harmony export */ });
+// Generate constant field lines with continuation support AND indicators
+function generateConstantFieldLinesUI({
+    field,
+    IndicatorUtils
+}) {
+    const rowStr = field.row.toString().padStart(2, ' ');
+    const colStr = field.col.toString().padStart(2, ' ');
+    const constantValue = field.value || 'TEXT';
+
+    // DDS format: text starts at column 45
+    // Dash for continuation goes at column 79
+    // Closing quote goes at column 80
+    // So we have 34 characters (columns 45-78) for actual text per line
+    const maxCharsPerLine = 34;
+    const lines = [];
+
+    // Build indicator prefix for the main line and prepended indicator lines
+    let indicatorPrefix = '            '; // 12 spaces (default, no indicators)
+    const fieldIndicatorLines = []; // For lines BEFORE the constant line
+
+    if (field.indicators && field.indicators.groups && field.indicators.groups.length > 0) {
+        const groups = field.indicators.groups;
+        const isOr = field.indicators.isOr || false;
+
+        if (isOr && groups.length > 1) {
+            // OR FORMAT: Multiple groups
+            let allLinesBeforeConst = [];
+
+            groups.forEach((group, groupIndex) => {
+                const groupIndicators = group.indicators || [];
+                if (groupIndicators.length === 0) {return;}
+
+                const numChunks = Math.ceil(groupIndicators.length / 3);
+                for (let chunkIndex = 0; chunkIndex < numChunks; chunkIndex++) {
+                    const startIdx = chunkIndex * 3;
+                    const chunk = groupIndicators.slice(startIdx, startIdx + 3);
+                    const chunkIndPart = IndicatorUtils.formatForDds(chunk);
+                    const firstIsNegative = chunk[0]?.not;
+
+                    let prefix, prefixSpaces;
+                    if (chunkIndex === 0) {
+                        prefix = groupIndex === 0 ? 'A' : 'AO';
+                        prefixSpaces = firstIsNegative ? ' ' : '  ';
+                        if (prefix === 'AO') {
+                            prefixSpaces = firstIsNegative ? '' : ' ';
+                        }
+                    } else {
+                        prefix = 'A';
+                        prefixSpaces = firstIsNegative ? ' ' : '  ';
+                    }
+
+                    allLinesBeforeConst.push(`     ${prefix}${prefixSpaces}${chunkIndPart}`);
+                }
+            });
+
+            // Last line goes to constant line, rest go before
+            if (allLinesBeforeConst.length > 1) {
+                fieldIndicatorLines.push(...allLinesBeforeConst.slice(0, -1));
+                const lastLine = allLinesBeforeConst[allLinesBeforeConst.length - 1];
+                const isAO = lastLine.startsWith('     AO');
+
+                let indicatorPart;
+                if (isAO) {
+                    indicatorPart = lastLine.substring(7);
+                } else {
+                    indicatorPart = lastLine.substring(6);
+                }
+                indicatorPart = indicatorPart.trimEnd();
+
+                if (isAO) {
+                    indicatorPrefix = 'O' + indicatorPart;
+                } else {
+                    indicatorPrefix = indicatorPart;
+                }
+
+                const spacesNeeded = 12 - indicatorPrefix.length;
+                indicatorPrefix = indicatorPrefix + ' '.repeat(Math.max(0, spacesNeeded));
+            } else if (allLinesBeforeConst.length === 1) {
+                const lastLine = allLinesBeforeConst[0];
+                const isAO = lastLine.startsWith('     AO');
+
+                let indicatorPart;
+                if (isAO) {
+                    indicatorPart = lastLine.substring(7);
+                } else {
+                    indicatorPart = lastLine.substring(6);
+                }
+                indicatorPart = indicatorPart.trimEnd();
+
+                if (isAO) {
+                    indicatorPrefix = 'O' + indicatorPart;
+                } else {
+                    indicatorPrefix = indicatorPart;
+                }
+
+                const spacesNeeded = 12 - indicatorPrefix.length;
+                indicatorPrefix = indicatorPrefix + ' '.repeat(Math.max(0, spacesNeeded));
+            }
+        } else {
+            // AND FORMAT: Single group
+            const allIndicators = groups.length > 0 ? groups[0].indicators : [];
+
+            if (allIndicators.length > 3) {
+                const numChunks = Math.ceil(allIndicators.length / 3);
+
+                for (let chunkIndex = 0; chunkIndex < numChunks - 1; chunkIndex++) {
+                    const startIdx = chunkIndex * 3;
+                    const chunk = allIndicators.slice(startIdx, startIdx + 3);
+                    const chunkIndPart = IndicatorUtils.formatForDds(chunk);
+                    const chunkFirstIsNegative = chunk[0]?.not;
+                    const chunkPrefixSpaces = chunkFirstIsNegative ? ' ' : '  ';
+                    fieldIndicatorLines.push(`     A${chunkPrefixSpaces}${chunkIndPart}`);
+                }
+
+                const lastChunkStart = (numChunks - 1) * 3;
+                const lastChunk = allIndicators.slice(lastChunkStart);
+                const indPart = IndicatorUtils.formatForDds(lastChunk);
+                const firstIsNegative = lastChunk[0]?.not;
+                const prefixSpaces = firstIsNegative ? ' ' : '  ';
+                const spacesNeeded = 12 - prefixSpaces.length - indPart.length;
+                indicatorPrefix = prefixSpaces + indPart + ' '.repeat(Math.max(0, spacesNeeded));
+            } else if (allIndicators.length > 0) {
+                const indPart = IndicatorUtils.formatForDds(allIndicators);
+                const firstIsNegative = allIndicators[0]?.not;
+                const prefixSpaces = firstIsNegative ? ' ' : '  ';
+                const spacesNeeded = 12 - prefixSpaces.length - indPart.length;
+                indicatorPrefix = prefixSpaces + indPart + ' '.repeat(Math.max(0, spacesNeeded));
+            }
+        }
+    }
+
+    // Add field indicator lines BEFORE constant line
+    if (fieldIndicatorLines.length > 0) {
+        lines.push(...fieldIndicatorLines);
+    }
+
+    // Build constant line(s) with indicator prefix
+    // Format: "     A  03                           19 11'TEXT'"
+    const spacingAfterIndicators = ' '.repeat(21); // 21 spaces to reach column 38 (coordinates start at column 39)
+
+    if (constantValue.length <= maxCharsPerLine) {
+        // Short constant - single line with indicators
+        lines.push(`     A${indicatorPrefix}${spacingAfterIndicators}${rowStr} ${colStr}'${constantValue}'`);
+    } else {
+        // Long constant - split into multiple lines with dash continuation
+        let remainingText = constantValue;
+        let isFirstLine = true;
+
+        while (remainingText.length > 0) {
+            const chunk = remainingText.substring(0, maxCharsPerLine);
+            remainingText = remainingText.substring(maxCharsPerLine);
+            const hasContinuation = remainingText.length > 0;
+
+            if (isFirstLine) {
+                // First line: includes indicators, row, column, text from column 45
+                lines.push(`     A${indicatorPrefix}${spacingAfterIndicators}${rowStr} ${colStr}'${chunk}${hasContinuation ? '-' : '\''}`);
+                isFirstLine = false;
+            } else {
+                // Continuation lines: NO indicators, text starts at column 45, NO opening quote
+                lines.push(`     A                                      ${chunk}${hasContinuation ? '-' : '\''}`);
+            }
+        }
+    }
+
+    return lines;
+}
+
+
+/***/ }),
+/* 76 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldDspatrLinesUI: () => (/* binding */ generateFieldDspatrLinesUI)
+/* harmony export */ });
+//Generate DSPATR lines for a field
+function generateFieldDspatrLinesUI({
+    field,
+    DSPATR_ATTRIBUTE_MAP,
+    applyIndicatorChangesToField,
+    generateDdsLineWithIndicators,
+    Logger
+}) {
+    // Apply any pending indicator changes from the Map before generating DDS
+    applyIndicatorChangesToField(field);
+
+    const lines = [];
+
+    if (!field.attributes || Object.keys(field.attributes).length === 0) {
+        return lines;
+    }
+
+    // Check if this field originally had a grouped DSPATR format
+    if (field.hasGroupedDspatr) {
+        // Preserve grouped format: regenerate DSPATR(XX YY ZZ) with active attributes
+        const activeCodes = [];
+        for (const [attrName, ddsCode] of Object.entries(DSPATR_ATTRIBUTE_MAP)) {
+            if (field.attributes[attrName]) {
+                activeCodes.push(ddsCode);
+            }
+        }
+
+        if (activeCodes.length > 0) {
+            // Get indicators from the first attribute (all share same indicators in grouped format)
+            const firstAttr = Object.keys(field.attributes).find(k => field.attributes[k]);
+            const indicatorData = field.attributeIndicators && firstAttr ?
+                (field.attributeIndicators[firstAttr] || []) : [];
+
+            const groupedDspatr = `DSPATR(${activeCodes.join(' ')})`;
+            const generated = generateDdsLineWithIndicators(groupedDspatr, indicatorData);
+            // Split by newline in case generateDdsLineWithIndicators returns multiple lines (OR groups)
+            const generatedLines = generated.split('\n');
+            lines.push(...generatedLines);
+            Logger.dds('Generated grouped DSPATR line with indicators');
+        }
+    } else {
+        // Individual format: one DSPATR per line
+        for (const [attrName, ddsCode] of Object.entries(DSPATR_ATTRIBUTE_MAP)) {
+            if (field.attributes[attrName]) {
+                // Preserve original line(s) if indicators haven't changed (now an array)
+                if (field.originalAttrLines && field.originalAttrLines[attrName] && !field.attributeIndicatorsModified && Array.isArray(field.originalAttrLines[attrName])) {
+                    Logger.dds(`Preserving ${field.originalAttrLines[attrName].length} original DSPATR line(s) for ${attrName}`);
+                    lines.push(...field.originalAttrLines[attrName]);
+                } else {
+                    Logger.dds(`Generating new DSPATR line(s) for ${attrName}`);
+                    const indicatorData = field.attributeIndicators && field.attributeIndicators[attrName] ? field.attributeIndicators[attrName] : [];
+                    const generated = generateDdsLineWithIndicators(`DSPATR(${ddsCode})`, indicatorData);
+                    // Split by newline in case generateDdsLineWithIndicators returns multiple lines (OR groups)
+                    const generatedLines = generated.split('\n');
+                    lines.push(...generatedLines);
+                }
+            }
+        }
+    }
+
+    return lines;
+}
+
+
+/***/ }),
+/* 77 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldColorLinesUI: () => (/* binding */ generateFieldColorLinesUI)
+/* harmony export */ });
+// Generate COLOR lines for a field
+function generateFieldColorLinesUI({
+    field,
+    applyIndicatorChangesToField,
+    generateDdsLineWithIndicators,
+    Logger
+}) {
+    // Apply any pending indicator changes from the Map before generating DDS
+    applyIndicatorChangesToField(field);
+
+    const lines = [];
+
+    if (field.colors && field.colors.length > 1) {
+        // Multiple colors - each on separate line with indicators
+        field.colors.forEach(color => {
+            const indicatorData = field.colorIndicators && field.colorIndicators[color] ? field.colorIndicators[color] : [];
+
+            // Check if we should preserve original lines (originalColorLines is now an array)
+            if (field.originalColorLines && field.originalColorLines[color] && !field.colorIndicatorsModified && Array.isArray(field.originalColorLines[color])) {
+                Logger.dds(`Preserving ${field.originalColorLines[color].length} original COLOR line(s) for ${color}`);
+                lines.push(...field.originalColorLines[color]);
+            } else {
+                // Generate new line(s) - may be multiple if OR groups exist
+                const generated = generateDdsLineWithIndicators(`COLOR(${color})`, indicatorData);
+                lines.push(generated);
+            }
+        });
+    } else if (field.color) {
+        // Single color - check if it has indicators
+        const indicatorData = field.colorIndicators && field.colorIndicators[field.color] ? field.colorIndicators[field.color] : [];
+
+        // Check if indicatorData has any groups with indicators
+        const hasIndicators = Array.isArray(indicatorData) ? indicatorData.length > 0 :
+                             (indicatorData.groups && indicatorData.groups.length > 0);
+
+        if (hasIndicators) {
+            // Has indicators - must be on separate line
+            if (field.originalColorLines && field.originalColorLines[field.color] && !field.colorIndicatorsModified && Array.isArray(field.originalColorLines[field.color])) {
+                lines.push(...field.originalColorLines[field.color]);
+            } else {
+                const generated = generateDdsLineWithIndicators(`COLOR(${field.color})`, indicatorData);
+                lines.push(generated);
+            }
+        }
+        // If no indicators, return empty array (will be added inline)
+    }
+
+    return lines;
+}
+
+
+/***/ }),
+/* 78 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldCheckLinesUI: () => (/* binding */ generateFieldCheckLinesUI)
+/* harmony export */ });
+// Generate CHECK keyword lines for a field
+function generateFieldCheckLinesUI({
+    field,
+    CHECK_CHAR_CODES,
+    CHECK_NUMERIC_CODES,
+    generateDdsLineWithIndicators,
+    Logger
+}) {
+    const lines = [];
+    if (!field.checkOptions) {return lines;}
+    const orderedCodes = [...CHECK_CHAR_CODES, ...CHECK_NUMERIC_CODES];
+    const seen = new Set();
+    orderedCodes.forEach(code => {
+        if (seen.has(code)) {return;}
+        seen.add(code);
+        if (!field.checkOptions[code]) {return;}
+        const keyword = `CHECK(${code})`;
+        if (['ME', 'ER'].includes(code)) {
+            // ME and ER support indicators with OR groups
+            const indicatorData = field.checkIndicators && field.checkIndicators[code] ? field.checkIndicators[code] : null;
+
+            Logger.debug(`[CHECK GEN ${code}] field.checkIndicators[${code}]:`, indicatorData);
+
+            const hasIndicators = indicatorData && indicatorData.groups && indicatorData.groups.length > 0;
+
+            Logger.debug(`[CHECK GEN ${code}] hasIndicators=${hasIndicators}`);
+
+            if (hasIndicators) {
+                Logger.debug(`[CHECK GEN ${code}] Calling generateDdsLineWithIndicators with keyword="${keyword}"`);
+                const generated = generateDdsLineWithIndicators(keyword, indicatorData);
+                Logger.debug(`[CHECK GEN ${code}] Generated result (type=${typeof generated}):`, generated);
+                Logger.debug(`[CHECK GEN ${code}] Generated length: ${generated.length} chars`);
+                lines.push(generated); // Push complete string (may contain \n for OR groups)
+            } else {
+                Logger.debug(`[CHECK GEN ${code}] No indicators, using default line`);
+                lines.push(`     A                                      ${keyword}`);
+            }
+
+            Logger.debug(`[CHECK GEN ${code}] Returning ${lines.length} line(s) for this code`);
+        } else {
+            lines.push(`     A                                      ${keyword}`);
+        }
+    });
+    return lines;
+}
+
+
+/***/ }),
+/* 79 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldEdtcdeLinesUI: () => (/* binding */ generateFieldEdtcdeLinesUI)
+/* harmony export */ });
+// Generate EDTCDE keyword lines for a field
+function generateFieldEdtcdeLinesUI({
+    field
+}) {
+    const lines = [];
+
+    if (!field.edtcde || !field.edtcde.value) {
+        return lines;
+    }
+
+    const edtcdeValue = String(field.edtcde.value).trim().toUpperCase();
+    const replaceLeadingZerosWith = field.edtcde.replaceLeadingZerosWith
+        ? String(field.edtcde.replaceLeadingZerosWith).trim()
+        : '';
+    const allowReplacement = edtcdeValue !== 'Z';
+
+    const keyword = (allowReplacement && replaceLeadingZerosWith)
+        ? `EDTCDE(${edtcdeValue} ${replaceLeadingZerosWith})`
+        : `EDTCDE(${edtcdeValue})`;
+
+    lines.push(`     A                                      ${keyword}`);
+    return lines;
+}
+
+
+/***/ }),
+/* 80 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldEditKeywordsLinesUI: () => (/* binding */ generateFieldEditKeywordsLinesUI)
+/* harmony export */ });
+// Generate EDTWRD/EDTMSK keyword lines for a field
+function generateFieldEditKeywordsLinesUI({
+    field
+}) {
+    const lines = [];
+
+    const escapeSingleQuotes = (text) => String(text).replace(/'/g, "''");
+    const resolveValue = (keywordData) => {
+        if (!keywordData) {
+            return '';
+        }
+        if (typeof keywordData === 'string') {
+            return keywordData;
+        }
+        if (typeof keywordData.value === 'string') {
+            return keywordData.value;
+        }
+        return '';
+    };
+
+    const edtwrdValue = resolveValue(field.edtwrd);
+    if (edtwrdValue.length > 0) {
+        lines.push(`     A                                      EDTWRD('${escapeSingleQuotes(edtwrdValue)}')`);
+    }
+
+    const edtmskValue = resolveValue(field.edtmsk);
+    if (edtmskValue.length > 0) {
+        lines.push(`     A                                      EDTMSK('${escapeSingleQuotes(edtmskValue)}')`);
+    }
+
+    return lines;
+}
+
+
+/***/ }),
+/* 81 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldValuesLinesUI: () => (/* binding */ generateFieldValuesLinesUI)
+/* harmony export */ });
+function generateFieldValuesLinesUI({ field }) {
+    const lines = [];
+    if (!field?.values) {
+        return lines;
+    }
+
+    const rawValues = (typeof field.values === 'string' ? field.values : '').trim();
+    if (!rawValues) {
+        return lines;
+    }
+
+    const prefix = '     A                                      ';
+    const keyword = `VALUES(${rawValues})`;
+    const maxLineLength = 80;
+
+    if ((prefix + keyword).length <= maxLineLength) {
+        lines.push(prefix + keyword);
+        return lines;
+    }
+
+    const tokens = [];
+    const tokenRegex = /'(?:''|[^'])*'/g;
+    let match;
+    while ((match = tokenRegex.exec(rawValues)) !== null) {
+        tokens.push(match[0]);
+    }
+
+    if (tokens.length === 0) {
+        lines.push((prefix + keyword).substring(0, maxLineLength));
+        return lines;
+    }
+
+    let current = 'VALUES(';
+    for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+        const isLast = i === tokens.length - 1;
+        const candidate = `${current}${current === 'VALUES(' ? '' : ' '}${token}${isLast ? ')' : ''}`;
+
+        if ((prefix + candidate).length <= maxLineLength) {
+            current = candidate;
+            if (isLast) {
+                lines.push(prefix + current);
+            }
+            continue;
+        }
+
+        lines.push(prefix + current + ' -');
+        current = token + (isLast ? ')' : '');
+
+        if (isLast) {
+            lines.push(prefix + current);
+        }
+    }
+
+    return lines;
+}
+
+
+/***/ }),
+/* 82 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldDftLinesUI: () => (/* binding */ generateFieldDftLinesUI)
+/* harmony export */ });
+// Generate DFT keyword lines for a field
+function generateFieldDftLinesUI({
+    field
+}) {
+    const lines = [];
+
+    if (!field.dft) {
+        return lines;
+    }
+
+    const dftValue = typeof field.dft === 'string'
+        ? field.dft.trim()
+        : (field.dft.value ? String(field.dft.value).trim() : '');
+
+    if (!dftValue) {
+        return lines;
+    }
+
+    const escapedValue = dftValue.replace(/'/g, "''");
+    const keyword = `DFT('${escapedValue}')`;
+    lines.push(`     A                                      ${keyword}`);
+
+    return lines;
+}
+
+
+/***/ }),
+/* 83 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldDftvalLinesUI: () => (/* binding */ generateFieldDftvalLinesUI)
+/* harmony export */ });
+// Generate DFTVAL keyword lines for a field
+function generateFieldDftvalLinesUI({
+    field,
+    generateDdsLineWithIndicators,
+    Logger
+}) {
+    const lines = [];
+    if (!field.dftval || !field.dftval.value) {return lines;}
+    const dftvalValue = field.dftval.value;
+    const keyword = `DFTVAL('${dftvalValue}')`;
+
+    // Support both old format (array) and new format (groups structure)
+    const indicatorData = field.dftvalIndicators;
+
+    Logger.debug(`[DFTVAL GEN] field.dftvalIndicators:`, indicatorData);
+
+    // Check if indicatorData has any groups with indicators
+    const hasIndicators = Array.isArray(indicatorData) ? indicatorData.length > 0 :
+                         (indicatorData && indicatorData.groups && indicatorData.groups.length > 0);
+
+    Logger.debug(`[DFTVAL GEN] hasIndicators=${hasIndicators}`);
+
+    if (hasIndicators) {
+        // Has indicators - must be on separate line(s)
+        // Generate line(s) - may be multiple if OR groups exist (SAME AS COLOR)
+        Logger.debug(`[DFTVAL GEN] Calling generateDdsLineWithIndicators with keyword="${keyword}"`);
+        const generated = generateDdsLineWithIndicators(keyword, indicatorData);
+        Logger.debug(`[DFTVAL GEN] Generated result (type=${typeof generated}):`, generated);
+        Logger.debug(`[DFTVAL GEN] Generated length: ${generated.length} chars`);
+        lines.push(generated); // Push the complete string (may contain \n for OR groups)
+    } else {
+        // No indicators - return empty array (will be added inline if needed)
+        // For DFTVAL, we always generate a separate line even without indicators
+        Logger.debug(`[DFTVAL GEN] No indicators, using default line`);
+        lines.push(`     A                                      ${keyword}`);
+    }
+
+    Logger.debug(`[DFTVAL GEN] Returning ${lines.length} line(s):`, lines);
+    return lines;
+}
+
+
+/***/ }),
+/* 84 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateDdsLineWithIndicatorsUI: () => (/* binding */ generateDdsLineWithIndicatorsUI)
+/* harmony export */ });
+// Generate a DDS line with optional indicators
+function generateDdsLineWithIndicatorsUI({
+    keyword,
+    indicatorsOrGroups,
+    IndicatorUtils
+}) {
+    // Support both old format (array) and new format (groups structure)
+    let indicators = [];
+    let groups = [];
+    let isOr = false;
+
+    if (Array.isArray(indicatorsOrGroups)) {
+        // Old format - backward compatibility
+        indicators = indicatorsOrGroups;
+    } else if (indicatorsOrGroups && indicatorsOrGroups.groups) {
+        // New format with OR support
+        groups = indicatorsOrGroups.groups;
+        isOr = indicatorsOrGroups.isOr;
+    }
+
+    // If we have groups with OR, generate multiple lines with AO prefix
+    if (groups.length > 1 && isOr) {
+        const lines = [];
+        groups.forEach((group, groupIndex) => {
+            // Check if this group has more than 3 indicators
+            if (group.indicators.length > 3) {
+                // Split this OR group into multiple lines (3 indicators per line)
+                const numChunks = Math.ceil(group.indicators.length / 3);
+
+                for (let chunkIndex = 0; chunkIndex < numChunks; chunkIndex++) {
+                    const startIdx = chunkIndex * 3;
+                    const chunk = group.indicators.slice(startIdx, startIdx + 3);
+                    const indPart = IndicatorUtils.formatForDds(chunk);
+
+                    // Determine prefix:
+                    // - First group, any chunk: 'A' (no O)
+                    // - Other groups, first chunk: 'AO' (marca inicio del grupo OR)
+                    // - Other groups, other chunks: 'A' (continuación AND dentro del grupo)
+                    const isFirstChunk = chunkIndex === 0;
+                    const isFirstGroup = groupIndex === 0;
+                    const prefix = (isFirstGroup || !isFirstChunk) ? 'A' : 'AO';
+
+                    const firstIsNegative = chunk[0]?.not;
+                    let prefixSpaces = firstIsNegative ? ' ' : '  ';
+
+                    // Adjust spaces for AO prefix
+                    if (prefix === 'AO') {
+                        prefixSpaces = firstIsNegative ? '' : ' ';
+                    }
+
+                    // targetWidth must be 36 for AO to compensate for the extra character
+                    const targetWidth = prefix === 'AO' ? 36 : 37;
+                    const spacesNeeded = Math.max(1, targetWidth - indPart.length);
+
+                    // Only add keyword on the LAST line of the LAST group
+                    const isLastChunkOfLastGroup = groupIndex === groups.length - 1 && chunkIndex === numChunks - 1;
+                    if (isLastChunkOfLastGroup) {
+                        lines.push(`     ${prefix}${prefixSpaces}${indPart}${' '.repeat(spacesNeeded)}${keyword}`);
+                    } else {
+                        lines.push(`     ${prefix}${prefixSpaces}${indPart}`);
+                    }
+                }
+            } else {
+                // This group has 3 or fewer indicators - single line
+                const indPart = IndicatorUtils.formatForDds(group.indicators);
+                const prefix = groupIndex === 0 ? 'A' : 'AO';
+                const firstIsNegative = group.indicators.length > 0 && group.indicators[0].not;
+                let prefixSpaces = firstIsNegative ? ' ' : '  ';
+
+                // Adjust spaces for AO prefix
+                if (prefix === 'AO') {
+                    prefixSpaces = firstIsNegative ? '' : ' ';
+                }
+
+                // targetWidth must be 36 for AO to compensate for the extra character
+                const targetWidth = prefix === 'AO' ? 36 : 37;
+                const spacesNeeded = Math.max(1, targetWidth - indPart.length);
+
+                // Only add keyword on the LAST group
+                if (groupIndex === groups.length - 1) {
+                    lines.push(`     ${prefix}${prefixSpaces}${indPart}${' '.repeat(spacesNeeded)}${keyword}`);
+                } else {
+                    lines.push(`     ${prefix}${prefixSpaces}${indPart}`);
+                }
+            }
+        });
+        return lines.join('\n');
+    }
+
+    // Single group or old format - get all indicators
+    const finalIndicators = groups.length > 0 ? groups[0].indicators : indicators;
+
+    if (finalIndicators && finalIndicators.length > 0) {
+        // If more than 3 indicators (AND format), split into multiple lines (3 per line max)
+        if (finalIndicators.length > 3 && !isOr) {
+            const lines = [];
+            // Split indicators into chunks of 3, process from end to start
+            const numChunks = Math.ceil(finalIndicators.length / 3);
+
+            for (let chunkIndex = 0; chunkIndex < numChunks; chunkIndex++) {
+                const startIdx = chunkIndex * 3;
+                const chunk = finalIndicators.slice(startIdx, startIdx + 3);
+                const indPart = IndicatorUtils.formatForDds(chunk);
+                const firstIsNegative = chunk[0]?.not;
+                const prefixSpaces = firstIsNegative ? ' ' : '  ';
+
+                // Check if this is the last chunk (will have the keyword)
+                const isLastChunk = chunkIndex === numChunks - 1;
+
+                if (isLastChunk) {
+                    // Last chunk - add keyword
+                    const targetWidth = firstIsNegative ? 37 : 36;
+                    const spacesNeeded = Math.max(1, targetWidth - indPart.length);
+                    lines.push(`     A${prefixSpaces}${indPart}${' '.repeat(spacesNeeded)}${keyword}`);
+                } else {
+                    // Not last chunk - just indicators
+                    lines.push(`     A${prefixSpaces}${indPart}`);
+                }
+            }
+            return lines.join('\n');
+        }
+
+        // 3 or fewer indicators - single line
+        const indPart = IndicatorUtils.formatForDds(finalIndicators);
+        const firstIsNegative = finalIndicators[0]?.not;
+        const prefixSpaces = firstIsNegative ? ' ' : '  ';
+        const targetWidth = firstIsNegative ? 37 : 36;
+        const spacesNeeded = Math.max(1, targetWidth - indPart.length);
+        return `     A${prefixSpaces}${indPart}${' '.repeat(spacesNeeded)}${keyword}`;
+    }
+
+    return `     A                                      ${keyword}`;
+}
+
+
+/***/ }),
+/* 85 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   applyIndicatorChangesToFieldUI: () => (/* binding */ applyIndicatorChangesToFieldUI)
+/* harmony export */ });
+function applyIndicatorChangesToFieldUI({
+    field,
+    indicatorConfigurations,
+    Logger
+}) {
+    if (!field) {return;}
+
+    Logger.dds(`Applying indicator changes from Map to field: ${field.name}`);
+
+    // Iterate through color indicators
+    if (field.colors && Array.isArray(field.colors)) {
+        field.colors.forEach(color => {
+            const key = `color:${color}`;
+            if (indicatorConfigurations.has(key)) {
+                const indicatorData = indicatorConfigurations.get(key);
+
+                if (!field.colorIndicators) {
+                    field.colorIndicators = {};
+                }
+
+                // Convert from Map format to field format
+                if (indicatorData.isOr && indicatorData.groups) {
+                    // OR format - preserve groups structure
+                    field.colorIndicators[color] = indicatorData;
+                    Logger.dds(`Applied OR indicators for color ${color}:`, indicatorData);
+                } else if (indicatorData instanceof Set) {
+                    // AND format - convert Set to array for DDS generation
+                    // The Set contains JSON strings, so we need to parse them back to objects
+                    const indicatorArray = Array.from(indicatorData).map(jsonStr => JSON.parse(jsonStr));
+                    field.colorIndicators[color] = indicatorArray;
+                    Logger.dds(`Applied AND indicators for color ${color}:`, indicatorArray);
+                }
+            }
+        });
+    }
+
+    // Iterate through attribute indicators
+    if (field.attributes) {
+        Object.keys(field.attributes).forEach(attrName => {
+            if (!field.attributes[attrName]) {return;} // Skip inactive attributes
+
+            const key = `attr:${attrName}`;
+            if (indicatorConfigurations.has(key)) {
+                const indicatorData = indicatorConfigurations.get(key);
+
+                if (!field.attributeIndicators) {
+                    field.attributeIndicators = {};
+                }
+
+                // Convert from Map format to field format
+                if (indicatorData.isOr && indicatorData.groups) {
+                    // OR format - preserve groups structure
+                    field.attributeIndicators[attrName] = indicatorData;
+                    Logger.dds(`Applied OR indicators for attribute ${attrName}:`, indicatorData);
+                } else if (indicatorData instanceof Set) {
+                    // AND format - convert Set to array for DDS generation
+                    // The Set contains JSON strings, so we need to parse them back to objects
+                    const indicatorArray = Array.from(indicatorData).map(jsonStr => JSON.parse(jsonStr));
+                    field.attributeIndicators[attrName] = indicatorArray;
+                    Logger.dds(`Applied AND indicators for attribute ${attrName}:`, indicatorArray);
+                }
+            }
+        });
+    }
+}
+
+
+/***/ })
+/******/ 	]);
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/harmony module decorator */
+/******/ 	(() => {
+/******/ 		__webpack_require__.hmd = (module) => {
+/******/ 			module = Object.create(module);
+/******/ 			if (!module.children) module.children = [];
+/******/ 			Object.defineProperty(module, 'exports', {
+/******/ 				enumerable: true,
+/******/ 				set: () => {
+/******/ 					throw new Error('ES Modules may not assign module.exports or exports.*, Use ESM export syntax, instead: ' + module.id);
+/******/ 				}
+/******/ 			});
+/******/ 			return module;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__(0);
+/******/ 	
+/******/ })()
+;
+//# sourceMappingURL=dspfDesigner.bundle.js.map

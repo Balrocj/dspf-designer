@@ -136,7 +136,7 @@ export function getFieldDisplayText(options) {
 
             let formattedText = baseText;
 
-            if (['1', '2', '3', 'A', 'B', 'J', 'K', 'N', 'O'].includes(edtcdeCode)) {
+            if (['1', '2', 'A', 'B', 'J', 'K', 'N', 'O'].includes(edtcdeCode)) {
                 formattedText = formatThousandsInDigitRuns(formattedText);
             }
 
@@ -155,7 +155,7 @@ export function getFieldDisplayText(options) {
                 }
             }
 
-            if (edtcdeCode === 'Z') {
+            if (['3', 'Z'].includes(edtcdeCode)) {
                 formattedText = formattedText.replace(/\./g, '');
                 formattedText = formattedText.replace(/-/g, '');
             }
