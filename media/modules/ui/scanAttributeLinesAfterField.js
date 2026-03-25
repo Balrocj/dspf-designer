@@ -15,7 +15,7 @@ export function scanAttributeLinesAfterField({
         includeChecks = false,
         preserveOriginalSpacing = false,
         stopOnFieldKeywordsRegex = null,
-        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(/,
+        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(/,
     } = options;
 
     let lineOffset = 1;
@@ -378,6 +378,12 @@ export function scanAttributeLinesAfterField({
         if (dftValue.length > 0) {
             field.dft = { value: dftValue };
             Logger.parse(`Found DFT(${dftValue}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
+
+        const cntfldValue = parseKeywordTextArg('CNTFLD', nextLine);
+        if (/^\d{3}$/.test(cntfldValue)) {
+            field.cntfld = { value: cntfldValue };
+            Logger.parse(`Found CNTFLD(${field.cntfld.value}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
             // Parse VALUES('A' 'B' ...), including DDS continuation lines

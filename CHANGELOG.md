@@ -2,6 +2,11 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [1.4.0] - 2026-03-24
+
+### 🎨 Improved
+- Added support for keyword `CNTFLD` for char output/input fields.
+
 ## [1.3.4] - 2026-03-24
 
 ### 🐛 Fixed

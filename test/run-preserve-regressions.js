@@ -6,7 +6,8 @@ const tests = [
     'run-delete-preserve-block.js',
     'run-move-preserve-indicator-unknown.js',
     'run-sfldspctl-indicator-isolation.js',
-    'run-sfldspctl-reinsert-on-enable.js'
+    'run-sfldspctl-reinsert-on-enable.js',
+    'run-cntfld-regression.js'
 ];
 
 function runOne(scriptName) {

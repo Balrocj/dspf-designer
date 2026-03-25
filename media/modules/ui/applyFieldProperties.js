@@ -418,6 +418,31 @@ export function applyFieldProperties({
             delete field.dft;
         }
 
+        const cntfldCheckbox = document.getElementById('prop-cntfld-enabled');
+        const cntfldValueInput = document.getElementById('prop-cntfld-value');
+        const canUseCntfld = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && field.dataType === 'character'
+            && (field.usage === 'I' || field.usage === 'B');
+
+        if (canUseCntfld && cntfldCheckbox && cntfldCheckbox.checked && cntfldValueInput) {
+            const rawValue = cntfldValueInput.value.trim();
+            if (/^\d{1,3}$/.test(rawValue)) {
+                field.cntfld = { value: rawValue.padStart(3, '0') };
+                Logger.debug(`CNTFLD set to '${field.cntfld.value}' for field ${field.name}`);
+            } else {
+                Logger.warn(`Invalid CNTFLD value for field ${field.name}: "${rawValue}"`);
+                vscode.postMessage({
+                    type: 'applyChangesError',
+                    message: 'CNTFLD debe tener exactamente 3 digitos (001-999).'
+                });
+                return;
+            }
+        } else {
+            delete field.cntfld;
+        }
+
         if (field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B')) {
             const dftvalCheckbox = document.getElementById('prop-dftval-enabled');
             const dftvalValueInput = document.getElementById('prop-dftval-value');
@@ -552,6 +577,7 @@ export function applyFieldProperties({
         const checkOptionsChanged = JSON.stringify(oldField.checkOptions || {}) !== JSON.stringify(field.checkOptions || {});
         const checkIndicatorsModified = Boolean(field.checkIndicatorsModified);
         const dftChanged = JSON.stringify(oldField.dft || null) !== JSON.stringify(field.dft || null);
+        const cntfldChanged = JSON.stringify(oldField.cntfld || null) !== JSON.stringify(field.cntfld || null);
         const valuesChanged = JSON.stringify(oldField.values || null) !== JSON.stringify(field.values || null);
         const dftvalChanged = JSON.stringify(oldField.dftval || null) !== JSON.stringify(field.dftval || null);
         const dftvalIndicatorsChanged = JSON.stringify(oldField.dftvalIndicators || null) !== JSON.stringify(field.dftvalIndicators || null);
@@ -577,6 +603,7 @@ export function applyFieldProperties({
             checkOptionsChanged ||
             checkIndicatorsModified ||
             dftChanged ||
+            cntfldChanged ||
             valuesChanged ||
             dftvalChanged ||
             dftvalIndicatorsChanged ||
@@ -586,7 +613,7 @@ export function applyFieldProperties({
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;

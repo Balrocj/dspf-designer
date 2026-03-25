@@ -88,9 +88,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_ui_generateFieldValuesLines_js__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(81);
 /* harmony import */ var _modules_ui_generateFieldDftLines_js__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(82);
 /* harmony import */ var _modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_82__ = __webpack_require__(83);
-/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(84);
-/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(85);
+/* harmony import */ var _modules_ui_generateFieldCntfldLines_js__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(86);
+/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(84);
+/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_85__ = __webpack_require__(85);
 /* module decorator */ module = __webpack_require__.hmd(module);
+
 
 
 
@@ -1276,7 +1278,7 @@ __webpack_require__.r(__webpack_exports__);
                         startIndex: index,
                         field,
                         contextLabel: 'PREVIEW',
-                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(/
+                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(/
                     });
                     
                     _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Parsed preview field: ${field.name} (${field.type}) at ${field.row},${field.col} for record ${currentRecordName}`);
@@ -1359,7 +1361,7 @@ __webpack_require__.r(__webpack_exports__);
                                 field,
                                 contextLabel: 'PREVIEW-COMPANION',
                                 includeDftval: true,
-                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(/,
+                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(/,
                                 stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|RANGE\()/
                             });
                             
@@ -2848,7 +2850,7 @@ __webpack_require__.r(__webpack_exports__);
     
     // Helper: Generate a DDS line with optional indicators
     function generateDdsLineWithIndicators(keyword, indicatorsOrGroups) {
-        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_83__.generateDdsLineWithIndicatorsUI)({
+        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_84__.generateDdsLineWithIndicatorsUI)({
             keyword,
             indicatorsOrGroups,
             IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils
@@ -2858,7 +2860,7 @@ __webpack_require__.r(__webpack_exports__);
     // Helper: Apply indicator changes from indicatorConfigurations Map back to field object
     // This ensures that any edits made through the IBM i modal are reflected in DDS generation
     function applyIndicatorChangesToField(field) {
-        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_84__.applyIndicatorChangesToFieldUI)({
+        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_85__.applyIndicatorChangesToFieldUI)({
             field,
             indicatorConfigurations,
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
@@ -2917,6 +2919,13 @@ __webpack_require__.r(__webpack_exports__);
     // Helper: Generate DFT keyword lines for a field
     function generateFieldDftLines(field) {
         return (0,_modules_ui_generateFieldDftLines_js__WEBPACK_IMPORTED_MODULE_81__.generateFieldDftLinesUI)({
+            field
+        });
+    }
+
+    // Helper: Generate CNTFLD keyword lines for a field
+    function generateFieldCntfldLines(field) {
+        return (0,_modules_ui_generateFieldCntfldLines_js__WEBPACK_IMPORTED_MODULE_83__.generateFieldCntfldLinesUI)({
             field
         });
     }
@@ -3318,6 +3327,7 @@ __webpack_require__.r(__webpack_exports__);
         const valuesLines = generateFieldValuesLines(field);
         const dftLines = generateFieldDftLines(field);
         const dftvalLines = generateFieldDftvalLines(field);
+        const cntfldLines = generateFieldCntfldLines(field);
         
         // Build main line with indicators
         const mainLine = `     A${indicatorPrefix}${fieldNamePadded} ${typePartPadded} ${rowStr}${rowColSeparator}${colStr}${attributes}`;
@@ -3331,9 +3341,10 @@ __webpack_require__.r(__webpack_exports__);
         const valuesLinesStr = valuesLines.length > 0 ? '\n' + valuesLines.join('\n') : '';
         const dftLinesStr = dftLines.length > 0 ? '\n' + dftLines.join('\n') : '';
         const dftvalLinesStr = dftvalLines.length > 0 ? '\n' + dftvalLines.join('\n') : '';
+        const cntfldLinesStr = cntfldLines.length > 0 ? '\n' + cntfldLines.join('\n') : '';
         const colorLinesStr = colorLines.length > 0 ? '\n' + colorLines.join('\n') : '';
 
-        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + valuesLinesStr + dftLinesStr + dftvalLinesStr + colorLinesStr;
+        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + valuesLinesStr + dftLinesStr + dftvalLinesStr + cntfldLinesStr + colorLinesStr;
         
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Generated DDS: name="${field.name}" padded="${fieldNamePadded}" type="${typeAndUsage}" padded="${typePartPadded}"`);
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Full line(s): "${result}"`);
@@ -4267,6 +4278,12 @@ __webpack_require__.r(__webpack_exports__);
         if (dftValue.length > 0) {
             fieldObj.dft = { value: dftValue };
             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline DFT(${dftValue}) for field ${fieldName}`);
+        }
+
+        const cntfldValue = parseInlineKeywordTextArg('CNTFLD', line);
+        if (/^\d{3}$/.test(cntfldValue)) {
+            fieldObj.cntfld = { value: cntfldValue };
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline CNTFLD(${fieldObj.cntfld.value}) for field ${fieldName}`);
         }
 
             const valuesMatch = line.match(/VALUES\(([^)]*)\)/i);
@@ -5428,6 +5445,33 @@ const ScreenCoordinates = {
             return [{ row: field.row, col: field.col, length: field.length }];
         }
 
+        // CNTFLD: continued input/both character field split in repeated chunks.
+        // Example: length 5 + CNTFLD(002) => 2,2,1 across consecutive rows.
+        if (field && field.dataType === 'character' && (field.usage === 'I' || field.usage === 'B') && field.cntfld && field.cntfld.value) {
+            const fieldLength = field.length || 10;
+            const cntfldRaw = String(field.cntfld.value).trim();
+            if (/^\d{3}$/.test(cntfldRaw)) {
+                const chunkLength = parseInt(cntfldRaw, 10);
+
+                if (chunkLength > 0 && field.row <= dims.rows) {
+                    const segments = [];
+                    let remaining = fieldLength;
+                    let row = field.row;
+
+                    while (remaining > 0 && row <= dims.rows) {
+                        const len = Math.min(chunkLength, remaining);
+                        segments.push({ row, col: field.col, length: len });
+                        remaining -= len;
+                        row++;
+                    }
+
+                    if (segments.length > 0) {
+                        return segments;
+                    }
+                }
+            }
+        }
+
         const startCol = field.col;
         const fieldLength = field.length || 10;
         const segments = [];
@@ -5965,13 +6009,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   REGENERATED_KEYWORDS_SET: () => (/* binding */ REGENERATED_KEYWORDS_SET),
 /* harmony export */   attributeContentRegex: () => (/* binding */ attributeContentRegex)
 /* harmony export */ });
-const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE'];
+const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE', 'CNTFLD'];
 const ATTRIBUTE_KEYWORDS_SET = new Set(ATTRIBUTE_KEYWORDS);
 const attributeContentRegex = new RegExp(`\\b(?:${ATTRIBUTE_KEYWORDS.join('|')})\\(`);
 
 // Keywords that are fully regenerated from Designer state during DDS updates.
 // Any keyword outside this set should be treated as unknown and preserved.
-const REGENERATED_KEYWORDS = ['COLOR', 'DSPATR', 'CHECK', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'VALUES'];
+const REGENERATED_KEYWORDS = ['COLOR', 'DSPATR', 'CHECK', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'VALUES', 'CNTFLD'];
 const REGENERATED_KEYWORDS_SET = new Set(REGENERATED_KEYWORDS);
 
 const CHECK_CHAR_CODES = ['ME', 'ER', 'MF', 'FE', 'RB', 'RZ', 'RL', 'LC'];
@@ -8508,6 +8552,17 @@ function showFieldProperties({
                         <label>Value</label>
                         <input type="text" id="prop-dftval-value" placeholder="Default value" />
                     </div>
+
+                    <div class="property-group cntfld-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-cntfld-enabled" />
+                            Continued field (CNTFLD)
+                        </label>
+                    </div>
+                    <div class="property-group cntfld-value-group" style="display: none;">
+                        <label>Length (exactly 3 digits: 001-999)</label>
+                        <input type="text" id="prop-cntfld-value" inputmode="numeric" maxlength="3" pattern="\d{1,3}" placeholder="e.g. 002" />
+                    </div>
                 </div>
 
                 <div id="tab-editing-keywords" class="tab-panel">
@@ -8630,6 +8685,8 @@ function showFieldProperties({
     const dftValueGroup = document.querySelector('.dft-value-group');
     const dftvalGroup = document.querySelector('.dftval-group');
     const dftvalValueGroup = document.querySelector('.dftval-value-group');
+    const cntfldGroup = document.querySelector('.cntfld-group');
+    const cntfldValueGroup = document.querySelector('.cntfld-value-group');
     const shiftSelectElement = document.getElementById('prop-shift');
     const shiftGroup = shiftSelectElement ? shiftSelectElement.closest('.property-group') : null;
     const updateUsageRestrictedAttrs = () => {
@@ -8699,6 +8756,10 @@ function showFieldProperties({
         const showGeneralKeywords = isVariableField;
         const showDFT = isVariableField;
         const showDFTVAL = isVariableField && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B');
+        const showCNTFLD = isVariableField
+            && usageSelect
+            && (usageSelect.value === 'I' || usageSelect.value === 'B')
+            && selectedType === 'character';
         if (dftGroup) {
             dftGroup.style.display = showDFT ? 'flex' : 'none';
         }
@@ -8710,6 +8771,12 @@ function showFieldProperties({
         }
         if (dftvalValueGroup) {
             dftvalValueGroup.style.display = showDFTVAL ? 'block' : 'none';
+        }
+        if (cntfldGroup) {
+            cntfldGroup.style.display = showCNTFLD ? 'flex' : 'none';
+        }
+        if (cntfldValueGroup) {
+            cntfldValueGroup.style.display = showCNTFLD ? 'block' : 'none';
         }
         if (generalKeywordsTabBtn) {
             generalKeywordsTabBtn.style.display = showGeneralKeywords ? 'inline-flex' : 'none';
@@ -9324,6 +9391,54 @@ function showFieldProperties({
                 if (this.checked && dftvalValueInput) {
                     dftvalValueInput.focus();
                 }
+            }
+        });
+    }
+
+    const cntfldEnabledCheckbox = document.getElementById('prop-cntfld-enabled');
+    const cntfldValueInput = document.getElementById('prop-cntfld-value');
+
+    const sanitizeCntfldInput = () => {
+        if (!cntfldValueInput) {
+            return;
+        }
+        cntfldValueInput.value = cntfldValueInput.value.replace(/\D/g, '').slice(0, 3);
+    };
+
+    const finalizeCntfldInput = () => {
+        if (!cntfldValueInput) {
+            return;
+        }
+        sanitizeCntfldInput();
+        if (cntfldValueInput.value.length > 0) {
+            cntfldValueInput.value = cntfldValueInput.value.padStart(3, '0');
+        }
+    };
+
+    if (field.cntfld && field.cntfld.value) {
+        if (cntfldEnabledCheckbox) {
+            cntfldEnabledCheckbox.checked = true;
+        }
+        if (cntfldValueInput) {
+            cntfldValueInput.value = String(field.cntfld.value).replace(/\D/g, '').slice(0, 3).padStart(3, '0');
+            if (cntfldValueInput.parentElement) {
+                cntfldValueInput.parentElement.style.display = 'block';
+            }
+        }
+    }
+
+    if (cntfldValueInput) {
+        cntfldValueInput.addEventListener('input', sanitizeCntfldInput);
+        cntfldValueInput.addEventListener('blur', finalizeCntfldInput);
+    }
+
+    if (cntfldEnabledCheckbox) {
+        cntfldEnabledCheckbox.addEventListener('change', function() {
+            if (cntfldValueGroup) {
+                cntfldValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (this.checked && cntfldValueInput) {
+                cntfldValueInput.focus();
             }
         });
     }
@@ -10005,6 +10120,31 @@ function applyFieldProperties({
             delete field.dft;
         }
 
+        const cntfldCheckbox = document.getElementById('prop-cntfld-enabled');
+        const cntfldValueInput = document.getElementById('prop-cntfld-value');
+        const canUseCntfld = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && field.dataType === 'character'
+            && (field.usage === 'I' || field.usage === 'B');
+
+        if (canUseCntfld && cntfldCheckbox && cntfldCheckbox.checked && cntfldValueInput) {
+            const rawValue = cntfldValueInput.value.trim();
+            if (/^\d{1,3}$/.test(rawValue)) {
+                field.cntfld = { value: rawValue.padStart(3, '0') };
+                Logger.debug(`CNTFLD set to '${field.cntfld.value}' for field ${field.name}`);
+            } else {
+                Logger.warn(`Invalid CNTFLD value for field ${field.name}: "${rawValue}"`);
+                vscode.postMessage({
+                    type: 'applyChangesError',
+                    message: 'CNTFLD debe tener exactamente 3 digitos (001-999).'
+                });
+                return;
+            }
+        } else {
+            delete field.cntfld;
+        }
+
         if (field.type !== 'constant' && (field.usage === 'O' || field.usage === 'B')) {
             const dftvalCheckbox = document.getElementById('prop-dftval-enabled');
             const dftvalValueInput = document.getElementById('prop-dftval-value');
@@ -10139,6 +10279,7 @@ function applyFieldProperties({
         const checkOptionsChanged = JSON.stringify(oldField.checkOptions || {}) !== JSON.stringify(field.checkOptions || {});
         const checkIndicatorsModified = Boolean(field.checkIndicatorsModified);
         const dftChanged = JSON.stringify(oldField.dft || null) !== JSON.stringify(field.dft || null);
+        const cntfldChanged = JSON.stringify(oldField.cntfld || null) !== JSON.stringify(field.cntfld || null);
         const valuesChanged = JSON.stringify(oldField.values || null) !== JSON.stringify(field.values || null);
         const dftvalChanged = JSON.stringify(oldField.dftval || null) !== JSON.stringify(field.dftval || null);
         const dftvalIndicatorsChanged = JSON.stringify(oldField.dftvalIndicators || null) !== JSON.stringify(field.dftvalIndicators || null);
@@ -10164,6 +10305,7 @@ function applyFieldProperties({
             checkOptionsChanged ||
             checkIndicatorsModified ||
             dftChanged ||
+            cntfldChanged ||
             valuesChanged ||
             dftvalChanged ||
             dftvalIndicatorsChanged ||
@@ -10173,7 +10315,7 @@ function applyFieldProperties({
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;
@@ -14149,7 +14291,7 @@ function scanAttributeLinesAfterField({
         includeChecks = false,
         preserveOriginalSpacing = false,
         stopOnFieldKeywordsRegex = null,
-        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(/,
+        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(/,
     } = options;
 
     let lineOffset = 1;
@@ -14512,6 +14654,12 @@ function scanAttributeLinesAfterField({
         if (dftValue.length > 0) {
             field.dft = { value: dftValue };
             Logger.parse(`Found DFT(${dftValue}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
+
+        const cntfldValue = parseKeywordTextArg('CNTFLD', nextLine);
+        if (/^\d{3}$/.test(cntfldValue)) {
+            field.cntfld = { value: cntfldValue };
+            Logger.parse(`Found CNTFLD(${field.cntfld.value}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
             // Parse VALUES('A' 'B' ...), including DDS continuation lines
@@ -15577,6 +15725,42 @@ function applyIndicatorChangesToFieldUI({
             }
         });
     }
+}
+
+
+/***/ }),
+/* 86 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldCntfldLinesUI: () => (/* binding */ generateFieldCntfldLinesUI)
+/* harmony export */ });
+// Generate CNTFLD keyword lines for a field
+function generateFieldCntfldLinesUI({
+    field
+}) {
+    const lines = [];
+
+    if (!field.cntfld) {
+        return lines;
+    }
+
+    const rawValue = typeof field.cntfld === 'string'
+        ? field.cntfld.trim()
+        : (field.cntfld.value ? String(field.cntfld.value).trim() : '');
+
+    if (!rawValue) {
+        return lines;
+    }
+
+    if (!/^\d{3}$/.test(rawValue)) {
+        return lines;
+    }
+
+    lines.push(`     A                                      CNTFLD(${rawValue})`);
+
+    return lines;
 }
 
 

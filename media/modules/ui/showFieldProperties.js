@@ -535,6 +535,17 @@ export function showFieldProperties({
                         <label>Value</label>
                         <input type="text" id="prop-dftval-value" placeholder="Default value" />
                     </div>
+
+                    <div class="property-group cntfld-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-cntfld-enabled" />
+                            Continued field (CNTFLD)
+                        </label>
+                    </div>
+                    <div class="property-group cntfld-value-group" style="display: none;">
+                        <label>Length (exactly 3 digits: 001-999)</label>
+                        <input type="text" id="prop-cntfld-value" inputmode="numeric" maxlength="3" pattern="\d{1,3}" placeholder="e.g. 002" />
+                    </div>
                 </div>
 
                 <div id="tab-editing-keywords" class="tab-panel">
@@ -657,6 +668,8 @@ export function showFieldProperties({
     const dftValueGroup = document.querySelector('.dft-value-group');
     const dftvalGroup = document.querySelector('.dftval-group');
     const dftvalValueGroup = document.querySelector('.dftval-value-group');
+    const cntfldGroup = document.querySelector('.cntfld-group');
+    const cntfldValueGroup = document.querySelector('.cntfld-value-group');
     const shiftSelectElement = document.getElementById('prop-shift');
     const shiftGroup = shiftSelectElement ? shiftSelectElement.closest('.property-group') : null;
     const updateUsageRestrictedAttrs = () => {
@@ -726,6 +739,10 @@ export function showFieldProperties({
         const showGeneralKeywords = isVariableField;
         const showDFT = isVariableField;
         const showDFTVAL = isVariableField && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B');
+        const showCNTFLD = isVariableField
+            && usageSelect
+            && (usageSelect.value === 'I' || usageSelect.value === 'B')
+            && selectedType === 'character';
         if (dftGroup) {
             dftGroup.style.display = showDFT ? 'flex' : 'none';
         }
@@ -737,6 +754,12 @@ export function showFieldProperties({
         }
         if (dftvalValueGroup) {
             dftvalValueGroup.style.display = showDFTVAL ? 'block' : 'none';
+        }
+        if (cntfldGroup) {
+            cntfldGroup.style.display = showCNTFLD ? 'flex' : 'none';
+        }
+        if (cntfldValueGroup) {
+            cntfldValueGroup.style.display = showCNTFLD ? 'block' : 'none';
         }
         if (generalKeywordsTabBtn) {
             generalKeywordsTabBtn.style.display = showGeneralKeywords ? 'inline-flex' : 'none';
@@ -1351,6 +1374,54 @@ export function showFieldProperties({
                 if (this.checked && dftvalValueInput) {
                     dftvalValueInput.focus();
                 }
+            }
+        });
+    }
+
+    const cntfldEnabledCheckbox = document.getElementById('prop-cntfld-enabled');
+    const cntfldValueInput = document.getElementById('prop-cntfld-value');
+
+    const sanitizeCntfldInput = () => {
+        if (!cntfldValueInput) {
+            return;
+        }
+        cntfldValueInput.value = cntfldValueInput.value.replace(/\D/g, '').slice(0, 3);
+    };
+
+    const finalizeCntfldInput = () => {
+        if (!cntfldValueInput) {
+            return;
+        }
+        sanitizeCntfldInput();
+        if (cntfldValueInput.value.length > 0) {
+            cntfldValueInput.value = cntfldValueInput.value.padStart(3, '0');
+        }
+    };
+
+    if (field.cntfld && field.cntfld.value) {
+        if (cntfldEnabledCheckbox) {
+            cntfldEnabledCheckbox.checked = true;
+        }
+        if (cntfldValueInput) {
+            cntfldValueInput.value = String(field.cntfld.value).replace(/\D/g, '').slice(0, 3).padStart(3, '0');
+            if (cntfldValueInput.parentElement) {
+                cntfldValueInput.parentElement.style.display = 'block';
+            }
+        }
+    }
+
+    if (cntfldValueInput) {
+        cntfldValueInput.addEventListener('input', sanitizeCntfldInput);
+        cntfldValueInput.addEventListener('blur', finalizeCntfldInput);
+    }
+
+    if (cntfldEnabledCheckbox) {
+        cntfldEnabledCheckbox.addEventListener('change', function() {
+            if (cntfldValueGroup) {
+                cntfldValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (this.checked && cntfldValueInput) {
+                cntfldValueInput.focus();
             }
         });
     }

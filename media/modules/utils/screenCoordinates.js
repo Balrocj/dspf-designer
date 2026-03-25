@@ -75,6 +75,33 @@ export const ScreenCoordinates = {
             return [{ row: field.row, col: field.col, length: field.length }];
         }
 
+        // CNTFLD: continued input/both character field split in repeated chunks.
+        // Example: length 5 + CNTFLD(002) => 2,2,1 across consecutive rows.
+        if (field && field.dataType === 'character' && (field.usage === 'I' || field.usage === 'B') && field.cntfld && field.cntfld.value) {
+            const fieldLength = field.length || 10;
+            const cntfldRaw = String(field.cntfld.value).trim();
+            if (/^\d{3}$/.test(cntfldRaw)) {
+                const chunkLength = parseInt(cntfldRaw, 10);
+
+                if (chunkLength > 0 && field.row <= dims.rows) {
+                    const segments = [];
+                    let remaining = fieldLength;
+                    let row = field.row;
+
+                    while (remaining > 0 && row <= dims.rows) {
+                        const len = Math.min(chunkLength, remaining);
+                        segments.push({ row, col: field.col, length: len });
+                        remaining -= len;
+                        row++;
+                    }
+
+                    if (segments.length > 0) {
+                        return segments;
+                    }
+                }
+            }
+        }
+
         const startCol = field.col;
         const fieldLength = field.length || 10;
         const segments = [];
