@@ -88,9 +88,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_ui_generateFieldValuesLines_js__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(81);
 /* harmony import */ var _modules_ui_generateFieldDftLines_js__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(82);
 /* harmony import */ var _modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_82__ = __webpack_require__(83);
-/* harmony import */ var _modules_ui_generateFieldCntfldLines_js__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(86);
-/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(84);
-/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_85__ = __webpack_require__(85);
+/* harmony import */ var _modules_ui_generateFieldCntfldLines_js__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(84);
+/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(85);
+/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_85__ = __webpack_require__(86);
 /* module decorator */ module = __webpack_require__.hmd(module);
 
 
@@ -1532,6 +1532,8 @@ __webpack_require__.r(__webpack_exports__);
             let html = '';
             let offset = 0;
             const baseClass = (field.type === 'constant' || isKeyword) ? 'constant' : `${field.type}-field`;
+            const extraClasses = classes.length ? ` ${classes.join(' ')}` : '';
+            const colorInlineStyle = colorInline ? `color: ${colorInline};` : '';
             
             segments.forEach(segment => {
                 const segmentRow = windowOffset ? windowOffset.row + segment.row - 1 : segment.row;
@@ -1540,7 +1542,7 @@ __webpack_require__.r(__webpack_exports__);
                 const segmentValue = displayValue.substring(offset, offset + segment.length);
                 const widthStyle = `width: ${_modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates.getWidthInPixels(segment.length)}px;`;
                 
-                html += `        <div class="field ${baseClass}" data-field-segment="true" style="top: ${top}px; left: ${left}px; ${widthStyle} white-space: pre;">${segmentValue}</div>\n`;
+                html += `        <div class="field ${baseClass}${extraClasses}" data-field-segment="true" style="top: ${top}px; left: ${left}px; ${widthStyle} ${colorInlineStyle} white-space: pre;">${segmentValue}</div>\n`;
                 
                 offset += segment.length;
             });
@@ -15516,6 +15518,42 @@ function generateFieldDftvalLinesUI({
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldCntfldLinesUI: () => (/* binding */ generateFieldCntfldLinesUI)
+/* harmony export */ });
+// Generate CNTFLD keyword lines for a field
+function generateFieldCntfldLinesUI({
+    field
+}) {
+    const lines = [];
+
+    if (!field.cntfld) {
+        return lines;
+    }
+
+    const rawValue = typeof field.cntfld === 'string'
+        ? field.cntfld.trim()
+        : (field.cntfld.value ? String(field.cntfld.value).trim() : '');
+
+    if (!rawValue) {
+        return lines;
+    }
+
+    if (!/^\d{3}$/.test(rawValue)) {
+        return lines;
+    }
+
+    lines.push(`     A                                      CNTFLD(${rawValue})`);
+
+    return lines;
+}
+
+
+/***/ }),
+/* 85 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   generateDdsLineWithIndicatorsUI: () => (/* binding */ generateDdsLineWithIndicatorsUI)
 /* harmony export */ });
 // Generate a DDS line with optional indicators
@@ -15654,7 +15692,7 @@ function generateDdsLineWithIndicatorsUI({
 
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -15725,42 +15763,6 @@ function applyIndicatorChangesToFieldUI({
             }
         });
     }
-}
-
-
-/***/ }),
-/* 86 */
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   generateFieldCntfldLinesUI: () => (/* binding */ generateFieldCntfldLinesUI)
-/* harmony export */ });
-// Generate CNTFLD keyword lines for a field
-function generateFieldCntfldLinesUI({
-    field
-}) {
-    const lines = [];
-
-    if (!field.cntfld) {
-        return lines;
-    }
-
-    const rawValue = typeof field.cntfld === 'string'
-        ? field.cntfld.trim()
-        : (field.cntfld.value ? String(field.cntfld.value).trim() : '');
-
-    if (!rawValue) {
-        return lines;
-    }
-
-    if (!/^\d{3}$/.test(rawValue)) {
-        return lines;
-    }
-
-    lines.push(`     A                                      CNTFLD(${rawValue})`);
-
-    return lines;
 }
 
 

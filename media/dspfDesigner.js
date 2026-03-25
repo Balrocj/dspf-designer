@@ -1438,6 +1438,8 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             let html = '';
             let offset = 0;
             const baseClass = (field.type === 'constant' || isKeyword) ? 'constant' : `${field.type}-field`;
+            const extraClasses = classes.length ? ` ${classes.join(' ')}` : '';
+            const colorInlineStyle = colorInline ? `color: ${colorInline};` : '';
             
             segments.forEach(segment => {
                 const segmentRow = windowOffset ? windowOffset.row + segment.row - 1 : segment.row;
@@ -1446,7 +1448,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 const segmentValue = displayValue.substring(offset, offset + segment.length);
                 const widthStyle = `width: ${ScreenCoordinates.getWidthInPixels(segment.length)}px;`;
                 
-                html += `        <div class="field ${baseClass}" data-field-segment="true" style="top: ${top}px; left: ${left}px; ${widthStyle} white-space: pre;">${segmentValue}</div>\n`;
+                html += `        <div class="field ${baseClass}${extraClasses}" data-field-segment="true" style="top: ${top}px; left: ${left}px; ${widthStyle} ${colorInlineStyle} white-space: pre;">${segmentValue}</div>\n`;
                 
                 offset += segment.length;
             });
