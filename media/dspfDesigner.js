@@ -18,7 +18,7 @@ import { setupPreviewDisplaySizeListeners as setupPreviewDisplaySizeListenersUI 
 import { setupSourceSearch as setupSourceSearchUI } from './modules/ui/sourceSearch.js';
 import { updateRecordTitle as updateRecordTitleUI, updateNavigationButtons as updateNavigationButtonsUI } from './modules/ui/navigation.js';
 import { setupWindowResize as setupWindowResizeUI } from './modules/ui/windowResize.js';
-import { updateSourceView as updateSourceViewUI } from './modules/ui/sourceView.js';
+import { updateSourceView as updateSourceViewUI, focusSourceEditor as focusSourceEditorUI } from './modules/ui/sourceView.js';
 import { moveField as moveFieldUI } from './modules/ui/moveField.js';
 import { applyWindowDimensions as applyWindowDimensionsUI } from './modules/ui/applyWindowDimensions.js';
 import { showScreenProperties as showScreenPropertiesUI } from './modules/ui/showScreenProperties.js';
@@ -948,7 +948,8 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             setCurrentDocument: (value) => { currentDocument = value; },
             getCurrentRecord: () => currentRecord,
             setupSourceSearchUI,
-            scrollToRecordInSource
+            scrollToRecordInSource,
+            focusSourceEditor: focusSourceEditorUI
         });
     }
     
@@ -4227,6 +4228,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         
         switch (message.type) {
             case 'documentContent':
+                const previousDocument = currentDocument;
                 currentDocument = message.content;
                 currentRecord = message.currentRecord || null;
                 applyDisplaySizeSettingsFromDocument();
@@ -4274,6 +4276,18 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 }
                 
                 Logger.debug('Received document content for record:', currentRecord);
+
+                const activeViewBeforeSync = document.querySelector('.view.active');
+                const normalizeLineEndings = (text) => typeof text === 'string' ? text.replace(/\r\n/g, '\n') : '';
+                const isSourceEcho = !viewToRestore
+                    && activeViewBeforeSync
+                    && activeViewBeforeSync.id === 'source-view'
+                    && normalizeLineEndings(previousDocument) === normalizeLineEndings(message.content);
+
+                if (isSourceEcho) {
+                    Logger.debug('Skipping source echo re-parse to preserve editor responsiveness/history');
+                    break;
+                }
                 
                 // Parse fields with current record filter to maintain view consistency
                 // This will automatically re-render the designer view (clearing and redrawing all fields)

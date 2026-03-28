@@ -14,7 +14,8 @@ export function switchToView({
     setCurrentDocument,
     getCurrentRecord,
     setupSourceSearchUI,
-    scrollToRecordInSource
+    scrollToRecordInSource,
+    focusSourceEditor
 }) {
     Logger.ui('Switching to view:', viewName);
 
@@ -126,6 +127,16 @@ export function switchToView({
                 });
                 setupSourceSearchUI({ Logger });
                 scrollToRecordInSource();
+                // Ensure keyboard input goes to CodeMirror even on delayed webview/layout updates
+                if (focusSourceEditor) {
+                    setTimeout(() => {
+                        focusSourceEditor();
+                        requestAnimationFrame(() => {
+                            focusSourceEditor();
+                            requestAnimationFrame(() => focusSourceEditor());
+                        });
+                    }, 0);
+                }
                 Logger.debug('Source view activated and visible');
             } else {
                 Logger.error('Source elements not found');

@@ -109,6 +109,8 @@ import * as path from 'path';
 
 		// Handle messages from the webview
 		// Handle messages from the webview
+		let suppressedSourceEchoContent: string | null = null;
+		let suppressSourceEchoUntil = 0;
 		const messageSubscription = webviewPanel.webview.onDidReceiveMessage(async (message) => {
 			console.log('📨 Received message:', message);
 			switch (message.type) {
@@ -118,18 +120,25 @@ import * as path from 'path';
 						currentRecordContext = message.currentRecord;
 					}
 					try {
+						if (message.origin === 'source-editor') {
+							suppressedSourceEchoContent = message.content;
+							suppressSourceEchoUntil = Date.now() + 1500;
+						}
 						await this.updateTextDocument(document, message.content);
-						// Send back updated document with preserved record context
-						const isEditable = await this.isDocumentEditable(document);
-						const recordsUpdate = this.parseDspfRecords(document.getText());
-						console.log('📤 Sending isReadOnly:', !isEditable, '(isEditable:', isEditable, ')');
-						webviewPanel.webview.postMessage({
-							type: 'documentContent',
-							content: document.getText(),
-							currentRecord: currentRecordContext, // Preserve the current record context
-							isReadOnly: !isEditable,
-							records: recordsUpdate
-						});
+						// Avoid echoing full document on every Source keystroke (it can reset editor history/feel).
+						if (message.origin !== 'source-editor') {
+							// Send back updated document with preserved record context
+							const isEditable = await this.isDocumentEditable(document);
+							const recordsUpdate = this.parseDspfRecords(document.getText());
+							console.log('📤 Sending isReadOnly:', !isEditable, '(isEditable:', isEditable, ')');
+							webviewPanel.webview.postMessage({
+								type: 'documentContent',
+								content: document.getText(),
+								currentRecord: currentRecordContext, // Preserve the current record context
+								isReadOnly: !isEditable,
+								records: recordsUpdate
+							});
+						}
 						// Send success notification
 						webviewPanel.webview.postMessage({
 							type: 'saveSuccess'
@@ -273,6 +282,16 @@ import * as path from 'path';
 		// Listen for document changes
 		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(async e => {
 			if (e.document.uri.toString() === document.uri.toString()) {
+				const now = Date.now();
+				const docText = document.getText();
+				if (suppressedSourceEchoContent && now <= suppressSourceEchoUntil && docText === suppressedSourceEchoContent) {
+					return;
+				}
+
+				if (now > suppressSourceEchoUntil) {
+					suppressedSourceEchoContent = null;
+				}
+
 				// PRESERVE currentReadOnlyMode if it was set via Display button
 				const isEditableChange = await this.isDocumentEditable(e.document);
 				const effectiveReadOnlyForChange = currentReadOnlyMode || !isEditableChange;

@@ -10,6 +10,8 @@ let EditorState;
 let EditorView;
 let keymap;
 let indentWithTab;
+let undo;
+let redo;
 let openSearchPanel;
 let Decoration;
 let ViewPlugin;
@@ -17,8 +19,17 @@ let RangeSetBuilder;
 let editableCompartment;
 let readOnlyCompartment;
 let ddsHighlightExtension;
+let sourceInteractionBridgeSetupDone = false;
+let sourceSyncTimer = null;
+let pendingSourceDocument = null;
+
+const SOURCE_SYNC_DEBOUNCE_MS = 100;
 
 const DDS_KEYWORDS_REGEX = /'(?:''|[^'])*'|\*(?:DS3|DS4|JOB|SYS|YY|YMD|MDY|DMY|JUL|ISO|USA|EUR|JIS)|\b\d+\b|\b[A-Z][A-Z0-9]{1,}\b/gi;
+
+function normalizeLineEndings(text) {
+    return typeof text === 'string' ? text.replace(/\r\n/g, '\n') : '';
+}
 
 function isCommentLine(lineText) {
     const trimmed = lineText.trim();
@@ -167,6 +178,8 @@ function ensureCodeMirrorLoaded() {
     ViewPlugin = view.ViewPlugin;
     keymap = view.keymap;
     indentWithTab = commands.indentWithTab;
+    undo = commands.undo;
+    redo = commands.redo;
     openSearchPanel = search.openSearchPanel;
     RangeSetBuilder = state.RangeSetBuilder;
 
@@ -196,6 +209,39 @@ function generateColumnRuler() {
     syncRulerSpacerWidth();
 }
 
+function flushSourceSync() {
+    if (!currentDeps || pendingSourceDocument === null) {
+        return;
+    }
+
+    const updatedDocument = pendingSourceDocument;
+    pendingSourceDocument = null;
+
+    const { Logger, vscode, getCurrentRecord, parseDspfFields } = currentDeps;
+    vscode.postMessage({
+        type: 'update',
+        content: updatedDocument,
+        currentRecord: getCurrentRecord(),
+        origin: 'source-editor'
+    });
+
+    parseDspfFields(updatedDocument);
+    Logger.debug('CodeMirror source changed, designer view updated');
+}
+
+function scheduleSourceSync(updatedDocument) {
+    pendingSourceDocument = updatedDocument;
+
+    if (sourceSyncTimer) {
+        clearTimeout(sourceSyncTimer);
+    }
+
+    sourceSyncTimer = setTimeout(() => {
+        sourceSyncTimer = null;
+        flushSourceSync();
+    }, SOURCE_SYNC_DEBOUNCE_MS);
+}
+
 function buildSourceExtensions(readOnly = false) {
     if (!ensureCodeMirrorLoaded()) {
         return [];
@@ -204,7 +250,12 @@ function buildSourceExtensions(readOnly = false) {
     return [
         basicSetup,
         ddsHighlightExtension,
-        keymap.of([indentWithTab]),
+        keymap.of([
+            { key: 'Mod-z', run: undo, preventDefault: true },
+            { key: 'Mod-y', run: redo, preventDefault: true },
+            { key: 'Mod-Shift-z', run: redo, preventDefault: true },
+            indentWithTab
+        ]),
         editableCompartment.of(EditorView.editable.of(!readOnly)),
         readOnlyCompartment.of(EditorState.readOnly.of(readOnly)),
         EditorView.theme({
@@ -240,24 +291,52 @@ function buildSourceExtensions(readOnly = false) {
                 return;
             }
 
-            const { Logger, vscode, setCurrentDocument, getCurrentRecord, parseDspfFields } = currentDeps;
+            const { setCurrentDocument } = currentDeps;
             const updatedDocument = update.state.doc.toString();
             setCurrentDocument(updatedDocument);
-
-            vscode.postMessage({
-                type: 'update',
-                content: updatedDocument,
-                currentRecord: getCurrentRecord()
-            });
-
-            parseDspfFields(updatedDocument);
-            Logger.debug('CodeMirror source changed, designer view updated');
+            scheduleSourceSync(updatedDocument);
         })
     ];
 }
 
 function getSourceEditorHost() {
     return document.getElementById('source-editor');
+}
+
+function setupSourceInteractionBridge() {
+    if (sourceInteractionBridgeSetupDone) {
+        return;
+    }
+    sourceInteractionBridgeSetupDone = true;
+
+    const getTargetElement = (target) => {
+        if (target instanceof Element) {
+            return target;
+        }
+        return target && target.parentElement ? target.parentElement : null;
+    };
+
+    // Note: Ctrl+Z and Ctrl+Y are now handled natively by CodeMirror's history extension.
+    // We don't intercept them here anymore to allow CodeMirror to process them naturally.
+
+    const focusEditorFromNonEditorAreas = (event) => {
+        if (!sourceEditorView) {
+            return;
+        }
+        if (event.target instanceof Element && event.target.closest('.cm-editor')) {
+            return;
+        }
+        sourceEditorView.focus();
+    };
+
+    const sourceEditorWrapper = document.getElementById('source-editor-wrapper');
+    const sourceColumnRuler = document.getElementById('source-column-ruler');
+    if (sourceEditorWrapper) {
+        sourceEditorWrapper.addEventListener('mousedown', focusEditorFromNonEditorAreas);
+    }
+    if (sourceColumnRuler) {
+        sourceColumnRuler.addEventListener('mousedown', focusEditorFromNonEditorAreas);
+    }
 }
 
 function ensureSourceEditor(readOnly = false) {
@@ -296,6 +375,8 @@ function ensureSourceEditor(readOnly = false) {
                 syncRulerSpacerWidth();
             }
         }, 50);
+
+        setupSourceInteractionBridge();
     }
 
     return sourceEditorView;
@@ -306,8 +387,9 @@ export function getSourceEditorValue() {
 }
 
 export function focusSourceEditor() {
-    if (sourceEditorView) {
-        sourceEditorView.focus();
+    const editor = ensureSourceEditor(false);
+    if (editor) {
+        editor.focus();
     }
 }
 
@@ -389,14 +471,16 @@ export function updateSourceView({ Logger, vscode, getCurrentDocument, setCurren
 
     const currentDocument = getCurrentDocument();
     const currentText = sourceEditor.state.doc.toString();
+    const normalizedCurrentDocument = normalizeLineEndings(currentDocument);
+    const normalizedCurrentText = normalizeLineEndings(currentText);
 
-    if (currentText !== currentDocument) {
+    if (normalizedCurrentText !== normalizedCurrentDocument) {
         const currentSelection = sourceEditor.state.selection.main;
         const previousScrollTop = sourceEditor.scrollDOM.scrollTop;
 
         suppressDocSync = true;
         sourceEditor.dispatch({
-            changes: { from: 0, to: currentText.length, insert: currentDocument }
+            changes: { from: 0, to: currentText.length, insert: normalizedCurrentDocument }
         });
         suppressDocSync = false;
 
