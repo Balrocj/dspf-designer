@@ -217,13 +217,20 @@ function flushSourceSync() {
     const updatedDocument = pendingSourceDocument;
     pendingSourceDocument = null;
 
-    const { Logger, vscode, getCurrentRecord, parseDspfFields } = currentDeps;
-    vscode.postMessage({
-        type: 'update',
-        content: updatedDocument,
-        currentRecord: getCurrentRecord(),
-        origin: 'source-editor'
-    });
+    const { Logger, vscode, getCurrentRecord, parseDspfFields, getSaveMode } = currentDeps;
+    const saveMode = typeof getSaveMode === 'function' ? getSaveMode() : 'manual';
+
+    if (saveMode === 'automatic') {
+        vscode.postMessage({
+            type: 'update',
+            content: updatedDocument,
+            currentRecord: getCurrentRecord(),
+            origin: 'source-editor'
+        });
+        Logger.debug('CodeMirror source changed, auto-save sent to extension');
+    } else {
+        Logger.debug('CodeMirror source changed in manual save mode; waiting for Save button');
+    }
 
     parseDspfFields(updatedDocument);
     Logger.debug('CodeMirror source changed, designer view updated');
@@ -455,13 +462,14 @@ export function scrollSourceEditorToLine(lineNumber, offset = 100) {
     sourceEditorView.scrollDOM.scrollTop = Math.max(0, topInScroller - offset);
 }
 
-export function updateSourceView({ Logger, vscode, getCurrentDocument, setCurrentDocument, getCurrentRecord, parseDspfFields }) {
+export function updateSourceView({ Logger, vscode, getCurrentDocument, setCurrentDocument, getCurrentRecord, parseDspfFields, getSaveMode }) {
     currentDeps = {
         Logger,
         vscode,
         setCurrentDocument,
         getCurrentRecord,
-        parseDspfFields
+        parseDspfFields,
+        getSaveMode
     };
 
     const sourceEditor = ensureSourceEditor(false);

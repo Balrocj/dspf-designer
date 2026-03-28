@@ -92,6 +92,29 @@
           "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds || editorLangId == dspf) && dspfDesigner.isInDesignerMode"
         }
       ]
+    },
+    "configuration": {
+      "title": "DSPF Designer",
+      "properties": {
+        "dspfDesigner.openBehavior": {
+          "type": "string",
+          "enum": [
+            "currentEditor",
+            "newTab"
+          ],
+          "default": "currentEditor",
+          "description": "Controls where Designer Mode opens: replace current editor or open as a new tab in the same editor group."
+        },
+        "dspfDesigner.saveMode": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "automatic"
+          ],
+          "default": "manual",
+          "description": "Controls save behavior in Designer and Source views: manual save with Save button or automatic save while editing."
+        }
+      }
     }
   },
   "scripts": {

@@ -4,6 +4,13 @@ import { DspfEditorProvider } from './dspfEditorProvider';
 export function activate(context: vscode.ExtensionContext) {
 	console.log('DSPF Designer extension is now active!');
 
+	type OpenBehavior = 'currentEditor' | 'newTab';
+
+	const getOpenBehavior = (): OpenBehavior => {
+		const configValue = vscode.workspace.getConfiguration('dspfDesigner').get<string>('openBehavior', 'currentEditor');
+		return configValue === 'newTab' ? 'newTab' : 'currentEditor';
+	};
+
 	const isDesignerTabActive = () => {
 		const activeTab = vscode.window.tabGroups.activeTabGroup.activeTab;
 		return activeTab?.input instanceof vscode.TabInputCustom && activeTab.input.viewType === 'dspfDesigner.editor';
@@ -47,15 +54,29 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 
+		const openBehavior = getOpenBehavior();
+
 		if (isDesignerTabActive()) {
-			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-			await vscode.commands.executeCommand('vscode.open', targetUri);
+			if (openBehavior === 'currentEditor') {
+				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+				await vscode.commands.executeCommand('vscode.open', targetUri);
+			} else {
+				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+				await vscode.commands.executeCommand('vscode.open', targetUri, { preserveFocus: false, preview: false });
+			}
 			await updateDesignerModeContext();
 			return;
 		}
 
-		await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-		await vscode.commands.executeCommand('vscode.openWith', targetUri, 'dspfDesigner.editor');
+		if (openBehavior === 'currentEditor') {
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+			await vscode.commands.executeCommand('vscode.openWith', targetUri, 'dspfDesigner.editor');
+		} else {
+			await vscode.commands.executeCommand('vscode.openWith', targetUri, 'dspfDesigner.editor', {
+				preview: false,
+				preserveFocus: false
+			});
+		}
 		await updateDesignerModeContext();
 	});
 
@@ -66,8 +87,16 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 
-		await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-		await vscode.commands.executeCommand('vscode.open', targetUri);
+		if (getOpenBehavior() === 'currentEditor') {
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+			await vscode.commands.executeCommand('vscode.open', targetUri);
+		} else {
+			// In newTab mode, close designer and focus text editor without replacing layout.
+			if (isDesignerTabActive()) {
+				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+			}
+			await vscode.commands.executeCommand('vscode.open', targetUri, { preserveFocus: false, preview: false });
+		}
 		await updateDesignerModeContext();
 	});
 

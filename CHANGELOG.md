@@ -6,6 +6,8 @@ All notable changes to the "dspf-designer" extension will be documented in this 
 
 ### 🎨 Improved
 - Replaced Source textarea view with a real CodeMirror editor (line numbers, native search panel, and synchronized updates).
+- Added a new `dspfDesigner.openBehavior` setting to control whether Designer Mode opens in the current editor, a new tab, or a new window, allowing users to keep the text editor open alongside the designer if desired.
+- Added a new `dspfDesigner.saveMode` setting to enable automatic saving of changes while editing in Designer or Source views, providing a more seamless editing experience without needing to click the Save button.
 
 ## [1.4.0] - 2026-03-24
 

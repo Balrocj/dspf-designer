@@ -91,6 +91,8 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     
     const vscode = acquireVsCodeApi();
     window.vscodeApi = vscode; // Make it globally available
+    const initialConfig = window.dspfDesignerConfig || {};
+    let saveMode = initialConfig.saveMode === 'automatic' ? 'automatic' : 'manual';
     
     // IBM i Color Mappings (5250 standard colors) - now using ColorUtils
     const IBM_COLORS = ColorUtils.IBM_COLORS;
@@ -104,6 +106,10 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     let isReadOnly = false; // Track if document is in read-only mode
     let currentView = 'designer'; // Track the current active view (designer, preview, source)
     let currentZoom = 1; // Zoom level for views container
+
+    function getSaveMode() {
+        return saveMode;
+    }
     
     // Initialize the designer when DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
@@ -947,6 +953,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             vscode,
             setCurrentDocument: (value) => { currentDocument = value; },
             getCurrentRecord: () => currentRecord,
+            getSaveMode,
             setupSourceSearchUI,
             scrollToRecordInSource,
             focusSourceEditor: focusSourceEditorUI
@@ -2734,7 +2741,9 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         return updateDocumentInEditorUI({
             currentRecord,
             currentDocument,
-            Logger
+            Logger,
+            vscode,
+            getSaveMode
         });
     }
     
@@ -4309,7 +4318,8 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                             getCurrentDocument: () => currentDocument,
                             setCurrentDocument: (value) => { currentDocument = value; },
                             getCurrentRecord: () => currentRecord,
-                            parseDspfFields
+                            parseDspfFields,
+                            getSaveMode
                         });
                     }
                     // Note: Designer view is already updated by parseDspfFields() which re-renders all fields

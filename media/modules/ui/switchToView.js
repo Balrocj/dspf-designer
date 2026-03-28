@@ -13,6 +13,7 @@ export function switchToView({
     vscode,
     setCurrentDocument,
     getCurrentRecord,
+    getSaveMode,
     setupSourceSearchUI,
     scrollToRecordInSource,
     focusSourceEditor
@@ -123,7 +124,8 @@ export function switchToView({
                     getCurrentDocument,
                     setCurrentDocument,
                     getCurrentRecord,
-                    parseDspfFields
+                    parseDspfFields,
+                    getSaveMode
                 });
                 setupSourceSearchUI({ Logger });
                 scrollToRecordInSource();

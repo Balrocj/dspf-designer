@@ -49,6 +49,15 @@ Real-time preview showing how your screen will appear on IBM i, directly generat
 ## Extension Settings
 
 This extension automatically associates with `.dspf` files and requires no additional configuration.
+
+- `dspfDesigner.openBehavior` (default: `currentEditor`)
+	- `currentEditor`: Current behavior. Opening Designer Mode replaces the active editor tab.
+	- `newTab`: Opens Designer Mode in the same editor group as another tab (no split, no new window).
+
+- `dspfDesigner.saveMode` (default: `manual`)
+	- `manual`: Changes are saved only when pressing the Save button.
+	- `automatic`: Changes are saved automatically while editing (Designer and Source views).
+
 You can edit your DSPF files offline. You can edit DSPF files located on your local machine.
 
 ## Known Limitations

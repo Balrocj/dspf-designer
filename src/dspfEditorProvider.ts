@@ -74,6 +74,11 @@ import * as path from 'path';
 		const isEditable = await this.isDocumentEditable(document);
 		return !isEditable;
 	}
+
+	private getSaveMode(): 'manual' | 'automatic' {
+		const value = vscode.workspace.getConfiguration('dspfDesigner').get<string>('saveMode', 'manual');
+		return value === 'automatic' ? 'automatic' : 'manual';
+	}
 	
 	/**
 	 * Resolve a custom editor for DSPF files
@@ -91,6 +96,7 @@ import * as path from 'path';
 
 		// Parse the DSPF file to find all records
 		const records = this.parseDspfRecords(document.getText());
+		const saveMode = this.getSaveMode();
 		let currentRecordContext: string | undefined = undefined;
 		let currentReadOnlyMode: boolean = false; // Track if user chose Display mode
 		
@@ -99,12 +105,12 @@ import * as path from 'path';
 		
 		if (records.length > 1) {
 			// Show record selector if multiple records exist
-			webviewPanel.webview.html = this.getRecordSelectorHtml(webviewPanel.webview, records, isReadOnly);
+			webviewPanel.webview.html = this.getRecordSelectorHtml(webviewPanel.webview, records, isReadOnly, saveMode);
 		} else {
 			// Show designer directly if only one record (or no records)
 			const recordName = records.length > 0 ? records[0].name : 'MAIN';
 			currentRecordContext = recordName;
-			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, recordName);
+			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, recordName, saveMode);
 		}
 
 		// Handle messages from the webview
@@ -169,7 +175,7 @@ import * as path from 'path';
 					currentRecordContext = message.recordName;
 					currentReadOnlyMode = false; // Reset when explicitly selecting a record to edit
 					// Switch to designer view for selected record
-					webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, message.recordName);
+					webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, message.recordName, saveMode);
 					// Send document content and current record to the designer
 					setTimeout(async () => {
 						const isEditableSelect = await this.isDocumentEditable(document);
@@ -190,7 +196,7 @@ import * as path from 'path';
 					currentRecordContext = message.recordName;
 					currentReadOnlyMode = message.readOnly; // Save the user's choice
 					// Switch to designer view for selected record
-					webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, message.recordName);
+					webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, message.recordName, saveMode);
 					// Send document content with forced read-only mode
 					setTimeout(() => {
 						const recordsOpen = this.parseDspfRecords(document.getText());
@@ -209,7 +215,7 @@ import * as path from 'path';
 					// Go back to record selector
 					const updatedRecords = this.parseDspfRecords(document.getText());
 					const isReadOnlyBack = await this.isDocumentReadOnly(document);
-					webviewPanel.webview.html = this.getRecordSelectorHtml(webviewPanel.webview, updatedRecords, isReadOnlyBack);
+					webviewPanel.webview.html = this.getRecordSelectorHtml(webviewPanel.webview, updatedRecords, isReadOnlyBack, saveMode);
 					break;
 				case 'exitDesigner':
 					console.log('🚪 Exiting Designer and returning to text editor');
@@ -317,7 +323,7 @@ import * as path from 'path';
 	/**
 	 * Get the static HTML for the webview
 	 */
-	private getHtmlForWebview(webview: vscode.Webview, recordName: string = 'MAIN'): string {
+	private getHtmlForWebview(webview: vscode.Webview, recordName: string = 'MAIN', saveMode: 'manual' | 'automatic' = 'manual'): string {
 		// Add timestamp to force cache refresh
 		const timestamp = Date.now();
 		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(
@@ -578,6 +584,10 @@ import * as path from 'path';
 	</div>
 
 	<script nonce="${nonce}">
+		window.dspfDesignerConfig = {
+			saveMode: '${saveMode}'
+		};
+
 		// Setup event listeners when DOM is ready
 		document.addEventListener('DOMContentLoaded', function() {
 			console.log('🔙 Setting up back button listener');
@@ -921,7 +931,7 @@ import * as path from 'path';
 	/**
 	 * Get HTML for record selector view
 	 */
-	private getRecordSelectorHtml(webview: vscode.Webview, records: Array<{name: string, type: string, lineStart: number, lineEnd: number}>, isReadOnly: boolean = false): string {
+	private getRecordSelectorHtml(webview: vscode.Webview, records: Array<{name: string, type: string, lineStart: number, lineEnd: number}>, isReadOnly: boolean = false, saveMode: 'manual' | 'automatic' = 'manual'): string {
 		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(
 			this.context.extensionUri, 'media', 'dspfDesigner.css'));
 		
@@ -1218,6 +1228,9 @@ import * as path from 'path';
 
 	<script nonce="${nonce}">
 		console.log('🚀 Record selector script starting...');
+		window.dspfDesignerConfig = {
+			saveMode: '${saveMode}'
+		};
 		const vscode = acquireVsCodeApi();
 		
 		function selectRecord(recordName) {
