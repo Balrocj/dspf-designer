@@ -1,3 +1,5 @@
+import { scrollSourceEditorToLine } from './sourceView.js';
+
 export function scrollToRecordInSource(options) {
     const {
         currentRecord,
@@ -8,14 +10,6 @@ export function scrollToRecordInSource(options) {
     if (!currentRecord) {
         if (Logger) {
             Logger.warn('No current record to scroll to');
-        }
-        return;
-    }
-
-    const sourceEditor = document.getElementById('source-editor');
-    if (!sourceEditor) {
-        if (Logger) {
-            Logger.error('Source editor not found');
         }
         return;
     }
@@ -43,8 +37,5 @@ export function scrollToRecordInSource(options) {
         Logger.debug(`Scrolling to record ${currentRecord} at line ${recordLineIndex + 1}`);
     }
 
-    const lineHeight = 21;
-    const scrollPosition = recordLineIndex * lineHeight;
-    const offset = 100;
-    sourceEditor.scrollTop = Math.max(0, scrollPosition - offset);
+    scrollSourceEditorToLine(recordLineIndex + 1, 100);
 }

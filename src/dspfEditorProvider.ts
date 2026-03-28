@@ -503,16 +503,6 @@ import * as path from 'path';
 			<!-- Source View -->
 			<div id="source-view" class="view">
 				<div id="source-container">
-					<!-- Search box for source view -->
-					<div id="source-search-box">
-						<div class="search-input-row">
-							<input type="text" id="source-search-input" placeholder="Find..." />
-							<button class="search-button" id="search-prev-btn">↑</button>
-							<button class="search-button" id="search-next-btn">↓</button>
-							<button class="search-close-button" id="search-close-btn">✕</button>
-						</div>
-						<div class="search-info" id="search-info"></div>
-					</div>
 					<div id="source-editor-wrapper">
 						<!-- Column ruler header (sticky) -->
 						<div id="source-column-ruler">
@@ -521,14 +511,7 @@ import * as path from 'path';
 								<div class="ruler-row ruler-main"></div>
 							</div>
 						</div>
-						<div id="source-line-numbers"></div>
-						<div id="source-syntax-highlights">
-							<div id="source-syntax-highlights-content"></div>
-						</div>
-						<div id="search-highlights">
-							<div id="search-highlights-content"></div>
-						</div>
-						<textarea id="source-editor" placeholder="DDS source code will appear here..."></textarea>
+						<div id="source-editor" aria-label="DDS source editor"></div>
 					</div>
 				</div>
 			</div>

@@ -1,3 +1,5 @@
+import { setSourceEditorReadOnly } from './sourceView.js';
+
 export function updateReadOnlyMode({
     Logger,
     isReadOnly,
@@ -12,8 +14,6 @@ export function updateReadOnlyMode({
     const previewView = document.getElementById('preview-view');
     const saveBtn = document.getElementById('saveBtn');
     const addRecordBtn = document.querySelector('.add-record-btn');
-    const sourceEditor = document.getElementById('source-editor');
-
     if (isReadOnly) {
         if (designerTab) {
             designerTab.style.display = 'none';
@@ -31,10 +31,7 @@ export function updateReadOnlyMode({
             addRecordBtn.style.display = 'none';
         }
 
-        if (sourceEditor) {
-            sourceEditor.readOnly = true;
-            sourceEditor.style.cursor = 'not-allowed';
-        }
+        setSourceEditorReadOnly(true);
 
         if (previewTab && previewView) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -77,10 +74,7 @@ export function updateReadOnlyMode({
             addRecordBtn.style.display = 'inline-block';
         }
 
-        if (sourceEditor) {
-            sourceEditor.readOnly = false;
-            sourceEditor.style.cursor = 'text';
-        }
+        setSourceEditorReadOnly(false);
 
         const badge = document.querySelector('.readonly-badge');
         if (badge) {

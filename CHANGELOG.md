@@ -2,6 +2,11 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.0.0] - 2026-03-27
+
+### 🎨 Improved
+- Replaced Source textarea view with a real CodeMirror editor (line numbers, native search panel, and synchronized updates).
+
 ## [1.4.0] - 2026-03-24
 
 ### 🎨 Improved

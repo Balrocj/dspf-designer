@@ -2,7 +2,7 @@
   "name": "dspf-designer",
   "displayName": "DSPF Designer",
   "description": "Visual designer for IBM i DSPF (Display Files) with drag-and-drop interface.",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "publisher": "Balrocj",
   "icon": "media/icon-256.png",
   "engines": {
@@ -107,16 +107,21 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.106.1",
+    "@codemirror/commands": "^6.10.3",
+    "@codemirror/search": "^6.6.0",
+    "@codemirror/state": "^6.6.0",
+    "@codemirror/view": "^6.40.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "typescript-eslint": "^8.46.3",
-    "eslint": "^9.39.1",
-    "typescript": "^5.9.3",
-    "ts-loader": "^9.5.4",
-    "webpack": "^5.102.1",
-    "webpack-cli": "^6.0.1",
+    "@types/vscode": "^1.106.1",
     "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2"
+    "@vscode/test-electron": "^2.5.2",
+    "codemirror": "^6.0.2",
+    "eslint": "^9.39.1",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.3",
+    "webpack": "^5.102.1",
+    "webpack-cli": "^6.0.1"
   }
 }
