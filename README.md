@@ -3,6 +3,8 @@
 🎉 **The first VS Code extension to visually design IBM i display files (DSPF).**
 Create and edit IBM i screen files using an intuitive drag-and-drop designer. This is not a renderer — it’s a true visual editor.
 
+![DSPF Designer Demo](https://raw.githubusercontent.com/Balrocj/dspf-designer/main/media/Demo.gif)
+
 ## Features
 
 ### 🎨 Visual Designer
