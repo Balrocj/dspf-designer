@@ -3,6 +3,7 @@ import { setSourceEditorReadOnly } from './sourceView.js';
 export function updateReadOnlyMode({
     Logger,
     isReadOnly,
+    getSaveMode,
     setCurrentView,
     updatePreviewView
 }) {
@@ -13,7 +14,12 @@ export function updateReadOnlyMode({
     const previewTab = document.getElementById('previewTab');
     const previewView = document.getElementById('preview-view');
     const saveBtn = document.getElementById('saveBtn');
+    const autoSaveIndicator = document.getElementById('autoSaveIndicator');
     const addRecordBtn = document.querySelector('.add-record-btn');
+    const saveMode = typeof getSaveMode === 'function' ? getSaveMode() : 'manual';
+    const shouldShowSaveButton = !isReadOnly && saveMode !== 'automatic';
+    const shouldShowAutoSaveIndicator = !isReadOnly && saveMode === 'automatic';
+
     if (isReadOnly) {
         if (designerTab) {
             designerTab.style.display = 'none';
@@ -25,6 +31,10 @@ export function updateReadOnlyMode({
 
         if (saveBtn) {
             saveBtn.style.display = 'none';
+        }
+
+        if (autoSaveIndicator) {
+            autoSaveIndicator.style.display = 'none';
         }
 
         if (addRecordBtn) {
@@ -67,7 +77,11 @@ export function updateReadOnlyMode({
         }
 
         if (saveBtn) {
-            saveBtn.style.display = 'inline-block';
+            saveBtn.style.display = shouldShowSaveButton ? 'inline-block' : 'none';
+        }
+
+        if (autoSaveIndicator) {
+            autoSaveIndicator.style.display = shouldShowAutoSaveIndicator ? 'inline-flex' : 'none';
         }
 
         if (addRecordBtn) {
@@ -81,6 +95,6 @@ export function updateReadOnlyMode({
             badge.remove();
         }
 
-        Logger.key('Edit mode enabled');
+        Logger.key(`Edit mode enabled (saveMode: ${saveMode})`);
     }
 }

@@ -255,6 +255,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         return updateReadOnlyModeUI({
             Logger,
             isReadOnly,
+            getSaveMode,
             setCurrentView: (value) => { currentView = value; },
             updatePreviewView
         });

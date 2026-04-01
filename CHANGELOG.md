@@ -2,6 +2,12 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.0.1] - 2026-04-01
+
+### 🐛 Fixed
+- It adjusts to hide the Save button when it's set to save automatically.
+- It is adjusted to read the fields when the coordinates need to be calculated.
+
 ## [2.0.0] - 2026-03-27
 
 ### 🎨 Improved
