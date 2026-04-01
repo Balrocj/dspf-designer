@@ -414,7 +414,7 @@ import * as path from 'path';
 			</div>
 			<div class="toolbar-buttons">
 				<button id="saveBtn">Save</button>
-				<span id="autoSaveIndicator" style="display: none; padding: 6px 10px; border-radius: 999px; background: color-mix(in srgb, var(--vscode-button-background) 18%, transparent); border: 1px solid var(--vscode-panel-border); color: var(--vscode-descriptionForeground); font-size: 0.85em; white-space: nowrap;">Auto-save enabled</span>
+				<span id="autoSaveIndicator" style="display: none; padding: 6px 10px; border-radius: 999px; background: color-mix(in srgb, var(--vscode-button-background) 18%, transparent); border: 1px solid var(--vscode-panel-border); color: var(--vscode-descriptionForeground); font-size: 0.85em; white-space: nowrap;">Auto-save on</span>
 				<div class="zoom-controls" aria-label="Zoom controls">
 					<button id="zoomOutBtn" class="zoom-button" title="Zoom out">−</button>
 					<span id="zoomLabel" class="zoom-label">100%</span>
