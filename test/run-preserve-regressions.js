@@ -7,7 +7,8 @@ const tests = [
     'run-move-preserve-indicator-unknown.js',
     'run-sfldspctl-indicator-isolation.js',
     'run-sfldspctl-reinsert-on-enable.js',
-    'run-cntfld-regression.js'
+    'run-cntfld-regression.js',
+    'run-relative-plus-normalization.js'
 ];
 
 function runOne(scriptName) {

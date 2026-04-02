@@ -1046,6 +1046,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         let windowDimensions = null;
         let currentRecordName = null;
         let inTargetRecord = false;
+        const parsePositionContext = { previousPosition: null };
         let skipNextLines = 0; // Track lines to skip (for multi-line constants)
         
         Logger.parse('Parsing DSPF for preview, target record:', targetRecord);
@@ -1085,6 +1086,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
 					}
 					// Check if this is our target record
 					inTargetRecord = (targetRecord === currentRecordName);
+                    parsePositionContext.previousPosition = null;
 					Logger.parse(`Found record: ${currentRecordName}, target: ${inTargetRecord}`);
 					
 					// Set the main record name if not set and this is our target
@@ -1104,7 +1106,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             // Parse field definitions only if we're in the target record
             // Align detection with Designer (absolute column 5 = 'A') and skip WINDOW keywords
                 const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
-                if (inTargetRecord && line.length > 6 && line[5] === 'A' && (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) && !trimmedLine.includes('WINDOW(')) {
+                if (inTargetRecord && line.length > 6 && line[5] === 'A' && (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /(^|\s)\+\d{1,3}(\s|$)/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) && !trimmedLine.includes('WINDOW(')) {
                 // Check for multi-line constant (ends with '-' or '+' before quote)
                 let lineToProcess = line;
                 if (line.includes("'") && line.match(/'[^']*[-+]\s*$/)) {
@@ -1123,7 +1125,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 }
                 
                 // Use Designer parser for consistent constant handling
-                const field = parseFieldLineForDesigner(lineToProcess);
+                const field = parseFieldLineForDesigner(lineToProcess, parsePositionContext);
                 if (field) {
                     field.recordName = currentRecordName; // Track which record this field belongs to
                     
@@ -1215,6 +1217,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 // Parse fields from companion record
                 let inCompanionRecord = false;
                 let companionRecordName = null;
+                const companionParsePositionContext = { previousPosition: null };
                 
                 lines.forEach((line, index) => {
                     if (skipNextLines > 0) {
@@ -1234,6 +1237,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         if (match) {
                             companionRecordName = match[1];
                             inCompanionRecord = (subfileRel.companionRecord === companionRecordName);
+                            companionParsePositionContext.previousPosition = null;
                             if (inCompanionRecord) {
                                 Logger.parse(`Preview: Found companion record: ${companionRecordName}`);
                             }
@@ -1242,7 +1246,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                     
                     // Parse fields from companion record (align with Designer detection)
                     const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
-                    if (inCompanionRecord && line.length > 6 && line[5] === 'A' && (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) && !trimmedLine.includes('WINDOW(')) {
+                    if (inCompanionRecord && line.length > 6 && line[5] === 'A' && (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /(^|\s)\+\d{1,3}(\s|$)/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) && !trimmedLine.includes('WINDOW(')) {
                         // Check for multi-line constant (ends with '-' or '+' before quote)
                         let lineToProcess = line;
                         if (line.includes("'") && line.match(/'[^']*[-+]\s*$/)) {
@@ -1261,7 +1265,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         }
                         
                         // Use Designer parser for consistent constant handling
-                        const field = parseFieldLineForDesigner(lineToProcess);
+                        const field = parseFieldLineForDesigner(lineToProcess, companionParsePositionContext);
                         if (field) {
                             field.isBackgroundRecord = true;
                             field.recordName = companionRecordName;
@@ -1324,11 +1328,24 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     
     // Helper: Extract row and column from parts array
     // Returns: { row, col, nextIndex } or null if invalid
-    function extractRowColFromParts(parts, startIndex) {
+    function extractRowColFromParts(parts, startIndex, previousPosition = null) {
         return extractRowColFromPartsUI({
             parts,
-            startIndex
+            startIndex,
+            previousPosition
         });
+    }
+
+    function updatePreviousPositionContext(parseContext, row, col, length) {
+        if (!parseContext || typeof row !== 'number' || typeof col !== 'number') {
+            return;
+        }
+
+        parseContext.previousPosition = {
+            row,
+            col,
+            length: Number.isFinite(length) ? length : 0
+        };
     }
     
     // Helper: Parse DDS type specification (e.g., "10A", "15S", "7P", "3Y", "2F")
@@ -1398,7 +1415,62 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     
     // extractColorWithIndicator removed - COLOR now uses unified indicator system in scanAttributeLinesAfterField
     // extractCheckOptions and applyCheckOptionsFromCodes removed - CHECK now uses unified indicator system like COLOR/DFTVAL
-    
+
+    // When opening a document in edit mode, convert any relative +NN coordinates to absolute
+    // values so that the edit pipeline (findFieldBlockInDds, updateFieldInDds, etc.) can locate
+    // and update fields reliably by their absolute row/col.
+    // Returns { content: string, modified: boolean }.
+    function resolveRelativeCoordinatesInDocument(content) {
+        const lines = content.split('\n');
+        const posContext = { previousPosition: null };
+        let modified = false;
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const trimmed = line.trim();
+
+            if (!trimmed || trimmed.startsWith('A*')) { continue; }
+
+            // Reset position context at each record boundary
+            if (/^A\s+R\s+\w+/.test(trimmed)) {
+                posContext.previousPosition = null;
+                continue;
+            }
+
+            if (line.length <= 5 || line[5] !== 'A') { continue; }
+
+            // DDS columnar format: coordinates live in fixed columns.
+            // We only inspect the coordinate region to avoid false positives in keyword args.
+            const coordArea = line.length > 38 ? line.substring(38, 46) : '';
+            const hasRelativeToken = /\+\d{1,3}/.test(coordArea);
+
+            if (!hasRelativeToken) {
+                // No relative token in coord area: parse to keep posContext current
+                parseFieldLineForDesigner(line, posContext);
+                continue;
+            }
+
+            // Parse with context to resolve absolute coordinates
+            const field = parseFieldLineForDesigner(line, posContext);
+            if (!field) { continue; }
+
+            // Write absolute coordinates into the fixed DDS coordinate slot to keep
+            // all fields aligned in the same column layout.
+            // Fixed slot used elsewhere in parser: line.substring(39, 44)
+            const paddedLine = line.length < 44 ? line.padEnd(44, ' ') : line;
+            const fixedCoords = field.row.toString().padStart(2, ' ') + field.col.toString().padStart(3, ' ');
+            const newLine = paddedLine.substring(0, 39) + fixedCoords + paddedLine.substring(44);
+
+            if (newLine !== line) {
+                lines[i] = newLine;
+                modified = true;
+                Logger.parse(`Resolved relative coordinate on line ${i + 1}: "${trimmed.substring(0, 60)}"`);
+            }
+        }
+
+        return { content: lines.join('\n'), modified };
+    }
+
     // Generate HTML for a single field
     // windowOffset: optional {row, col} to adjust position for WINDOW-relative fields
     function generateFieldHtml(field, windowOffset = null) {
@@ -1750,9 +1822,11 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             for (let i = startSearch; i < endSearch; i++) {
                 const line = lines[i];
                 // Search in content after column 18 to handle indicators in columns 7-18
-                // Format: "     A  03                            19 11'TEXT'"
+                // Format: "     A  03                            19 11'TEXT'" (spaced)
+                // Format: "     A                                      1911'TEXT'" (compact)
                 const contentAfter18 = line.substring(18);
-                const constMatch = contentAfter18.match(/(\d{1,2})\s+(\d{1,2})'/);
+                const constMatch = contentAfter18.match(/(\d{1,2})\s+(\d{1,3})'/) ||
+                                    contentAfter18.match(/^(\d{1,2})(\d{3})'/);
                 
                 if (constMatch && constMatch[1] === rowStr && constMatch[2] === colStr) {
                     fieldLineIndex = i;
@@ -2174,7 +2248,8 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 
                 // Search in content after column 18
                 const contentAfter18 = line.substring(18);
-                const constMatch = contentAfter18.match(/(\d{1,2})\s+(\d{1,2})'/);
+                const constMatch = contentAfter18.match(/(\d{1,2})\s+(\d{1,3})'/) ||
+                                    contentAfter18.match(/^(\d{1,2})(\d{3})'/);
                 
                 if (constMatch && constMatch[1] === rowStr && constMatch[2] === colStr) {
                     // Verify value prefix after first quote
@@ -3298,6 +3373,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         let inTargetRecord = false;
         let currentRecordName = null;
         let windowDimensions = null;
+        const parsePositionContext = { previousPosition: null };
         
         lines.forEach((line, index) => {
             const trimmedLine = line.trim();
@@ -3323,6 +3399,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
 					
 					// Check if this is our target record
 					inTargetRecord = (currentRecord === currentRecordName);
+                    parsePositionContext.previousPosition = null;
 					Logger.parse(`Found record: ${currentRecordName}, target: ${inTargetRecord}, looking for: ${currentRecord}`);
 				}
 				return;
@@ -3365,7 +3442,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 
                 const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
                 const isFieldLine = line.length > 6 && line[5] === 'A' && 
-                    (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) &&
+                    (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /(^|\s)\+\d{1,3}(\s|$)/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) &&
                     !isKeywordOnlyLine && !isAttributeOnlyLine &&
                     !trimmedLine.includes('WINDOW('); // Exclude WINDOW dimension lines
                 
@@ -3390,7 +3467,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         // Note: linesConsumed is not used here as Designer doesn't need skipNextLines
                     }
                     
-                    const field = parseFieldLineForDesigner(fullLine);
+                    const field = parseFieldLineForDesigner(fullLine, parsePositionContext);
                     if (field) {
                         field.recordName = currentRecordName; // Track which record this field belongs to
                         
@@ -3494,6 +3571,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             // Parse fields from companion record
             let inCompanionRecord = false;
             let companionRecordName = null;
+            const companionParsePositionContext = { previousPosition: null };
             
             lines.forEach((line, index) => {
                 const trimmedLine = line.trim();
@@ -3509,6 +3587,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                     if (match) {
                         companionRecordName = match[1];
                         inCompanionRecord = (subfileRel.companionRecord === companionRecordName);
+                        companionParsePositionContext.previousPosition = null;
                         if (inCompanionRecord) {
                             Logger.parse(`Found companion record: ${companionRecordName}`);
                         }
@@ -3538,7 +3617,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                     
                     const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
                     const isFieldLine = trimmedLine.startsWith('A ') &&
-                        (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) &&
+                        (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /(^|\s)\+\d{1,3}(\s|$)/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) &&
                         !isKeywordOnlyLine && !isAttributeOnlyLine &&
                         !trimmedLine.includes('WINDOW(');
                     
@@ -3559,7 +3638,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                             fullLine = result.fullLine;
                         }
                         
-                        const field = parseFieldLineForDesigner(fullLine);
+                        const field = parseFieldLineForDesigner(fullLine, companionParsePositionContext);
                         if (field) {
                             field.isBackgroundRecord = true;  // Mark as companion/background record
                             field.recordName = companionRecordName;
@@ -3826,7 +3905,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     // Para cada campo encontrado llama a scanAttributeLinesAfterField para obtener
     // atributos (COLOR,DSPATR,CHECK,DFTVAL) e indicadores de las líneas siguientes; y lo
     // agrega al array fields[]
-    function parseFieldLineForDesigner(line) {
+    function parseFieldLineForDesigner(line, parseContext = null) {
         // DDS is columnar format - parse by exact column positions
         // Example: "     A            FLD003        51A  O  5 19"
         //          "     A            W_DSP_EST      1A  O  8 19"
@@ -3897,6 +3976,8 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 fieldObj._inlineIsOr = keywordHasOrPrefix;
                 Logger.debug(`Stored ${inlineIndicators.length} inline indicators for keyword ${keywordName}, isOr=${keywordHasOrPrefix}`);
             }
+
+            updatePreviousPositionContext(parseContext, row, col, 0);
             
             return fieldObj;
         }
@@ -3980,6 +4061,8 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                     fieldObj._inlineIsOr = constHasOrPrefix;
                     Logger.debug(`Stored ${constInlineIndicators.length} inline indicators for constant ${constantName}, isOr=${constHasOrPrefix}`);
                 }
+
+                updatePreviousPositionContext(parseContext, row, col, text.length);
                 
                 return fieldObj;
             }
@@ -4060,7 +4143,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         Logger.stats(`Mapped typeChar="${typeInfo.typeChar}" hasDecimals=${usageInfo.hasDecimals} to dataType="${typeInfo.dataType}"`);
         
         // Extract row and col using helper (adjust index by partIndex for indicators)
-        let positionInfo = extractRowColFromParts(parts, usageInfo.nextIndex);
+        let positionInfo = extractRowColFromParts(parts, usageInfo.nextIndex, parseContext ? parseContext.previousPosition : null);
         if (!positionInfo) {
             const fixedPositionArea = line.length > 39 ? line.substring(39) : '';
             const fixedPositionMatch = fixedPositionArea.match(/^\s*([ 0-9]{2})([ 0-9]{3})/);
@@ -4227,6 +4310,8 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             fieldObj.shift = shift;
             Logger.debug(`Extracted shift="${fieldObj.shift}" from typeSpec="${typeSpec}"`);
         }
+
+        updatePreviousPositionContext(parseContext, fieldObj.row, fieldObj.col, fieldObj.length);
         
         return fieldObj;
     }
@@ -4298,10 +4383,22 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                     Logger.debug('Skipping source echo re-parse to preserve editor responsiveness/history');
                     break;
                 }
+
+                // When opening in edit mode, convert relative +NN coordinates to absolute values.
+                // This matches Rational Developer's behavior and ensures that all edit operations
+                // (drag and drop, attribute changes, etc.) can reliably locate fields by their
+                // absolute row/col in the DDS source.
+                if (!isReadOnly) {
+                    const resolved = resolveRelativeCoordinatesInDocument(currentDocument);
+                    if (resolved.modified) {
+                        currentDocument = resolved.content;
+                        Logger.parse('Converted relative (+NN) coordinates to absolute in document');
+                    }
+                }
                 
                 // Parse fields with current record filter to maintain view consistency
                 // This will automatically re-render the designer view (clearing and redrawing all fields)
-                parseDspfFields(message.content);
+                parseDspfFields(currentDocument);
                 
                 // Restore the view if navigation requested it
                 if (viewToRestore) {
@@ -5183,6 +5280,7 @@ try {
         if (typeof attributeContentRegex !== 'undefined') {window.__TESTS.attributeContentRegex = attributeContentRegex;}
         if (typeof ATTRIBUTE_KEYWORDS_SET !== 'undefined') {window.__TESTS.ATTRIBUTE_KEYWORDS_SET = ATTRIBUTE_KEYWORDS_SET;}
         if (typeof scanIndicatorsBackward !== 'undefined') {window.__TESTS.scanIndicatorsBackward = scanIndicatorsBackward;}
+        if (typeof resolveRelativeCoordinatesInDocument !== 'undefined') {window.__TESTS.resolveRelativeCoordinatesInDocument = resolveRelativeCoordinatesInDocument;}
         window.__TESTS.setCurrentDocument = __setCurrentDocumentForTests;
         window.__TESTS.getCurrentDocument = __getCurrentDocumentForTests;
         window.__TESTS.setCurrentRecord = __setCurrentRecordForTests;
@@ -5203,6 +5301,7 @@ if (typeof module !== 'undefined' && module.exports) {
         if (typeof attributeContentRegex !== 'undefined') {module.exports.attributeContentRegex = attributeContentRegex;}
         if (typeof ATTRIBUTE_KEYWORDS_SET !== 'undefined') {module.exports.ATTRIBUTE_KEYWORDS_SET = ATTRIBUTE_KEYWORDS_SET;}
         if (typeof scanIndicatorsBackward !== 'undefined') {module.exports.scanIndicatorsBackward = scanIndicatorsBackward;}
+        if (typeof resolveRelativeCoordinatesInDocument !== 'undefined') {module.exports.resolveRelativeCoordinatesInDocument = resolveRelativeCoordinatesInDocument;}
         module.exports.setCurrentDocument = __setCurrentDocumentForTests;
         module.exports.getCurrentDocument = __getCurrentDocumentForTests;
         module.exports.setCurrentRecord = __setCurrentRecordForTests;
