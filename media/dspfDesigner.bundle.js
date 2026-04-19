@@ -700,22 +700,31 @@ __webpack_require__.r(__webpack_exports__);
         
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
-            
-            // Check if we're entering the target record
-            if (line.includes(`R ${recordName}`) || line.includes(`R  ${recordName}`)) {
-                inTargetRecord = true;
+            const trimmedLine = line.trim();
+
+            // Skip comments/empty lines (DDS comment style: A* in fixed columns)
+            const isComment = (line.length > 6 && line[5] === 'A' && line[6] === '*') || trimmedLine.startsWith('A*');
+            if (!trimmedLine || isComment) {
                 continue;
             }
-            
-            // Stop when we hit the next record
-            if (inTargetRecord && line.match(/^\s*A\s+R\s+\w+/)) {
-                break;
+
+            // Track record boundaries using explicit record definitions only
+            const recordMatch = trimmedLine.match(/^A\s+R\s+(\w+)/);
+            if (recordMatch) {
+                const foundRecord = recordMatch[1];
+
+                if (inTargetRecord && foundRecord !== recordName) {
+                    break;
+                }
+
+                inTargetRecord = (foundRecord === recordName);
+                continue;
             }
-            
+
             // Look for WINDOW keywords
-            if (inTargetRecord && line.includes('WINDOW(')) {
+            if (inTargetRecord && trimmedLine.includes('WINDOW(')) {
                 // Check if it's a reference to another window record (no digits, just a name)
-                const windowRefMatch = line.match(/WINDOW\(([A-Z0-9_]+)\)/);
+                const windowRefMatch = trimmedLine.match(/WINDOW\(([A-Z0-9_]+)\)/);
                 if (windowRefMatch && !/\d+\s+\d+/.test(windowRefMatch[0])) {
                     // It's a reference to another WINDOW record
                     const referencedRecord = windowRefMatch[1];
@@ -735,7 +744,7 @@ __webpack_require__.r(__webpack_exports__);
                 }
                 
                 // Otherwise, it's direct coordinates
-                const windowMatch = line.match(/WINDOW\((\d+)\s+(\d+)\s+(\d+)\s+(\d+)\)/);
+                const windowMatch = trimmedLine.match(/WINDOW\((\d+)\s+(\d+)\s+(\d+)\s+(\d+)\)/);
                 if (windowMatch) {
                     const dimensions = {
                         row: parseInt(windowMatch[1]),
@@ -748,9 +757,9 @@ __webpack_require__.r(__webpack_exports__);
                     result.isReference = false;
                     
                     // Check for explicit display size marker
-                    if (line.includes('*DS3')) {
+                    if (trimmedLine.includes('*DS3')) {
                         result.ds3 = dimensions;
-                    } else if (line.includes('*DS4')) {
+                    } else if (trimmedLine.includes('*DS4')) {
                         result.ds4 = dimensions;
                     } else if (displayConfig.singleSize) {
                         // No marker, but single size mode - assign to both sizes
@@ -5375,6 +5384,7 @@ try {
         if (typeof _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET !== 'undefined') {window.__TESTS.ATTRIBUTE_KEYWORDS_SET = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET;}
         if (typeof scanIndicatorsBackward !== 'undefined') {window.__TESTS.scanIndicatorsBackward = scanIndicatorsBackward;}
         if (typeof resolveRelativeCoordinatesInDocument !== 'undefined') {window.__TESTS.resolveRelativeCoordinatesInDocument = resolveRelativeCoordinatesInDocument;}
+        if (typeof getWindowDimensions !== 'undefined') {window.__TESTS.getWindowDimensions = getWindowDimensions;}
         window.__TESTS.setCurrentDocument = __setCurrentDocumentForTests;
         window.__TESTS.getCurrentDocument = __getCurrentDocumentForTests;
         window.__TESTS.setCurrentRecord = __setCurrentRecordForTests;
@@ -5396,6 +5406,7 @@ if ( true && module.exports) {
         if (typeof _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET !== 'undefined') {module.exports.ATTRIBUTE_KEYWORDS_SET = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.ATTRIBUTE_KEYWORDS_SET;}
         if (typeof scanIndicatorsBackward !== 'undefined') {module.exports.scanIndicatorsBackward = scanIndicatorsBackward;}
         if (typeof resolveRelativeCoordinatesInDocument !== 'undefined') {module.exports.resolveRelativeCoordinatesInDocument = resolveRelativeCoordinatesInDocument;}
+        if (typeof getWindowDimensions !== 'undefined') {module.exports.getWindowDimensions = getWindowDimensions;}
         module.exports.setCurrentDocument = __setCurrentDocumentForTests;
         module.exports.getCurrentDocument = __getCurrentDocumentForTests;
         module.exports.setCurrentRecord = __setCurrentRecordForTests;

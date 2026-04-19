@@ -8,7 +8,8 @@ const tests = [
     'run-sfldspctl-indicator-isolation.js',
     'run-sfldspctl-reinsert-on-enable.js',
     'run-cntfld-regression.js',
-    'run-relative-plus-normalization.js'
+    'run-relative-plus-normalization.js',
+    'run-window-comment-ignore.js'
 ];
 
 function runOne(scriptName) {
