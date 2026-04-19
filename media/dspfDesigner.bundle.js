@@ -41029,7 +41029,7 @@ function updatePreviewView(options) {
             <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px;">
                 <label style="margin: 0; color: #cccccc; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;">
                     <input id="preview-indicator-sim-enabled" type="checkbox" ${simulationState.enabled ? 'checked' : ''}>
-                    <span>Simular indicadores (F6)</span>
+                    <span>Condition Work Screen display appear</span>
                 </label>
                 <div id="preview-indicator-list" style="display: flex; flex-wrap: wrap; gap: 8px; ${simulationState.enabled ? '' : 'opacity: 0.45; pointer-events: none;'}">
                     ${availableIndicators.length > 0
