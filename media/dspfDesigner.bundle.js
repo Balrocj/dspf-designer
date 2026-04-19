@@ -411,6 +411,7 @@ __webpack_require__.r(__webpack_exports__);
             renderField,
             renderWindowField,
             getSubfileRelationship,
+            getSflRowSpan,
             getSflpagValue,
             selectField,
             addFieldToDds,
@@ -665,6 +666,14 @@ __webpack_require__.r(__webpack_exports__);
             currentDisplaySize,
             DisplaySizeUtils: _modules_utils_displaySizeUtils_js__WEBPACK_IMPORTED_MODULE_3__.DisplaySizeUtils,
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
+        });
+    }
+
+    function getSflRowSpan(fieldsForSpan, targetRecord, subfileRelationship) {
+        return (0,_modules_ui_subfileControl_js__WEBPACK_IMPORTED_MODULE_31__.getSflRowSpan)({
+            fields: fieldsForSpan,
+            targetRecord,
+            subfileRelationship
         });
     }
     
@@ -3862,9 +3871,10 @@ __webpack_require__.r(__webpack_exports__);
             // Check if this is a SFL or SFLCTL record to determine repetition count
             const subfileRelationship = getSubfileRelationship(currentRecord);
             const sflpagRepeat = subfileRelationship ? getSflpagValue(subfileRelationship.sflctlRecord) : 1;
+            const sflRowSpan = subfileRelationship ? getSflRowSpan(fields, currentRecord, subfileRelationship) : 1;
             
             if (sflpagRepeat > 1) {
-                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.stats(`Subfile detected: Repeating SFL fields ${sflpagRepeat} times (SFLPAG from ${subfileRelationship.sflctlRecord})`);
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.stats(`Subfile detected: Repeating SFL fields ${sflpagRepeat} times (SFLPAG from ${subfileRelationship.sflctlRecord}, row span ${sflRowSpan})`);
             }
             
             // Render fields with repetition if needed
@@ -3889,7 +3899,7 @@ __webpack_require__.r(__webpack_exports__);
                         const visualCopy = {
                             ...field,
                             id: field.id + '_repeat' + repeat,
-                            row: field.row + repeat,
+                            row: field.row + (repeat * sflRowSpan),
                             isVisualCopy: true // Mark as visual copy
                         };
                         
@@ -5385,6 +5395,10 @@ try {
         if (typeof scanIndicatorsBackward !== 'undefined') {window.__TESTS.scanIndicatorsBackward = scanIndicatorsBackward;}
         if (typeof resolveRelativeCoordinatesInDocument !== 'undefined') {window.__TESTS.resolveRelativeCoordinatesInDocument = resolveRelativeCoordinatesInDocument;}
         if (typeof getWindowDimensions !== 'undefined') {window.__TESTS.getWindowDimensions = getWindowDimensions;}
+        if (typeof getSubfileRelationship !== 'undefined') {window.__TESTS.getSubfileRelationship = getSubfileRelationship;}
+        if (typeof getSflpagValue !== 'undefined') {window.__TESTS.getSflpagValue = getSflpagValue;}
+        if (typeof getSflRowSpan !== 'undefined') {window.__TESTS.getSflRowSpan = getSflRowSpan;}
+        if (typeof applySflpagRepetition !== 'undefined') {window.__TESTS.applySflpagRepetition = applySflpagRepetition;}
         window.__TESTS.setCurrentDocument = __setCurrentDocumentForTests;
         window.__TESTS.getCurrentDocument = __getCurrentDocumentForTests;
         window.__TESTS.setCurrentRecord = __setCurrentRecordForTests;
@@ -5407,6 +5421,10 @@ if ( true && module.exports) {
         if (typeof scanIndicatorsBackward !== 'undefined') {module.exports.scanIndicatorsBackward = scanIndicatorsBackward;}
         if (typeof resolveRelativeCoordinatesInDocument !== 'undefined') {module.exports.resolveRelativeCoordinatesInDocument = resolveRelativeCoordinatesInDocument;}
         if (typeof getWindowDimensions !== 'undefined') {module.exports.getWindowDimensions = getWindowDimensions;}
+        if (typeof getSubfileRelationship !== 'undefined') {module.exports.getSubfileRelationship = getSubfileRelationship;}
+        if (typeof getSflpagValue !== 'undefined') {module.exports.getSflpagValue = getSflpagValue;}
+        if (typeof getSflRowSpan !== 'undefined') {module.exports.getSflRowSpan = getSflRowSpan;}
+        if (typeof applySflpagRepetition !== 'undefined') {module.exports.applySflpagRepetition = applySflpagRepetition;}
         module.exports.setCurrentDocument = __setCurrentDocumentForTests;
         module.exports.getCurrentDocument = __getCurrentDocumentForTests;
         module.exports.setCurrentRecord = __setCurrentRecordForTests;
@@ -39200,6 +39218,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   applySflpagRepetition: () => (/* binding */ applySflpagRepetition),
 /* harmony export */   applySubfileControl: () => (/* binding */ applySubfileControl),
+/* harmony export */   getSflRowSpan: () => (/* binding */ getSflRowSpan),
 /* harmony export */   getSflpagValue: () => (/* binding */ getSflpagValue),
 /* harmony export */   getSubfileRelationship: () => (/* binding */ getSubfileRelationship),
 /* harmony export */   loadSubfileControl: () => (/* binding */ loadSubfileControl)
@@ -40091,7 +40110,13 @@ function applySflpagRepetition(options) {
         return fields;
     }
 
-    Logger.debug(`Applying SFLPAG repetition: ${sflpagValue} times for ${targetRecord} (from ${sflctlRecord})`);
+    const sflRowSpan = getSflRowSpan({
+        fields,
+        targetRecord,
+        subfileRelationship
+    });
+
+    Logger.debug(`Applying SFLPAG repetition: ${sflpagValue} times for ${targetRecord} (from ${sflctlRecord}), row span=${sflRowSpan}`);
 
     const originalFields = [...fields];
     const resultFields = [...fields];
@@ -40106,7 +40131,7 @@ function applySflpagRepetition(options) {
             if (shouldRepeat) {
                 const visualCopy = {
                     ...field,
-                    row: field.row + repeat,
+                    row: field.row + (repeat * sflRowSpan),
                     isVisualCopy: true
                 };
                 resultFields.push(visualCopy);
@@ -40115,6 +40140,42 @@ function applySflpagRepetition(options) {
     }
 
     return resultFields;
+}
+
+function getSflRowSpan(options) {
+    const {
+        fields,
+        targetRecord,
+        subfileRelationship
+    } = options;
+
+    if (!subfileRelationship || !Array.isArray(fields) || fields.length === 0) {
+        return 1;
+    }
+
+    const repeatableRows = fields
+        .filter(field => {
+            if (!field || field.isVisualCopy) {
+                return false;
+            }
+
+            return (
+                (targetRecord === subfileRelationship.sflRecord && !field.isBackgroundRecord) ||
+                (targetRecord === subfileRelationship.sflctlRecord && field.isBackgroundRecord)
+            );
+        })
+        .map(field => field.row)
+        .filter(row => Number.isFinite(row));
+
+    if (repeatableRows.length === 0) {
+        return 1;
+    }
+
+    const minRow = Math.min(...repeatableRows);
+    const maxRow = Math.max(...repeatableRows);
+    const span = (maxRow - minRow) + 1;
+
+    return span > 0 ? span : 1;
 }
 
 function getSflpagValue(options) {
@@ -41251,6 +41312,7 @@ function createField({
     renderField,
     renderWindowField,
     getSubfileRelationship,
+    getSflRowSpan,
     getSflpagValue,
     selectField,
     addFieldToDds,
@@ -41381,12 +41443,13 @@ function createField({
         );
 
         if (shouldRepeat) {
+            const sflRowSpan = getSflRowSpan ? getSflRowSpan(fields, currentRecord, subfileRelationship) : 1;
             Logger.debug(`Creating ${sflpagRepeat - 1} visual copies for new field in SFL`);
             for (let repeat = 1; repeat < sflpagRepeat; repeat++) {
                 const visualCopy = {
                     ...field,
                     id: field.id + '_repeat' + repeat,
-                    row: field.row + repeat,
+                    row: field.row + (repeat * sflRowSpan),
                     isVisualCopy: true
                 };
                 if (winDimsForCreate && winDimsForCreate.hasWindow) {

@@ -1,4 +1,4 @@
-import { ColorUtils } from './modules/utils/colorUtils.js';
+﻿import { ColorUtils } from './modules/utils/colorUtils.js';
 import { ScreenCoordinates } from './modules/utils/screenCoordinates.js';
 import { IndicatorUtils } from './modules/utils/indicatorUtils.js';
 import { DisplaySizeUtils } from './modules/utils/displaySizeUtils.js';
@@ -29,7 +29,7 @@ import { setupIndicatorButtons as setupIndicatorButtonsUI } from './modules/ui/i
 import { showFieldProperties as showFieldPropertiesUI } from './modules/ui/showFieldProperties.js';
 import { applyFieldProperties as applyFieldPropertiesUI } from './modules/ui/applyFieldProperties.js';
 import { setupPropertiesTabs as setupPropertiesTabsUI } from './modules/ui/propertiesTabs.js';
-import { loadSubfileControl as loadSubfileControlUI, applySubfileControl as applySubfileControlUI, applySflpagRepetition as applySflpagRepetitionUI, getSflpagValue as getSflpagValueUI, getSubfileRelationship as getSubfileRelationshipUI } from './modules/ui/subfileControl.js';
+import { loadSubfileControl as loadSubfileControlUI, applySubfileControl as applySubfileControlUI, applySflpagRepetition as applySflpagRepetitionUI, getSflRowSpan as getSflRowSpanUI, getSflpagValue as getSflpagValueUI, getSubfileRelationship as getSubfileRelationshipUI } from './modules/ui/subfileControl.js';
 import { loadFunctionKeys as loadFunctionKeysUI, createFunctionKeyRow as createFunctionKeyRowUI, saveFunctionKeys as saveFunctionKeysUI } from './modules/ui/functionKeys.js';
 import { showDeleteConfirmation as showDeleteConfirmationUI, executeDeleteField as executeDeleteFieldUI } from './modules/ui/deleteConfirmation.js';
 import { updatePreviewView as updatePreviewViewUI } from './modules/ui/previewView.js';
@@ -317,6 +317,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             renderField,
             renderWindowField,
             getSubfileRelationship,
+            getSflRowSpan,
             getSflpagValue,
             selectField,
             addFieldToDds,
@@ -571,6 +572,14 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             currentDisplaySize,
             DisplaySizeUtils,
             Logger
+        });
+    }
+
+    function getSflRowSpan(fieldsForSpan, targetRecord, subfileRelationship) {
+        return getSflRowSpanUI({
+            fields: fieldsForSpan,
+            targetRecord,
+            subfileRelationship
         });
     }
     
@@ -3768,9 +3777,10 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             // Check if this is a SFL or SFLCTL record to determine repetition count
             const subfileRelationship = getSubfileRelationship(currentRecord);
             const sflpagRepeat = subfileRelationship ? getSflpagValue(subfileRelationship.sflctlRecord) : 1;
+            const sflRowSpan = subfileRelationship ? getSflRowSpan(fields, currentRecord, subfileRelationship) : 1;
             
             if (sflpagRepeat > 1) {
-                Logger.stats(`Subfile detected: Repeating SFL fields ${sflpagRepeat} times (SFLPAG from ${subfileRelationship.sflctlRecord})`);
+                Logger.stats(`Subfile detected: Repeating SFL fields ${sflpagRepeat} times (SFLPAG from ${subfileRelationship.sflctlRecord}, row span ${sflRowSpan})`);
             }
             
             // Render fields with repetition if needed
@@ -3795,7 +3805,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         const visualCopy = {
                             ...field,
                             id: field.id + '_repeat' + repeat,
-                            row: field.row + repeat,
+                            row: field.row + (repeat * sflRowSpan),
                             isVisualCopy: true // Mark as visual copy
                         };
                         
@@ -5291,6 +5301,10 @@ try {
         if (typeof scanIndicatorsBackward !== 'undefined') {window.__TESTS.scanIndicatorsBackward = scanIndicatorsBackward;}
         if (typeof resolveRelativeCoordinatesInDocument !== 'undefined') {window.__TESTS.resolveRelativeCoordinatesInDocument = resolveRelativeCoordinatesInDocument;}
         if (typeof getWindowDimensions !== 'undefined') {window.__TESTS.getWindowDimensions = getWindowDimensions;}
+        if (typeof getSubfileRelationship !== 'undefined') {window.__TESTS.getSubfileRelationship = getSubfileRelationship;}
+        if (typeof getSflpagValue !== 'undefined') {window.__TESTS.getSflpagValue = getSflpagValue;}
+        if (typeof getSflRowSpan !== 'undefined') {window.__TESTS.getSflRowSpan = getSflRowSpan;}
+        if (typeof applySflpagRepetition !== 'undefined') {window.__TESTS.applySflpagRepetition = applySflpagRepetition;}
         window.__TESTS.setCurrentDocument = __setCurrentDocumentForTests;
         window.__TESTS.getCurrentDocument = __getCurrentDocumentForTests;
         window.__TESTS.setCurrentRecord = __setCurrentRecordForTests;
@@ -5313,6 +5327,10 @@ if (typeof module !== 'undefined' && module.exports) {
         if (typeof scanIndicatorsBackward !== 'undefined') {module.exports.scanIndicatorsBackward = scanIndicatorsBackward;}
         if (typeof resolveRelativeCoordinatesInDocument !== 'undefined') {module.exports.resolveRelativeCoordinatesInDocument = resolveRelativeCoordinatesInDocument;}
         if (typeof getWindowDimensions !== 'undefined') {module.exports.getWindowDimensions = getWindowDimensions;}
+        if (typeof getSubfileRelationship !== 'undefined') {module.exports.getSubfileRelationship = getSubfileRelationship;}
+        if (typeof getSflpagValue !== 'undefined') {module.exports.getSflpagValue = getSflpagValue;}
+        if (typeof getSflRowSpan !== 'undefined') {module.exports.getSflRowSpan = getSflRowSpan;}
+        if (typeof applySflpagRepetition !== 'undefined') {module.exports.applySflpagRepetition = applySflpagRepetition;}
         module.exports.setCurrentDocument = __setCurrentDocumentForTests;
         module.exports.getCurrentDocument = __getCurrentDocumentForTests;
         module.exports.setCurrentRecord = __setCurrentRecordForTests;

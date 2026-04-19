@@ -14,6 +14,7 @@ export function createField({
     renderField,
     renderWindowField,
     getSubfileRelationship,
+    getSflRowSpan,
     getSflpagValue,
     selectField,
     addFieldToDds,
@@ -144,12 +145,13 @@ export function createField({
         );
 
         if (shouldRepeat) {
+            const sflRowSpan = getSflRowSpan ? getSflRowSpan(fields, currentRecord, subfileRelationship) : 1;
             Logger.debug(`Creating ${sflpagRepeat - 1} visual copies for new field in SFL`);
             for (let repeat = 1; repeat < sflpagRepeat; repeat++) {
                 const visualCopy = {
                     ...field,
                     id: field.id + '_repeat' + repeat,
-                    row: field.row + repeat,
+                    row: field.row + (repeat * sflRowSpan),
                     isVisualCopy: true
                 };
                 if (winDimsForCreate && winDimsForCreate.hasWindow) {

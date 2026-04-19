@@ -885,7 +885,13 @@ export function applySflpagRepetition(options) {
         return fields;
     }
 
-    Logger.debug(`Applying SFLPAG repetition: ${sflpagValue} times for ${targetRecord} (from ${sflctlRecord})`);
+    const sflRowSpan = getSflRowSpan({
+        fields,
+        targetRecord,
+        subfileRelationship
+    });
+
+    Logger.debug(`Applying SFLPAG repetition: ${sflpagValue} times for ${targetRecord} (from ${sflctlRecord}), row span=${sflRowSpan}`);
 
     const originalFields = [...fields];
     const resultFields = [...fields];
@@ -900,7 +906,7 @@ export function applySflpagRepetition(options) {
             if (shouldRepeat) {
                 const visualCopy = {
                     ...field,
-                    row: field.row + repeat,
+                    row: field.row + (repeat * sflRowSpan),
                     isVisualCopy: true
                 };
                 resultFields.push(visualCopy);
@@ -909,6 +915,42 @@ export function applySflpagRepetition(options) {
     }
 
     return resultFields;
+}
+
+export function getSflRowSpan(options) {
+    const {
+        fields,
+        targetRecord,
+        subfileRelationship
+    } = options;
+
+    if (!subfileRelationship || !Array.isArray(fields) || fields.length === 0) {
+        return 1;
+    }
+
+    const repeatableRows = fields
+        .filter(field => {
+            if (!field || field.isVisualCopy) {
+                return false;
+            }
+
+            return (
+                (targetRecord === subfileRelationship.sflRecord && !field.isBackgroundRecord) ||
+                (targetRecord === subfileRelationship.sflctlRecord && field.isBackgroundRecord)
+            );
+        })
+        .map(field => field.row)
+        .filter(row => Number.isFinite(row));
+
+    if (repeatableRows.length === 0) {
+        return 1;
+    }
+
+    const minRow = Math.min(...repeatableRows);
+    const maxRow = Math.max(...repeatableRows);
+    const span = (maxRow - minRow) + 1;
+
+    return span > 0 ? span : 1;
 }
 
 export function getSflpagValue(options) {
