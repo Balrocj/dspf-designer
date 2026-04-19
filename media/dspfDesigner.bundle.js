@@ -709,7 +709,7 @@ __webpack_require__.r(__webpack_exports__);
             }
 
             // Track record boundaries using explicit record definitions only
-            const recordMatch = trimmedLine.match(/^A\s+R\s+(\w+)/);
+            const recordMatch = trimmedLine.match(/^.{0,5}A\s+R\s+(\w+)/);
             if (recordMatch) {
                 const foundRecord = recordMatch[1];
 
@@ -1178,7 +1178,7 @@ __webpack_require__.r(__webpack_exports__);
             }
             
 			// Check for record definition line
-			if (trimmedLine.match(/^A\s+R\s+\w+/)) {
+			if (trimmedLine.match(/^.{0,5}A\s+R\s+\w+/)) {
 				const match = trimmedLine.match(/R\s+(\w+)/);
 				if (match) {
 					currentRecordName = match[1];
@@ -1335,7 +1335,7 @@ __webpack_require__.r(__webpack_exports__);
                     }
                     
                     // Check for record definition start
-                    if (trimmedLine.match(/^A\s+R\s+\w+/)) {
+                    if (trimmedLine.match(/^.{0,5}A\s+R\s+\w+/)) {
                         const match = trimmedLine.match(/R\s+(\w+)/);
                         if (match) {
                             companionRecordName = match[1];
@@ -1535,7 +1535,7 @@ __webpack_require__.r(__webpack_exports__);
             if (!trimmed || trimmed.startsWith('A*')) { continue; }
 
             // Reset position context at each record boundary
-            if (/^A\s+R\s+\w+/.test(trimmed)) {
+            if (/^.{0,5}A\s+R\s+\w+/.test(trimmed)) {
                 posContext.previousPosition = null;
                 continue;
             }
@@ -1665,8 +1665,8 @@ __webpack_require__.r(__webpack_exports__);
             const trimmedLine = lines[i].trim();
             
             // Check for record definition: A          R RECORDNAME
-            if (trimmedLine.match(/^A\s+R\s+(\w+)/)) {
-                const match = trimmedLine.match(/^A\s+R\s+(\w+)/);
+            if (trimmedLine.match(/^.{0,5}A\s+R\s+(\w+)/)) {
+                const match = trimmedLine.match(/^.{0,5}A\s+R\s+(\w+)/);
                 if (match) {
                     const recordName = match[1];
                     
@@ -1881,11 +1881,11 @@ __webpack_require__.r(__webpack_exports__);
             if (targetRecord) {
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i];
-                    const recordMatch = line.match(/^\s*A\s+R\s+(\w+)/);
+                    const recordMatch = line.match(/^.{0,5}A\s+R\s+(\w+)/);
                     if (recordMatch && recordMatch[1] === targetRecord) {
                         recordStartLine = i;
                     }
-                    if (recordStartLine >= 0 && i > recordStartLine && line.match(/^\s*A\s+R\s+\w+/)) {
+                    if (recordStartLine >= 0 && i > recordStartLine && line.match(/^.{0,5}A\s+R\s+\w+/)) {
                         recordEndLine = i;
                         break;
                     }
@@ -1974,7 +1974,7 @@ __webpack_require__.r(__webpack_exports__);
             
             // Check if this is a different field/record/constant definition
             const hasConstant = prevTrim.match(/\d+\s+\d+'/);
-            const isRecordDef = prevTrim.match(/^A\s+R\s+\w+/);
+            const isRecordDef = prevTrim.match(/^.{0,5}A\s+R\s+\w+/);
             const hasFieldName = prevLine.length >= 28 && /^[A-Z_][A-Z0-9_]*$/i.test(prevLine.substring(18, 28).trim());
             
             if (isRecordDef || hasConstant || hasFieldName) {
@@ -2050,7 +2050,7 @@ __webpack_require__.r(__webpack_exports__);
             
             // Check if line has a field/constant/record definition
             const hasConstant = nextTrim.match(/\d+\s+\d+'/);
-            const isRecordDef = nextTrim.match(/^A\s+R\s+\w+/);
+            const isRecordDef = nextTrim.match(/^.{0,5}A\s+R\s+\w+/);
             
             if (isRecordDef || hasConstant || parsedNextKeyword) {
                 break;
@@ -2130,13 +2130,13 @@ __webpack_require__.r(__webpack_exports__);
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
                 //Primero busca el número de línea del record que contiene el campo
-                const recordMatch = line.match(/^\s*A\s+R\s+(\w+)/);
+                const recordMatch = line.match(/^.{0,5}A\s+R\s+(\w+)/);
                 if (recordMatch && recordMatch[1] === targetRecord) {
                     recordStartLine = i;
                     _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Found record start at line', i + 1);
                 }
                 // Check if we found a different record after finding ours
-                if (recordStartLine >= 0 && i > recordStartLine && line.match(/^\s*A\s+R\s+\w+/)) {
+                if (recordStartLine >= 0 && i > recordStartLine && line.match(/^.{0,5}A\s+R\s+\w+/)) {
                     recordEndLine = i;
                     _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Found record end at line', i);
                     break;
@@ -2294,7 +2294,7 @@ __webpack_require__.r(__webpack_exports__);
                         
                         // Check if line has a field/constant/record definition
                         const hasConstant = nextTrim.match(/\d+\s+\d+'/);
-                        const isRecordDef = nextTrim.match(/^A\s+R\s+\w+/);
+                        const isRecordDef = nextTrim.match(/^.{0,5}A\s+R\s+\w+/);
                         
                         if (isRecordDef || hasConstant || parsedNextKeyword) {
                             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: found record def or constant`);
@@ -2370,7 +2370,7 @@ __webpack_require__.r(__webpack_exports__);
                                     const cont = lines[j];
                                     const contTrim = cont.trim();
                                     // Stop at record header or new element
-                                    const isRecordHeader = /^A\s+R\s+\w+/.test(contTrim);
+                                    const isRecordHeader = /^.{0,5}A\s+R\s+\w+/.test(contTrim);
                                     const isNewConstant = /\d+\s+\d+'/.test(contTrim);
                                     const isNewField = /\b[A-Z][A-Z0-9_]{2,}\s+\d+[A-Z]/i.test(contTrim);
                                     if (isRecordHeader || isNewConstant || isNewField) {break;}
@@ -2461,7 +2461,7 @@ __webpack_require__.r(__webpack_exports__);
                                 
                                 // Check if line has a field/constant/record definition
                                 const hasConstant = nextTrim.match(/\d+\s+\d+'/);
-                                const isRecordDef = nextTrim.match(/^A\s+R\s+\w+/);
+                                const isRecordDef = nextTrim.match(/^.{0,5}A\s+R\s+\w+/);
                                 
                                 if (isRecordDef || hasConstant) {
                                     _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`   Stopping: found record def or constant`);
@@ -2634,7 +2634,7 @@ __webpack_require__.r(__webpack_exports__);
                         
                         // Check if line has a field/constant/record definition
                         const hasConstant = nextTrim.match(/\d+\s+\d+'/);
-                        const isRecordDef = nextTrim.match(/^A\s+R\s+\w+/);
+                        const isRecordDef = nextTrim.match(/^.{0,5}A\s+R\s+\w+/);
                         
                         // If there's a record definition or constant, stop
                         if (isRecordDef || hasConstant) {
@@ -2736,14 +2736,14 @@ __webpack_require__.r(__webpack_exports__);
                 const line = lines[i];
                 // Check if this is the start of our record (exact match, not just includes)
                 // Match: "     A          R SUBFILE" but not "     A          R PANTALLA  SFLCTL(SUBFILE)"
-                const recordMatch = line.match(/^\s*A\s+R\s+(\w+)/);
+                const recordMatch = line.match(/^.{0,5}A\s+R\s+(\w+)/);
                 if (recordMatch && recordMatch[1] === targetRecord) {
                     recordStartLine = i;
                     _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Found record start at line', i + 1);
                     // Continue to find the end
                 }
                 // Check if we found a different record after finding ours
-                if (recordStartLine >= 0 && i > recordStartLine && line.match(/^\s*A\s+R\s+\w+/)) {
+                if (recordStartLine >= 0 && i > recordStartLine && line.match(/^.{0,5}A\s+R\s+\w+/)) {
                     recordEndLine = i;
                     _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Found record end at line', i);
                     break;
@@ -3492,8 +3492,8 @@ __webpack_require__.r(__webpack_exports__);
             }
             
 			// Check for record definition start
-			if (trimmedLine.match(/^A\s+R\s+\w+/)) {
-				const match = trimmedLine.match(/^A\s+R\s+(\w+)/);
+			if (trimmedLine.match(/^.{0,5}A\s+R\s+\w+/)) {
+				const match = trimmedLine.match(/^.{0,5}A\s+R\s+(\w+)/);
 				if (match) {
 					currentRecordName = match[1];
 					// Don't auto-change currentRecord during normal parsing
@@ -3685,8 +3685,8 @@ __webpack_require__.r(__webpack_exports__);
                 }
                 
                 // Check for record definition start
-                if (trimmedLine.match(/^A\s+R\s+\w+/)) {
-                    const match = trimmedLine.match(/^A\s+R\s+(\w+)/);
+                if (trimmedLine.match(/^.{0,5}A\s+R\s+\w+/)) {
+                    const match = trimmedLine.match(/^.{0,5}A\s+R\s+(\w+)/);
                     if (match) {
                         companionRecordName = match[1];
                         inCompanionRecord = (subfileRel.companionRecord === companionRecordName);
@@ -3945,7 +3945,7 @@ __webpack_require__.r(__webpack_exports__);
         let nextRecordLineIndex = lines.length; // Default: search until end
         
         // Find the next record definition to limit search scope
-        const nextRecordRegex = /^\s*A\s+R\s+\w+/;
+        const nextRecordRegex = /^.{0,5}A\s+R\s+\w+/;
         for (let i = recordLineIndex + 1; i < lines.length; i++) {
             if (nextRecordRegex.test(lines[i])) {
                 nextRecordLineIndex = i;

@@ -5,7 +5,8 @@ All notable changes to the "dspf-designer" extension will be documented in this 
 ## [2.0.2] - 2026-04-18
 
 ### 🐛 Fixed
-
+- The regular expression was modified to ignore comments between columns 1 and 5.
+- The regular expression was modified to not read the linea if it contains a comment in column 6.
 
 ## [2.0.1] - 2026-04-01
 

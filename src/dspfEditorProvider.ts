@@ -818,8 +818,8 @@ import * as path from 'path';
 			const line = lines[i].trim();
 			
 			// Look for record format declarations: A          R RECORDNAME
-			if (line.match(/^A\s+R\s+\w+/)) {
-				const match = line.match(/^A\s+R\s+(\w+)(.*)$/);
+			if (line.match(/^.{0,5}A\s+R\s+\w+/)) {
+				const match = line.match(/^.{0,5}A\s+R\s+(\w+)(.*)$/);
 				if (match) {
 					const recordName = match[1];
 					let attributes = match[2].trim();
@@ -827,7 +827,7 @@ import * as path from 'path';
 					// Find the end of this record (next record or end of file)
 					let lineEnd = lines.length - 1;
 					for (let j = i + 1; j < lines.length; j++) {
-						if (lines[j].trim().match(/^A\s+R\s+\w+/)) {
+						if (lines[j].trim().match(/^.{0,5}A\s+R\s+\w+/)) {
 							lineEnd = j - 1;
 							break;
 						}
