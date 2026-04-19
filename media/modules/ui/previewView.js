@@ -13,6 +13,10 @@ export function updatePreviewView(options) {
         getCurrentRecord,
         getCurrentDisplaySize,
         setCurrentDisplaySize,
+        getIndicatorSimulationState,
+        setIndicatorSimulationEnabled,
+        setPreviewIndicatorActive,
+        getPreviewSimulatedField,
         applyDefaultZoomForDisplaySize,
         updatePreviewView: updatePreviewViewHandler
     } = options;
@@ -23,11 +27,75 @@ export function updatePreviewView(options) {
     const currentDocument = getCurrentDocument();
     const currentRecord = getCurrentRecord();
     const currentDisplaySize = getCurrentDisplaySize();
+    const simulationState = getIndicatorSimulationState ? getIndicatorSimulationState() : { enabled: false, activeIndicators: [] };
 
     const parsedScreen = parseDspfForPreview(currentDocument, currentRecord);
 
+    const collectIndicatorsFromData = (indicatorData, bucket) => {
+        if (!indicatorData) {
+            return;
+        }
+
+        if (Array.isArray(indicatorData)) {
+            indicatorData.forEach(ind => {
+                if (ind && ind.number) {
+                    bucket.add(String(ind.number).padStart(2, '0'));
+                }
+            });
+            return;
+        }
+
+        if (Array.isArray(indicatorData.groups)) {
+            indicatorData.groups.forEach(group => {
+                const indicators = Array.isArray(group?.indicators) ? group.indicators : [];
+                indicators.forEach(ind => {
+                    if (ind && ind.number) {
+                        bucket.add(String(ind.number).padStart(2, '0'));
+                    }
+                });
+            });
+        }
+    };
+
+    const availableIndicatorsSet = new Set();
+    parsedScreen.fields.forEach(field => {
+        collectIndicatorsFromData(field.indicators, availableIndicatorsSet);
+        collectIndicatorsFromData(field.keywordIndicators, availableIndicatorsSet);
+        collectIndicatorsFromData(field.dftvalIndicators, availableIndicatorsSet);
+
+        const mapGroups = [field.attributeIndicators, field.colorIndicators, field.checkIndicators];
+        mapGroups.forEach(groupMap => {
+            if (!groupMap || typeof groupMap !== 'object') {
+                return;
+            }
+            Object.values(groupMap).forEach(value => collectIndicatorsFromData(value, availableIndicatorsSet));
+        });
+    });
+
+    const availableIndicators = Array.from(availableIndicatorsSet).sort((a, b) => Number(a) - Number(b));
+    const activeIndicators = new Set(simulationState.activeIndicators || []);
+
     const rows = currentDisplaySize === 'DS3' ? 24 : 27;
     const cols = currentDisplaySize === 'DS3' ? 80 : 132;
+
+    const indicatorPanel = `
+        <div style="display: flex; flex-direction: column; gap: 8px; border: 1px solid #555; padding: 8px 10px; border-radius: 3px; margin: 10px auto; width: fit-content; max-width: min(95vw, 900px); background-color: #1e1e1e;">
+            <label style="margin: 0; color: #cccccc; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                <input id="preview-indicator-sim-enabled" type="checkbox" ${simulationState.enabled ? 'checked' : ''}>
+                <span>Condition Work Screen display appear</span>
+            </label>
+            <div id="preview-indicator-list" style="display: flex; flex-wrap: wrap; gap: 8px; ${simulationState.enabled ? '' : 'opacity: 0.55;'}">
+                ${availableIndicators.length > 0
+                    ? availableIndicators.map(ind => `
+                        <label style="display: inline-flex; align-items: center; gap: 4px; color: #cccccc; cursor: pointer;">
+                            <input class="preview-indicator-checkbox" type="checkbox" data-indicator="${ind}" ${activeIndicators.has(ind) ? 'checked' : ''} ${simulationState.enabled ? '' : 'disabled'}>
+                            <span>${ind}</span>
+                        </label>
+                    `).join('')
+                    : '<span style="color: #888; font-size: 12px;">No se detectaron indicadores en este record.</span>'}
+            </div>
+        </div>
+    `;
 
     let html = `
         <div class="header">
@@ -43,6 +111,7 @@ export function updatePreviewView(options) {
                     <span style="margin-left: 5px;">27 x 132 (*DS4)</span>
                 </label>
             </div>
+            ${indicatorPanel}
         </div>
         <div class="screen" style="width: ${ScreenCoordinates.getWidthInPixels(cols)}px; height: ${ScreenCoordinates.getHeightInPixels(rows)}px;">
     `;
@@ -76,10 +145,14 @@ export function updatePreviewView(options) {
     }
 
     parsedScreen.fields.forEach(field => {
+        const fieldForPreview = getPreviewSimulatedField ? getPreviewSimulatedField(field) : field;
+        if (fieldForPreview && fieldForPreview.hidden) {
+            return; // Field's conditioning indicators are not satisfied — hide it
+        }
         if (parsedScreen.windowDimensions) {
-            html += generateWindowFieldHtml(field, parsedScreen.windowDimensions);
+            html += generateWindowFieldHtml(fieldForPreview, parsedScreen.windowDimensions);
         } else {
-            html += generateFieldHtml(field);
+            html += generateFieldHtml(fieldForPreview);
         }
     });
 
@@ -97,6 +170,27 @@ export function updatePreviewView(options) {
         getCurrentDocument,
         applyDefaultZoomForDisplaySize,
         updatePreviewView: updatePreviewViewHandler
+    });
+
+    const simulationToggle = document.getElementById('preview-indicator-sim-enabled');
+    if (simulationToggle && setIndicatorSimulationEnabled) {
+        simulationToggle.addEventListener('change', function() {
+            setIndicatorSimulationEnabled(this.checked);
+            if (updatePreviewViewHandler) {
+                updatePreviewViewHandler();
+            }
+        });
+    }
+
+    previewContainer.querySelectorAll('.preview-indicator-checkbox').forEach(input => {
+        input.addEventListener('change', function() {
+            if (setPreviewIndicatorActive) {
+                setPreviewIndicatorActive(this.dataset.indicator, this.checked);
+            }
+            if (updatePreviewViewHandler) {
+                updatePreviewViewHandler();
+            }
+        });
     });
 
     previewContainer.querySelectorAll('.input-field').forEach(field => {

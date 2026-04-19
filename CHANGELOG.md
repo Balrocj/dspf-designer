@@ -5,6 +5,7 @@ All notable changes to the "dspf-designer" extension will be documented in this 
 ## [2.1.0] - 2026-04-19
 ### ✨ Added
 - Added support for subfile with multile lines. The designer now allows you to visually design subfiles with multiple lines.
+- Add new feature to allow users to simulate conditioning indicators (SDA-like) directly in the preview like F6 in SDA.
 
 ## [2.0.2] - 2026-04-18
 

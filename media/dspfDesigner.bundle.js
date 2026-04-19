@@ -200,6 +200,9 @@ __webpack_require__.r(__webpack_exports__);
     let isReadOnly = false; // Track if document is in read-only mode
     let currentView = 'designer'; // Track the current active view (designer, preview, source)
     let currentZoom = 1; // Zoom level for views container
+    let indicatorSimulationEnabled = false; // Preview-only indicator simulation (SDA-like)
+    let activePreviewIndicators = new Set();
+    let indicatorSimulationShortcutBound = false;
 
     function getSaveMode() {
         return saveMode;
@@ -223,6 +226,7 @@ __webpack_require__.r(__webpack_exports__);
     
     async function initializeDesigner() {
         await (0,_modules_utils_charMetrics_js__WEBPACK_IMPORTED_MODULE_8__.calibrateCharMetrics)(_modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates, _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger);
+        setupIndicatorSimulationShortcut();
         (0,_modules_ui_canvasSetup_js__WEBPACK_IMPORTED_MODULE_10__.setupCanvasInteraction)(deselectAllFields, showScreenProperties);
         (0,_modules_ui_toolbarSetup_js__WEBPACK_IMPORTED_MODULE_11__.setupToolbarButtons)({
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
@@ -273,6 +277,177 @@ __webpack_require__.r(__webpack_exports__);
         vscode.postMessage({ type: 'getDocument' });
         
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.success('DSPF Designer initialized');
+    }
+
+    function setupIndicatorSimulationShortcut() {
+        if (indicatorSimulationShortcutBound) {
+            return;
+        }
+
+        indicatorSimulationShortcutBound = true;
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'F6') {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            setIndicatorSimulationEnabled(!indicatorSimulationEnabled);
+
+            if (currentView === 'preview') {
+                updatePreviewView();
+            }
+        });
+    }
+
+    function setIndicatorSimulationEnabled(enabled) {
+        indicatorSimulationEnabled = !!enabled;
+        if (!indicatorSimulationEnabled) {
+            activePreviewIndicators.clear();
+        }
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.ui(`Indicator simulation ${indicatorSimulationEnabled ? 'enabled' : 'disabled'}`);
+    }
+
+    function setPreviewIndicatorActive(indicatorNumber, isActive) {
+        if (!indicatorNumber) {
+            return;
+        }
+
+        const normalized = String(indicatorNumber).replace(/[^0-9]/g, '').padStart(2, '0').slice(-2);
+        if (isActive) {
+            activePreviewIndicators.add(normalized);
+        } else {
+            activePreviewIndicators.delete(normalized);
+        }
+    }
+
+    function getIndicatorSimulationState() {
+        return {
+            enabled: indicatorSimulationEnabled,
+            activeIndicators: Array.from(activePreviewIndicators).sort((a, b) => a.localeCompare(b))
+        };
+    }
+
+    function isIndicatorSatisfied(indicator) {
+        if (!indicator || !indicator.number) {
+            return true;
+        }
+
+        const normalized = String(indicator.number).replace(/[^0-9]/g, '').padStart(2, '0').slice(-2);
+        const isOn = activePreviewIndicators.has(normalized);
+        return indicator.not ? !isOn : isOn;
+    }
+
+    function evaluateIndicatorData(indicatorData) {
+        if (!indicatorData) {
+            return false;
+        }
+
+        if (Array.isArray(indicatorData)) {
+            if (indicatorData.length === 0) {
+                return false;
+            }
+            return indicatorData.every(isIndicatorSatisfied);
+        }
+
+        if (indicatorData.groups && Array.isArray(indicatorData.groups)) {
+            const groups = indicatorData.groups;
+            if (groups.length === 0) {
+                return false;
+            }
+
+            const groupResults = groups.map(group => {
+                const indicators = Array.isArray(group?.indicators) ? group.indicators : [];
+                if (indicators.length === 0) {
+                    return false;
+                }
+                return indicators.every(isIndicatorSatisfied);
+            });
+
+            // In current parser shape, non-OR data is usually a single AND group.
+            // Using some() keeps compatibility if multiple groups are accumulated.
+            return indicatorData.isOr ? groupResults.some(Boolean) : groupResults.some(Boolean);
+        }
+
+        return false;
+    }
+
+    // Returns normalized indicator numbers referenced by a field.indicators structure.
+    function getConditioningIndicatorNumbers(indicatorData) {
+        const normalize = n => String(n).replace(/[^0-9]/g, '').padStart(2, '0').slice(-2);
+        const nums = [];
+        if (!indicatorData) { return nums; }
+        if (Array.isArray(indicatorData)) {
+            indicatorData.forEach(ind => { if (ind && ind.number) { nums.push(normalize(ind.number)); } });
+        } else if (indicatorData.groups) {
+            indicatorData.groups.forEach(group => {
+                (group.indicators || []).forEach(ind => { if (ind && ind.number) { nums.push(normalize(ind.number)); } });
+            });
+        }
+        return nums;
+    }
+
+    function getPreviewSimulatedField(field) {
+        if (!field) {
+            return field;
+        }
+
+        // When simulation is off, return field as-is so computeFieldDisplay
+        // can apply its normal attributeIndicators always-on display.
+        if (!indicatorSimulationEnabled) {
+            return field;
+        }
+
+        const simulatedField = { ...field };
+
+        // Evaluate field-level conditioning indicators (visibility) only when
+        // the user has explicitly activated at least one of the indicators that
+        // conditions this field. If none have been touched yet, show the field
+        // (neutral state), so enabling F6 alone doesn't immediately hide fields.
+        if (field.indicators) {
+            const refNums = getConditioningIndicatorNumbers(field.indicators);
+            const anyExplicitlySet = refNums.some(n => activePreviewIndicators.has(n));
+            if (anyExplicitlySet && !evaluateIndicatorData(field.indicators)) {
+                simulatedField.hidden = true;
+                return simulatedField;
+            }
+        }
+
+        // Resolve attribute indicators against active indicators.
+        // Clear attributeIndicators so computeFieldDisplay doesn't re-add
+        // all indicator-conditioned classes unconditionally.
+        const baseAttributes = { ...(field.attributes || {}) };
+        const attrIndicators = field.attributeIndicators || {};
+        Object.keys(attrIndicators).forEach(attrName => {
+            if (evaluateIndicatorData(attrIndicators[attrName])) {
+                baseAttributes[attrName] = true;
+            } else {
+                delete baseAttributes[attrName];
+            }
+        });
+        simulatedField.attributes = Object.keys(baseAttributes).length > 0 ? baseAttributes : undefined;
+        simulatedField.attributeIndicators = undefined;
+
+        // Resolve color indicators against active indicators.
+        const colorIndicators = field.colorIndicators || {};
+        const indicatorColorKeys = Object.keys(colorIndicators);
+        if (indicatorColorKeys.length > 0) {
+            const colorOrder = Array.isArray(field.colors) && field.colors.length > 0
+                ? field.colors
+                : (field.color ? [field.color] : []);
+
+            const defaultColor = colorOrder.find(colorName => !colorIndicators[colorName]);
+            const activeColor = colorOrder.find(colorName => {
+                const indicatorData = colorIndicators[colorName];
+                return indicatorData && evaluateIndicatorData(indicatorData);
+            });
+
+            simulatedField.color = activeColor || defaultColor;
+        }
+
+        return simulatedField;
     }
 
     function setViewZoom(zoomValue) {
@@ -1098,6 +1273,10 @@ __webpack_require__.r(__webpack_exports__);
             getCurrentRecord: () => currentRecord,
             getCurrentDisplaySize: () => currentDisplaySize,
             setCurrentDisplaySize: (value) => { currentDisplaySize = value; },
+            getIndicatorSimulationState,
+            setIndicatorSimulationEnabled,
+            setPreviewIndicatorActive,
+            getPreviewSimulatedField,
             applyDefaultZoomForDisplaySize,
             updatePreviewView
         });
@@ -40778,6 +40957,10 @@ function updatePreviewView(options) {
         getCurrentRecord,
         getCurrentDisplaySize,
         setCurrentDisplaySize,
+        getIndicatorSimulationState,
+        setIndicatorSimulationEnabled,
+        setPreviewIndicatorActive,
+        getPreviewSimulatedField,
         applyDefaultZoomForDisplaySize,
         updatePreviewView: updatePreviewViewHandler
     } = options;
@@ -40788,11 +40971,75 @@ function updatePreviewView(options) {
     const currentDocument = getCurrentDocument();
     const currentRecord = getCurrentRecord();
     const currentDisplaySize = getCurrentDisplaySize();
+    const simulationState = getIndicatorSimulationState ? getIndicatorSimulationState() : { enabled: false, activeIndicators: [] };
 
     const parsedScreen = parseDspfForPreview(currentDocument, currentRecord);
 
+    const collectIndicatorsFromData = (indicatorData, bucket) => {
+        if (!indicatorData) {
+            return;
+        }
+
+        if (Array.isArray(indicatorData)) {
+            indicatorData.forEach(ind => {
+                if (ind && ind.number) {
+                    bucket.add(String(ind.number).padStart(2, '0'));
+                }
+            });
+            return;
+        }
+
+        if (Array.isArray(indicatorData.groups)) {
+            indicatorData.groups.forEach(group => {
+                const indicators = Array.isArray(group?.indicators) ? group.indicators : [];
+                indicators.forEach(ind => {
+                    if (ind && ind.number) {
+                        bucket.add(String(ind.number).padStart(2, '0'));
+                    }
+                });
+            });
+        }
+    };
+
+    const availableIndicatorsSet = new Set();
+    parsedScreen.fields.forEach(field => {
+        collectIndicatorsFromData(field.indicators, availableIndicatorsSet);
+        collectIndicatorsFromData(field.keywordIndicators, availableIndicatorsSet);
+        collectIndicatorsFromData(field.dftvalIndicators, availableIndicatorsSet);
+
+        const mapGroups = [field.attributeIndicators, field.colorIndicators, field.checkIndicators];
+        mapGroups.forEach(groupMap => {
+            if (!groupMap || typeof groupMap !== 'object') {
+                return;
+            }
+            Object.values(groupMap).forEach(value => collectIndicatorsFromData(value, availableIndicatorsSet));
+        });
+    });
+
+    const availableIndicators = Array.from(availableIndicatorsSet).sort((a, b) => Number(a) - Number(b));
+    const activeIndicators = new Set(simulationState.activeIndicators || []);
+
     const rows = currentDisplaySize === 'DS3' ? 24 : 27;
     const cols = currentDisplaySize === 'DS3' ? 80 : 132;
+
+    const indicatorPanel = `
+        <div style="display: flex; flex-direction: column; gap: 8px; border: 1px solid #555; padding: 8px 10px; border-radius: 3px; margin: 10px auto; width: fit-content; max-width: min(95vw, 900px); background-color: #1e1e1e;">
+            <label style="margin: 0; color: #cccccc; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                <input id="preview-indicator-sim-enabled" type="checkbox" ${simulationState.enabled ? 'checked' : ''}>
+                <span>Condition Work Screen display appear</span>
+            </label>
+            <div id="preview-indicator-list" style="display: flex; flex-wrap: wrap; gap: 8px; ${simulationState.enabled ? '' : 'opacity: 0.55;'}">
+                ${availableIndicators.length > 0
+                    ? availableIndicators.map(ind => `
+                        <label style="display: inline-flex; align-items: center; gap: 4px; color: #cccccc; cursor: pointer;">
+                            <input class="preview-indicator-checkbox" type="checkbox" data-indicator="${ind}" ${activeIndicators.has(ind) ? 'checked' : ''} ${simulationState.enabled ? '' : 'disabled'}>
+                            <span>${ind}</span>
+                        </label>
+                    `).join('')
+                    : '<span style="color: #888; font-size: 12px;">No se detectaron indicadores en este record.</span>'}
+            </div>
+        </div>
+    `;
 
     let html = `
         <div class="header">
@@ -40808,6 +41055,7 @@ function updatePreviewView(options) {
                     <span style="margin-left: 5px;">27 x 132 (*DS4)</span>
                 </label>
             </div>
+            ${indicatorPanel}
         </div>
         <div class="screen" style="width: ${ScreenCoordinates.getWidthInPixels(cols)}px; height: ${ScreenCoordinates.getHeightInPixels(rows)}px;">
     `;
@@ -40841,10 +41089,14 @@ function updatePreviewView(options) {
     }
 
     parsedScreen.fields.forEach(field => {
+        const fieldForPreview = getPreviewSimulatedField ? getPreviewSimulatedField(field) : field;
+        if (fieldForPreview && fieldForPreview.hidden) {
+            return; // Field's conditioning indicators are not satisfied — hide it
+        }
         if (parsedScreen.windowDimensions) {
-            html += generateWindowFieldHtml(field, parsedScreen.windowDimensions);
+            html += generateWindowFieldHtml(fieldForPreview, parsedScreen.windowDimensions);
         } else {
-            html += generateFieldHtml(field);
+            html += generateFieldHtml(fieldForPreview);
         }
     });
 
@@ -40862,6 +41114,27 @@ function updatePreviewView(options) {
         getCurrentDocument,
         applyDefaultZoomForDisplaySize,
         updatePreviewView: updatePreviewViewHandler
+    });
+
+    const simulationToggle = document.getElementById('preview-indicator-sim-enabled');
+    if (simulationToggle && setIndicatorSimulationEnabled) {
+        simulationToggle.addEventListener('change', function() {
+            setIndicatorSimulationEnabled(this.checked);
+            if (updatePreviewViewHandler) {
+                updatePreviewViewHandler();
+            }
+        });
+    }
+
+    previewContainer.querySelectorAll('.preview-indicator-checkbox').forEach(input => {
+        input.addEventListener('change', function() {
+            if (setPreviewIndicatorActive) {
+                setPreviewIndicatorActive(this.dataset.indicator, this.checked);
+            }
+            if (updatePreviewViewHandler) {
+                updatePreviewViewHandler();
+            }
+        });
     });
 
     previewContainer.querySelectorAll('.input-field').forEach(field => {

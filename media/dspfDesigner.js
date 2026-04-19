@@ -106,6 +106,9 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     let isReadOnly = false; // Track if document is in read-only mode
     let currentView = 'designer'; // Track the current active view (designer, preview, source)
     let currentZoom = 1; // Zoom level for views container
+    let indicatorSimulationEnabled = false; // Preview-only indicator simulation (SDA-like)
+    let activePreviewIndicators = new Set();
+    let indicatorSimulationShortcutBound = false;
 
     function getSaveMode() {
         return saveMode;
@@ -129,6 +132,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     
     async function initializeDesigner() {
         await calibrateCharMetrics(ScreenCoordinates, Logger);
+        setupIndicatorSimulationShortcut();
         setupCanvasInteraction(deselectAllFields, showScreenProperties);
         setupToolbarButtonsUI({
             Logger,
@@ -179,6 +183,177 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         vscode.postMessage({ type: 'getDocument' });
         
         Logger.success('DSPF Designer initialized');
+    }
+
+    function setupIndicatorSimulationShortcut() {
+        if (indicatorSimulationShortcutBound) {
+            return;
+        }
+
+        indicatorSimulationShortcutBound = true;
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'F6') {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            setIndicatorSimulationEnabled(!indicatorSimulationEnabled);
+
+            if (currentView === 'preview') {
+                updatePreviewView();
+            }
+        });
+    }
+
+    function setIndicatorSimulationEnabled(enabled) {
+        indicatorSimulationEnabled = !!enabled;
+        if (!indicatorSimulationEnabled) {
+            activePreviewIndicators.clear();
+        }
+        Logger.ui(`Indicator simulation ${indicatorSimulationEnabled ? 'enabled' : 'disabled'}`);
+    }
+
+    function setPreviewIndicatorActive(indicatorNumber, isActive) {
+        if (!indicatorNumber) {
+            return;
+        }
+
+        const normalized = String(indicatorNumber).replace(/[^0-9]/g, '').padStart(2, '0').slice(-2);
+        if (isActive) {
+            activePreviewIndicators.add(normalized);
+        } else {
+            activePreviewIndicators.delete(normalized);
+        }
+    }
+
+    function getIndicatorSimulationState() {
+        return {
+            enabled: indicatorSimulationEnabled,
+            activeIndicators: Array.from(activePreviewIndicators).sort((a, b) => a.localeCompare(b))
+        };
+    }
+
+    function isIndicatorSatisfied(indicator) {
+        if (!indicator || !indicator.number) {
+            return true;
+        }
+
+        const normalized = String(indicator.number).replace(/[^0-9]/g, '').padStart(2, '0').slice(-2);
+        const isOn = activePreviewIndicators.has(normalized);
+        return indicator.not ? !isOn : isOn;
+    }
+
+    function evaluateIndicatorData(indicatorData) {
+        if (!indicatorData) {
+            return false;
+        }
+
+        if (Array.isArray(indicatorData)) {
+            if (indicatorData.length === 0) {
+                return false;
+            }
+            return indicatorData.every(isIndicatorSatisfied);
+        }
+
+        if (indicatorData.groups && Array.isArray(indicatorData.groups)) {
+            const groups = indicatorData.groups;
+            if (groups.length === 0) {
+                return false;
+            }
+
+            const groupResults = groups.map(group => {
+                const indicators = Array.isArray(group?.indicators) ? group.indicators : [];
+                if (indicators.length === 0) {
+                    return false;
+                }
+                return indicators.every(isIndicatorSatisfied);
+            });
+
+            // In current parser shape, non-OR data is usually a single AND group.
+            // Using some() keeps compatibility if multiple groups are accumulated.
+            return indicatorData.isOr ? groupResults.some(Boolean) : groupResults.some(Boolean);
+        }
+
+        return false;
+    }
+
+    // Returns normalized indicator numbers referenced by a field.indicators structure.
+    function getConditioningIndicatorNumbers(indicatorData) {
+        const normalize = n => String(n).replace(/[^0-9]/g, '').padStart(2, '0').slice(-2);
+        const nums = [];
+        if (!indicatorData) { return nums; }
+        if (Array.isArray(indicatorData)) {
+            indicatorData.forEach(ind => { if (ind && ind.number) { nums.push(normalize(ind.number)); } });
+        } else if (indicatorData.groups) {
+            indicatorData.groups.forEach(group => {
+                (group.indicators || []).forEach(ind => { if (ind && ind.number) { nums.push(normalize(ind.number)); } });
+            });
+        }
+        return nums;
+    }
+
+    function getPreviewSimulatedField(field) {
+        if (!field) {
+            return field;
+        }
+
+        // When simulation is off, return field as-is so computeFieldDisplay
+        // can apply its normal attributeIndicators always-on display.
+        if (!indicatorSimulationEnabled) {
+            return field;
+        }
+
+        const simulatedField = { ...field };
+
+        // Evaluate field-level conditioning indicators (visibility) only when
+        // the user has explicitly activated at least one of the indicators that
+        // conditions this field. If none have been touched yet, show the field
+        // (neutral state), so enabling F6 alone doesn't immediately hide fields.
+        if (field.indicators) {
+            const refNums = getConditioningIndicatorNumbers(field.indicators);
+            const anyExplicitlySet = refNums.some(n => activePreviewIndicators.has(n));
+            if (anyExplicitlySet && !evaluateIndicatorData(field.indicators)) {
+                simulatedField.hidden = true;
+                return simulatedField;
+            }
+        }
+
+        // Resolve attribute indicators against active indicators.
+        // Clear attributeIndicators so computeFieldDisplay doesn't re-add
+        // all indicator-conditioned classes unconditionally.
+        const baseAttributes = { ...(field.attributes || {}) };
+        const attrIndicators = field.attributeIndicators || {};
+        Object.keys(attrIndicators).forEach(attrName => {
+            if (evaluateIndicatorData(attrIndicators[attrName])) {
+                baseAttributes[attrName] = true;
+            } else {
+                delete baseAttributes[attrName];
+            }
+        });
+        simulatedField.attributes = Object.keys(baseAttributes).length > 0 ? baseAttributes : undefined;
+        simulatedField.attributeIndicators = undefined;
+
+        // Resolve color indicators against active indicators.
+        const colorIndicators = field.colorIndicators || {};
+        const indicatorColorKeys = Object.keys(colorIndicators);
+        if (indicatorColorKeys.length > 0) {
+            const colorOrder = Array.isArray(field.colors) && field.colors.length > 0
+                ? field.colors
+                : (field.color ? [field.color] : []);
+
+            const defaultColor = colorOrder.find(colorName => !colorIndicators[colorName]);
+            const activeColor = colorOrder.find(colorName => {
+                const indicatorData = colorIndicators[colorName];
+                return indicatorData && evaluateIndicatorData(indicatorData);
+            });
+
+            simulatedField.color = activeColor || defaultColor;
+        }
+
+        return simulatedField;
     }
 
     function setViewZoom(zoomValue) {
@@ -1004,6 +1179,10 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             getCurrentRecord: () => currentRecord,
             getCurrentDisplaySize: () => currentDisplaySize,
             setCurrentDisplaySize: (value) => { currentDisplaySize = value; },
+            getIndicatorSimulationState,
+            setIndicatorSimulationEnabled,
+            setPreviewIndicatorActive,
+            getPreviewSimulatedField,
             applyDefaultZoomForDisplaySize,
             updatePreviewView
         });
