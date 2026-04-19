@@ -522,6 +522,9 @@ import * as path from 'path';
 
 			<!-- Preview View -->
 			<div id="preview-view" class="view">
+				<div id="preview-toolbar">
+					<!-- Indicator simulation panel rendered here by JS -->
+				</div>
 				<div id="preview-container">
 					<!-- Preview content will be generated here -->
 				</div>

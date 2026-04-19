@@ -41022,24 +41022,28 @@ function updatePreviewView(options) {
     const rows = currentDisplaySize === 'DS3' ? 24 : 27;
     const cols = currentDisplaySize === 'DS3' ? 80 : 132;
 
-    const indicatorPanel = `
-        <div style="display: flex; flex-direction: column; gap: 8px; border: 1px solid #555; padding: 8px 10px; border-radius: 3px; margin: 10px auto; width: fit-content; max-width: min(95vw, 900px); background-color: #1e1e1e;">
-            <label style="margin: 0; color: #cccccc; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-                <input id="preview-indicator-sim-enabled" type="checkbox" ${simulationState.enabled ? 'checked' : ''}>
-                <span>Condition Work Screen display appear</span>
-            </label>
-            <div id="preview-indicator-list" style="display: flex; flex-wrap: wrap; gap: 8px; ${simulationState.enabled ? '' : 'opacity: 0.55;'}">
-                ${availableIndicators.length > 0
-                    ? availableIndicators.map(ind => `
-                        <label style="display: inline-flex; align-items: center; gap: 4px; color: #cccccc; cursor: pointer;">
-                            <input class="preview-indicator-checkbox" type="checkbox" data-indicator="${ind}" ${activeIndicators.has(ind) ? 'checked' : ''} ${simulationState.enabled ? '' : 'disabled'}>
-                            <span>${ind}</span>
-                        </label>
-                    `).join('')
-                    : '<span style="color: #888; font-size: 12px;">No se detectaron indicadores en este record.</span>'}
+    // Render indicator panel into the toolbar element (sits outside the scrollable container)
+    const previewToolbar = document.getElementById('preview-toolbar');
+    if (previewToolbar) {
+        previewToolbar.innerHTML = `
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px;">
+                <label style="margin: 0; color: #cccccc; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;">
+                    <input id="preview-indicator-sim-enabled" type="checkbox" ${simulationState.enabled ? 'checked' : ''}>
+                    <span>Simular indicadores (F6)</span>
+                </label>
+                <div id="preview-indicator-list" style="display: flex; flex-wrap: wrap; gap: 8px; ${simulationState.enabled ? '' : 'opacity: 0.45; pointer-events: none;'}">
+                    ${availableIndicators.length > 0
+                        ? availableIndicators.map(ind => `
+                            <label style="display: inline-flex; align-items: center; gap: 4px; color: #cccccc; cursor: pointer;">
+                                <input class="preview-indicator-checkbox" type="checkbox" data-indicator="${ind}" ${activeIndicators.has(ind) ? 'checked' : ''} ${simulationState.enabled ? '' : 'disabled'}>
+                                <span>${ind}</span>
+                            </label>
+                        `).join('')
+                        : '<span style="color: #666; font-size: 12px;">Sin indicadores detectados</span>'}
+                </div>
             </div>
-        </div>
-    `;
+        `;
+    }
 
     let html = `
         <div class="header">
@@ -41055,7 +41059,6 @@ function updatePreviewView(options) {
                     <span style="margin-left: 5px;">27 x 132 (*DS4)</span>
                 </label>
             </div>
-            ${indicatorPanel}
         </div>
         <div class="screen" style="width: ${ScreenCoordinates.getWidthInPixels(cols)}px; height: ${ScreenCoordinates.getHeightInPixels(rows)}px;">
     `;
@@ -41126,7 +41129,8 @@ function updatePreviewView(options) {
         });
     }
 
-    previewContainer.querySelectorAll('.preview-indicator-checkbox').forEach(input => {
+    // Checkboxes are in #preview-toolbar (outside previewContainer), query from document
+    document.querySelectorAll('.preview-indicator-checkbox').forEach(input => {
         input.addEventListener('change', function() {
             if (setPreviewIndicatorActive) {
                 setPreviewIndicatorActive(this.dataset.indicator, this.checked);

@@ -194,10 +194,9 @@ body {
 /* Preview View - IBM i Terminal Look */
 #preview-view {
 	display: none; /* Hidden by default */
-	align-items: center;
-	justify-content: center;
+	flex-direction: column;
+	align-items: stretch;
 	background-color: #000000; /* Pure black like IBM i terminal */
-	padding: 20px;
 	font-family: '3270', 'IBM Plex Mono', 'Consolas', 'Courier New', monospace;
 }
 
@@ -205,13 +204,30 @@ body {
 	display: flex !important;
 }
 
+/* Indicator simulation toolbar - sits above the scrollable screen area */
+#preview-toolbar {
+	flex-shrink: 0;
+	background-color: #111111;
+	border-bottom: 1px solid #333;
+	padding: 6px 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 0;
+}
+
+#preview-toolbar:empty {
+	display: none;
+}
+
 #preview-container {
-	width: 100%;
-	height: 100%;
+	flex: 1;
+	min-height: 0;
 	overflow: auto;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	padding: 20px;
 }
 
 /* Preview Screen Styles - IBM i Authentic Look */
