@@ -95,7 +95,7 @@ export function updatePreviewView(options) {
                                 <span>${ind}</span>
                             </label>
                         `).join('')
-                        : '<span style="color: #666; font-size: 12px;">Sin indicadores detectados</span>'}
+                        : '<span style="color: #666; font-size: 12px;">No indicators detected</span>'}
                 </div>
             </div>
         `;
