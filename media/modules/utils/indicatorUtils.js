@@ -11,7 +11,14 @@ export const IndicatorUtils = {
             return [];
         }
 
-        const tokens = indicatorStr.trim().split(/\s+/);
+        // Indicator area can contain compact expressions like "27N29" and
+        // OR-prefixed lines like "O N54". Keep only indicator-safe chars.
+        const cleaned = indicatorStr.trim().replace(/^O\s*/, '');
+        if (!cleaned || !/^[N\d\s]+$/.test(cleaned)) {
+            return [];
+        }
+
+        const tokens = cleaned.split(/\s+/);
         const indicators = [];
 
         tokens.forEach(token => {
@@ -77,7 +84,9 @@ export const IndicatorUtils = {
             return [];
         }
 
-        const indicatorArea = fullLine.substring(6, 44);
+        // DDS conditioning indicators are in columns 7-17 (0-based slice 6..18).
+        // Reading beyond this area can accidentally capture field name/length/row.
+        const indicatorArea = fullLine.substring(6, 18);
         const indicatorStr = indicatorArea.trim();
 
         if (debugContext && indicatorStr) {
