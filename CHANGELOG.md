@@ -2,6 +2,10 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.1.1] - 2026-04-21
+### 🐛 Fixed
+- Modified the logic that read the indicators to show in the preview view.
+
 ## [2.1.0] - 2026-04-19
 ### ✨ Added
 - Added support for subfile with multile lines. The designer now allows you to visually design subfiles with multiple lines.
