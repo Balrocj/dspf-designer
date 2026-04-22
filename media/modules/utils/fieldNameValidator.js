@@ -1,5 +1,6 @@
 export const FieldNameValidator = {
     MAX_LENGTH: 10,
+    ALLOWED_NAME_CHARS: 'A-Z0-9_@#$',
 
     isValid(name, options = {}) {
         const {
@@ -17,9 +18,9 @@ export const FieldNameValidator = {
         }
 
         if (mustStartWithLetter) {
-            return /^[A-Z][A-Z0-9_]*$/i.test(name);
+            return new RegExp(`^[A-Z][${this.ALLOWED_NAME_CHARS}]*$`, 'i').test(name);
         } else {
-            return /^[A-Z0-9_]+$/i.test(name);
+            return new RegExp(`^[${this.ALLOWED_NAME_CHARS}]+$`, 'i').test(name);
         }
     },
 
@@ -36,9 +37,9 @@ export const FieldNameValidator = {
             }
 
             if (mustStartWithLetter) {
-                throw new Error('Field name must start with a letter and contain only letters, numbers, and underscores');
+                throw new Error('Field name must start with a letter and contain only letters, numbers, underscores, @, #, and $');
             } else {
-                throw new Error('Field name must contain only letters, numbers, and underscores');
+                throw new Error('Field name must contain only letters, numbers, underscores, @, #, and $');
             }
         }
 
@@ -51,7 +52,7 @@ export const FieldNameValidator = {
         }
 
         let sanitized = name.toUpperCase();
-        sanitized = sanitized.replace(/[^A-Z0-9_]/g, '');
+        sanitized = sanitized.replace(/[^A-Z0-9_@#$]/g, '');
 
         if (!/^[A-Z]/.test(sanitized)) {
             sanitized = 'F' + sanitized;
