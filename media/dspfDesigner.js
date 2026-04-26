@@ -84,6 +84,7 @@ import { generateFieldDftvalLinesUI } from './modules/ui/generateFieldDftvalLine
 import { generateFieldCntfldLinesUI } from './modules/ui/generateFieldCntfldLines.js';
 import { generateFieldMsgidLinesUI } from './modules/ui/generateFieldMsgidLines.js';
 import { generateFieldReffldLinesUI } from './modules/ui/generateFieldReffldLines.js';
+import { generateFieldTextLinesUI } from './modules/ui/generateFieldTextLines.js';
 import { generateDdsLineWithIndicatorsUI } from './modules/ui/generateDdsLineWithIndicators.js';
 import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChangesToField.js';
 
@@ -3166,6 +3167,13 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         });
     }
 
+    // Helper: Generate TEXT keyword lines for a field
+    function generateFieldTextLines(field) {
+        return generateFieldTextLinesUI({
+            field
+        });
+    }
+
     // Helper: Generate EDTCDE keyword lines for a field
     function generateFieldEdtcdeLines(field) {
         return generateFieldEdtcdeLinesUI({
@@ -3566,6 +3574,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         const cntfldLines = generateFieldCntfldLines(field);
         const msgidLines = generateFieldMsgidLines(field);
         const reffldLines = generateFieldReffldLines(field);
+        const textLines = generateFieldTextLines(field);
         
         // Build main line with indicators
         const mainLine = `     A${indicatorPrefix}${fieldNamePadded} ${typePartPadded} ${rowStr}${rowColSeparator}${colStr}${attributes}`;
@@ -3584,6 +3593,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             CNTFLD: cntfldLines,
             MSGID: msgidLines,
             REFFLD: reffldLines,
+            TEXT: textLines,
             COLOR: colorLines
         };
 
@@ -3598,6 +3608,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             'CNTFLD',
             'MSGID',
             'REFFLD',
+            'TEXT',
             'COLOR'
         ];
 
@@ -3758,7 +3769,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 // Field lines have a recognizable pattern: field name (at least 3 chars) followed by type spec
                 // The type spec can be: "10A", "10", "10Y 0", or with spaces "64   O"
                 // Anchor to ^ and test against content from column 18 onwards to avoid matching
-                // keyword args (e.g. AUM 0025 inside MSGID(...)) as a field name pattern.
+                // keyword args (e.g. XXX 0001 inside MSGID(...)) as a field name pattern.
                 const hasFieldNameInLine = /^[A-Z_][A-Z0-9_@#$]{0,9}\s+(?:\d+[A-Z]?|L|T|Z|R)\b/i.test(line.substring(18).trim());
                 const hasAttributeKeyword = attributeContentRegex.test(trimmedLine);
                 const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;

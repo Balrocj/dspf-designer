@@ -633,17 +633,17 @@ export function showFieldProperties({
 
                     <div class="property-group msgid-value-group" style="display: none;">
                         <label>Message prefix</label>
-                        <input type="text" id="prop-msgid-prefix" maxlength="3" size="3" placeholder="e.g. AUM" />
+                        <input type="text" id="prop-msgid-prefix" maxlength="3" size="3" placeholder="" />
                     </div>
 
                     <div class="property-group msgid-value-group" style="display: none;">
                         <label>Message identifier</label>
-                        <input type="text" id="prop-msgid-identifier" maxlength="4" size="4" placeholder="e.g. 0425" />
+                        <input type="text" id="prop-msgid-identifier" maxlength="4" size="4" placeholder="" />
                     </div>
 
                     <div class="property-group msgid-value-group" style="display: none;">
                         <label>Message file</label>
-                        <input type="text" id="prop-msgid-file" maxlength="10" size="10" placeholder="e.g. FTLNGMSG" />
+                        <input type="text" id="prop-msgid-file" maxlength="10" size="10" placeholder="" />
                     </div>
 
                     <div class="property-group msgid-value-group" style="display: none;">
@@ -662,22 +662,37 @@ export function showFieldProperties({
 
                     <div class="property-group reffld-value-group" style="display: none;">
                         <label>Reference format</label>
-                        <input type="text" id="prop-reffld-format" maxlength="10" size="10" placeholder="e.g. RACMST" />
+                        <input type="text" id="prop-reffld-format" maxlength="10" size="10" placeholder="" />
                     </div>
 
                     <div class="property-group reffld-value-group" style="display: none;">
                         <label>Reference field</label>
-                        <input type="text" id="prop-reffld-fieldname" maxlength="10" size="10" placeholder="e.g. ACMPRO" />
+                        <input type="text" id="prop-reffld-fieldname" maxlength="10" size="10" placeholder="" />
                     </div>
 
                     <div class="property-group reffld-value-group" style="display: none;">
                         <label>Reference file</label>
-                        <input type="text" id="prop-reffld-file" maxlength="10" size="10" placeholder="e.g. CUSTMST" />
+                        <input type="text" id="prop-reffld-file" maxlength="10" size="10" placeholder="" />
                     </div>
 
                     <div class="property-group reffld-value-group" style="display: none;">
                         <label>Reference library</label>
                         <input type="text" id="prop-reffld-library" maxlength="10" size="10" placeholder="e.g. *LIBL" />
+                    </div>
+                </div>
+
+                <div id="tab-text-keyword" class="tab-panel">
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-text-enabled" />
+                            Enable TEXT keyword
+                        </label>
+                    </div>
+
+                    <div class="property-group text-value-group" style="display: none;">
+                        <label>Description (up to 50 chars)</label>
+                        <textarea id="prop-text-value" rows="3" maxlength="200" placeholder=""></textarea>
+                        <small id="prop-text-counter" style="opacity: 0.8;">0 / 50</small>
                     </div>
                 </div>
             </div>
@@ -717,6 +732,12 @@ export function showFieldProperties({
         dbrefBtn.setAttribute('data-tab', 'dbref');
         dbrefBtn.textContent = 'Database reference';
         tabsContainer.appendChild(dbrefBtn);
+
+        const textKeywordBtn = document.createElement('button');
+        textKeywordBtn.className = 'properties-tab';
+        textKeywordBtn.setAttribute('data-tab', 'text-keyword');
+        textKeywordBtn.textContent = 'TEXT keyword';
+        tabsContainer.appendChild(textKeywordBtn);
     }
 
     const usageSelect = document.getElementById('prop-usage');
@@ -733,12 +754,18 @@ export function showFieldProperties({
     const msgidTabPanel = document.getElementById('tab-msgid');
     const dbrefTabBtn = document.querySelector('.properties-tab[data-tab="dbref"]');
     const dbrefTabPanel = document.getElementById('tab-dbref');
+    const textKeywordTabBtn = document.querySelector('.properties-tab[data-tab="text-keyword"]');
+    const textKeywordTabPanel = document.getElementById('tab-text-keyword');
     const reffldEnabledCheckbox = document.getElementById('prop-reffld-enabled');
     const reffldValueGroups = Array.from(document.querySelectorAll('.reffld-value-group'));
     const reffldFormatInput = document.getElementById('prop-reffld-format');
     const reffldFieldNameInput = document.getElementById('prop-reffld-fieldname');
     const reffldFileInput = document.getElementById('prop-reffld-file');
     const reffldLibraryInput = document.getElementById('prop-reffld-library');
+    const textEnabledCheckbox = document.getElementById('prop-text-enabled');
+    const textValueGroup = document.querySelector('.text-value-group');
+    const textValueInput = document.getElementById('prop-text-value');
+    const textCounter = document.getElementById('prop-text-counter');
     const checkCharGroups = Array.from(document.querySelectorAll('.check-char'));
     const checkNumGroups = Array.from(document.querySelectorAll('.check-num'));
     const checkCharTitles = Array.from(document.querySelectorAll('.check-char-title'));
@@ -908,6 +935,8 @@ export function showFieldProperties({
             && usageSelect
             && (['character', 'double'].includes(selectedType) || isNumericType || isReferenceType);
 
+        const showTextKeyword = field.type !== 'keyword' && !field.isKeyword;
+
         if (dbrefTabBtn) {
             dbrefTabBtn.style.display = showDbRef ? 'inline-flex' : 'none';
         }
@@ -917,6 +946,21 @@ export function showFieldProperties({
         if (!showDbRef && dbrefTabBtn && dbrefTabBtn.classList.contains('active')) {
             dbrefTabBtn.classList.remove('active');
             dbrefTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
+        }
+
+        if (textKeywordTabBtn) {
+            textKeywordTabBtn.style.display = showTextKeyword ? 'inline-flex' : 'none';
+        }
+        if (textKeywordTabPanel) {
+            textKeywordTabPanel.style.display = showTextKeyword ? '' : 'none';
+        }
+        if (!showTextKeyword && textKeywordTabBtn && textKeywordTabBtn.classList.contains('active')) {
+            textKeywordTabBtn.classList.remove('active');
+            textKeywordTabPanel?.classList.remove('active');
             const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
             const basicPanel = document.getElementById('tab-basic');
             basicTab?.classList.add('active');
@@ -1572,6 +1616,32 @@ export function showFieldProperties({
         library: 10
     };
 
+    const applyTextLengthLimit = (value) => {
+        const source = String(value || '').replace(/\r/g, '');
+        let limited = '';
+        let count = 0;
+        for (const char of source) {
+            if (char === '\n') {
+                limited += char;
+                continue;
+            }
+            if (count >= 50) {
+                break;
+            }
+            limited += char;
+            count += 1;
+        }
+        return { limited, count };
+    };
+
+    const updateTextCounter = () => {
+        if (!textCounter || !textValueInput) {
+            return;
+        }
+        const count = textValueInput.value.replace(/\r/g, '').replace(/\n/g, '').length;
+        textCounter.textContent = `${Math.min(count, 50)} / 50`;
+    };
+
     const updateEdtcdeReplaceVisibility = () => {
         if (!edtcdeReplaceGroup) {
             return;
@@ -1797,6 +1867,43 @@ export function showFieldProperties({
                 reffldFieldNameInput.focus();
             }
         });
+    }
+
+    if (field.text && textEnabledCheckbox) {
+        textEnabledCheckbox.checked = true;
+        if (textValueGroup) {
+            textValueGroup.style.display = 'block';
+        }
+        if (textValueInput) {
+            const rawTextValue = typeof field.text.value === 'string'
+                ? field.text.value
+                : (typeof field.text.raw === 'string' ? field.text.raw : '');
+            const { limited } = applyTextLengthLimit(rawTextValue);
+            textValueInput.value = limited;
+        }
+        updateTextCounter();
+    }
+
+    if (textEnabledCheckbox) {
+        textEnabledCheckbox.addEventListener('change', function() {
+            if (textValueGroup) {
+                textValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (this.checked && textValueInput) {
+                textValueInput.focus();
+            }
+        });
+    }
+
+    if (textValueInput) {
+        textValueInput.addEventListener('input', function() {
+            const { limited } = applyTextLengthLimit(this.value);
+            if (this.value !== limited) {
+                this.value = limited;
+            }
+            updateTextCounter();
+        });
+        updateTextCounter();
     }
 
     setupIndicatorButtons();

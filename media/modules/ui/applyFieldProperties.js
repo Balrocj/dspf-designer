@@ -52,6 +52,7 @@ export function applyFieldProperties({
             edtcde: field.edtcde ? { ...field.edtcde } : undefined,
             edtwrd: field.edtwrd ? { ...field.edtwrd } : undefined,
             edtmsk: field.edtmsk ? { ...field.edtmsk } : undefined,
+            text: field.text ? JSON.parse(JSON.stringify(field.text)) : undefined,
             dft: field.dft ? { ...field.dft } : undefined,
                 values: field.values,
             dftval: field.dftval ? { ...field.dftval } : undefined,
@@ -685,6 +686,60 @@ export function applyFieldProperties({
             delete field.reffld;
         }
 
+        const textEnabledCheckbox = document.getElementById('prop-text-enabled');
+        const textValueInput = document.getElementById('prop-text-value');
+        const previousText = oldField.text || null;
+        const canUseText = field.type !== 'keyword' && !field.isKeyword;
+
+        const limitTextTo50 = (value) => {
+            const source = String(value || '').replace(/\r/g, '');
+            let limited = '';
+            let count = 0;
+            for (const ch of source) {
+                if (ch === '\n') {
+                    limited += ch;
+                    continue;
+                }
+                if (count >= 50) {
+                    break;
+                }
+                limited += ch;
+                count += 1;
+            }
+            return limited;
+        };
+
+        if (canUseText && textEnabledCheckbox && textEnabledCheckbox.checked && textValueInput) {
+            const limitedValue = limitTextTo50(textValueInput.value);
+            const semanticValue = limitedValue.replace(/\n/g, '');
+
+            if (semanticValue.length > 0) {
+                const nextText = { value: limitedValue };
+                const previousValue = previousText && typeof previousText.value === 'string'
+                    ? previousText.value
+                    : '';
+
+                // Preserve exact raw multiline layout when semantic content is unchanged.
+                const sameAsPrevious = previousText
+                    && previousValue.replace(/\n/g, '') === semanticValue;
+
+                if (sameAsPrevious) {
+                    if (typeof previousText.raw === 'string' && previousText.raw.trim().length > 0) {
+                        nextText.raw = previousText.raw;
+                    }
+                    if (Array.isArray(previousText.rawLines) && previousText.rawLines.length > 0) {
+                        nextText.rawLines = previousText.rawLines.slice();
+                    }
+                }
+
+                field.text = nextText;
+            } else {
+                delete field.text;
+            }
+        } else {
+            delete field.text;
+        }
+
         const edtcdeForShift = field.edtcde && field.edtcde.value
             ? String(field.edtcde.value).trim().toUpperCase()
             : '';
@@ -747,6 +802,7 @@ export function applyFieldProperties({
         const edtcdeChanged = JSON.stringify(oldField.edtcde || null) !== JSON.stringify(field.edtcde || null);
         const edtwrdChanged = JSON.stringify(oldField.edtwrd || null) !== JSON.stringify(field.edtwrd || null);
         const edtmskChanged = JSON.stringify(oldField.edtmsk || null) !== JSON.stringify(field.edtmsk || null);
+        const textChanged = JSON.stringify(oldField.text || null) !== JSON.stringify(field.text || null);
         const msgidChanged = JSON.stringify(oldField.msgid || null) !== JSON.stringify(field.msgid || null);
         // Compare REFFLD by semantic content (formatName/fieldName/file/library)
         const extractReffldKey = (r) => {
@@ -811,12 +867,13 @@ export function applyFieldProperties({
             edtcdeChanged ||
             edtwrdChanged ||
             edtmskChanged ||
+            textChanged ||
             msgidChanged ||
             reffldChanged
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, msgid: ${msgidChanged}, reffld: ${reffldChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, text: ${textChanged}, msgid: ${msgidChanged}, reffld: ${reffldChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;

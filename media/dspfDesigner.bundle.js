@@ -91,9 +91,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_ui_generateFieldCntfldLines_js__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(98);
 /* harmony import */ var _modules_ui_generateFieldMsgidLines_js__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(99);
 /* harmony import */ var _modules_ui_generateFieldReffldLines_js__WEBPACK_IMPORTED_MODULE_85__ = __webpack_require__(100);
-/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_86__ = __webpack_require__(101);
-/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_87__ = __webpack_require__(102);
+/* harmony import */ var _modules_ui_generateFieldTextLines_js__WEBPACK_IMPORTED_MODULE_86__ = __webpack_require__(103);
+/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_87__ = __webpack_require__(101);
+/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_88__ = __webpack_require__(102);
 /* module decorator */ module = __webpack_require__.hmd(module);
+
 
 
 
@@ -3169,7 +3171,7 @@ __webpack_require__.r(__webpack_exports__);
     
     // Helper: Generate a DDS line with optional indicators
     function generateDdsLineWithIndicators(keyword, indicatorsOrGroups) {
-        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_86__.generateDdsLineWithIndicatorsUI)({
+        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_87__.generateDdsLineWithIndicatorsUI)({
             keyword,
             indicatorsOrGroups,
             IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils
@@ -3179,7 +3181,7 @@ __webpack_require__.r(__webpack_exports__);
     // Helper: Apply indicator changes from indicatorConfigurations Map back to field object
     // This ensures that any edits made through the IBM i modal are reflected in DDS generation
     function applyIndicatorChangesToField(field) {
-        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_87__.applyIndicatorChangesToFieldUI)({
+        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_88__.applyIndicatorChangesToFieldUI)({
             field,
             indicatorConfigurations,
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
@@ -3258,6 +3260,13 @@ __webpack_require__.r(__webpack_exports__);
     // Helper: Generate REFFLD keyword lines for a field
     function generateFieldReffldLines(field) {
         return (0,_modules_ui_generateFieldReffldLines_js__WEBPACK_IMPORTED_MODULE_85__.generateFieldReffldLinesUI)({
+            field
+        });
+    }
+
+    // Helper: Generate TEXT keyword lines for a field
+    function generateFieldTextLines(field) {
+        return (0,_modules_ui_generateFieldTextLines_js__WEBPACK_IMPORTED_MODULE_86__.generateFieldTextLinesUI)({
             field
         });
     }
@@ -3662,6 +3671,7 @@ __webpack_require__.r(__webpack_exports__);
         const cntfldLines = generateFieldCntfldLines(field);
         const msgidLines = generateFieldMsgidLines(field);
         const reffldLines = generateFieldReffldLines(field);
+        const textLines = generateFieldTextLines(field);
         
         // Build main line with indicators
         const mainLine = `     A${indicatorPrefix}${fieldNamePadded} ${typePartPadded} ${rowStr}${rowColSeparator}${colStr}${attributes}`;
@@ -3680,6 +3690,7 @@ __webpack_require__.r(__webpack_exports__);
             CNTFLD: cntfldLines,
             MSGID: msgidLines,
             REFFLD: reffldLines,
+            TEXT: textLines,
             COLOR: colorLines
         };
 
@@ -3694,6 +3705,7 @@ __webpack_require__.r(__webpack_exports__);
             'CNTFLD',
             'MSGID',
             'REFFLD',
+            'TEXT',
             'COLOR'
         ];
 
@@ -3854,7 +3866,7 @@ __webpack_require__.r(__webpack_exports__);
                 // Field lines have a recognizable pattern: field name (at least 3 chars) followed by type spec
                 // The type spec can be: "10A", "10", "10Y 0", or with spaces "64   O"
                 // Anchor to ^ and test against content from column 18 onwards to avoid matching
-                // keyword args (e.g. AUM 0025 inside MSGID(...)) as a field name pattern.
+                // keyword args (e.g. XXX 0001 inside MSGID(...)) as a field name pattern.
                 const hasFieldNameInLine = /^[A-Z_][A-Z0-9_@#$]{0,9}\s+(?:\d+[A-Z]?|L|T|Z|R)\b/i.test(line.substring(18).trim());
                 const hasAttributeKeyword = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex.test(trimmedLine);
                 const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
@@ -6663,13 +6675,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   REGENERATED_KEYWORDS_SET: () => (/* binding */ REGENERATED_KEYWORDS_SET),
 /* harmony export */   attributeContentRegex: () => (/* binding */ attributeContentRegex)
 /* harmony export */ });
-const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE', 'CNTFLD', 'MSGID', 'REFFLD'];
+const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE', 'CNTFLD', 'MSGID', 'REFFLD', 'TEXT'];
 const ATTRIBUTE_KEYWORDS_SET = new Set(ATTRIBUTE_KEYWORDS);
 const attributeContentRegex = new RegExp(`\\b(?:${ATTRIBUTE_KEYWORDS.join('|')})\\(`);
 
 // Keywords that are fully regenerated from Designer state during DDS updates.
 // Any keyword outside this set should be treated as unknown and preserved.
-const REGENERATED_KEYWORDS = ['COLOR', 'DSPATR', 'CHECK', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'VALUES', 'CNTFLD', 'MSGID', 'REFFLD'];
+const REGENERATED_KEYWORDS = ['COLOR', 'DSPATR', 'CHECK', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'VALUES', 'CNTFLD', 'MSGID', 'REFFLD', 'TEXT'];
 const REGENERATED_KEYWORDS_SET = new Set(REGENERATED_KEYWORDS);
 
 const CHECK_CHAR_CODES = ['ME', 'ER', 'MF', 'FE', 'RB', 'RZ', 'RL', 'LC'];
@@ -37945,17 +37957,17 @@ function showFieldProperties({
 
                     <div class="property-group msgid-value-group" style="display: none;">
                         <label>Message prefix</label>
-                        <input type="text" id="prop-msgid-prefix" maxlength="3" size="3" placeholder="e.g. AUM" />
+                        <input type="text" id="prop-msgid-prefix" maxlength="3" size="3" placeholder="" />
                     </div>
 
                     <div class="property-group msgid-value-group" style="display: none;">
                         <label>Message identifier</label>
-                        <input type="text" id="prop-msgid-identifier" maxlength="4" size="4" placeholder="e.g. 0425" />
+                        <input type="text" id="prop-msgid-identifier" maxlength="4" size="4" placeholder="" />
                     </div>
 
                     <div class="property-group msgid-value-group" style="display: none;">
                         <label>Message file</label>
-                        <input type="text" id="prop-msgid-file" maxlength="10" size="10" placeholder="e.g. FTLNGMSG" />
+                        <input type="text" id="prop-msgid-file" maxlength="10" size="10" placeholder="" />
                     </div>
 
                     <div class="property-group msgid-value-group" style="display: none;">
@@ -37974,22 +37986,37 @@ function showFieldProperties({
 
                     <div class="property-group reffld-value-group" style="display: none;">
                         <label>Reference format</label>
-                        <input type="text" id="prop-reffld-format" maxlength="10" size="10" placeholder="e.g. RACMST" />
+                        <input type="text" id="prop-reffld-format" maxlength="10" size="10" placeholder="" />
                     </div>
 
                     <div class="property-group reffld-value-group" style="display: none;">
                         <label>Reference field</label>
-                        <input type="text" id="prop-reffld-fieldname" maxlength="10" size="10" placeholder="e.g. ACMPRO" />
+                        <input type="text" id="prop-reffld-fieldname" maxlength="10" size="10" placeholder="" />
                     </div>
 
                     <div class="property-group reffld-value-group" style="display: none;">
                         <label>Reference file</label>
-                        <input type="text" id="prop-reffld-file" maxlength="10" size="10" placeholder="e.g. CUSTMST" />
+                        <input type="text" id="prop-reffld-file" maxlength="10" size="10" placeholder="" />
                     </div>
 
                     <div class="property-group reffld-value-group" style="display: none;">
                         <label>Reference library</label>
                         <input type="text" id="prop-reffld-library" maxlength="10" size="10" placeholder="e.g. *LIBL" />
+                    </div>
+                </div>
+
+                <div id="tab-text-keyword" class="tab-panel">
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-text-enabled" />
+                            Enable TEXT keyword
+                        </label>
+                    </div>
+
+                    <div class="property-group text-value-group" style="display: none;">
+                        <label>Description (up to 50 chars)</label>
+                        <textarea id="prop-text-value" rows="3" maxlength="200" placeholder=""></textarea>
+                        <small id="prop-text-counter" style="opacity: 0.8;">0 / 50</small>
                     </div>
                 </div>
             </div>
@@ -38029,6 +38056,12 @@ function showFieldProperties({
         dbrefBtn.setAttribute('data-tab', 'dbref');
         dbrefBtn.textContent = 'Database reference';
         tabsContainer.appendChild(dbrefBtn);
+
+        const textKeywordBtn = document.createElement('button');
+        textKeywordBtn.className = 'properties-tab';
+        textKeywordBtn.setAttribute('data-tab', 'text-keyword');
+        textKeywordBtn.textContent = 'TEXT keyword';
+        tabsContainer.appendChild(textKeywordBtn);
     }
 
     const usageSelect = document.getElementById('prop-usage');
@@ -38045,12 +38078,18 @@ function showFieldProperties({
     const msgidTabPanel = document.getElementById('tab-msgid');
     const dbrefTabBtn = document.querySelector('.properties-tab[data-tab="dbref"]');
     const dbrefTabPanel = document.getElementById('tab-dbref');
+    const textKeywordTabBtn = document.querySelector('.properties-tab[data-tab="text-keyword"]');
+    const textKeywordTabPanel = document.getElementById('tab-text-keyword');
     const reffldEnabledCheckbox = document.getElementById('prop-reffld-enabled');
     const reffldValueGroups = Array.from(document.querySelectorAll('.reffld-value-group'));
     const reffldFormatInput = document.getElementById('prop-reffld-format');
     const reffldFieldNameInput = document.getElementById('prop-reffld-fieldname');
     const reffldFileInput = document.getElementById('prop-reffld-file');
     const reffldLibraryInput = document.getElementById('prop-reffld-library');
+    const textEnabledCheckbox = document.getElementById('prop-text-enabled');
+    const textValueGroup = document.querySelector('.text-value-group');
+    const textValueInput = document.getElementById('prop-text-value');
+    const textCounter = document.getElementById('prop-text-counter');
     const checkCharGroups = Array.from(document.querySelectorAll('.check-char'));
     const checkNumGroups = Array.from(document.querySelectorAll('.check-num'));
     const checkCharTitles = Array.from(document.querySelectorAll('.check-char-title'));
@@ -38220,6 +38259,8 @@ function showFieldProperties({
             && usageSelect
             && (['character', 'double'].includes(selectedType) || isNumericType || isReferenceType);
 
+        const showTextKeyword = field.type !== 'keyword' && !field.isKeyword;
+
         if (dbrefTabBtn) {
             dbrefTabBtn.style.display = showDbRef ? 'inline-flex' : 'none';
         }
@@ -38229,6 +38270,21 @@ function showFieldProperties({
         if (!showDbRef && dbrefTabBtn && dbrefTabBtn.classList.contains('active')) {
             dbrefTabBtn.classList.remove('active');
             dbrefTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
+        }
+
+        if (textKeywordTabBtn) {
+            textKeywordTabBtn.style.display = showTextKeyword ? 'inline-flex' : 'none';
+        }
+        if (textKeywordTabPanel) {
+            textKeywordTabPanel.style.display = showTextKeyword ? '' : 'none';
+        }
+        if (!showTextKeyword && textKeywordTabBtn && textKeywordTabBtn.classList.contains('active')) {
+            textKeywordTabBtn.classList.remove('active');
+            textKeywordTabPanel?.classList.remove('active');
             const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
             const basicPanel = document.getElementById('tab-basic');
             basicTab?.classList.add('active');
@@ -38884,6 +38940,32 @@ function showFieldProperties({
         library: 10
     };
 
+    const applyTextLengthLimit = (value) => {
+        const source = String(value || '').replace(/\r/g, '');
+        let limited = '';
+        let count = 0;
+        for (const char of source) {
+            if (char === '\n') {
+                limited += char;
+                continue;
+            }
+            if (count >= 50) {
+                break;
+            }
+            limited += char;
+            count += 1;
+        }
+        return { limited, count };
+    };
+
+    const updateTextCounter = () => {
+        if (!textCounter || !textValueInput) {
+            return;
+        }
+        const count = textValueInput.value.replace(/\r/g, '').replace(/\n/g, '').length;
+        textCounter.textContent = `${Math.min(count, 50)} / 50`;
+    };
+
     const updateEdtcdeReplaceVisibility = () => {
         if (!edtcdeReplaceGroup) {
             return;
@@ -39111,6 +39193,43 @@ function showFieldProperties({
         });
     }
 
+    if (field.text && textEnabledCheckbox) {
+        textEnabledCheckbox.checked = true;
+        if (textValueGroup) {
+            textValueGroup.style.display = 'block';
+        }
+        if (textValueInput) {
+            const rawTextValue = typeof field.text.value === 'string'
+                ? field.text.value
+                : (typeof field.text.raw === 'string' ? field.text.raw : '');
+            const { limited } = applyTextLengthLimit(rawTextValue);
+            textValueInput.value = limited;
+        }
+        updateTextCounter();
+    }
+
+    if (textEnabledCheckbox) {
+        textEnabledCheckbox.addEventListener('change', function() {
+            if (textValueGroup) {
+                textValueGroup.style.display = this.checked ? 'block' : 'none';
+            }
+            if (this.checked && textValueInput) {
+                textValueInput.focus();
+            }
+        });
+    }
+
+    if (textValueInput) {
+        textValueInput.addEventListener('input', function() {
+            const { limited } = applyTextLengthLimit(this.value);
+            if (this.value !== limited) {
+                this.value = limited;
+            }
+            updateTextCounter();
+        });
+        updateTextCounter();
+    }
+
     setupIndicatorButtons();
 
     if (field.colorIndicators) {
@@ -39282,6 +39401,7 @@ function applyFieldProperties({
             edtcde: field.edtcde ? { ...field.edtcde } : undefined,
             edtwrd: field.edtwrd ? { ...field.edtwrd } : undefined,
             edtmsk: field.edtmsk ? { ...field.edtmsk } : undefined,
+            text: field.text ? JSON.parse(JSON.stringify(field.text)) : undefined,
             dft: field.dft ? { ...field.dft } : undefined,
                 values: field.values,
             dftval: field.dftval ? { ...field.dftval } : undefined,
@@ -39915,6 +40035,60 @@ function applyFieldProperties({
             delete field.reffld;
         }
 
+        const textEnabledCheckbox = document.getElementById('prop-text-enabled');
+        const textValueInput = document.getElementById('prop-text-value');
+        const previousText = oldField.text || null;
+        const canUseText = field.type !== 'keyword' && !field.isKeyword;
+
+        const limitTextTo50 = (value) => {
+            const source = String(value || '').replace(/\r/g, '');
+            let limited = '';
+            let count = 0;
+            for (const ch of source) {
+                if (ch === '\n') {
+                    limited += ch;
+                    continue;
+                }
+                if (count >= 50) {
+                    break;
+                }
+                limited += ch;
+                count += 1;
+            }
+            return limited;
+        };
+
+        if (canUseText && textEnabledCheckbox && textEnabledCheckbox.checked && textValueInput) {
+            const limitedValue = limitTextTo50(textValueInput.value);
+            const semanticValue = limitedValue.replace(/\n/g, '');
+
+            if (semanticValue.length > 0) {
+                const nextText = { value: limitedValue };
+                const previousValue = previousText && typeof previousText.value === 'string'
+                    ? previousText.value
+                    : '';
+
+                // Preserve exact raw multiline layout when semantic content is unchanged.
+                const sameAsPrevious = previousText
+                    && previousValue.replace(/\n/g, '') === semanticValue;
+
+                if (sameAsPrevious) {
+                    if (typeof previousText.raw === 'string' && previousText.raw.trim().length > 0) {
+                        nextText.raw = previousText.raw;
+                    }
+                    if (Array.isArray(previousText.rawLines) && previousText.rawLines.length > 0) {
+                        nextText.rawLines = previousText.rawLines.slice();
+                    }
+                }
+
+                field.text = nextText;
+            } else {
+                delete field.text;
+            }
+        } else {
+            delete field.text;
+        }
+
         const edtcdeForShift = field.edtcde && field.edtcde.value
             ? String(field.edtcde.value).trim().toUpperCase()
             : '';
@@ -39977,6 +40151,7 @@ function applyFieldProperties({
         const edtcdeChanged = JSON.stringify(oldField.edtcde || null) !== JSON.stringify(field.edtcde || null);
         const edtwrdChanged = JSON.stringify(oldField.edtwrd || null) !== JSON.stringify(field.edtwrd || null);
         const edtmskChanged = JSON.stringify(oldField.edtmsk || null) !== JSON.stringify(field.edtmsk || null);
+        const textChanged = JSON.stringify(oldField.text || null) !== JSON.stringify(field.text || null);
         const msgidChanged = JSON.stringify(oldField.msgid || null) !== JSON.stringify(field.msgid || null);
         // Compare REFFLD by semantic content (formatName/fieldName/file/library)
         const extractReffldKey = (r) => {
@@ -40041,12 +40216,13 @@ function applyFieldProperties({
             edtcdeChanged ||
             edtwrdChanged ||
             edtmskChanged ||
+            textChanged ||
             msgidChanged ||
             reffldChanged
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, msgid: ${msgidChanged}, reffld: ${reffldChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, text: ${textChanged}, msgid: ${msgidChanged}, reffld: ${reffldChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;
@@ -44308,7 +44484,7 @@ function scanAttributeLinesAfterField({
         includeChecks = false,
         preserveOriginalSpacing = false,
         stopOnFieldKeywordsRegex = null,
-        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/,
+        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(|TEXT\(/,
     } = options;
 
     if (!Array.isArray(field.keywordOrder)) {
@@ -44548,6 +44724,107 @@ function scanAttributeLinesAfterField({
         return true;
     };
 
+    const parseTextFromLine = (lineText, initialOffset) => {
+        if (!lineText) {
+            return null;
+        }
+
+        const textStart = lineText.search(/TEXT\(/i);
+        if (textStart < 0) {
+            return null;
+        }
+
+        const firstSegment = lineText.substring(textStart + 'TEXT('.length).trim();
+        if (!firstSegment) {
+            return null;
+        }
+
+        const rawLines = [];
+        const closedInFirst = firstSegment.indexOf(')');
+        if (closedInFirst >= 0) {
+            rawLines.push(firstSegment.substring(0, closedInFirst).trim());
+            return { rawLines, consumedOffset: initialOffset };
+        }
+
+        rawLines.push(firstSegment);
+        let lookaheadOffset = initialOffset;
+
+        while ((startIndex + lookaheadOffset + 1) < lines.length) {
+            const continuationLine = lines[startIndex + lookaheadOffset + 1];
+            const continuationTrimmed = continuationLine.trim();
+            const continuationContentAfter18 = continuationLine.length > 18
+                ? continuationLine.substring(18).trim()
+                : '';
+
+            const continuationIsComment = (continuationLine.length > 6 && continuationLine[5] === 'A' && continuationLine[6] === '*') ||
+                continuationTrimmed.startsWith('A*') ||
+                continuationTrimmed.startsWith('*') ||
+                continuationTrimmed.startsWith('-');
+            const continuationHasFieldName = /^[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(continuationContentAfter18);
+            const continuationIsRecordDef = continuationTrimmed.match(/^A\s+R\s+\w+/);
+            const continuationIsBlank = continuationTrimmed === '' || continuationTrimmed === 'A';
+
+            if (continuationIsComment || continuationHasFieldName || continuationIsRecordDef || continuationIsBlank) {
+                break;
+            }
+
+            const continuationKeywordArea = extractKeywordArea(continuationLine);
+            if (!continuationKeywordArea) {
+                break;
+            }
+
+            const closeIndex = continuationKeywordArea.indexOf(')');
+            if (closeIndex >= 0) {
+                const contentBeforeClose = continuationKeywordArea.substring(0, closeIndex).trim();
+                if (contentBeforeClose.length > 0) {
+                    rawLines.push(contentBeforeClose);
+                } else if (rawLines.length > 0) {
+                    rawLines.push(')');
+                }
+                lookaheadOffset++;
+                return { rawLines, consumedOffset: lookaheadOffset };
+            }
+
+            const trimmedContinuation = continuationKeywordArea.trim();
+            if (trimmedContinuation.length > 0) {
+                rawLines.push(trimmedContinuation);
+            }
+            lookaheadOffset++;
+        }
+
+        return {
+            rawLines,
+            consumedOffset: lookaheadOffset
+        };
+    };
+
+    const parseAndAssignText = (rawLines, lineOffsetForLog) => {
+        const rawText = rawLines.join(' ').replace(/\s+/g, ' ').trim();
+        if (rawText.length <= 0) {
+            return false;
+        }
+
+        const compacted = rawText.replace(/\s*[+-]\s*/g, '');
+        let textValue = '';
+
+        const fullyQuoted = compacted.match(/^'((?:''|[^'])*)'$/);
+        if (fullyQuoted) {
+            textValue = fullyQuoted[1].replace(/''/g, "'");
+        } else {
+            const firstQuoted = compacted.match(/'((?:''|[^'])*)'/);
+            textValue = firstQuoted ? firstQuoted[1].replace(/''/g, "'") : compacted;
+        }
+
+        field.text = {
+            value: textValue,
+            raw: rawText,
+            rawLines: rawLines.slice()
+        };
+
+        Logger.parse(`Found TEXT(${rawText}) for ${contextLabel} field ${field.name} at offset ${lineOffsetForLog}`);
+        return true;
+    };
+
     let lineOffset = 1;
 
     // Some DDS files define REFFLD inline on the field line and continue it
@@ -44578,6 +44855,15 @@ function scanAttributeLinesAfterField({
             // still try to advance lineOffset to skip the continuation
             lineOffset = Math.max(lineOffset, 2);
             Logger.parse(`[SAFETY] Advancing lineOffset for inline MSGID without close: ${inlineMsgid.rawLines[0]}`);
+        }
+    }
+
+    const inlineText = parseTextFromLine(baseLine, 0);
+    if (inlineText && inlineText.rawLines.length > 0) {
+        addKeywordOrder('TEXT');
+        parseAndAssignText(inlineText.rawLines, 0);
+        if (inlineText.consumedOffset >= 1) {
+            lineOffset = Math.max(lineOffset, inlineText.consumedOffset + 1);
         }
     }
 
@@ -44953,6 +45239,14 @@ function scanAttributeLinesAfterField({
             addKeywordOrder('CNTFLD');
             field.cntfld = { value: cntfldValue };
             Logger.parse(`Found CNTFLD(${field.cntfld.value}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
+
+        const parsedText = parseTextFromLine(nextLine, lineOffset);
+        if (parsedText && parsedText.rawLines.length > 0) {
+            addKeywordOrder('TEXT');
+            if (parseAndAssignText(parsedText.rawLines, lineOffset) && parsedText.consumedOffset > lineOffset) {
+                lineOffset = parsedText.consumedOffset;
+            }
         }
 
         const parsedMsgid = parseMsgidFromLine(nextLine, lineOffset);
@@ -46296,6 +46590,106 @@ function applyIndicatorChangesToFieldUI({
             }
         });
     }
+}
+
+
+/***/ }),
+/* 103 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldTextLinesUI: () => (/* binding */ generateFieldTextLinesUI)
+/* harmony export */ });
+// Generate TEXT keyword lines for a field
+function generateFieldTextLinesUI({ field }) {
+    if (!field || !field.text) {
+        return [];
+    }
+
+    const textKeyword = field.text;
+
+    const contentLines = Array.isArray(textKeyword.rawLines)
+        ? textKeyword.rawLines.filter(line => line && line.trim().length > 0 && line !== ')')
+        : [];
+    const hasClosureMarker = Array.isArray(textKeyword.rawLines) && textKeyword.rawLines.includes(')');
+    const wasMultilineRaw = Array.isArray(textKeyword.rawLines) && (textKeyword.rawLines.length > 1 || hasClosureMarker);
+
+    // Preserve original multiline shape when parser captured raw lines.
+    if (wasMultilineRaw && contentLines.length >= 1) {
+        const lines = [];
+        lines.push(`     A                                      TEXT(${contentLines[0]}`);
+
+        for (let i = 1; i < contentLines.length - 1; i++) {
+            lines.push(`     A                                      ${contentLines[i]}`);
+        }
+
+        if (contentLines.length > 1) {
+            lines.push(`     A                                      ${contentLines[contentLines.length - 1]})`);
+        } else if (hasClosureMarker) {
+            lines.push('     A                                      )');
+        }
+
+        return lines;
+    }
+
+    if (typeof textKeyword.raw === 'string' && textKeyword.raw.trim().length > 0) {
+        return [`     A                                      TEXT(${textKeyword.raw})`];
+    }
+
+    if (typeof textKeyword.value !== 'string') {
+        return [];
+    }
+
+    const escapeSingleQuotes = (value) => String(value).replace(/'/g, "''");
+
+    // DDS TEXT supports up to 50 content characters.
+    const input = textKeyword.value.replace(/\r/g, '');
+    let limited = '';
+    let countedChars = 0;
+    for (const ch of input) {
+        if (ch === '\n') {
+            limited += ch;
+            continue;
+        }
+        if (countedChars >= 50) {
+            break;
+        }
+        limited += ch;
+        countedChars += 1;
+    }
+
+    const rawLogicalLines = limited.split('\n').map(escapeSingleQuotes);
+    const segments = [];
+    const maxSegmentLength = 28;
+
+    rawLogicalLines.forEach((line) => {
+        if (line.length === 0) {
+            segments.push('');
+            return;
+        }
+        for (let i = 0; i < line.length; i += maxSegmentLength) {
+            segments.push(line.slice(i, i + maxSegmentLength));
+        }
+    });
+
+    const finalSegments = segments.filter((segment, index) => segment.length > 0 || segments.length === 1 || index === segments.length - 1);
+
+    if (finalSegments.length <= 1) {
+        const single = finalSegments[0] || '';
+        return [`     A                                      TEXT('${single}')`];
+    }
+
+    const lines = [];
+    lines.push(`     A                                      TEXT('${finalSegments[0]}-`);
+
+    for (let i = 1; i < finalSegments.length - 1; i++) {
+        lines.push(`     A                                      ${finalSegments[i]}-`);
+    }
+
+    lines.push(`     A                                      ${finalSegments[finalSegments.length - 1]}')`);
+    return lines;
 }
 
 
