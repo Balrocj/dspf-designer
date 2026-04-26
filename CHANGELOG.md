@@ -8,7 +8,6 @@ All notable changes to the "dspf-designer" extension will be documented in this 
 - Added support the TEXT keyword for fields in the designer. The TEXT keyword allows you to specify a text description for a field, which can be used for documentation purposes or to provide additional context about the field's purpose.
 - Logic is added to preserve the original order of keywords when editing, updating, or moving a field in the designer view.
 
-
 ## [2.3.0] - 2026-04-25
 ### ✨ Added
 -Added suport for MSGID keyword. The designer now supports the MSGID keyword for message subfiles, allowing you to specify a message identifier for subfile records.
