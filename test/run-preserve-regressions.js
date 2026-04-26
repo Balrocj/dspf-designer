@@ -12,7 +12,8 @@ const tests = [
     'run-reffld-regression.js',
     'run-relative-plus-normalization.js',
     'run-window-comment-ignore.js',
-    'run-sfl-multiline-rowspan.js'
+    'run-sfl-multiline-rowspan.js',
+    'run-keyword-position-preservation.js'
 ];
 
 function runOne(scriptName) {

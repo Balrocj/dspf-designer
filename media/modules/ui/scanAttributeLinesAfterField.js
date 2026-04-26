@@ -69,12 +69,15 @@ export function scanAttributeLinesAfterField({
         while ((startIndex + lookaheadOffset + 1) < lines.length) {
             const continuationLine = lines[startIndex + lookaheadOffset + 1];
             const continuationTrimmed = continuationLine.trim();
+            const continuationContentAfter18 = continuationLine.length > 18
+                ? continuationLine.substring(18).trim()
+                : '';
 
             const continuationIsComment = (continuationLine.length > 6 && continuationLine[5] === 'A' && continuationLine[6] === '*') ||
                 continuationTrimmed.startsWith('A*') ||
                 continuationTrimmed.startsWith('*') ||
                 continuationTrimmed.startsWith('-');
-            const continuationHasFieldName = /\b[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(continuationTrimmed);
+            const continuationHasFieldName = /^[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(continuationContentAfter18);
             const continuationIsRecordDef = continuationTrimmed.match(/^A\s+R\s+\w+/);
             const continuationIsBlank = continuationTrimmed === '' || continuationTrimmed === 'A';
 
@@ -89,12 +92,27 @@ export function scanAttributeLinesAfterField({
 
             const closeIndex = continuationKeywordArea.indexOf(')');
             if (closeIndex >= 0) {
-                rawLines.push(continuationKeywordArea.substring(0, closeIndex).trim());
+                // Extract content before the closing ")"
+                const contentBeforeClose = continuationKeywordArea.substring(0, closeIndex).trim();
+                
+                // Add content if there's something before the ")"
+                if (contentBeforeClose.length > 0) {
+                    rawLines.push(contentBeforeClose);
+                } else if (rawLines.length > 0) {
+                    // Empty content with ) means closing marker: preserve multiline structure
+                    // by pushing the ")" as a marker so generator knows this was multiline
+                    rawLines.push(')');
+                }
+                
                 lookaheadOffset++;
                 return { rawLines, consumedOffset: lookaheadOffset };
             }
 
-            rawLines.push(continuationKeywordArea.trim());
+            // Only add non-empty continuation lines
+            const trimmedContinuation = continuationKeywordArea.trim();
+            if (trimmedContinuation.length > 0) {
+                rawLines.push(trimmedContinuation);
+            }
             lookaheadOffset++;
         }
 
@@ -102,6 +120,139 @@ export function scanAttributeLinesAfterField({
             rawLines,
             consumedOffset: lookaheadOffset
         };
+    };
+
+    const parseMsgidFromLine = (lineText, initialOffset) => {
+        if (!lineText) {
+            return null;
+        }
+
+        const msgidStart = lineText.search(/MSGID\(/i);
+        if (msgidStart < 0) {
+            return null;
+        }
+
+        const firstSegment = lineText.substring(msgidStart + 'MSGID('.length).trim();
+        if (!firstSegment) {
+            return null;
+        }
+
+        const rawLines = [];
+        const closedInFirst = firstSegment.indexOf(')');
+        if (closedInFirst >= 0) {
+            rawLines.push(firstSegment.substring(0, closedInFirst).trim());
+            return { rawLines, consumedOffset: initialOffset };
+        }
+
+        rawLines.push(firstSegment);
+        let lookaheadOffset = initialOffset;
+
+        while ((startIndex + lookaheadOffset + 1) < lines.length) {
+            const continuationLine = lines[startIndex + lookaheadOffset + 1];
+            const continuationTrimmed = continuationLine.trim();
+            const continuationContentAfter18 = continuationLine.length > 18
+                ? continuationLine.substring(18).trim()
+                : '';
+
+            const continuationIsComment = (continuationLine.length > 6 && continuationLine[5] === 'A' && continuationLine[6] === '*') ||
+                continuationTrimmed.startsWith('A*') ||
+                continuationTrimmed.startsWith('*') ||
+                continuationTrimmed.startsWith('-');
+            const continuationHasFieldName = /^[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(continuationContentAfter18);
+            const continuationIsRecordDef = continuationTrimmed.match(/^A\s+R\s+\w+/);
+            const continuationIsBlank = continuationTrimmed === '' || continuationTrimmed === 'A';
+
+            if (continuationIsComment || continuationHasFieldName || continuationIsRecordDef || continuationIsBlank) {
+                break;
+            }
+
+            const continuationKeywordArea = extractKeywordArea(continuationLine);
+            if (!continuationKeywordArea) {
+                break;
+            }
+
+            const closeIndex = continuationKeywordArea.indexOf(')');
+            if (closeIndex >= 0) {
+                // Extract content before the closing ")"
+                const contentBeforeClose = continuationKeywordArea.substring(0, closeIndex).trim();
+                
+                // Only add content if there's something before the ")"
+                if (contentBeforeClose.length > 0) {
+                    rawLines.push(contentBeforeClose);
+                }
+                
+                lookaheadOffset++;
+                return { rawLines, consumedOffset: lookaheadOffset };
+            }
+
+            // Only add non-empty continuation lines
+            const trimmedContinuation = continuationKeywordArea.trim();
+            if (trimmedContinuation.length > 0) {
+                rawLines.push(trimmedContinuation);
+            }
+            lookaheadOffset++;
+        }
+
+        return {
+            rawLines,
+            consumedOffset: lookaheadOffset
+        };
+    };
+
+    const parseAndAssignMsgid = (rawLines, lineOffsetForLog) => {
+        const rawMsgid = rawLines.join(' ').replace(/\s+/g, ' ').trim();
+        if (rawMsgid.length <= 0) {
+            return false;
+        }
+
+        const tokens = rawMsgid.split(/\s+/).filter(Boolean);
+        let prefix = '';
+        let messageId = '';
+        let fileToken = '';
+        let nextTokenIndex = 0;
+
+        const compactFirstToken = tokens.length > 0 ? tokens[0].match(/^([A-Z]+)(\d+)$/i) : null;
+        if (compactFirstToken) {
+            prefix = compactFirstToken[1];
+            messageId = compactFirstToken[2];
+            nextTokenIndex = 1;
+        } else if (tokens.length >= 2) {
+            prefix = tokens[0];
+            messageId = tokens[1];
+            nextTokenIndex = 2;
+        }
+
+        if (prefix && messageId && tokens.length > nextTokenIndex) {
+            fileToken = tokens[nextTokenIndex];
+        }
+
+        if (!prefix || !messageId) {
+            return false;
+        }
+
+        let file = '';
+        let library = '';
+
+        if (fileToken) {
+            if (fileToken.includes('/')) {
+                const [libPart, filePart] = fileToken.split('/');
+                library = (libPart || '').trim();
+                file = (filePart || '').trim();
+            } else {
+                file = fileToken.trim();
+            }
+        }
+
+        field.msgid = {
+            prefix,
+            messageId,
+            file,
+            library,
+            raw: rawMsgid,
+            rawLines: rawLines.slice()
+        };
+        Logger.parse(`Found MSGID(${rawMsgid}) for ${contextLabel} field ${field.name} at offset ${lineOffsetForLog}`);
+        return true;
     };
 
     let lineOffset = 1;
@@ -121,6 +272,20 @@ export function scanAttributeLinesAfterField({
             lineOffset = inlineReffld.consumedOffset + 1;
         }
         Logger.parse(`Found multiline inline REFFLD for ${contextLabel} field ${field.name}: ${inlineReffld.rawLines.join(' | ')}`);
+    }
+
+    const inlineMsgid = parseMsgidFromLine(baseLine, 0);
+    if (inlineMsgid && inlineMsgid.rawLines.length > 0) {
+        addKeywordOrder('MSGID');
+        parseAndAssignMsgid(inlineMsgid.rawLines, 0);
+        if (inlineMsgid.consumedOffset >= 1) {
+            lineOffset = Math.max(lineOffset, inlineMsgid.consumedOffset + 1);
+        } else if (inlineMsgid.rawLines.length > 0 && inlineMsgid.rawLines[0] && !inlineMsgid.rawLines[0].includes(')')) {
+            // SAFETY: If inline MSGID doesn't close on same line but we don't have consumedOffset,
+            // still try to advance lineOffset to skip the continuation
+            lineOffset = Math.max(lineOffset, 2);
+            Logger.parse(`[SAFETY] Advancing lineOffset for inline MSGID without close: ${inlineMsgid.rawLines[0]}`);
+        }
     }
 
     while (startIndex + lineOffset < lines.length) {
@@ -497,54 +662,11 @@ export function scanAttributeLinesAfterField({
             Logger.parse(`Found CNTFLD(${field.cntfld.value}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
-        const msgidMatch = nextLine.match(/MSGID\(([^)]*)\)/i);
-        if (msgidMatch) {
+        const parsedMsgid = parseMsgidFromLine(nextLine, lineOffset);
+        if (parsedMsgid && parsedMsgid.rawLines.length > 0) {
             addKeywordOrder('MSGID');
-            const rawMsgid = msgidMatch[1].trim().replace(/\s+/g, ' ');
-            if (rawMsgid.length > 0) {
-                const tokens = rawMsgid.split(/\s+/).filter(Boolean);
-                let prefix = '';
-                let messageId = '';
-                let fileToken = '';
-                let nextTokenIndex = 0;
-
-                const compactFirstToken = tokens.length > 0 ? tokens[0].match(/^([A-Z]+)(\d+)$/i) : null;
-                if (compactFirstToken) {
-                    prefix = compactFirstToken[1];
-                    messageId = compactFirstToken[2];
-                    nextTokenIndex = 1;
-                } else if (tokens.length >= 2) {
-                    prefix = tokens[0];
-                    messageId = tokens[1];
-                    nextTokenIndex = 2;
-                }
-
-                if (prefix && messageId && tokens.length > nextTokenIndex) {
-                    fileToken = tokens[nextTokenIndex];
-                }
-
-                if (prefix && messageId) {
-                    let file = '';
-                    let library = '';
-
-                    if (fileToken) {
-                        if (fileToken.includes('/')) {
-                            const [libPart, filePart] = fileToken.split('/');
-                            library = (libPart || '').trim();
-                            file = (filePart || '').trim();
-                        } else {
-                            file = fileToken.trim();
-                        }
-                    }
-
-                    field.msgid = {
-                        prefix,
-                        messageId,
-                        file,
-                        library
-                    };
-                    Logger.parse(`Found MSGID(${rawMsgid}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
-                }
+            if (parseAndAssignMsgid(parsedMsgid.rawLines, lineOffset) && parsedMsgid.consumedOffset > lineOffset) {
+                lineOffset = parsedMsgid.consumedOffset;
             }
         }
 

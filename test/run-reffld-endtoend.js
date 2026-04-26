@@ -52,7 +52,7 @@ function createHarness() {
 function run() {
     try {
         const tests = createHarness();
-        if (!tests) throw new Error('No test exports found');
+        if (!tests) {throw new Error('No test exports found');}
 
         const { 
             setCurrentDocument, 

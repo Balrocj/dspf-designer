@@ -11,13 +11,26 @@ export function generateFieldReffldLinesUI({ field }) {
     // Example:
     //   REFFLD(RCNTRCNT/CNTNME +
     //          *LIBL/CNTRLCNT)
-    if (Array.isArray(reffld.rawLines) && reffld.rawLines.length > 1) {
+    // Preserve parsed segments exactly, only dropping truly empty lines.
+    const contentLines = reffld.rawLines ? reffld.rawLines.filter(line => line && line.trim().length > 0 && line !== ')') : [];
+    const hasClosureMarker = reffld.rawLines && reffld.rawLines.includes(')');
+
+    const wasMultiline = reffld.rawLines && (reffld.rawLines.length > 1 || hasClosureMarker);
+
+    if (wasMultiline && contentLines.length >= 1) {
         const lines = [];
-        lines.push(`     A                                      REFFLD(${reffld.rawLines[0]}`);
-        for (let i = 1; i < reffld.rawLines.length - 1; i++) {
-            lines.push(`     A                                      ${reffld.rawLines[i]}`);
+        lines.push(`     A                                      REFFLD(${contentLines[0]}`);
+
+        for (let i = 1; i < contentLines.length - 1; i++) {
+            lines.push(`     A                                      ${contentLines[i]}`);
         }
-        lines.push(`     A                                      ${reffld.rawLines[reffld.rawLines.length - 1]})`);
+
+        if (contentLines.length > 1) {
+            lines.push(`     A                                      ${contentLines[contentLines.length - 1]})`);
+        } else if (hasClosureMarker) {
+            lines.push(`     A                                      )`);
+        }
+
         return lines;
     }
 

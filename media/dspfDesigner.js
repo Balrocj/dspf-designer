@@ -2865,7 +2865,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             // Preserve only comments and UNKNOWN keywords (e.g., OVERLAY, KEEP) after the field
             const blockLines = lines.slice(fieldBlock.startLine, fieldBlock.endLine + 1);
             const preservedExtras = [];
-            const reffldContinuationLinesToSkip = new Set();
+            const multilineKeywordContinuationLinesToSkip = new Set();
 
             if (searchField && searchField.reffld && Array.isArray(searchField.reffld.rawLines) && searchField.reffld.rawLines.length > 1) {
                 const reffldRawLines = searchField.reffld.rawLines;
@@ -2873,7 +2873,17 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                     const continuationText = i === reffldRawLines.length - 1
                         ? `${reffldRawLines[i]})`
                         : reffldRawLines[i];
-                    reffldContinuationLinesToSkip.add((continuationText || '').trim());
+                    multilineKeywordContinuationLinesToSkip.add((continuationText || '').trim());
+                }
+            }
+
+            if (searchField && searchField.msgid && Array.isArray(searchField.msgid.rawLines) && searchField.msgid.rawLines.length > 1) {
+                const msgidRawLines = searchField.msgid.rawLines;
+                for (let i = 1; i < msgidRawLines.length; i++) {
+                    const continuationText = i === msgidRawLines.length - 1
+                        ? `${msgidRawLines[i]})`
+                        : msgidRawLines[i];
+                    multilineKeywordContinuationLinesToSkip.add((continuationText || '').trim());
                 }
             }
 
@@ -2895,9 +2905,9 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 const contentAfter43 = line.length > 43 ? line.substring(43).trim() : '';
                 const contentAfter18 = line.length > 18 ? line.substring(18).trim() : '';
 
-                if (contentAfter43 && reffldContinuationLinesToSkip.has(contentAfter43)) {
+                if (contentAfter43 && multilineKeywordContinuationLinesToSkip.has(contentAfter43)) {
                     pendingIndicatorLines = [];
-                    Logger.dds(`Skipping multiline REFFLD continuation line ${globalIndex + 1}: "${contentAfter43}"`);
+                    Logger.dds(`Skipping multiline regenerated continuation line ${globalIndex + 1}: "${contentAfter43}"`);
                     return;
                 }
 

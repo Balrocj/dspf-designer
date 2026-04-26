@@ -528,6 +528,7 @@ export function applyFieldProperties({
         const msgidIdentifierInput = document.getElementById('prop-msgid-identifier');
         const msgidFileInput = document.getElementById('prop-msgid-file');
         const msgidLibraryInput = document.getElementById('prop-msgid-library');
+        const previousMsgid = oldField.msgid || null;
         const isTextType = ['character', 'double'].includes(field.dataType);
         const isNumericMsgidType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(field.dataType);
         const canUseMsgid = field.type !== 'constant'
@@ -546,12 +547,30 @@ export function applyFieldProperties({
             const library = getLimitedMsgidValue(msgidLibraryInput, 10);
 
             if (prefix && messageId) {
-                field.msgid = {
+                const nextMsgid = {
                     prefix,
                     messageId,
                     file,
                     library
                 };
+
+                // Preserve multiline/raw formatting when MSGID semantic values are unchanged.
+                const sameAsPrevious = previousMsgid
+                    && previousMsgid.prefix === prefix
+                    && previousMsgid.messageId === messageId
+                    && (previousMsgid.file || '') === file
+                    && (previousMsgid.library || '') === library;
+
+                if (sameAsPrevious) {
+                    if (typeof previousMsgid.raw === 'string' && previousMsgid.raw.trim().length > 0) {
+                        nextMsgid.raw = previousMsgid.raw;
+                    }
+                    if (Array.isArray(previousMsgid.rawLines) && previousMsgid.rawLines.length > 0) {
+                        nextMsgid.rawLines = previousMsgid.rawLines.slice();
+                    }
+                }
+
+                field.msgid = nextMsgid;
             } else {
                 delete field.msgid;
             }

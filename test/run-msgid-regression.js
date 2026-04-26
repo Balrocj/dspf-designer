@@ -174,6 +174,59 @@ function run() {
             );
         }
 
+        // ── TEST 5: Multiline MSGID continuation must stay multiline without duplicates ──
+        {
+            const sample = [
+                '     A          R PRUEBA',
+                '     A            FLD006        10A  O  5 10',
+                '     A                                      MSGID(WWM0049 +',
+                '     A                                      *LIBL/FTLNGMSG)',
+                '     A                                      DSPATR(HI)'
+            ].join('\n');
+
+            setCurrentRecord('PRUEBA');
+            setCurrentDocument(sample);
+
+            const oldField = {
+                name: 'FLD006',
+                row: 5,
+                col: 10,
+                dataType: 'character',
+                usage: 'O',
+                length: 10,
+                attributes: { highIntensity: true },
+                msgid: {
+                    prefix: 'WWM',
+                    messageId: '0049',
+                    file: 'FTLNGMSG',
+                    library: '*LIBL',
+                    raw: 'WWM0049 + *LIBL/FTLNGMSG',
+                    rawLines: ['WWM0049 +', '*LIBL/FTLNGMSG']
+                },
+                keywordOrder: ['MSGID', 'DSPATR']
+            };
+            const movedField = { ...oldField, row: 6 };
+
+            updateFieldInDds(movedField, oldField);
+            const doc = getCurrentDocument();
+
+            assert.ok(
+                doc.includes('MSGID(WWM0049 +'),
+                `Multiline MSGID should keep first continuation line. Got:\n${doc}`
+            );
+            assert.ok(
+                doc.includes('*LIBL/FTLNGMSG)'),
+                `Multiline MSGID should keep second continuation line. Got:\n${doc}`
+            );
+
+            const continuationOccurrences = (doc.match(/\*LIBL\/FTLNGMSG\)/g) || []).length;
+            assert.strictEqual(
+                continuationOccurrences,
+                1,
+                `Multiline MSGID continuation must not be duplicated. Found ${continuationOccurrences}. Got:\n${doc}`
+            );
+        }
+
         console.log('PASS: run-msgid-regression.js');
         process.exit(0);
     } catch (err) {
