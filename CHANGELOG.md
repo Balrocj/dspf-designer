@@ -2,7 +2,7 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
-## [2.5.0] - 2026-05-01
+## [2.5.0] - 2026-04-26
 ### ✨ Added
 - Added new button to go to settings in the properties panel.
 
