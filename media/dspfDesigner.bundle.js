@@ -89,9 +89,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_ui_generateFieldDftLines_js__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(96);
 /* harmony import */ var _modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_82__ = __webpack_require__(97);
 /* harmony import */ var _modules_ui_generateFieldCntfldLines_js__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(98);
-/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(99);
-/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_85__ = __webpack_require__(100);
+/* harmony import */ var _modules_ui_generateFieldMsgidLines_js__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(99);
+/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_85__ = __webpack_require__(100);
+/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_86__ = __webpack_require__(101);
 /* module decorator */ module = __webpack_require__.hmd(module);
+
 
 
 
@@ -1487,7 +1489,7 @@ __webpack_require__.r(__webpack_exports__);
                         startIndex: index,
                         field,
                         contextLabel: 'PREVIEW',
-                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(/
+                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/
                     });
                     
                     _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Parsed preview field: ${field.name} (${field.type}) at ${field.row},${field.col} for record ${currentRecordName}`);
@@ -1572,8 +1574,9 @@ __webpack_require__.r(__webpack_exports__);
                                 field,
                                 contextLabel: 'PREVIEW-COMPANION',
                                 includeDftval: true,
-                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(/,
+                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/,
                                 stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|RANGE\()/
+
                             });
                             
                             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Preview: Parsed companion field: ${field.name} at ${field.row},${field.col} with color=${field.color}, attrs=${field.attributes ? Object.keys(field.attributes).join(',') : 'none'}`);
@@ -3136,7 +3139,7 @@ __webpack_require__.r(__webpack_exports__);
     
     // Helper: Generate a DDS line with optional indicators
     function generateDdsLineWithIndicators(keyword, indicatorsOrGroups) {
-        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_84__.generateDdsLineWithIndicatorsUI)({
+        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_85__.generateDdsLineWithIndicatorsUI)({
             keyword,
             indicatorsOrGroups,
             IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils
@@ -3146,7 +3149,7 @@ __webpack_require__.r(__webpack_exports__);
     // Helper: Apply indicator changes from indicatorConfigurations Map back to field object
     // This ensures that any edits made through the IBM i modal are reflected in DDS generation
     function applyIndicatorChangesToField(field) {
-        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_85__.applyIndicatorChangesToFieldUI)({
+        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_86__.applyIndicatorChangesToFieldUI)({
             field,
             indicatorConfigurations,
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
@@ -3212,6 +3215,12 @@ __webpack_require__.r(__webpack_exports__);
     // Helper: Generate CNTFLD keyword lines for a field
     function generateFieldCntfldLines(field) {
         return (0,_modules_ui_generateFieldCntfldLines_js__WEBPACK_IMPORTED_MODULE_83__.generateFieldCntfldLinesUI)({
+            field
+        });
+    }
+
+    function generateFieldMsgidLines(field) {
+        return (0,_modules_ui_generateFieldMsgidLines_js__WEBPACK_IMPORTED_MODULE_84__.generateFieldMsgidLinesUI)({
             field
         });
     }
@@ -3614,6 +3623,7 @@ __webpack_require__.r(__webpack_exports__);
         const dftLines = generateFieldDftLines(field);
         const dftvalLines = generateFieldDftvalLines(field);
         const cntfldLines = generateFieldCntfldLines(field);
+        const msgidLines = generateFieldMsgidLines(field);
         
         // Build main line with indicators
         const mainLine = `     A${indicatorPrefix}${fieldNamePadded} ${typePartPadded} ${rowStr}${rowColSeparator}${colStr}${attributes}`;
@@ -3628,9 +3638,10 @@ __webpack_require__.r(__webpack_exports__);
         const dftLinesStr = dftLines.length > 0 ? '\n' + dftLines.join('\n') : '';
         const dftvalLinesStr = dftvalLines.length > 0 ? '\n' + dftvalLines.join('\n') : '';
         const cntfldLinesStr = cntfldLines.length > 0 ? '\n' + cntfldLines.join('\n') : '';
+        const msgidLinesStr = msgidLines.length > 0 ? '\n' + msgidLines.join('\n') : '';
         const colorLinesStr = colorLines.length > 0 ? '\n' + colorLines.join('\n') : '';
 
-        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + valuesLinesStr + dftLinesStr + dftvalLinesStr + cntfldLinesStr + colorLinesStr;
+        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + valuesLinesStr + dftLinesStr + dftvalLinesStr + cntfldLinesStr + msgidLinesStr + colorLinesStr;
         
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Generated DDS: name="${field.name}" padded="${fieldNamePadded}" type="${typeAndUsage}" padded="${typePartPadded}"`);
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Full line(s): "${result}"`);
@@ -3728,7 +3739,9 @@ __webpack_require__.r(__webpack_exports__);
                 // These lines don't have field names like "A FIELDNAME 10A"
                 // Field lines have a recognizable pattern: field name (at least 3 chars) followed by type spec
                 // The type spec can be: "10A", "10", "10Y 0", or with spaces "64   O"
-                const hasFieldNameInLine = /\b[A-Z][A-Z0-9_@#$]{0,9}\s+(?:\d+[A-Z]?|L|T|Z|R)\b/i.test(trimmedLine);
+                // Anchor to ^ and test against content from column 18 onwards to avoid matching
+                // keyword args (e.g. AUM 0025 inside MSGID(...)) as a field name pattern.
+                const hasFieldNameInLine = /^[A-Z_][A-Z0-9_@#$]{0,9}\s+(?:\d+[A-Z]?|L|T|Z|R)\b/i.test(line.substring(18).trim());
                 const hasAttributeKeyword = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex.test(trimmedLine);
                 const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
                 const hasHiddenUsage = /\b(?:\d+[A-Z]?|L|T|Z|R)\s+(?:\d+H|H)(?:\s|$)/i.test(trimmedLine);
@@ -3904,7 +3917,7 @@ __webpack_require__.r(__webpack_exports__);
                         trimmedLine.includes('SFLCTL')
                     );
                     
-                    const hasFieldNameInLine = /\b[A-Z][A-Z0-9_@#$]{0,9}\s+(?:\d+[A-Z]?|L|T|Z|R)\b/i.test(trimmedLine);
+                    const hasFieldNameInLine = /^[A-Z_][A-Z0-9_@#$]{0,9}\s+(?:\d+[A-Z]?|L|T|Z|R)\b/i.test(line.substring(18).trim());
                     const hasAttributeKeyword = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex.test(trimmedLine);
                     const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
                     const hasHiddenUsage = /\b(?:\d+[A-Z]?|L|T|Z|R)\s+(?:\d+H|H)(?:\s|$)/i.test(trimmedLine);
@@ -4674,6 +4687,55 @@ __webpack_require__.r(__webpack_exports__);
         if (/^\d{3}$/.test(cntfldValue)) {
             fieldObj.cntfld = { value: cntfldValue };
             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline CNTFLD(${fieldObj.cntfld.value}) for field ${fieldName}`);
+        }
+
+        const msgidMatch = line.match(/MSGID\(([^)]*)\)/i);
+        if (msgidMatch) {
+            const rawMsgid = msgidMatch[1].trim().replace(/\s+/g, ' ');
+            if (rawMsgid.length > 0) {
+                const tokens = rawMsgid.split(/\s+/).filter(Boolean);
+                let prefix = '';
+                let messageId = '';
+                let fileToken = '';
+                let nextTokenIndex = 0;
+
+                const compactFirstToken = tokens.length > 0 ? tokens[0].match(/^([A-Z]+)(\d+)$/i) : null;
+                if (compactFirstToken) {
+                    prefix = compactFirstToken[1];
+                    messageId = compactFirstToken[2];
+                    nextTokenIndex = 1;
+                } else if (tokens.length >= 2) {
+                    prefix = tokens[0];
+                    messageId = tokens[1];
+                    nextTokenIndex = 2;
+                }
+
+                if (prefix && messageId && tokens.length > nextTokenIndex) {
+                    fileToken = tokens[nextTokenIndex];
+                }
+
+                if (prefix && messageId) {
+                    let file = '';
+                    let library = '';
+                    if (fileToken) {
+                        if (fileToken.includes('/')) {
+                            const [libPart, filePart] = fileToken.split('/');
+                            library = (libPart || '').trim();
+                            file = (filePart || '').trim();
+                        } else {
+                            file = fileToken.trim();
+                        }
+                    }
+
+                    fieldObj.msgid = {
+                        prefix,
+                        messageId,
+                        file,
+                        library
+                    };
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found inline MSGID(${rawMsgid}) for field ${fieldName}`);
+                }
+            }
         }
 
             const valuesMatch = line.match(/VALUES\(([^)]*)\)/i);
@@ -6457,13 +6519,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   REGENERATED_KEYWORDS_SET: () => (/* binding */ REGENERATED_KEYWORDS_SET),
 /* harmony export */   attributeContentRegex: () => (/* binding */ attributeContentRegex)
 /* harmony export */ });
-const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE', 'CNTFLD'];
+const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE', 'CNTFLD', 'MSGID'];
 const ATTRIBUTE_KEYWORDS_SET = new Set(ATTRIBUTE_KEYWORDS);
 const attributeContentRegex = new RegExp(`\\b(?:${ATTRIBUTE_KEYWORDS.join('|')})\\(`);
 
 // Keywords that are fully regenerated from Designer state during DDS updates.
 // Any keyword outside this set should be treated as unknown and preserved.
-const REGENERATED_KEYWORDS = ['COLOR', 'DSPATR', 'CHECK', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'VALUES', 'CNTFLD'];
+const REGENERATED_KEYWORDS = ['COLOR', 'DSPATR', 'CHECK', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'VALUES', 'CNTFLD', 'MSGID'];
 const REGENERATED_KEYWORDS_SET = new Set(REGENERATED_KEYWORDS);
 
 const CHECK_CHAR_CODES = ['ME', 'ER', 'MF', 'FE', 'RB', 'RZ', 'RL', 'LC'];
@@ -37727,6 +37789,35 @@ function showFieldProperties({
                         <input type="text" id="prop-edtmsk-value" placeholder="e.g. 000,000.00" />
                     </div>
                 </div>
+
+                <div id="tab-msgid" class="tab-panel">
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-msgid-enabled" />
+                            Enable Message ID (MSGID)
+                        </label>
+                    </div>
+
+                    <div class="property-group msgid-value-group" style="display: none;">
+                        <label>Message prefix</label>
+                        <input type="text" id="prop-msgid-prefix" maxlength="3" size="3" placeholder="e.g. AUM" />
+                    </div>
+
+                    <div class="property-group msgid-value-group" style="display: none;">
+                        <label>Message identifier</label>
+                        <input type="text" id="prop-msgid-identifier" maxlength="4" size="4" placeholder="e.g. 0425" />
+                    </div>
+
+                    <div class="property-group msgid-value-group" style="display: none;">
+                        <label>Message file</label>
+                        <input type="text" id="prop-msgid-file" maxlength="10" size="10" placeholder="e.g. FTLNGMSG" />
+                    </div>
+
+                    <div class="property-group msgid-value-group" style="display: none;">
+                        <label>Library</label>
+                        <input type="text" id="prop-msgid-library" maxlength="10" size="10" placeholder="e.g. *LIBL" />
+                    </div>
+                </div>
             </div>
             
             <div style="padding: 16px; border-top: 1px solid var(--border-color); background-color: var(--panel-background);">
@@ -37752,6 +37843,12 @@ function showFieldProperties({
         editingKeywordsBtn.setAttribute('data-tab', 'editing-keywords');
         editingKeywordsBtn.textContent = 'Editing keywords';
         tabsContainer.appendChild(editingKeywordsBtn);
+
+        const msgidBtn = document.createElement('button');
+        msgidBtn.className = 'properties-tab';
+        msgidBtn.setAttribute('data-tab', 'msgid');
+        msgidBtn.textContent = 'Message ID (MSGID)';
+        tabsContainer.appendChild(msgidBtn);
     }
 
     const usageSelect = document.getElementById('prop-usage');
@@ -37764,6 +37861,8 @@ function showFieldProperties({
     const generalKeywordsTabPanel = document.getElementById('tab-general-keywords');
     const editingKeywordsTabBtn = document.querySelector('.properties-tab[data-tab="editing-keywords"]');
     const editingKeywordsTabPanel = document.getElementById('tab-editing-keywords');
+    const msgidTabBtn = document.querySelector('.properties-tab[data-tab="msgid"]');
+    const msgidTabPanel = document.getElementById('tab-msgid');
     const checkCharGroups = Array.from(document.querySelectorAll('.check-char'));
     const checkNumGroups = Array.from(document.querySelectorAll('.check-num'));
     const checkCharTitles = Array.from(document.querySelectorAll('.check-char-title'));
@@ -37876,6 +37975,12 @@ function showFieldProperties({
 
         const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
         const showEditingKeywords = field.type !== 'constant' && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B') && isNumericType;
+        const showMsgid = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && usageSelect
+            && (usageSelect.value === 'O' || usageSelect.value === 'B')
+            && (['character', 'double'].includes(selectedType) || isNumericType);
 
         const lockShiftForZonedOutputOnly = field.type !== 'constant'
             && usageSelect
@@ -37901,6 +38006,21 @@ function showFieldProperties({
         if (!showEditingKeywords && editingKeywordsTabBtn && editingKeywordsTabBtn.classList.contains('active')) {
             editingKeywordsTabBtn.classList.remove('active');
             editingKeywordsTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
+        }
+
+        if (msgidTabBtn) {
+            msgidTabBtn.style.display = showMsgid ? 'inline-flex' : 'none';
+        }
+        if (msgidTabPanel) {
+            msgidTabPanel.style.display = showMsgid ? '' : 'none';
+        }
+        if (!showMsgid && msgidTabBtn && msgidTabBtn.classList.contains('active')) {
+            msgidTabBtn.classList.remove('active');
+            msgidTabPanel?.classList.remove('active');
             const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
             const basicPanel = document.getElementById('tab-basic');
             basicTab?.classList.add('active');
@@ -38543,6 +38663,18 @@ function showFieldProperties({
     const edtmskEnabledCheckbox = document.getElementById('prop-edtmsk-enabled');
     const edtmskValueInput = document.getElementById('prop-edtmsk-value');
     const edtmskValueGroup = document.querySelector('.edtmsk-value-group');
+    const msgidEnabledCheckbox = document.getElementById('prop-msgid-enabled');
+    const msgidValueGroups = Array.from(document.querySelectorAll('.msgid-value-group'));
+    const msgidPrefixInput = document.getElementById('prop-msgid-prefix');
+    const msgidIdentifierInput = document.getElementById('prop-msgid-identifier');
+    const msgidFileInput = document.getElementById('prop-msgid-file');
+    const msgidLibraryInput = document.getElementById('prop-msgid-library');
+    const msgidLimits = {
+        prefix: 3,
+        messageId: 4,
+        file: 10,
+        library: 10
+    };
 
     const updateEdtcdeReplaceVisibility = () => {
         if (!edtcdeReplaceGroup) {
@@ -38669,6 +38801,38 @@ function showFieldProperties({
             }
             if (this.checked && edtmskValueInput) {
                 edtmskValueInput.focus();
+            }
+        });
+    }
+
+    if (field.msgid) {
+        if (msgidEnabledCheckbox) {
+            msgidEnabledCheckbox.checked = true;
+        }
+        msgidValueGroups.forEach(group => {
+            group.style.display = 'block';
+        });
+        if (msgidPrefixInput) {
+            msgidPrefixInput.value = (field.msgid.prefix || '').slice(0, msgidLimits.prefix);
+        }
+        if (msgidIdentifierInput) {
+            msgidIdentifierInput.value = (field.msgid.messageId || '').slice(0, msgidLimits.messageId);
+        }
+        if (msgidFileInput) {
+            msgidFileInput.value = (field.msgid.file || '').slice(0, msgidLimits.file);
+        }
+        if (msgidLibraryInput) {
+            msgidLibraryInput.value = (field.msgid.library || '').slice(0, msgidLimits.library);
+        }
+    }
+
+    if (msgidEnabledCheckbox) {
+        msgidEnabledCheckbox.addEventListener('change', function() {
+            msgidValueGroups.forEach(group => {
+                group.style.display = this.checked ? 'block' : 'none';
+            });
+            if (this.checked && msgidPrefixInput) {
+                msgidPrefixInput.focus();
             }
         });
     }
@@ -39314,6 +39478,42 @@ function applyFieldProperties({
             delete field.edtmsk;
         }
 
+        const msgidEnabledCheckbox = document.getElementById('prop-msgid-enabled');
+        const msgidPrefixInput = document.getElementById('prop-msgid-prefix');
+        const msgidIdentifierInput = document.getElementById('prop-msgid-identifier');
+        const msgidFileInput = document.getElementById('prop-msgid-file');
+        const msgidLibraryInput = document.getElementById('prop-msgid-library');
+        const isTextType = ['character', 'double'].includes(field.dataType);
+        const isNumericMsgidType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(field.dataType);
+        const canUseMsgid = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && (field.usage === 'O' || field.usage === 'B')
+            && (isTextType || isNumericMsgidType);
+        const getLimitedMsgidValue = (input, maxLength) => input
+            ? input.value.trim().toUpperCase().slice(0, maxLength)
+            : '';
+
+        if (canUseMsgid && msgidEnabledCheckbox && msgidEnabledCheckbox.checked) {
+            const prefix = getLimitedMsgidValue(msgidPrefixInput, 3);
+            const messageId = getLimitedMsgidValue(msgidIdentifierInput, 4);
+            const file = getLimitedMsgidValue(msgidFileInput, 10);
+            const library = getLimitedMsgidValue(msgidLibraryInput, 10);
+
+            if (prefix && messageId) {
+                field.msgid = {
+                    prefix,
+                    messageId,
+                    file,
+                    library
+                };
+            } else {
+                delete field.msgid;
+            }
+        } else {
+            delete field.msgid;
+        }
+
         const edtcdeForShift = field.edtcde && field.edtcde.value
             ? String(field.edtcde.value).trim().toUpperCase()
             : '';
@@ -39376,6 +39576,7 @@ function applyFieldProperties({
         const edtcdeChanged = JSON.stringify(oldField.edtcde || null) !== JSON.stringify(field.edtcde || null);
         const edtwrdChanged = JSON.stringify(oldField.edtwrd || null) !== JSON.stringify(field.edtwrd || null);
         const edtmskChanged = JSON.stringify(oldField.edtmsk || null) !== JSON.stringify(field.edtmsk || null);
+        const msgidChanged = JSON.stringify(oldField.msgid || null) !== JSON.stringify(field.msgid || null);
 
         const valueChanged = field.type === 'constant' && oldField.value !== field.value;
 
@@ -39401,11 +39602,12 @@ function applyFieldProperties({
             dftvalIndicatorsChanged ||
             edtcdeChanged ||
             edtwrdChanged ||
-            edtmskChanged
+            edtmskChanged ||
+            msgidChanged
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, msgid: ${msgidChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;
@@ -43667,7 +43869,7 @@ function scanAttributeLinesAfterField({
         includeChecks = false,
         preserveOriginalSpacing = false,
         stopOnFieldKeywordsRegex = null,
-        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(/,
+        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/,
     } = options;
 
     let lineOffset = 1;
@@ -44036,6 +44238,56 @@ function scanAttributeLinesAfterField({
         if (/^\d{3}$/.test(cntfldValue)) {
             field.cntfld = { value: cntfldValue };
             Logger.parse(`Found CNTFLD(${field.cntfld.value}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
+
+        const msgidMatch = nextLine.match(/MSGID\(([^)]*)\)/i);
+        if (msgidMatch) {
+            const rawMsgid = msgidMatch[1].trim().replace(/\s+/g, ' ');
+            if (rawMsgid.length > 0) {
+                const tokens = rawMsgid.split(/\s+/).filter(Boolean);
+                let prefix = '';
+                let messageId = '';
+                let fileToken = '';
+                let nextTokenIndex = 0;
+
+                const compactFirstToken = tokens.length > 0 ? tokens[0].match(/^([A-Z]+)(\d+)$/i) : null;
+                if (compactFirstToken) {
+                    prefix = compactFirstToken[1];
+                    messageId = compactFirstToken[2];
+                    nextTokenIndex = 1;
+                } else if (tokens.length >= 2) {
+                    prefix = tokens[0];
+                    messageId = tokens[1];
+                    nextTokenIndex = 2;
+                }
+
+                if (prefix && messageId && tokens.length > nextTokenIndex) {
+                    fileToken = tokens[nextTokenIndex];
+                }
+
+                if (prefix && messageId) {
+                    let file = '';
+                    let library = '';
+
+                    if (fileToken) {
+                        if (fileToken.includes('/')) {
+                            const [libPart, filePart] = fileToken.split('/');
+                            library = (libPart || '').trim();
+                            file = (filePart || '').trim();
+                        } else {
+                            file = fileToken.trim();
+                        }
+                    }
+
+                    field.msgid = {
+                        prefix,
+                        messageId,
+                        file,
+                        library
+                    };
+                    Logger.parse(`Found MSGID(${rawMsgid}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+                }
+            }
         }
 
             // Parse VALUES('A' 'B' ...), including DDS continuation lines
@@ -44958,6 +45210,52 @@ function generateFieldCntfldLinesUI({
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldMsgidLinesUI: () => (/* binding */ generateFieldMsgidLinesUI)
+/* harmony export */ });
+// Generate MSGID keyword lines for a field
+function generateFieldMsgidLinesUI({ field }) {
+    if (!field || !field.msgid) {
+        return [];
+    }
+
+    const msgid = field.msgid;
+    const parts = [];
+
+    const prefix = typeof msgid.prefix === 'string' ? msgid.prefix.trim() : '';
+    const messageId = typeof msgid.messageId === 'string' ? msgid.messageId.trim() : '';
+    const file = typeof msgid.file === 'string' ? msgid.file.trim() : '';
+    const library = typeof msgid.library === 'string' ? msgid.library.trim() : '';
+
+    if (prefix) {
+        parts.push(prefix);
+    }
+    if (messageId) {
+        parts.push(messageId);
+    }
+
+    if (file) {
+        if (library) {
+            parts.push(`${library}/${file}`);
+        } else {
+            parts.push(file);
+        }
+    }
+
+    if (parts.length < 2) {
+        return [];
+    }
+
+    return [`     A                                      MSGID(${parts.join(' ')})`];
+}
+
+
+/***/ }),
+/* 100 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   generateDdsLineWithIndicatorsUI: () => (/* binding */ generateDdsLineWithIndicatorsUI)
 /* harmony export */ });
 // Generate a DDS line with optional indicators
@@ -45096,7 +45394,7 @@ function generateDdsLineWithIndicatorsUI({
 
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";

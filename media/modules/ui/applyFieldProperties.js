@@ -522,6 +522,42 @@ export function applyFieldProperties({
             delete field.edtmsk;
         }
 
+        const msgidEnabledCheckbox = document.getElementById('prop-msgid-enabled');
+        const msgidPrefixInput = document.getElementById('prop-msgid-prefix');
+        const msgidIdentifierInput = document.getElementById('prop-msgid-identifier');
+        const msgidFileInput = document.getElementById('prop-msgid-file');
+        const msgidLibraryInput = document.getElementById('prop-msgid-library');
+        const isTextType = ['character', 'double'].includes(field.dataType);
+        const isNumericMsgidType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(field.dataType);
+        const canUseMsgid = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && (field.usage === 'O' || field.usage === 'B')
+            && (isTextType || isNumericMsgidType);
+        const getLimitedMsgidValue = (input, maxLength) => input
+            ? input.value.trim().toUpperCase().slice(0, maxLength)
+            : '';
+
+        if (canUseMsgid && msgidEnabledCheckbox && msgidEnabledCheckbox.checked) {
+            const prefix = getLimitedMsgidValue(msgidPrefixInput, 3);
+            const messageId = getLimitedMsgidValue(msgidIdentifierInput, 4);
+            const file = getLimitedMsgidValue(msgidFileInput, 10);
+            const library = getLimitedMsgidValue(msgidLibraryInput, 10);
+
+            if (prefix && messageId) {
+                field.msgid = {
+                    prefix,
+                    messageId,
+                    file,
+                    library
+                };
+            } else {
+                delete field.msgid;
+            }
+        } else {
+            delete field.msgid;
+        }
+
         const edtcdeForShift = field.edtcde && field.edtcde.value
             ? String(field.edtcde.value).trim().toUpperCase()
             : '';
@@ -584,6 +620,7 @@ export function applyFieldProperties({
         const edtcdeChanged = JSON.stringify(oldField.edtcde || null) !== JSON.stringify(field.edtcde || null);
         const edtwrdChanged = JSON.stringify(oldField.edtwrd || null) !== JSON.stringify(field.edtwrd || null);
         const edtmskChanged = JSON.stringify(oldField.edtmsk || null) !== JSON.stringify(field.edtmsk || null);
+        const msgidChanged = JSON.stringify(oldField.msgid || null) !== JSON.stringify(field.msgid || null);
 
         const valueChanged = field.type === 'constant' && oldField.value !== field.value;
 
@@ -609,11 +646,12 @@ export function applyFieldProperties({
             dftvalIndicatorsChanged ||
             edtcdeChanged ||
             edtwrdChanged ||
-            edtmskChanged
+            edtmskChanged ||
+            msgidChanged
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, msgid: ${msgidChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;

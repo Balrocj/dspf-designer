@@ -82,6 +82,7 @@ import { generateFieldValuesLinesUI } from './modules/ui/generateFieldValuesLine
 import { generateFieldDftLinesUI } from './modules/ui/generateFieldDftLines.js';
 import { generateFieldDftvalLinesUI } from './modules/ui/generateFieldDftvalLines.js';
 import { generateFieldCntfldLinesUI } from './modules/ui/generateFieldCntfldLines.js';
+import { generateFieldMsgidLinesUI } from './modules/ui/generateFieldMsgidLines.js';
 import { generateDdsLineWithIndicatorsUI } from './modules/ui/generateDdsLineWithIndicators.js';
 import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChangesToField.js';
 
@@ -1393,7 +1394,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         startIndex: index,
                         field,
                         contextLabel: 'PREVIEW',
-                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(/
+                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/
                     });
                     
                     Logger.debug(`Parsed preview field: ${field.name} (${field.type}) at ${field.row},${field.col} for record ${currentRecordName}`);
@@ -1478,8 +1479,9 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                                 field,
                                 contextLabel: 'PREVIEW-COMPANION',
                                 includeDftval: true,
-                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(/,
+                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/,
                                 stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|RANGE\()/
+
                             });
                             
                             Logger.debug(`Preview: Parsed companion field: ${field.name} at ${field.row},${field.col} with color=${field.color}, attrs=${field.attributes ? Object.keys(field.attributes).join(',') : 'none'}`);
@@ -3122,6 +3124,12 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         });
     }
 
+    function generateFieldMsgidLines(field) {
+        return generateFieldMsgidLinesUI({
+            field
+        });
+    }
+
     // Helper: Generate EDTCDE keyword lines for a field
     function generateFieldEdtcdeLines(field) {
         return generateFieldEdtcdeLinesUI({
@@ -3520,6 +3528,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         const dftLines = generateFieldDftLines(field);
         const dftvalLines = generateFieldDftvalLines(field);
         const cntfldLines = generateFieldCntfldLines(field);
+        const msgidLines = generateFieldMsgidLines(field);
         
         // Build main line with indicators
         const mainLine = `     A${indicatorPrefix}${fieldNamePadded} ${typePartPadded} ${rowStr}${rowColSeparator}${colStr}${attributes}`;
@@ -3534,9 +3543,10 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         const dftLinesStr = dftLines.length > 0 ? '\n' + dftLines.join('\n') : '';
         const dftvalLinesStr = dftvalLines.length > 0 ? '\n' + dftvalLines.join('\n') : '';
         const cntfldLinesStr = cntfldLines.length > 0 ? '\n' + cntfldLines.join('\n') : '';
+        const msgidLinesStr = msgidLines.length > 0 ? '\n' + msgidLines.join('\n') : '';
         const colorLinesStr = colorLines.length > 0 ? '\n' + colorLines.join('\n') : '';
 
-        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + valuesLinesStr + dftLinesStr + dftvalLinesStr + cntfldLinesStr + colorLinesStr;
+        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + valuesLinesStr + dftLinesStr + dftvalLinesStr + cntfldLinesStr + msgidLinesStr + colorLinesStr;
         
         Logger.dds(`Generated DDS: name="${field.name}" padded="${fieldNamePadded}" type="${typeAndUsage}" padded="${typePartPadded}"`);
         Logger.dds(`Full line(s): "${result}"`);
@@ -3634,7 +3644,9 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 // These lines don't have field names like "A FIELDNAME 10A"
                 // Field lines have a recognizable pattern: field name (at least 3 chars) followed by type spec
                 // The type spec can be: "10A", "10", "10Y 0", or with spaces "64   O"
-                const hasFieldNameInLine = /\b[A-Z][A-Z0-9_@#$]{0,9}\s+(?:\d+[A-Z]?|L|T|Z|R)\b/i.test(trimmedLine);
+                // Anchor to ^ and test against content from column 18 onwards to avoid matching
+                // keyword args (e.g. AUM 0025 inside MSGID(...)) as a field name pattern.
+                const hasFieldNameInLine = /^[A-Z_][A-Z0-9_@#$]{0,9}\s+(?:\d+[A-Z]?|L|T|Z|R)\b/i.test(line.substring(18).trim());
                 const hasAttributeKeyword = attributeContentRegex.test(trimmedLine);
                 const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
                 const hasHiddenUsage = /\b(?:\d+[A-Z]?|L|T|Z|R)\s+(?:\d+H|H)(?:\s|$)/i.test(trimmedLine);
@@ -3810,7 +3822,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         trimmedLine.includes('SFLCTL')
                     );
                     
-                    const hasFieldNameInLine = /\b[A-Z][A-Z0-9_@#$]{0,9}\s+(?:\d+[A-Z]?|L|T|Z|R)\b/i.test(trimmedLine);
+                    const hasFieldNameInLine = /^[A-Z_][A-Z0-9_@#$]{0,9}\s+(?:\d+[A-Z]?|L|T|Z|R)\b/i.test(line.substring(18).trim());
                     const hasAttributeKeyword = attributeContentRegex.test(trimmedLine);
                     const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
                     const hasHiddenUsage = /\b(?:\d+[A-Z]?|L|T|Z|R)\s+(?:\d+H|H)(?:\s|$)/i.test(trimmedLine);
@@ -4580,6 +4592,55 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         if (/^\d{3}$/.test(cntfldValue)) {
             fieldObj.cntfld = { value: cntfldValue };
             Logger.parse(`Found inline CNTFLD(${fieldObj.cntfld.value}) for field ${fieldName}`);
+        }
+
+        const msgidMatch = line.match(/MSGID\(([^)]*)\)/i);
+        if (msgidMatch) {
+            const rawMsgid = msgidMatch[1].trim().replace(/\s+/g, ' ');
+            if (rawMsgid.length > 0) {
+                const tokens = rawMsgid.split(/\s+/).filter(Boolean);
+                let prefix = '';
+                let messageId = '';
+                let fileToken = '';
+                let nextTokenIndex = 0;
+
+                const compactFirstToken = tokens.length > 0 ? tokens[0].match(/^([A-Z]+)(\d+)$/i) : null;
+                if (compactFirstToken) {
+                    prefix = compactFirstToken[1];
+                    messageId = compactFirstToken[2];
+                    nextTokenIndex = 1;
+                } else if (tokens.length >= 2) {
+                    prefix = tokens[0];
+                    messageId = tokens[1];
+                    nextTokenIndex = 2;
+                }
+
+                if (prefix && messageId && tokens.length > nextTokenIndex) {
+                    fileToken = tokens[nextTokenIndex];
+                }
+
+                if (prefix && messageId) {
+                    let file = '';
+                    let library = '';
+                    if (fileToken) {
+                        if (fileToken.includes('/')) {
+                            const [libPart, filePart] = fileToken.split('/');
+                            library = (libPart || '').trim();
+                            file = (filePart || '').trim();
+                        } else {
+                            file = fileToken.trim();
+                        }
+                    }
+
+                    fieldObj.msgid = {
+                        prefix,
+                        messageId,
+                        file,
+                        library
+                    };
+                    Logger.parse(`Found inline MSGID(${rawMsgid}) for field ${fieldName}`);
+                }
+            }
         }
 
             const valuesMatch = line.match(/VALUES\(([^)]*)\)/i);

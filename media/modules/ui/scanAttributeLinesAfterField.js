@@ -15,7 +15,7 @@ export function scanAttributeLinesAfterField({
         includeChecks = false,
         preserveOriginalSpacing = false,
         stopOnFieldKeywordsRegex = null,
-        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(/,
+        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/,
     } = options;
 
     let lineOffset = 1;
@@ -384,6 +384,56 @@ export function scanAttributeLinesAfterField({
         if (/^\d{3}$/.test(cntfldValue)) {
             field.cntfld = { value: cntfldValue };
             Logger.parse(`Found CNTFLD(${field.cntfld.value}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+        }
+
+        const msgidMatch = nextLine.match(/MSGID\(([^)]*)\)/i);
+        if (msgidMatch) {
+            const rawMsgid = msgidMatch[1].trim().replace(/\s+/g, ' ');
+            if (rawMsgid.length > 0) {
+                const tokens = rawMsgid.split(/\s+/).filter(Boolean);
+                let prefix = '';
+                let messageId = '';
+                let fileToken = '';
+                let nextTokenIndex = 0;
+
+                const compactFirstToken = tokens.length > 0 ? tokens[0].match(/^([A-Z]+)(\d+)$/i) : null;
+                if (compactFirstToken) {
+                    prefix = compactFirstToken[1];
+                    messageId = compactFirstToken[2];
+                    nextTokenIndex = 1;
+                } else if (tokens.length >= 2) {
+                    prefix = tokens[0];
+                    messageId = tokens[1];
+                    nextTokenIndex = 2;
+                }
+
+                if (prefix && messageId && tokens.length > nextTokenIndex) {
+                    fileToken = tokens[nextTokenIndex];
+                }
+
+                if (prefix && messageId) {
+                    let file = '';
+                    let library = '';
+
+                    if (fileToken) {
+                        if (fileToken.includes('/')) {
+                            const [libPart, filePart] = fileToken.split('/');
+                            library = (libPart || '').trim();
+                            file = (filePart || '').trim();
+                        } else {
+                            file = fileToken.trim();
+                        }
+                    }
+
+                    field.msgid = {
+                        prefix,
+                        messageId,
+                        file,
+                        library
+                    };
+                    Logger.parse(`Found MSGID(${rawMsgid}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+                }
+            }
         }
 
             // Parse VALUES('A' 'B' ...), including DDS continuation lines

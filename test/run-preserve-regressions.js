@@ -8,6 +8,7 @@ const tests = [
     'run-sfldspctl-indicator-isolation.js',
     'run-sfldspctl-reinsert-on-enable.js',
     'run-cntfld-regression.js',
+    'run-msgid-regression.js',
     'run-relative-plus-normalization.js',
     'run-window-comment-ignore.js',
     'run-sfl-multiline-rowspan.js'

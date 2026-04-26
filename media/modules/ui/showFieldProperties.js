@@ -621,6 +621,35 @@ export function showFieldProperties({
                         <input type="text" id="prop-edtmsk-value" placeholder="e.g. 000,000.00" />
                     </div>
                 </div>
+
+                <div id="tab-msgid" class="tab-panel">
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-msgid-enabled" />
+                            Enable Message ID (MSGID)
+                        </label>
+                    </div>
+
+                    <div class="property-group msgid-value-group" style="display: none;">
+                        <label>Message prefix</label>
+                        <input type="text" id="prop-msgid-prefix" maxlength="3" size="3" placeholder="e.g. AUM" />
+                    </div>
+
+                    <div class="property-group msgid-value-group" style="display: none;">
+                        <label>Message identifier</label>
+                        <input type="text" id="prop-msgid-identifier" maxlength="4" size="4" placeholder="e.g. 0425" />
+                    </div>
+
+                    <div class="property-group msgid-value-group" style="display: none;">
+                        <label>Message file</label>
+                        <input type="text" id="prop-msgid-file" maxlength="10" size="10" placeholder="e.g. FTLNGMSG" />
+                    </div>
+
+                    <div class="property-group msgid-value-group" style="display: none;">
+                        <label>Library</label>
+                        <input type="text" id="prop-msgid-library" maxlength="10" size="10" placeholder="e.g. *LIBL" />
+                    </div>
+                </div>
             </div>
             
             <div style="padding: 16px; border-top: 1px solid var(--border-color); background-color: var(--panel-background);">
@@ -646,6 +675,12 @@ export function showFieldProperties({
         editingKeywordsBtn.setAttribute('data-tab', 'editing-keywords');
         editingKeywordsBtn.textContent = 'Editing keywords';
         tabsContainer.appendChild(editingKeywordsBtn);
+
+        const msgidBtn = document.createElement('button');
+        msgidBtn.className = 'properties-tab';
+        msgidBtn.setAttribute('data-tab', 'msgid');
+        msgidBtn.textContent = 'Message ID (MSGID)';
+        tabsContainer.appendChild(msgidBtn);
     }
 
     const usageSelect = document.getElementById('prop-usage');
@@ -658,6 +693,8 @@ export function showFieldProperties({
     const generalKeywordsTabPanel = document.getElementById('tab-general-keywords');
     const editingKeywordsTabBtn = document.querySelector('.properties-tab[data-tab="editing-keywords"]');
     const editingKeywordsTabPanel = document.getElementById('tab-editing-keywords');
+    const msgidTabBtn = document.querySelector('.properties-tab[data-tab="msgid"]');
+    const msgidTabPanel = document.getElementById('tab-msgid');
     const checkCharGroups = Array.from(document.querySelectorAll('.check-char'));
     const checkNumGroups = Array.from(document.querySelectorAll('.check-num'));
     const checkCharTitles = Array.from(document.querySelectorAll('.check-char-title'));
@@ -770,6 +807,12 @@ export function showFieldProperties({
 
         const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
         const showEditingKeywords = field.type !== 'constant' && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B') && isNumericType;
+        const showMsgid = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && usageSelect
+            && (usageSelect.value === 'O' || usageSelect.value === 'B')
+            && (['character', 'double'].includes(selectedType) || isNumericType);
 
         const lockShiftForZonedOutputOnly = field.type !== 'constant'
             && usageSelect
@@ -795,6 +838,21 @@ export function showFieldProperties({
         if (!showEditingKeywords && editingKeywordsTabBtn && editingKeywordsTabBtn.classList.contains('active')) {
             editingKeywordsTabBtn.classList.remove('active');
             editingKeywordsTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
+        }
+
+        if (msgidTabBtn) {
+            msgidTabBtn.style.display = showMsgid ? 'inline-flex' : 'none';
+        }
+        if (msgidTabPanel) {
+            msgidTabPanel.style.display = showMsgid ? '' : 'none';
+        }
+        if (!showMsgid && msgidTabBtn && msgidTabBtn.classList.contains('active')) {
+            msgidTabBtn.classList.remove('active');
+            msgidTabPanel?.classList.remove('active');
             const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
             const basicPanel = document.getElementById('tab-basic');
             basicTab?.classList.add('active');
@@ -1437,6 +1495,18 @@ export function showFieldProperties({
     const edtmskEnabledCheckbox = document.getElementById('prop-edtmsk-enabled');
     const edtmskValueInput = document.getElementById('prop-edtmsk-value');
     const edtmskValueGroup = document.querySelector('.edtmsk-value-group');
+    const msgidEnabledCheckbox = document.getElementById('prop-msgid-enabled');
+    const msgidValueGroups = Array.from(document.querySelectorAll('.msgid-value-group'));
+    const msgidPrefixInput = document.getElementById('prop-msgid-prefix');
+    const msgidIdentifierInput = document.getElementById('prop-msgid-identifier');
+    const msgidFileInput = document.getElementById('prop-msgid-file');
+    const msgidLibraryInput = document.getElementById('prop-msgid-library');
+    const msgidLimits = {
+        prefix: 3,
+        messageId: 4,
+        file: 10,
+        library: 10
+    };
 
     const updateEdtcdeReplaceVisibility = () => {
         if (!edtcdeReplaceGroup) {
@@ -1563,6 +1633,38 @@ export function showFieldProperties({
             }
             if (this.checked && edtmskValueInput) {
                 edtmskValueInput.focus();
+            }
+        });
+    }
+
+    if (field.msgid) {
+        if (msgidEnabledCheckbox) {
+            msgidEnabledCheckbox.checked = true;
+        }
+        msgidValueGroups.forEach(group => {
+            group.style.display = 'block';
+        });
+        if (msgidPrefixInput) {
+            msgidPrefixInput.value = (field.msgid.prefix || '').slice(0, msgidLimits.prefix);
+        }
+        if (msgidIdentifierInput) {
+            msgidIdentifierInput.value = (field.msgid.messageId || '').slice(0, msgidLimits.messageId);
+        }
+        if (msgidFileInput) {
+            msgidFileInput.value = (field.msgid.file || '').slice(0, msgidLimits.file);
+        }
+        if (msgidLibraryInput) {
+            msgidLibraryInput.value = (field.msgid.library || '').slice(0, msgidLimits.library);
+        }
+    }
+
+    if (msgidEnabledCheckbox) {
+        msgidEnabledCheckbox.addEventListener('change', function() {
+            msgidValueGroups.forEach(group => {
+                group.style.display = this.checked ? 'block' : 'none';
+            });
+            if (this.checked && msgidPrefixInput) {
+                msgidPrefixInput.focus();
             }
         });
     }
