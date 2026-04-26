@@ -1237,7 +1237,7 @@ import * as path from 'path';
 <body>
 	<div class="records-container">
 		<div class="records-top-bar">
-			<button class="settings-btn" type="button" title="Open DSPF Designer extension settings">Advanced options</button>
+			<button class="settings-btn" type="button" title="Open DSPF Designer extension settings">Settings</button>
 		</div>
 
 		<div class="records-header">

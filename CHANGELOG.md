@@ -2,6 +2,10 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.5.0] - 2026-05-01
+### ✨ Added
+- Added new button to go to settings in the properties panel.
+
 ## [2.4.0] - 2026-04-26
 ### ✨ Added
 - Added support to prevent the REFFLD keyword from being deleted when editing, updating, or moving a field.
