@@ -222,6 +222,9 @@ import * as path from 'path';
 					await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 					await vscode.commands.executeCommand('vscode.open', document.uri);
 					break;
+				case 'openExtensionSettings':
+					await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:Balrocj.dspf-designer');
+					break;
 				case 'addField':
 					await this.addField(document, message.field);
 					break;
@@ -995,9 +998,22 @@ import * as path from 'path';
 		.records-top-bar {
 			display: flex;
 			align-items: center;
-			justify-content: space-between;
+			justify-content: flex-end;
 			gap: 12px;
-			margin-bottom: 20px;
+			margin-bottom: 8px;
+		}
+		.settings-btn {
+			background: var(--vscode-button-secondaryBackground);
+			color: var(--vscode-button-secondaryForeground);
+			border: 1px solid var(--vscode-button-border);
+			padding: 8px 14px;
+			border-radius: 4px;
+			cursor: pointer;
+			white-space: nowrap;
+			font-size: 0.9em;
+		}
+		.settings-btn:hover {
+			background: var(--vscode-button-secondaryHoverBackground);
 		}
 		.records-header {
 			margin-bottom: 30px;
@@ -1220,6 +1236,10 @@ import * as path from 'path';
 </head>
 <body>
 	<div class="records-container">
+		<div class="records-top-bar">
+			<button class="settings-btn" type="button" title="Open DSPF Designer extension settings">Advanced options</button>
+		</div>
+
 		<div class="records-header">
 			<h1>DSPF Records</h1>
 			<p>Select a record to edit in the visual designer</p>
@@ -1250,6 +1270,12 @@ import * as path from 'path';
 		function addNewRecord() {
 			// TODO: Implement add new record functionality
 			alert('Add new record functionality coming soon!');
+		}
+
+		function openAdvancedOptions() {
+			vscode.postMessage({
+				type: 'openExtensionSettings'
+			});
 		}
 		
 		// Add click event listeners when DOM is ready
@@ -1363,6 +1389,11 @@ import * as path from 'path';
 			const addBtn = document.querySelector('.add-record-btn');
 			if (addBtn) {
 				addBtn.addEventListener('click', addNewRecord);
+			}
+
+			const settingsBtn = document.querySelector('.settings-btn');
+			if (settingsBtn) {
+				settingsBtn.addEventListener('click', openAdvancedOptions);
 			}
 		});
 	</script>
