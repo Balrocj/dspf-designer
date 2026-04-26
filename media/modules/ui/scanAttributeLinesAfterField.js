@@ -18,7 +18,110 @@ export function scanAttributeLinesAfterField({
         attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/,
     } = options;
 
+    if (!Array.isArray(field.keywordOrder)) {
+        field.keywordOrder = [];
+    }
+
+    const addKeywordOrder = (keywordName) => {
+        if (!keywordName) {
+            return;
+        }
+        if (!field.keywordOrder.includes(keywordName)) {
+            field.keywordOrder.push(keywordName);
+        }
+    };
+
+    const extractKeywordArea = (lineText) => {
+        if (!lineText) {
+            return '';
+        }
+        if (lineText.length > 43) {
+            return lineText.substring(43).trim();
+        }
+        return lineText.trim();
+    };
+
+    const parseReffldFromLine = (lineText, initialOffset) => {
+        if (!lineText) {
+            return null;
+        }
+
+        const reffldStart = lineText.search(/REFFLD\(/i);
+        if (reffldStart < 0) {
+            return null;
+        }
+
+        const firstSegment = lineText.substring(reffldStart + 'REFFLD('.length).trim();
+        if (!firstSegment) {
+            return null;
+        }
+
+        const rawLines = [];
+        const closedInFirst = firstSegment.indexOf(')');
+        if (closedInFirst >= 0) {
+            rawLines.push(firstSegment.substring(0, closedInFirst).trim());
+            return { rawLines, consumedOffset: initialOffset };
+        }
+
+        rawLines.push(firstSegment);
+        let lookaheadOffset = initialOffset;
+
+        while ((startIndex + lookaheadOffset + 1) < lines.length) {
+            const continuationLine = lines[startIndex + lookaheadOffset + 1];
+            const continuationTrimmed = continuationLine.trim();
+
+            const continuationIsComment = (continuationLine.length > 6 && continuationLine[5] === 'A' && continuationLine[6] === '*') ||
+                continuationTrimmed.startsWith('A*') ||
+                continuationTrimmed.startsWith('*') ||
+                continuationTrimmed.startsWith('-');
+            const continuationHasFieldName = /\b[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(continuationTrimmed);
+            const continuationIsRecordDef = continuationTrimmed.match(/^A\s+R\s+\w+/);
+            const continuationIsBlank = continuationTrimmed === '' || continuationTrimmed === 'A';
+
+            if (continuationIsComment || continuationHasFieldName || continuationIsRecordDef || continuationIsBlank) {
+                break;
+            }
+
+            const continuationKeywordArea = extractKeywordArea(continuationLine);
+            if (!continuationKeywordArea) {
+                break;
+            }
+
+            const closeIndex = continuationKeywordArea.indexOf(')');
+            if (closeIndex >= 0) {
+                rawLines.push(continuationKeywordArea.substring(0, closeIndex).trim());
+                lookaheadOffset++;
+                return { rawLines, consumedOffset: lookaheadOffset };
+            }
+
+            rawLines.push(continuationKeywordArea.trim());
+            lookaheadOffset++;
+        }
+
+        return {
+            rawLines,
+            consumedOffset: lookaheadOffset
+        };
+    };
+
     let lineOffset = 1;
+
+    // Some DDS files define REFFLD inline on the field line and continue it
+    // on the next line(s) with '+' continuation markers.
+    const baseLine = lines[startIndex];
+    const inlineReffld = parseReffldFromLine(baseLine, 0);
+    if (inlineReffld && inlineReffld.rawLines.length > 0) {
+        addKeywordOrder('REFFLD');
+        const normalizedRaw = inlineReffld.rawLines.join(' ').replace(/\s+/g, ' ').trim();
+        field.reffld = {
+            raw: normalizedRaw,
+            rawLines: inlineReffld.rawLines
+        };
+        if (inlineReffld.consumedOffset >= 1) {
+            lineOffset = inlineReffld.consumedOffset + 1;
+        }
+        Logger.parse(`Found multiline inline REFFLD for ${contextLabel} field ${field.name}: ${inlineReffld.rawLines.join(' | ')}`);
+    }
 
     while (startIndex + lineOffset < lines.length) {
         const nextLine = lines[startIndex + lineOffset];
@@ -201,6 +304,7 @@ export function scanAttributeLinesAfterField({
         // Extract COLOR with indicators (with OR support)
         const colorMatch = nextLine.match(/COLOR\((\w+)\)/);
         if (colorMatch) {
+            addKeywordOrder('COLOR');
             const color = colorMatch[1];
 
             if (!field.color) {
@@ -254,6 +358,7 @@ export function scanAttributeLinesAfterField({
         // Extract DSPATR attributes with indicators (with OR support)
         const attrResult = extractAttributes(nextLine, nextLine);
         if (attrResult.attrs && Object.keys(attrResult.attrs).length > 0) {
+            addKeywordOrder('DSPATR');
             field.attributes = { ...field.attributes, ...attrResult.attrs };
 
             if (preserveOriginalSpacing) {
@@ -309,6 +414,7 @@ export function scanAttributeLinesAfterField({
         Logger.debug(`[${contextLabel}] Checking line ${startIndex + lineOffset + 1} for DFTVAL: ${nextTrimmed.substring(0, 50)}`);
         Logger.debug(`[${contextLabel}] DFTVAL match result:`, dftvalMatch ? `YES (value='${dftvalMatch[1]}')` : 'NO');
         if (dftvalMatch) {
+            addKeywordOrder('DFTVAL');
             const value = dftvalMatch[1];
             field.dftval = { value: value };
 
@@ -351,6 +457,7 @@ export function scanAttributeLinesAfterField({
 
         const edtcdeMatch = nextLine.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);
         if (edtcdeMatch) {
+            addKeywordOrder('EDTCDE');
             const edtcdeValue = edtcdeMatch[1].replace(/["']/g, '').trim().toUpperCase();
             if (edtcdeValue) {
                 const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
@@ -364,30 +471,35 @@ export function scanAttributeLinesAfterField({
 
         const edtwrdValue = parseKeywordTextArg('EDTWRD', nextLine);
         if (edtwrdValue.length > 0) {
+            addKeywordOrder('EDITKEYWORDS');
             field.edtwrd = { value: edtwrdValue };
             Logger.parse(`Found EDTWRD('${edtwrdValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
         const edtmskValue = parseKeywordTextArg('EDTMSK', nextLine);
         if (edtmskValue.length > 0) {
+            addKeywordOrder('EDITKEYWORDS');
             field.edtmsk = { value: edtmskValue };
             Logger.parse(`Found EDTMSK('${edtmskValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
         const dftValue = parseKeywordTextArg('DFT', nextLine);
         if (dftValue.length > 0) {
+            addKeywordOrder('DFT');
             field.dft = { value: dftValue };
             Logger.parse(`Found DFT(${dftValue}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
         const cntfldValue = parseKeywordTextArg('CNTFLD', nextLine);
         if (/^\d{3}$/.test(cntfldValue)) {
+            addKeywordOrder('CNTFLD');
             field.cntfld = { value: cntfldValue };
             Logger.parse(`Found CNTFLD(${field.cntfld.value}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
         const msgidMatch = nextLine.match(/MSGID\(([^)]*)\)/i);
         if (msgidMatch) {
+            addKeywordOrder('MSGID');
             const rawMsgid = msgidMatch[1].trim().replace(/\s+/g, ' ');
             if (rawMsgid.length > 0) {
                 const tokens = rawMsgid.split(/\s+/).filter(Boolean);
@@ -436,8 +548,28 @@ export function scanAttributeLinesAfterField({
             }
         }
 
+        // Extract REFFLD keyword (reference field for Db2 metadata inheritance)
+        // Format: REFFLD(FIELDNAME), REFFLD(FIELDNAME FILE), REFFLD(FIELDNAME LIB/FILE), etc.
+        // Phase 1: Store raw string as-is for preservation during round-trip
+        const parsedReffld = parseReffldFromLine(nextLine, lineOffset);
+        if (parsedReffld && parsedReffld.rawLines.length > 0) {
+            addKeywordOrder('REFFLD');
+            const rawReffld = parsedReffld.rawLines.join(' ').replace(/\s+/g, ' ').trim();
+            if (rawReffld.length > 0) {
+                field.reffld = {
+                    raw: rawReffld,
+                    rawLines: parsedReffld.rawLines
+                };
+                Logger.parse(`Found REFFLD(${rawReffld}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+                if (parsedReffld.consumedOffset > lineOffset) {
+                    lineOffset = parsedReffld.consumedOffset;
+                }
+            }
+        }
+
             // Parse VALUES('A' 'B' ...), including DDS continuation lines
             if (/VALUES\(/i.test(nextLine)) {
+                addKeywordOrder('VALUES');
                 let valuesText = nextLine;
                 let lookaheadOffset = lineOffset;
 
@@ -485,6 +617,7 @@ export function scanAttributeLinesAfterField({
         if (includeChecks) {
             const checkMatch = nextLine.match(/CHECK\(([^)]+)\)/);
             if (checkMatch) {
+                addKeywordOrder('CHECK');
                 Logger.debug(`[${contextLabel}] ===== FOUND CHECK LINE =====`);
                 Logger.debug(`[${contextLabel}] nextLine: "${nextLine}"`);
                 Logger.debug(`[${contextLabel}] lineOffset: ${lineOffset}`);

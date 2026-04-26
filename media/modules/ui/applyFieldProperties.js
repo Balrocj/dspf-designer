@@ -55,7 +55,8 @@ export function applyFieldProperties({
             dft: field.dft ? { ...field.dft } : undefined,
                 values: field.values,
             dftval: field.dftval ? { ...field.dftval } : undefined,
-            dftvalIndicators: field.dftvalIndicators ? JSON.parse(JSON.stringify(field.dftvalIndicators)) : undefined
+                dftvalIndicators: field.dftvalIndicators ? JSON.parse(JSON.stringify(field.dftvalIndicators)) : undefined,
+                reffld: field.reffld ? { ...field.reffld } : undefined
         };
 
         Logger.debug('Applying properties to field:', oldField.name);
@@ -621,6 +622,7 @@ export function applyFieldProperties({
         const edtwrdChanged = JSON.stringify(oldField.edtwrd || null) !== JSON.stringify(field.edtwrd || null);
         const edtmskChanged = JSON.stringify(oldField.edtmsk || null) !== JSON.stringify(field.edtmsk || null);
         const msgidChanged = JSON.stringify(oldField.msgid || null) !== JSON.stringify(field.msgid || null);
+            const reffldChanged = JSON.stringify(oldField.reffld || null) !== JSON.stringify(field.reffld || null);
 
         const valueChanged = field.type === 'constant' && oldField.value !== field.value;
 
@@ -651,7 +653,7 @@ export function applyFieldProperties({
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, msgid: ${msgidChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, msgid: ${msgidChanged}, reffld: ${reffldChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;

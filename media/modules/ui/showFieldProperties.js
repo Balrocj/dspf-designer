@@ -295,6 +295,7 @@ export function showFieldProperties({
                         <label>Type</label>
                         <select id="prop-type">
                             <option value="character" ${normalizedDataTypeForUi === 'character' ? 'selected' : ''}>Character</option>
+                            <option value="reference" ${normalizedDataTypeForUi === 'reference' ? 'selected' : ''}>Reference (R)</option>
                             <option value="date" ${normalizedDataTypeForUi === 'date' ? 'selected' : ''}>Date (L)</option>
                             <option value="time" ${normalizedDataTypeForUi === 'time' ? 'selected' : ''}>Time (T)</option>
                             <option value="timestamp" ${normalizedDataTypeForUi === 'timestamp' ? 'selected' : ''}>Timestamp (Z)</option>
@@ -321,12 +322,12 @@ export function showFieldProperties({
                     </div>
                     <div class="property-group">
                         <label>Length</label>
-                        <input type="number" id="prop-length" value="${field.length || ''}" min="1" max="9999" ${(field.type === 'constant' || field.dataType === 'date' || field.dataType === 'time' || field.dataType === 'timestamp') ? 'readonly style="background-color: #2d2d2d; cursor: not-allowed;"' : ''} />
+                        <input type="number" id="prop-length" value="${field.length || ''}" min="1" max="9999" ${(field.type === 'constant' || field.dataType === 'reference' || field.dataType === 'date' || field.dataType === 'time' || field.dataType === 'timestamp') ? 'readonly style="background-color: #2d2d2d; cursor: not-allowed;"' : ''} />
                     </div>
                     ${field.type !== 'constant' ? `
                     <div class="property-group">
                         <label>Decimals</label>
-                        <input type="number" id="prop-decimals" value="${field.decimals || 0}" min="0" ${(field.dataType === 'character' || field.dataType === 'double' || field.dataType === 'date' || field.dataType === 'time' || field.dataType === 'timestamp') ? 'readonly style="background-color: #2d2d2d; cursor: not-allowed;"' : ''} />
+                        <input type="number" id="prop-decimals" value="${field.decimals || 0}" min="0" ${(field.dataType === 'character' || field.dataType === 'reference' || field.dataType === 'double' || field.dataType === 'date' || field.dataType === 'time' || field.dataType === 'timestamp') ? 'readonly style="background-color: #2d2d2d; cursor: not-allowed;"' : ''} />
                     </div>
                     ` : ''}
                     ${field.type === 'constant' ? `
@@ -936,7 +937,7 @@ export function showFieldProperties({
         const lengthInput = document.getElementById('prop-length');
         if (!lengthInput) {return;}
 
-        const shouldLockLength = field.type === 'constant' || type === 'date' || type === 'time' || type === 'timestamp';
+        const shouldLockLength = field.type === 'constant' || type === 'reference' || type === 'date' || type === 'time' || type === 'timestamp';
         lengthInput.readOnly = shouldLockLength;
 
         if (shouldLockLength) {

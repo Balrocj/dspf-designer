@@ -90,9 +90,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_ui_generateFieldDftvalLines_js__WEBPACK_IMPORTED_MODULE_82__ = __webpack_require__(97);
 /* harmony import */ var _modules_ui_generateFieldCntfldLines_js__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(98);
 /* harmony import */ var _modules_ui_generateFieldMsgidLines_js__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(99);
-/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_85__ = __webpack_require__(100);
-/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_86__ = __webpack_require__(101);
+/* harmony import */ var _modules_ui_generateFieldReffldLines_js__WEBPACK_IMPORTED_MODULE_85__ = __webpack_require__(100);
+/* harmony import */ var _modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_86__ = __webpack_require__(101);
+/* harmony import */ var _modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_87__ = __webpack_require__(102);
 /* module decorator */ module = __webpack_require__.hmd(module);
+
 
 
 
@@ -202,6 +204,7 @@ __webpack_require__.r(__webpack_exports__);
     let isReadOnly = false; // Track if document is in read-only mode
     let currentView = 'designer'; // Track the current active view (designer, preview, source)
     let currentZoom = 1; // Zoom level for views container
+    let fileMetadata = { ref: null }; // File-level metadata (REF keyword, etc.)
     let indicatorSimulationEnabled = false; // Preview-only indicator simulation (SDA-like)
     let activePreviewIndicators = new Set();
     let indicatorSimulationShortcutBound = false;
@@ -1489,7 +1492,7 @@ __webpack_require__.r(__webpack_exports__);
                         startIndex: index,
                         field,
                         contextLabel: 'PREVIEW',
-                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/
+                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(|REFFLD\(/
                     });
                     
                     _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Parsed preview field: ${field.name} (${field.type}) at ${field.row},${field.col} for record ${currentRecordName}`);
@@ -1574,7 +1577,7 @@ __webpack_require__.r(__webpack_exports__);
                                 field,
                                 contextLabel: 'PREVIEW-COMPANION',
                                 includeDftval: true,
-                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/,
+                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(|REFFLD\(/,
                                 stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|RANGE\()/
 
                             });
@@ -2958,6 +2961,17 @@ __webpack_require__.r(__webpack_exports__);
             // Preserve only comments and UNKNOWN keywords (e.g., OVERLAY, KEEP) after the field
             const blockLines = lines.slice(fieldBlock.startLine, fieldBlock.endLine + 1);
             const preservedExtras = [];
+            const reffldContinuationLinesToSkip = new Set();
+
+            if (searchField && searchField.reffld && Array.isArray(searchField.reffld.rawLines) && searchField.reffld.rawLines.length > 1) {
+                const reffldRawLines = searchField.reffld.rawLines;
+                for (let i = 1; i < reffldRawLines.length; i++) {
+                    const continuationText = i === reffldRawLines.length - 1
+                        ? `${reffldRawLines[i]})`
+                        : reffldRawLines[i];
+                    reffldContinuationLinesToSkip.add((continuationText || '').trim());
+                }
+            }
 
             // Track whether we are inside a multi-line VALUES continuation block
             let insideValuesContinuation = false;
@@ -2976,6 +2990,12 @@ __webpack_require__.r(__webpack_exports__);
                 const trimmed = line.trim();
                 const contentAfter43 = line.length > 43 ? line.substring(43).trim() : '';
                 const contentAfter18 = line.length > 18 ? line.substring(18).trim() : '';
+
+                if (contentAfter43 && reffldContinuationLinesToSkip.has(contentAfter43)) {
+                    pendingIndicatorLines = [];
+                    _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Skipping multiline REFFLD continuation line ${globalIndex + 1}: "${contentAfter43}"`);
+                    return;
+                }
 
                 // For constants: do NOT preserve continuation lines
                 if (searchField.type === 'constant') {
@@ -3139,7 +3159,7 @@ __webpack_require__.r(__webpack_exports__);
     
     // Helper: Generate a DDS line with optional indicators
     function generateDdsLineWithIndicators(keyword, indicatorsOrGroups) {
-        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_85__.generateDdsLineWithIndicatorsUI)({
+        return (0,_modules_ui_generateDdsLineWithIndicators_js__WEBPACK_IMPORTED_MODULE_86__.generateDdsLineWithIndicatorsUI)({
             keyword,
             indicatorsOrGroups,
             IndicatorUtils: _modules_utils_indicatorUtils_js__WEBPACK_IMPORTED_MODULE_2__.IndicatorUtils
@@ -3149,7 +3169,7 @@ __webpack_require__.r(__webpack_exports__);
     // Helper: Apply indicator changes from indicatorConfigurations Map back to field object
     // This ensures that any edits made through the IBM i modal are reflected in DDS generation
     function applyIndicatorChangesToField(field) {
-        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_86__.applyIndicatorChangesToFieldUI)({
+        return (0,_modules_ui_applyIndicatorChangesToField_js__WEBPACK_IMPORTED_MODULE_87__.applyIndicatorChangesToFieldUI)({
             field,
             indicatorConfigurations,
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger
@@ -3221,6 +3241,13 @@ __webpack_require__.r(__webpack_exports__);
 
     function generateFieldMsgidLines(field) {
         return (0,_modules_ui_generateFieldMsgidLines_js__WEBPACK_IMPORTED_MODULE_84__.generateFieldMsgidLinesUI)({
+            field
+        });
+    }
+
+    // Helper: Generate REFFLD keyword lines for a field
+    function generateFieldReffldLines(field) {
+        return (0,_modules_ui_generateFieldReffldLines_js__WEBPACK_IMPORTED_MODULE_85__.generateFieldReffldLinesUI)({
             field
         });
     }
@@ -3624,24 +3651,65 @@ __webpack_require__.r(__webpack_exports__);
         const dftvalLines = generateFieldDftvalLines(field);
         const cntfldLines = generateFieldCntfldLines(field);
         const msgidLines = generateFieldMsgidLines(field);
+        const reffldLines = generateFieldReffldLines(field);
         
         // Build main line with indicators
         const mainLine = `     A${indicatorPrefix}${fieldNamePadded} ${typePartPadded} ${rowStr}${rowColSeparator}${colStr}${attributes}`;
         
-        // Combine: field indicator lines BEFORE main + main + DSPATR + CHECK + DFTVAL + COLOR
+        // Combine: field indicator lines BEFORE main + main + keyword lines.
+        // Preserve original keyword order when available from parser.
         const fieldIndicatorLinesStr = fieldIndicatorLines.length > 0 ? fieldIndicatorLines.join('\n') + '\n' : '';
-        const attrLinesStr = attrLines.length > 0 ? '\n' + attrLines.join('\n') : '';
-        const checkLinesStr = checkLines.length > 0 ? '\n' + checkLines.join('\n') : '';
-        const edtcdeLinesStr = edtcdeLines.length > 0 ? '\n' + edtcdeLines.join('\n') : '';
-        const editKeywordLinesStr = editKeywordLines.length > 0 ? '\n' + editKeywordLines.join('\n') : '';
-        const valuesLinesStr = valuesLines.length > 0 ? '\n' + valuesLines.join('\n') : '';
-        const dftLinesStr = dftLines.length > 0 ? '\n' + dftLines.join('\n') : '';
-        const dftvalLinesStr = dftvalLines.length > 0 ? '\n' + dftvalLines.join('\n') : '';
-        const cntfldLinesStr = cntfldLines.length > 0 ? '\n' + cntfldLines.join('\n') : '';
-        const msgidLinesStr = msgidLines.length > 0 ? '\n' + msgidLines.join('\n') : '';
-        const colorLinesStr = colorLines.length > 0 ? '\n' + colorLines.join('\n') : '';
+        const keywordLineMap = {
+            DSPATR: attrLines,
+            CHECK: checkLines,
+            EDTCDE: edtcdeLines,
+            EDITKEYWORDS: editKeywordLines,
+            VALUES: valuesLines,
+            DFT: dftLines,
+            DFTVAL: dftvalLines,
+            CNTFLD: cntfldLines,
+            MSGID: msgidLines,
+            REFFLD: reffldLines,
+            COLOR: colorLines
+        };
 
-        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + valuesLinesStr + dftLinesStr + dftvalLinesStr + cntfldLinesStr + msgidLinesStr + colorLinesStr;
+        const defaultKeywordOrder = [
+            'DSPATR',
+            'CHECK',
+            'EDTCDE',
+            'EDITKEYWORDS',
+            'VALUES',
+            'DFT',
+            'DFTVAL',
+            'CNTFLD',
+            'MSGID',
+            'REFFLD',
+            'COLOR'
+        ];
+
+        const orderedKeywordBlocks = [];
+        const emittedKeywords = new Set();
+        const originalKeywordOrder = Array.isArray(field.keywordOrder) ? field.keywordOrder : [];
+
+        originalKeywordOrder.forEach((keywordName) => {
+            const linesForKeyword = keywordLineMap[keywordName];
+            if (linesForKeyword && linesForKeyword.length > 0 && !emittedKeywords.has(keywordName)) {
+                orderedKeywordBlocks.push(...linesForKeyword);
+                emittedKeywords.add(keywordName);
+            }
+        });
+
+        defaultKeywordOrder.forEach((keywordName) => {
+            const linesForKeyword = keywordLineMap[keywordName];
+            if (linesForKeyword && linesForKeyword.length > 0 && !emittedKeywords.has(keywordName)) {
+                orderedKeywordBlocks.push(...linesForKeyword);
+                emittedKeywords.add(keywordName);
+            }
+        });
+
+        const orderedKeywordLinesStr = orderedKeywordBlocks.length > 0 ? '\n' + orderedKeywordBlocks.join('\n') : '';
+
+        const result = fieldIndicatorLinesStr + mainLine + orderedKeywordLinesStr;
         
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Generated DDS: name="${field.name}" padded="${fieldNamePadded}" type="${typeAndUsage}" padded="${typePartPadded}"`);
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.dds(`Full line(s): "${result}"`);
@@ -3656,6 +3724,42 @@ __webpack_require__.r(__webpack_exports__);
     
     function getDefaultLength(type) {
         return (0,_modules_ui_getDefaultLength_js__WEBPACK_IMPORTED_MODULE_53__.getDefaultLength)(type);
+    }
+
+    // Parse file-level metadata (REF, DSPSIZ, etc.)
+    // This runs BEFORE record parsing to extract global file properties
+    function parseFileMetadata(content) {
+        fileMetadata = { ref: null }; // Reset file metadata
+        const lines = content.split('\n');
+        
+        _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Parsing file-level metadata...');
+        
+        // REF is typically at the beginning of the file, before any records
+        // Format: "A          REF(FILENAME)" or "A          REF(LIBRARY/FILENAME)"
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const trimmedLine = line.trim();
+            
+            // Stop parsing file-level keywords once we hit a record definition
+            if (trimmedLine.match(/^.{0,5}A\s+R\s+\w+/)) {
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Reached first record definition, stopping file metadata parsing');
+                break;
+            }
+            
+            // Skip comments and empty lines
+            if (!trimmedLine || trimmedLine.startsWith('A*')) {
+                continue;
+            }
+            
+            // Look for REF keyword
+            const refMatch = trimmedLine.match(/REF\(([^)]+)\)/i);
+            if (refMatch) {
+                fileMetadata.ref = { raw: refMatch[1].trim() };
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Found REF: ${fileMetadata.ref.raw}`);
+            }
+        }
+        
+        return fileMetadata;
     }
 
     // lee/parsea el DDS (texto -> objetos field) para renderizar en Designer/Preview.
@@ -4518,7 +4622,7 @@ __webpack_require__.r(__webpack_exports__);
         }
         
         // Parse usage and decimals using helper (adjust index by partIndex)
-        const usageInfo = parseUsageAndDecimals(parts, partIndex + 2);
+        let usageInfo = parseUsageAndDecimals(parts, partIndex + 2);
         
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Parsing field: typeSpec="${typeSpec}" hasDecimals=${usageInfo.hasDecimals}`);
         
@@ -4527,6 +4631,21 @@ __webpack_require__.r(__webpack_exports__);
         if (!typeInfo) {
             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error(`Invalid type spec: "${typeSpec}"`);
             return null;
+        }
+        
+        // For reference type fields in old-style DDS, a standalone data type override letter
+        // (e.g. 'A' for character, 'S' for zoned) may appear between the 'R' reference indicator
+        // and the usage letter.  Example: "SCRBNK    R      A  B 10 48" – the 'A' is a data type
+        // override that parseUsageAndDecimals silently ignores, causing usage to default to 'O'.
+        // Detect and skip such override letters so the real usage ('B' here) is captured.
+        if (typeInfo.dataType === 'reference') {
+            const potentialOverride = parts[partIndex + 2];
+            if (potentialOverride && potentialOverride.length === 1 &&
+                /^[A-Za-z]$/.test(potentialOverride) && !/^[OIBHMP]$/i.test(potentialOverride)) {
+                // Re-parse starting one token later (past the type override letter)
+                usageInfo = parseUsageAndDecimals(parts, partIndex + 3);
+                _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Reference field: skipped type override '${potentialOverride}', re-parsed usage as '${usageInfo.usage}'`);
+            }
         }
         
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.stats(`Mapped typeChar="${typeInfo.typeChar}" hasDecimals=${usageInfo.hasDecimals} to dataType="${typeInfo.dataType}"`);
@@ -4845,6 +4964,9 @@ __webpack_require__.r(__webpack_exports__);
                         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse('Converted relative (+NN) coordinates to absolute in document');
                     }
                 }
+                
+                // Parse file-level metadata first (REF, etc.)
+                parseFileMetadata(currentDocument);
                 
                 // Parse fields with current record filter to maintain view consistency
                 // This will automatically re-render the designer view (clearing and redrawing all fields)
@@ -5713,12 +5835,18 @@ function __applySubfileControlForTests(overrides = {}) {
         getCurrentRecord: overrides.getCurrentRecord || (() => currentRecord),
         getCurrentView: overrides.getCurrentView || (() => 'preview'),
         updateDocumentInEditor: overrides.updateDocumentInEditor || (() => {}),
+        parseDspfFields: overrides.parseDspfFields || parseDspfFields,
+        setIndicatorConfiguration: overrides.setIndicatorConfiguration || __setIndicatorConfigurationForTests,
+        clearIndicatorConfigurations: overrides.clearIndicatorConfigurations || __clearIndicatorConfigurationsForTests,
         generateDdsLineWithIndicators: overrides.generateDdsLineWithIndicators || generateDdsLineWithIndicators,
         indicatorConfigurations: overrides.indicatorConfigurations || indicatorConfigurations,
         showScreenProperties: overrides.showScreenProperties || (() => {}),
-        parseDspfFields: overrides.parseDspfFields || (() => {}),
         updatePreviewView: overrides.updatePreviewView || (() => {})
     });
+}
+
+function __getFieldsForTests() {
+    return fields;
 }
 
 try {
@@ -5736,6 +5864,9 @@ try {
         if (typeof getSflpagValue !== 'undefined') {window.__TESTS.getSflpagValue = getSflpagValue;}
         if (typeof getSflRowSpan !== 'undefined') {window.__TESTS.getSflRowSpan = getSflRowSpan;}
         if (typeof applySflpagRepetition !== 'undefined') {window.__TESTS.applySflpagRepetition = applySflpagRepetition;}
+        if (typeof parseFileMetadata !== 'undefined') {window.__TESTS.parseFileMetadata = parseFileMetadata;}
+        if (typeof parseDspfFields !== 'undefined') {window.__TESTS.parseDspfFields = parseDspfFields;}
+        window.__TESTS.getFields = __getFieldsForTests;
         window.__TESTS.setCurrentDocument = __setCurrentDocumentForTests;
         window.__TESTS.getCurrentDocument = __getCurrentDocumentForTests;
         window.__TESTS.setCurrentRecord = __setCurrentRecordForTests;
@@ -5762,6 +5893,9 @@ if ( true && module.exports) {
         if (typeof getSflpagValue !== 'undefined') {module.exports.getSflpagValue = getSflpagValue;}
         if (typeof getSflRowSpan !== 'undefined') {module.exports.getSflRowSpan = getSflRowSpan;}
         if (typeof applySflpagRepetition !== 'undefined') {module.exports.applySflpagRepetition = applySflpagRepetition;}
+        if (typeof parseFileMetadata !== 'undefined') {module.exports.parseFileMetadata = parseFileMetadata;}
+        if (typeof parseDspfFields !== 'undefined') {module.exports.parseDspfFields = parseDspfFields;}
+        module.exports.getFields = __getFieldsForTests;
         module.exports.setCurrentDocument = __setCurrentDocumentForTests;
         module.exports.getCurrentDocument = __getCurrentDocumentForTests;
         module.exports.setCurrentRecord = __setCurrentRecordForTests;
@@ -6519,13 +6653,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   REGENERATED_KEYWORDS_SET: () => (/* binding */ REGENERATED_KEYWORDS_SET),
 /* harmony export */   attributeContentRegex: () => (/* binding */ attributeContentRegex)
 /* harmony export */ });
-const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE', 'CNTFLD', 'MSGID'];
+const ATTRIBUTE_KEYWORDS = ['COLOR', 'DSPATR', 'VALUES', 'CHECK', 'PSHBTNCHC', 'PSHBTNFLD', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'RANGE', 'CNTFLD', 'MSGID', 'REFFLD'];
 const ATTRIBUTE_KEYWORDS_SET = new Set(ATTRIBUTE_KEYWORDS);
 const attributeContentRegex = new RegExp(`\\b(?:${ATTRIBUTE_KEYWORDS.join('|')})\\(`);
 
 // Keywords that are fully regenerated from Designer state during DDS updates.
 // Any keyword outside this set should be treated as unknown and preserved.
-const REGENERATED_KEYWORDS = ['COLOR', 'DSPATR', 'CHECK', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'VALUES', 'CNTFLD', 'MSGID'];
+const REGENERATED_KEYWORDS = ['COLOR', 'DSPATR', 'CHECK', 'DFTVAL', 'DFT', 'EDTCDE', 'EDTWRD', 'EDTMSK', 'VALUES', 'CNTFLD', 'MSGID', 'REFFLD'];
 const REGENERATED_KEYWORDS_SET = new Set(REGENERATED_KEYWORDS);
 
 const CHECK_CHAR_CODES = ['ME', 'ER', 'MF', 'FE', 'RB', 'RZ', 'RL', 'LC'];
@@ -37463,6 +37597,7 @@ function showFieldProperties({
                         <label>Type</label>
                         <select id="prop-type">
                             <option value="character" ${normalizedDataTypeForUi === 'character' ? 'selected' : ''}>Character</option>
+                            <option value="reference" ${normalizedDataTypeForUi === 'reference' ? 'selected' : ''}>Reference (R)</option>
                             <option value="date" ${normalizedDataTypeForUi === 'date' ? 'selected' : ''}>Date (L)</option>
                             <option value="time" ${normalizedDataTypeForUi === 'time' ? 'selected' : ''}>Time (T)</option>
                             <option value="timestamp" ${normalizedDataTypeForUi === 'timestamp' ? 'selected' : ''}>Timestamp (Z)</option>
@@ -37489,12 +37624,12 @@ function showFieldProperties({
                     </div>
                     <div class="property-group">
                         <label>Length</label>
-                        <input type="number" id="prop-length" value="${field.length || ''}" min="1" max="9999" ${(field.type === 'constant' || field.dataType === 'date' || field.dataType === 'time' || field.dataType === 'timestamp') ? 'readonly style="background-color: #2d2d2d; cursor: not-allowed;"' : ''} />
+                        <input type="number" id="prop-length" value="${field.length || ''}" min="1" max="9999" ${(field.type === 'constant' || field.dataType === 'reference' || field.dataType === 'date' || field.dataType === 'time' || field.dataType === 'timestamp') ? 'readonly style="background-color: #2d2d2d; cursor: not-allowed;"' : ''} />
                     </div>
                     ${field.type !== 'constant' ? `
                     <div class="property-group">
                         <label>Decimals</label>
-                        <input type="number" id="prop-decimals" value="${field.decimals || 0}" min="0" ${(field.dataType === 'character' || field.dataType === 'double' || field.dataType === 'date' || field.dataType === 'time' || field.dataType === 'timestamp') ? 'readonly style="background-color: #2d2d2d; cursor: not-allowed;"' : ''} />
+                        <input type="number" id="prop-decimals" value="${field.decimals || 0}" min="0" ${(field.dataType === 'character' || field.dataType === 'reference' || field.dataType === 'double' || field.dataType === 'date' || field.dataType === 'time' || field.dataType === 'timestamp') ? 'readonly style="background-color: #2d2d2d; cursor: not-allowed;"' : ''} />
                     </div>
                     ` : ''}
                     ${field.type === 'constant' ? `
@@ -38104,7 +38239,7 @@ function showFieldProperties({
         const lengthInput = document.getElementById('prop-length');
         if (!lengthInput) {return;}
 
-        const shouldLockLength = field.type === 'constant' || type === 'date' || type === 'time' || type === 'timestamp';
+        const shouldLockLength = field.type === 'constant' || type === 'reference' || type === 'date' || type === 'time' || type === 'timestamp';
         lengthInput.readOnly = shouldLockLength;
 
         if (shouldLockLength) {
@@ -39011,7 +39146,8 @@ function applyFieldProperties({
             dft: field.dft ? { ...field.dft } : undefined,
                 values: field.values,
             dftval: field.dftval ? { ...field.dftval } : undefined,
-            dftvalIndicators: field.dftvalIndicators ? JSON.parse(JSON.stringify(field.dftvalIndicators)) : undefined
+                dftvalIndicators: field.dftvalIndicators ? JSON.parse(JSON.stringify(field.dftvalIndicators)) : undefined,
+                reffld: field.reffld ? { ...field.reffld } : undefined
         };
 
         Logger.debug('Applying properties to field:', oldField.name);
@@ -39577,6 +39713,7 @@ function applyFieldProperties({
         const edtwrdChanged = JSON.stringify(oldField.edtwrd || null) !== JSON.stringify(field.edtwrd || null);
         const edtmskChanged = JSON.stringify(oldField.edtmsk || null) !== JSON.stringify(field.edtmsk || null);
         const msgidChanged = JSON.stringify(oldField.msgid || null) !== JSON.stringify(field.msgid || null);
+            const reffldChanged = JSON.stringify(oldField.reffld || null) !== JSON.stringify(field.reffld || null);
 
         const valueChanged = field.type === 'constant' && oldField.value !== field.value;
 
@@ -39607,7 +39744,7 @@ function applyFieldProperties({
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, msgid: ${msgidChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, msgid: ${msgidChanged}, reffld: ${reffldChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;
@@ -43872,7 +44009,110 @@ function scanAttributeLinesAfterField({
         attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/,
     } = options;
 
+    if (!Array.isArray(field.keywordOrder)) {
+        field.keywordOrder = [];
+    }
+
+    const addKeywordOrder = (keywordName) => {
+        if (!keywordName) {
+            return;
+        }
+        if (!field.keywordOrder.includes(keywordName)) {
+            field.keywordOrder.push(keywordName);
+        }
+    };
+
+    const extractKeywordArea = (lineText) => {
+        if (!lineText) {
+            return '';
+        }
+        if (lineText.length > 43) {
+            return lineText.substring(43).trim();
+        }
+        return lineText.trim();
+    };
+
+    const parseReffldFromLine = (lineText, initialOffset) => {
+        if (!lineText) {
+            return null;
+        }
+
+        const reffldStart = lineText.search(/REFFLD\(/i);
+        if (reffldStart < 0) {
+            return null;
+        }
+
+        const firstSegment = lineText.substring(reffldStart + 'REFFLD('.length).trim();
+        if (!firstSegment) {
+            return null;
+        }
+
+        const rawLines = [];
+        const closedInFirst = firstSegment.indexOf(')');
+        if (closedInFirst >= 0) {
+            rawLines.push(firstSegment.substring(0, closedInFirst).trim());
+            return { rawLines, consumedOffset: initialOffset };
+        }
+
+        rawLines.push(firstSegment);
+        let lookaheadOffset = initialOffset;
+
+        while ((startIndex + lookaheadOffset + 1) < lines.length) {
+            const continuationLine = lines[startIndex + lookaheadOffset + 1];
+            const continuationTrimmed = continuationLine.trim();
+
+            const continuationIsComment = (continuationLine.length > 6 && continuationLine[5] === 'A' && continuationLine[6] === '*') ||
+                continuationTrimmed.startsWith('A*') ||
+                continuationTrimmed.startsWith('*') ||
+                continuationTrimmed.startsWith('-');
+            const continuationHasFieldName = /\b[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(continuationTrimmed);
+            const continuationIsRecordDef = continuationTrimmed.match(/^A\s+R\s+\w+/);
+            const continuationIsBlank = continuationTrimmed === '' || continuationTrimmed === 'A';
+
+            if (continuationIsComment || continuationHasFieldName || continuationIsRecordDef || continuationIsBlank) {
+                break;
+            }
+
+            const continuationKeywordArea = extractKeywordArea(continuationLine);
+            if (!continuationKeywordArea) {
+                break;
+            }
+
+            const closeIndex = continuationKeywordArea.indexOf(')');
+            if (closeIndex >= 0) {
+                rawLines.push(continuationKeywordArea.substring(0, closeIndex).trim());
+                lookaheadOffset++;
+                return { rawLines, consumedOffset: lookaheadOffset };
+            }
+
+            rawLines.push(continuationKeywordArea.trim());
+            lookaheadOffset++;
+        }
+
+        return {
+            rawLines,
+            consumedOffset: lookaheadOffset
+        };
+    };
+
     let lineOffset = 1;
+
+    // Some DDS files define REFFLD inline on the field line and continue it
+    // on the next line(s) with '+' continuation markers.
+    const baseLine = lines[startIndex];
+    const inlineReffld = parseReffldFromLine(baseLine, 0);
+    if (inlineReffld && inlineReffld.rawLines.length > 0) {
+        addKeywordOrder('REFFLD');
+        const normalizedRaw = inlineReffld.rawLines.join(' ').replace(/\s+/g, ' ').trim();
+        field.reffld = {
+            raw: normalizedRaw,
+            rawLines: inlineReffld.rawLines
+        };
+        if (inlineReffld.consumedOffset >= 1) {
+            lineOffset = inlineReffld.consumedOffset + 1;
+        }
+        Logger.parse(`Found multiline inline REFFLD for ${contextLabel} field ${field.name}: ${inlineReffld.rawLines.join(' | ')}`);
+    }
 
     while (startIndex + lineOffset < lines.length) {
         const nextLine = lines[startIndex + lineOffset];
@@ -44055,6 +44295,7 @@ function scanAttributeLinesAfterField({
         // Extract COLOR with indicators (with OR support)
         const colorMatch = nextLine.match(/COLOR\((\w+)\)/);
         if (colorMatch) {
+            addKeywordOrder('COLOR');
             const color = colorMatch[1];
 
             if (!field.color) {
@@ -44108,6 +44349,7 @@ function scanAttributeLinesAfterField({
         // Extract DSPATR attributes with indicators (with OR support)
         const attrResult = extractAttributes(nextLine, nextLine);
         if (attrResult.attrs && Object.keys(attrResult.attrs).length > 0) {
+            addKeywordOrder('DSPATR');
             field.attributes = { ...field.attributes, ...attrResult.attrs };
 
             if (preserveOriginalSpacing) {
@@ -44163,6 +44405,7 @@ function scanAttributeLinesAfterField({
         Logger.debug(`[${contextLabel}] Checking line ${startIndex + lineOffset + 1} for DFTVAL: ${nextTrimmed.substring(0, 50)}`);
         Logger.debug(`[${contextLabel}] DFTVAL match result:`, dftvalMatch ? `YES (value='${dftvalMatch[1]}')` : 'NO');
         if (dftvalMatch) {
+            addKeywordOrder('DFTVAL');
             const value = dftvalMatch[1];
             field.dftval = { value: value };
 
@@ -44205,6 +44448,7 @@ function scanAttributeLinesAfterField({
 
         const edtcdeMatch = nextLine.match(/EDTCDE\(\s*([^\s)]+)(?:\s+([*$]))?\s*\)/);
         if (edtcdeMatch) {
+            addKeywordOrder('EDTCDE');
             const edtcdeValue = edtcdeMatch[1].replace(/["']/g, '').trim().toUpperCase();
             if (edtcdeValue) {
                 const replaceLeadingZerosWith = edtcdeMatch[2] ? edtcdeMatch[2].trim() : '';
@@ -44218,30 +44462,35 @@ function scanAttributeLinesAfterField({
 
         const edtwrdValue = parseKeywordTextArg('EDTWRD', nextLine);
         if (edtwrdValue.length > 0) {
+            addKeywordOrder('EDITKEYWORDS');
             field.edtwrd = { value: edtwrdValue };
             Logger.parse(`Found EDTWRD('${edtwrdValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
         const edtmskValue = parseKeywordTextArg('EDTMSK', nextLine);
         if (edtmskValue.length > 0) {
+            addKeywordOrder('EDITKEYWORDS');
             field.edtmsk = { value: edtmskValue };
             Logger.parse(`Found EDTMSK('${edtmskValue}') for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
         const dftValue = parseKeywordTextArg('DFT', nextLine);
         if (dftValue.length > 0) {
+            addKeywordOrder('DFT');
             field.dft = { value: dftValue };
             Logger.parse(`Found DFT(${dftValue}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
         const cntfldValue = parseKeywordTextArg('CNTFLD', nextLine);
         if (/^\d{3}$/.test(cntfldValue)) {
+            addKeywordOrder('CNTFLD');
             field.cntfld = { value: cntfldValue };
             Logger.parse(`Found CNTFLD(${field.cntfld.value}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
         }
 
         const msgidMatch = nextLine.match(/MSGID\(([^)]*)\)/i);
         if (msgidMatch) {
+            addKeywordOrder('MSGID');
             const rawMsgid = msgidMatch[1].trim().replace(/\s+/g, ' ');
             if (rawMsgid.length > 0) {
                 const tokens = rawMsgid.split(/\s+/).filter(Boolean);
@@ -44290,8 +44539,28 @@ function scanAttributeLinesAfterField({
             }
         }
 
+        // Extract REFFLD keyword (reference field for Db2 metadata inheritance)
+        // Format: REFFLD(FIELDNAME), REFFLD(FIELDNAME FILE), REFFLD(FIELDNAME LIB/FILE), etc.
+        // Phase 1: Store raw string as-is for preservation during round-trip
+        const parsedReffld = parseReffldFromLine(nextLine, lineOffset);
+        if (parsedReffld && parsedReffld.rawLines.length > 0) {
+            addKeywordOrder('REFFLD');
+            const rawReffld = parsedReffld.rawLines.join(' ').replace(/\s+/g, ' ').trim();
+            if (rawReffld.length > 0) {
+                field.reffld = {
+                    raw: rawReffld,
+                    rawLines: parsedReffld.rawLines
+                };
+                Logger.parse(`Found REFFLD(${rawReffld}) for ${contextLabel} field ${field.name} at offset ${lineOffset}`);
+                if (parsedReffld.consumedOffset > lineOffset) {
+                    lineOffset = parsedReffld.consumedOffset;
+                }
+            }
+        }
+
             // Parse VALUES('A' 'B' ...), including DDS continuation lines
             if (/VALUES\(/i.test(nextLine)) {
+                addKeywordOrder('VALUES');
                 let valuesText = nextLine;
                 let lookaheadOffset = lineOffset;
 
@@ -44339,6 +44608,7 @@ function scanAttributeLinesAfterField({
         if (includeChecks) {
             const checkMatch = nextLine.match(/CHECK\(([^)]+)\)/);
             if (checkMatch) {
+                addKeywordOrder('CHECK');
                 Logger.debug(`[${contextLabel}] ===== FOUND CHECK LINE =====`);
                 Logger.debug(`[${contextLabel}] nextLine: "${nextLine}"`);
                 Logger.debug(`[${contextLabel}] lineOffset: ${lineOffset}`);
@@ -44501,6 +44771,26 @@ __webpack_require__.r(__webpack_exports__);
 function buildVariableTypeAndUsageUI({
     field
 }) {
+    // Reference fields use DDS format: R <length> <usage>
+    if (field.dataType === 'reference') {
+        const refLength = Number.isFinite(field.decimals)
+            ? field.decimals
+            : (parseInt(field.decimals, 10) || 0);
+
+        let usageChar = 'O';
+        if (field.usage === 'I') {
+            usageChar = 'I';
+        } else if (field.usage === 'O') {
+            usageChar = 'O';
+        } else if (field.usage === 'B') {
+            usageChar = 'B';
+        } else if (field.type === 'input') {
+            usageChar = 'I';
+        }
+
+        return `R ${refLength} ${usageChar}`;
+    }
+
     const isDate = field.dataType === 'date';
     const isTime = field.dataType === 'time';
     const isTimestamp = field.dataType === 'timestamp';
@@ -45256,6 +45546,61 @@ function generateFieldMsgidLinesUI({ field }) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateFieldReffldLinesUI: () => (/* binding */ generateFieldReffldLinesUI)
+/* harmony export */ });
+// Generate REFFLD keyword lines for a field
+// Phase 1: Simple preservation of REFFLD syntax as parsed
+function generateFieldReffldLinesUI({ field }) {
+    if (!field || !field.reffld) {
+        return [];
+    }
+
+    const reffld = field.reffld;
+    
+    // Preserve multiline REFFLD continuations exactly in DDS shape when available.
+    // Example:
+    //   REFFLD(RCNTRCNT/CNTNME +
+    //          *LIBL/CNTRLCNT)
+    if (Array.isArray(reffld.rawLines) && reffld.rawLines.length > 1) {
+        const lines = [];
+        lines.push(`     A                                      REFFLD(${reffld.rawLines[0]}`);
+        for (let i = 1; i < reffld.rawLines.length - 1; i++) {
+            lines.push(`     A                                      ${reffld.rawLines[i]}`);
+        }
+        lines.push(`     A                                      ${reffld.rawLines[reffld.rawLines.length - 1]})`);
+        return lines;
+    }
+
+    // If reffld has a raw string (from parsing), use it as-is
+    if (reffld.raw) {
+        return [`     A                                      REFFLD(${reffld.raw})`];
+    }
+
+    // If reffld is an object with parts (future UI support), reconstruct it
+    // For Phase 1, this path is not used, but we prepare for Phase 3
+    if (reffld.fieldName) {
+        let parts = [reffld.fieldName];
+        if (reffld.file) {
+            if (reffld.library) {
+                parts.push(`${reffld.library}/${reffld.file}`);
+            } else {
+                parts.push(reffld.file);
+            }
+        }
+        return [`     A                                      REFFLD(${parts.join(' ')})`];
+    }
+
+    return [];
+}
+
+
+/***/ }),
+/* 101 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   generateDdsLineWithIndicatorsUI: () => (/* binding */ generateDdsLineWithIndicatorsUI)
 /* harmony export */ });
 // Generate a DDS line with optional indicators
@@ -45394,7 +45739,7 @@ function generateDdsLineWithIndicatorsUI({
 
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";

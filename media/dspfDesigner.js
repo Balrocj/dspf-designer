@@ -83,6 +83,7 @@ import { generateFieldDftLinesUI } from './modules/ui/generateFieldDftLines.js';
 import { generateFieldDftvalLinesUI } from './modules/ui/generateFieldDftvalLines.js';
 import { generateFieldCntfldLinesUI } from './modules/ui/generateFieldCntfldLines.js';
 import { generateFieldMsgidLinesUI } from './modules/ui/generateFieldMsgidLines.js';
+import { generateFieldReffldLinesUI } from './modules/ui/generateFieldReffldLines.js';
 import { generateDdsLineWithIndicatorsUI } from './modules/ui/generateDdsLineWithIndicators.js';
 import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChangesToField.js';
 
@@ -107,6 +108,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     let isReadOnly = false; // Track if document is in read-only mode
     let currentView = 'designer'; // Track the current active view (designer, preview, source)
     let currentZoom = 1; // Zoom level for views container
+    let fileMetadata = { ref: null }; // File-level metadata (REF keyword, etc.)
     let indicatorSimulationEnabled = false; // Preview-only indicator simulation (SDA-like)
     let activePreviewIndicators = new Set();
     let indicatorSimulationShortcutBound = false;
@@ -1394,7 +1396,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         startIndex: index,
                         field,
                         contextLabel: 'PREVIEW',
-                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/
+                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(|REFFLD\(/
                     });
                     
                     Logger.debug(`Parsed preview field: ${field.name} (${field.type}) at ${field.row},${field.col} for record ${currentRecordName}`);
@@ -1479,7 +1481,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                                 field,
                                 contextLabel: 'PREVIEW-COMPANION',
                                 includeDftval: true,
-                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(/,
+                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(|REFFLD\(/,
                                 stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|RANGE\()/
 
                             });
@@ -2863,6 +2865,17 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             // Preserve only comments and UNKNOWN keywords (e.g., OVERLAY, KEEP) after the field
             const blockLines = lines.slice(fieldBlock.startLine, fieldBlock.endLine + 1);
             const preservedExtras = [];
+            const reffldContinuationLinesToSkip = new Set();
+
+            if (searchField && searchField.reffld && Array.isArray(searchField.reffld.rawLines) && searchField.reffld.rawLines.length > 1) {
+                const reffldRawLines = searchField.reffld.rawLines;
+                for (let i = 1; i < reffldRawLines.length; i++) {
+                    const continuationText = i === reffldRawLines.length - 1
+                        ? `${reffldRawLines[i]})`
+                        : reffldRawLines[i];
+                    reffldContinuationLinesToSkip.add((continuationText || '').trim());
+                }
+            }
 
             // Track whether we are inside a multi-line VALUES continuation block
             let insideValuesContinuation = false;
@@ -2881,6 +2894,12 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 const trimmed = line.trim();
                 const contentAfter43 = line.length > 43 ? line.substring(43).trim() : '';
                 const contentAfter18 = line.length > 18 ? line.substring(18).trim() : '';
+
+                if (contentAfter43 && reffldContinuationLinesToSkip.has(contentAfter43)) {
+                    pendingIndicatorLines = [];
+                    Logger.dds(`Skipping multiline REFFLD continuation line ${globalIndex + 1}: "${contentAfter43}"`);
+                    return;
+                }
 
                 // For constants: do NOT preserve continuation lines
                 if (searchField.type === 'constant') {
@@ -3126,6 +3145,13 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
 
     function generateFieldMsgidLines(field) {
         return generateFieldMsgidLinesUI({
+            field
+        });
+    }
+
+    // Helper: Generate REFFLD keyword lines for a field
+    function generateFieldReffldLines(field) {
+        return generateFieldReffldLinesUI({
             field
         });
     }
@@ -3529,24 +3555,65 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         const dftvalLines = generateFieldDftvalLines(field);
         const cntfldLines = generateFieldCntfldLines(field);
         const msgidLines = generateFieldMsgidLines(field);
+        const reffldLines = generateFieldReffldLines(field);
         
         // Build main line with indicators
         const mainLine = `     A${indicatorPrefix}${fieldNamePadded} ${typePartPadded} ${rowStr}${rowColSeparator}${colStr}${attributes}`;
         
-        // Combine: field indicator lines BEFORE main + main + DSPATR + CHECK + DFTVAL + COLOR
+        // Combine: field indicator lines BEFORE main + main + keyword lines.
+        // Preserve original keyword order when available from parser.
         const fieldIndicatorLinesStr = fieldIndicatorLines.length > 0 ? fieldIndicatorLines.join('\n') + '\n' : '';
-        const attrLinesStr = attrLines.length > 0 ? '\n' + attrLines.join('\n') : '';
-        const checkLinesStr = checkLines.length > 0 ? '\n' + checkLines.join('\n') : '';
-        const edtcdeLinesStr = edtcdeLines.length > 0 ? '\n' + edtcdeLines.join('\n') : '';
-        const editKeywordLinesStr = editKeywordLines.length > 0 ? '\n' + editKeywordLines.join('\n') : '';
-        const valuesLinesStr = valuesLines.length > 0 ? '\n' + valuesLines.join('\n') : '';
-        const dftLinesStr = dftLines.length > 0 ? '\n' + dftLines.join('\n') : '';
-        const dftvalLinesStr = dftvalLines.length > 0 ? '\n' + dftvalLines.join('\n') : '';
-        const cntfldLinesStr = cntfldLines.length > 0 ? '\n' + cntfldLines.join('\n') : '';
-        const msgidLinesStr = msgidLines.length > 0 ? '\n' + msgidLines.join('\n') : '';
-        const colorLinesStr = colorLines.length > 0 ? '\n' + colorLines.join('\n') : '';
+        const keywordLineMap = {
+            DSPATR: attrLines,
+            CHECK: checkLines,
+            EDTCDE: edtcdeLines,
+            EDITKEYWORDS: editKeywordLines,
+            VALUES: valuesLines,
+            DFT: dftLines,
+            DFTVAL: dftvalLines,
+            CNTFLD: cntfldLines,
+            MSGID: msgidLines,
+            REFFLD: reffldLines,
+            COLOR: colorLines
+        };
 
-        const result = fieldIndicatorLinesStr + mainLine + attrLinesStr + checkLinesStr + edtcdeLinesStr + editKeywordLinesStr + valuesLinesStr + dftLinesStr + dftvalLinesStr + cntfldLinesStr + msgidLinesStr + colorLinesStr;
+        const defaultKeywordOrder = [
+            'DSPATR',
+            'CHECK',
+            'EDTCDE',
+            'EDITKEYWORDS',
+            'VALUES',
+            'DFT',
+            'DFTVAL',
+            'CNTFLD',
+            'MSGID',
+            'REFFLD',
+            'COLOR'
+        ];
+
+        const orderedKeywordBlocks = [];
+        const emittedKeywords = new Set();
+        const originalKeywordOrder = Array.isArray(field.keywordOrder) ? field.keywordOrder : [];
+
+        originalKeywordOrder.forEach((keywordName) => {
+            const linesForKeyword = keywordLineMap[keywordName];
+            if (linesForKeyword && linesForKeyword.length > 0 && !emittedKeywords.has(keywordName)) {
+                orderedKeywordBlocks.push(...linesForKeyword);
+                emittedKeywords.add(keywordName);
+            }
+        });
+
+        defaultKeywordOrder.forEach((keywordName) => {
+            const linesForKeyword = keywordLineMap[keywordName];
+            if (linesForKeyword && linesForKeyword.length > 0 && !emittedKeywords.has(keywordName)) {
+                orderedKeywordBlocks.push(...linesForKeyword);
+                emittedKeywords.add(keywordName);
+            }
+        });
+
+        const orderedKeywordLinesStr = orderedKeywordBlocks.length > 0 ? '\n' + orderedKeywordBlocks.join('\n') : '';
+
+        const result = fieldIndicatorLinesStr + mainLine + orderedKeywordLinesStr;
         
         Logger.dds(`Generated DDS: name="${field.name}" padded="${fieldNamePadded}" type="${typeAndUsage}" padded="${typePartPadded}"`);
         Logger.dds(`Full line(s): "${result}"`);
@@ -3561,6 +3628,42 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     
     function getDefaultLength(type) {
         return getDefaultLengthUI(type);
+    }
+
+    // Parse file-level metadata (REF, DSPSIZ, etc.)
+    // This runs BEFORE record parsing to extract global file properties
+    function parseFileMetadata(content) {
+        fileMetadata = { ref: null }; // Reset file metadata
+        const lines = content.split('\n');
+        
+        Logger.parse('Parsing file-level metadata...');
+        
+        // REF is typically at the beginning of the file, before any records
+        // Format: "A          REF(FILENAME)" or "A          REF(LIBRARY/FILENAME)"
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const trimmedLine = line.trim();
+            
+            // Stop parsing file-level keywords once we hit a record definition
+            if (trimmedLine.match(/^.{0,5}A\s+R\s+\w+/)) {
+                Logger.parse('Reached first record definition, stopping file metadata parsing');
+                break;
+            }
+            
+            // Skip comments and empty lines
+            if (!trimmedLine || trimmedLine.startsWith('A*')) {
+                continue;
+            }
+            
+            // Look for REF keyword
+            const refMatch = trimmedLine.match(/REF\(([^)]+)\)/i);
+            if (refMatch) {
+                fileMetadata.ref = { raw: refMatch[1].trim() };
+                Logger.parse(`Found REF: ${fileMetadata.ref.raw}`);
+            }
+        }
+        
+        return fileMetadata;
     }
 
     // lee/parsea el DDS (texto -> objetos field) para renderizar en Designer/Preview.
@@ -4423,7 +4526,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         }
         
         // Parse usage and decimals using helper (adjust index by partIndex)
-        const usageInfo = parseUsageAndDecimals(parts, partIndex + 2);
+        let usageInfo = parseUsageAndDecimals(parts, partIndex + 2);
         
         Logger.debug(`Parsing field: typeSpec="${typeSpec}" hasDecimals=${usageInfo.hasDecimals}`);
         
@@ -4432,6 +4535,21 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         if (!typeInfo) {
             Logger.error(`Invalid type spec: "${typeSpec}"`);
             return null;
+        }
+        
+        // For reference type fields in old-style DDS, a standalone data type override letter
+        // (e.g. 'A' for character, 'S' for zoned) may appear between the 'R' reference indicator
+        // and the usage letter.  Example: "SCRBNK    R      A  B 10 48" – the 'A' is a data type
+        // override that parseUsageAndDecimals silently ignores, causing usage to default to 'O'.
+        // Detect and skip such override letters so the real usage ('B' here) is captured.
+        if (typeInfo.dataType === 'reference') {
+            const potentialOverride = parts[partIndex + 2];
+            if (potentialOverride && potentialOverride.length === 1 &&
+                /^[A-Za-z]$/.test(potentialOverride) && !/^[OIBHMP]$/i.test(potentialOverride)) {
+                // Re-parse starting one token later (past the type override letter)
+                usageInfo = parseUsageAndDecimals(parts, partIndex + 3);
+                Logger.debug(`Reference field: skipped type override '${potentialOverride}', re-parsed usage as '${usageInfo.usage}'`);
+            }
         }
         
         Logger.stats(`Mapped typeChar="${typeInfo.typeChar}" hasDecimals=${usageInfo.hasDecimals} to dataType="${typeInfo.dataType}"`);
@@ -4750,6 +4868,9 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         Logger.parse('Converted relative (+NN) coordinates to absolute in document');
                     }
                 }
+                
+                // Parse file-level metadata first (REF, etc.)
+                parseFileMetadata(currentDocument);
                 
                 // Parse fields with current record filter to maintain view consistency
                 // This will automatically re-render the designer view (clearing and redrawing all fields)
@@ -5618,12 +5739,18 @@ function __applySubfileControlForTests(overrides = {}) {
         getCurrentRecord: overrides.getCurrentRecord || (() => currentRecord),
         getCurrentView: overrides.getCurrentView || (() => 'preview'),
         updateDocumentInEditor: overrides.updateDocumentInEditor || (() => {}),
+        parseDspfFields: overrides.parseDspfFields || parseDspfFields,
+        setIndicatorConfiguration: overrides.setIndicatorConfiguration || __setIndicatorConfigurationForTests,
+        clearIndicatorConfigurations: overrides.clearIndicatorConfigurations || __clearIndicatorConfigurationsForTests,
         generateDdsLineWithIndicators: overrides.generateDdsLineWithIndicators || generateDdsLineWithIndicators,
         indicatorConfigurations: overrides.indicatorConfigurations || indicatorConfigurations,
         showScreenProperties: overrides.showScreenProperties || (() => {}),
-        parseDspfFields: overrides.parseDspfFields || (() => {}),
         updatePreviewView: overrides.updatePreviewView || (() => {})
     });
+}
+
+function __getFieldsForTests() {
+    return fields;
 }
 
 try {
@@ -5641,6 +5768,9 @@ try {
         if (typeof getSflpagValue !== 'undefined') {window.__TESTS.getSflpagValue = getSflpagValue;}
         if (typeof getSflRowSpan !== 'undefined') {window.__TESTS.getSflRowSpan = getSflRowSpan;}
         if (typeof applySflpagRepetition !== 'undefined') {window.__TESTS.applySflpagRepetition = applySflpagRepetition;}
+        if (typeof parseFileMetadata !== 'undefined') {window.__TESTS.parseFileMetadata = parseFileMetadata;}
+        if (typeof parseDspfFields !== 'undefined') {window.__TESTS.parseDspfFields = parseDspfFields;}
+        window.__TESTS.getFields = __getFieldsForTests;
         window.__TESTS.setCurrentDocument = __setCurrentDocumentForTests;
         window.__TESTS.getCurrentDocument = __getCurrentDocumentForTests;
         window.__TESTS.setCurrentRecord = __setCurrentRecordForTests;
@@ -5667,6 +5797,9 @@ if (typeof module !== 'undefined' && module.exports) {
         if (typeof getSflpagValue !== 'undefined') {module.exports.getSflpagValue = getSflpagValue;}
         if (typeof getSflRowSpan !== 'undefined') {module.exports.getSflRowSpan = getSflRowSpan;}
         if (typeof applySflpagRepetition !== 'undefined') {module.exports.applySflpagRepetition = applySflpagRepetition;}
+        if (typeof parseFileMetadata !== 'undefined') {module.exports.parseFileMetadata = parseFileMetadata;}
+        if (typeof parseDspfFields !== 'undefined') {module.exports.parseDspfFields = parseDspfFields;}
+        module.exports.getFields = __getFieldsForTests;
         module.exports.setCurrentDocument = __setCurrentDocumentForTests;
         module.exports.getCurrentDocument = __getCurrentDocumentForTests;
         module.exports.setCurrentRecord = __setCurrentRecordForTests;

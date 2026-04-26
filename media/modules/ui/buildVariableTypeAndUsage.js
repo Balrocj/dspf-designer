@@ -1,6 +1,26 @@
 export function buildVariableTypeAndUsageUI({
     field
 }) {
+    // Reference fields use DDS format: R <length> <usage>
+    if (field.dataType === 'reference') {
+        const refLength = Number.isFinite(field.decimals)
+            ? field.decimals
+            : (parseInt(field.decimals, 10) || 0);
+
+        let usageChar = 'O';
+        if (field.usage === 'I') {
+            usageChar = 'I';
+        } else if (field.usage === 'O') {
+            usageChar = 'O';
+        } else if (field.usage === 'B') {
+            usageChar = 'B';
+        } else if (field.type === 'input') {
+            usageChar = 'I';
+        }
+
+        return `R ${refLength} ${usageChar}`;
+    }
+
     const isDate = field.dataType === 'date';
     const isTime = field.dataType === 'time';
     const isTimestamp = field.dataType === 'timestamp';
