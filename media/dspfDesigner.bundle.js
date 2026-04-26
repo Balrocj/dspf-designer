@@ -37963,6 +37963,35 @@ function showFieldProperties({
                         <input type="text" id="prop-msgid-library" maxlength="10" size="10" placeholder="e.g. *LIBL" />
                     </div>
                 </div>
+
+                <div id="tab-dbref" class="tab-panel">
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-reffld-enabled" />
+                            Enable Database Reference (REFFLD)
+                        </label>
+                    </div>
+
+                    <div class="property-group reffld-value-group" style="display: none;">
+                        <label>Reference format</label>
+                        <input type="text" id="prop-reffld-format" maxlength="10" size="10" placeholder="e.g. RACMST" />
+                    </div>
+
+                    <div class="property-group reffld-value-group" style="display: none;">
+                        <label>Reference field</label>
+                        <input type="text" id="prop-reffld-fieldname" maxlength="10" size="10" placeholder="e.g. ACMPRO" />
+                    </div>
+
+                    <div class="property-group reffld-value-group" style="display: none;">
+                        <label>Reference file</label>
+                        <input type="text" id="prop-reffld-file" maxlength="10" size="10" placeholder="e.g. CUSTMST" />
+                    </div>
+
+                    <div class="property-group reffld-value-group" style="display: none;">
+                        <label>Reference library</label>
+                        <input type="text" id="prop-reffld-library" maxlength="10" size="10" placeholder="e.g. *LIBL" />
+                    </div>
+                </div>
             </div>
             
             <div style="padding: 16px; border-top: 1px solid var(--border-color); background-color: var(--panel-background);">
@@ -37994,6 +38023,12 @@ function showFieldProperties({
         msgidBtn.setAttribute('data-tab', 'msgid');
         msgidBtn.textContent = 'Message ID (MSGID)';
         tabsContainer.appendChild(msgidBtn);
+
+        const dbrefBtn = document.createElement('button');
+        dbrefBtn.className = 'properties-tab';
+        dbrefBtn.setAttribute('data-tab', 'dbref');
+        dbrefBtn.textContent = 'Database reference';
+        tabsContainer.appendChild(dbrefBtn);
     }
 
     const usageSelect = document.getElementById('prop-usage');
@@ -38008,6 +38043,14 @@ function showFieldProperties({
     const editingKeywordsTabPanel = document.getElementById('tab-editing-keywords');
     const msgidTabBtn = document.querySelector('.properties-tab[data-tab="msgid"]');
     const msgidTabPanel = document.getElementById('tab-msgid');
+    const dbrefTabBtn = document.querySelector('.properties-tab[data-tab="dbref"]');
+    const dbrefTabPanel = document.getElementById('tab-dbref');
+    const reffldEnabledCheckbox = document.getElementById('prop-reffld-enabled');
+    const reffldValueGroups = Array.from(document.querySelectorAll('.reffld-value-group'));
+    const reffldFormatInput = document.getElementById('prop-reffld-format');
+    const reffldFieldNameInput = document.getElementById('prop-reffld-fieldname');
+    const reffldFileInput = document.getElementById('prop-reffld-file');
+    const reffldLibraryInput = document.getElementById('prop-reffld-library');
     const checkCharGroups = Array.from(document.querySelectorAll('.check-char'));
     const checkNumGroups = Array.from(document.querySelectorAll('.check-num'));
     const checkCharTitles = Array.from(document.querySelectorAll('.check-char-title'));
@@ -38119,13 +38162,14 @@ function showFieldProperties({
         }
 
         const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
+        const isReferenceType = selectedType === 'reference';
         const showEditingKeywords = field.type !== 'constant' && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B') && isNumericType;
         const showMsgid = field.type !== 'constant'
             && field.type !== 'keyword'
             && !field.isKeyword
             && usageSelect
             && (usageSelect.value === 'O' || usageSelect.value === 'B')
-            && (['character', 'double'].includes(selectedType) || isNumericType);
+            && (['character', 'double'].includes(selectedType) || isNumericType || isReferenceType);
 
         const lockShiftForZonedOutputOnly = field.type !== 'constant'
             && usageSelect
@@ -38166,6 +38210,25 @@ function showFieldProperties({
         if (!showMsgid && msgidTabBtn && msgidTabBtn.classList.contains('active')) {
             msgidTabBtn.classList.remove('active');
             msgidTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
+        }
+
+        const showDbRef = isVariableField
+            && usageSelect
+            && (['character', 'double'].includes(selectedType) || isNumericType || isReferenceType);
+
+        if (dbrefTabBtn) {
+            dbrefTabBtn.style.display = showDbRef ? 'inline-flex' : 'none';
+        }
+        if (dbrefTabPanel) {
+            dbrefTabPanel.style.display = showDbRef ? '' : 'none';
+        }
+        if (!showDbRef && dbrefTabBtn && dbrefTabBtn.classList.contains('active')) {
+            dbrefTabBtn.classList.remove('active');
+            dbrefTabPanel?.classList.remove('active');
             const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
             const basicPanel = document.getElementById('tab-basic');
             basicTab?.classList.add('active');
@@ -38982,6 +39045,72 @@ function showFieldProperties({
         });
     }
 
+    // Pre-populate Database reference (REFFLD) panel
+    if (field.reffld) {
+        let parsedFormat = '';
+        let parsedFieldName = '';
+        let parsedFile = '';
+        let parsedLibrary = '';
+
+        if (field.reffld.fieldName !== undefined) {
+            parsedFormat = (field.reffld.formatName || '').trim();
+            parsedFieldName = (field.reffld.fieldName || '').trim();
+            parsedFile = (field.reffld.file || '').trim();
+            parsedLibrary = (field.reffld.library || '').trim();
+
+            if (!parsedFormat && parsedFieldName.includes('/')) {
+                const splitFirst = parsedFieldName.split('/');
+                parsedFormat = splitFirst[0] || '';
+                parsedFieldName = splitFirst[1] || '';
+            }
+        } else {
+            const rawContent = field.reffld.raw
+                || (field.reffld.rawLines ? field.reffld.rawLines.join(' ').replace(/\s+/g, ' ').trim() : '');
+            const tokens = rawContent
+                .split(/\s+/)
+                .map(token => token.trim())
+                .filter(token => token.length > 0 && token !== '+' && token !== '-');
+            const firstToken = tokens[0] || '';
+
+            if (firstToken.includes('/')) {
+                const splitFirst = firstToken.split('/');
+                parsedFormat = splitFirst[0] || '';
+                parsedFieldName = splitFirst[1] || '';
+            } else {
+                parsedFieldName = firstToken;
+            }
+
+            const sourceToken = tokens.find((token, index) => index > 0 && token.includes('/')) || tokens[1] || '';
+            if (sourceToken) {
+                const slashIdx = sourceToken.indexOf('/');
+                if (slashIdx >= 0) {
+                    parsedLibrary = sourceToken.substring(0, slashIdx);
+                    parsedFile = sourceToken.substring(slashIdx + 1);
+                } else {
+                    parsedFile = sourceToken;
+                }
+            }
+        }
+
+        if (reffldEnabledCheckbox) {
+            reffldEnabledCheckbox.checked = true;
+        }
+        reffldValueGroups.forEach(g => { g.style.display = 'block'; });
+        if (reffldFormatInput) { reffldFormatInput.value = parsedFormat; }
+        if (reffldFieldNameInput) { reffldFieldNameInput.value = parsedFieldName; }
+        if (reffldFileInput) { reffldFileInput.value = parsedFile; }
+        if (reffldLibraryInput) { reffldLibraryInput.value = parsedLibrary; }
+    }
+
+    if (reffldEnabledCheckbox) {
+        reffldEnabledCheckbox.addEventListener('change', function() {
+            reffldValueGroups.forEach(g => { g.style.display = this.checked ? 'block' : 'none'; });
+            if (this.checked && reffldFieldNameInput) {
+                reffldFieldNameInput.focus();
+            }
+        });
+    }
+
     setupIndicatorButtons();
 
     if (field.colorIndicators) {
@@ -39632,11 +39761,12 @@ function applyFieldProperties({
         const previousMsgid = oldField.msgid || null;
         const isTextType = ['character', 'double'].includes(field.dataType);
         const isNumericMsgidType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(field.dataType);
+        const isReferenceMsgidType = field.dataType === 'reference';
         const canUseMsgid = field.type !== 'constant'
             && field.type !== 'keyword'
             && !field.isKeyword
             && (field.usage === 'O' || field.usage === 'B')
-            && (isTextType || isNumericMsgidType);
+            && (isTextType || isNumericMsgidType || isReferenceMsgidType);
         const getLimitedMsgidValue = (input, maxLength) => input
             ? input.value.trim().toUpperCase().slice(0, maxLength)
             : '';
@@ -39677,6 +39807,112 @@ function applyFieldProperties({
             }
         } else {
             delete field.msgid;
+        }
+
+        const reffldEnabledCheckbox = document.getElementById('prop-reffld-enabled');
+        const reffldFormatInput = document.getElementById('prop-reffld-format');
+        const reffldFieldNameInput = document.getElementById('prop-reffld-fieldname');
+        const reffldFileInput = document.getElementById('prop-reffld-file');
+        const reffldLibraryInput = document.getElementById('prop-reffld-library');
+        const previousReffld = oldField.reffld || null;
+        const isTextTypeReffld = ['character', 'double'].includes(field.dataType);
+        const isNumericTypeReffld = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(field.dataType);
+        const isReferenceTypeReffld = field.dataType === 'reference';
+        const canUseReffld = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && (isTextTypeReffld || isNumericTypeReffld || isReferenceTypeReffld);
+
+        // Helper: extract format/field/file/library from a raw REFFLD string.
+        const parseReffldRaw = (raw) => {
+            const tokens = (raw || '')
+                .trim()
+                .split(/\s+/)
+                .map(token => token.trim())
+                .filter(token => token.length > 0 && token !== '+' && token !== '-');
+            const firstToken = tokens[0] || '';
+            let formatName = '';
+            let fieldName = firstToken;
+            if (firstToken.includes('/')) {
+                const splitFirst = firstToken.split('/');
+                formatName = splitFirst[0] || '';
+                fieldName = splitFirst[1] || '';
+            }
+            let file = '', library = '';
+            const sourceToken = tokens.find((token, index) => index > 0 && token.includes('/')) || tokens[1] || '';
+            if (sourceToken) {
+                const slashIdx = sourceToken.indexOf('/');
+                if (slashIdx >= 0) {
+                    library = sourceToken.substring(0, slashIdx);
+                    file = sourceToken.substring(slashIdx + 1);
+                } else {
+                    file = sourceToken;
+                }
+            }
+            return { formatName, fieldName, file, library };
+        };
+
+        if (canUseReffld && reffldEnabledCheckbox && reffldEnabledCheckbox.checked) {
+            const formatName = reffldFormatInput ? reffldFormatInput.value.trim().toUpperCase().slice(0, 10) : '';
+            const fieldName = reffldFieldNameInput ? reffldFieldNameInput.value.trim().toUpperCase().slice(0, 10) : '';
+            const refFile = reffldFileInput ? reffldFileInput.value.trim().toUpperCase().slice(0, 10) : '';
+            const refLibrary = reffldLibraryInput ? reffldLibraryInput.value.trim().toUpperCase().slice(0, 10) : '';
+
+            if (fieldName) {
+                // Determine previous parsed values for preservation check
+                let prevParsed = { formatName: '', fieldName: '', file: '', library: '' };
+                if (previousReffld) {
+                    if (previousReffld.fieldName !== undefined) {
+                        const prevFieldName = previousReffld.fieldName || '';
+                        if (previousReffld.formatName !== undefined) {
+                            prevParsed = {
+                                formatName: previousReffld.formatName || '',
+                                fieldName: prevFieldName,
+                                file: previousReffld.file || '',
+                                library: previousReffld.library || ''
+                            };
+                        } else if (prevFieldName.includes('/')) {
+                            const splitFirst = prevFieldName.split('/');
+                            prevParsed = {
+                                formatName: splitFirst[0] || '',
+                                fieldName: splitFirst[1] || '',
+                                file: previousReffld.file || '',
+                                library: previousReffld.library || ''
+                            };
+                        } else {
+                            prevParsed = {
+                                formatName: '',
+                                fieldName: prevFieldName,
+                                file: previousReffld.file || '',
+                                library: previousReffld.library || ''
+                            };
+                        }
+                    } else {
+                        prevParsed = parseReffldRaw(previousReffld.raw || '');
+                    }
+                }
+
+                const sameAsPrevious = previousReffld
+                    && prevParsed.formatName === formatName
+                    && prevParsed.fieldName === fieldName
+                    && prevParsed.file === refFile
+                    && prevParsed.library === refLibrary;
+
+                const nextReffld = { formatName, fieldName, file: refFile, library: refLibrary };
+
+                if (sameAsPrevious) {
+                    if (typeof previousReffld.raw === 'string') { nextReffld.raw = previousReffld.raw; }
+                    if (Array.isArray(previousReffld.rawLines)) { nextReffld.rawLines = previousReffld.rawLines.slice(); }
+                }
+
+                field.reffld = nextReffld;
+                const reffldFirstToken = formatName ? `${formatName}/${fieldName}` : fieldName;
+                Logger.debug(`REFFLD set to ${reffldFirstToken}${refFile ? ' ' + (refLibrary ? refLibrary + '/' : '') + refFile : ''} for field ${field.name}`);
+            } else {
+                delete field.reffld;
+            }
+        } else {
+            delete field.reffld;
         }
 
         const edtcdeForShift = field.edtcde && field.edtcde.value
@@ -39742,7 +39978,43 @@ function applyFieldProperties({
         const edtwrdChanged = JSON.stringify(oldField.edtwrd || null) !== JSON.stringify(field.edtwrd || null);
         const edtmskChanged = JSON.stringify(oldField.edtmsk || null) !== JSON.stringify(field.edtmsk || null);
         const msgidChanged = JSON.stringify(oldField.msgid || null) !== JSON.stringify(field.msgid || null);
-            const reffldChanged = JSON.stringify(oldField.reffld || null) !== JSON.stringify(field.reffld || null);
+        // Compare REFFLD by semantic content (formatName/fieldName/file/library)
+        const extractReffldKey = (r) => {
+            if (!r) { return ''; }
+            if (r.fieldName !== undefined) {
+                if (r.formatName !== undefined) {
+                    return `${r.formatName || ''}|${r.fieldName || ''}|${r.file || ''}|${r.library || ''}`;
+                }
+                const directFieldName = r.fieldName || '';
+                if (directFieldName.includes('/')) {
+                    const splitFirst = directFieldName.split('/');
+                    return `${splitFirst[0] || ''}|${splitFirst[1] || ''}|${r.file || ''}|${r.library || ''}`;
+                }
+                return `|${directFieldName}|${r.file || ''}|${r.library || ''}`;
+            }
+            const tokens = (r.raw || '')
+                .trim()
+                .split(/\s+/)
+                .map(token => token.trim())
+                .filter(token => token.length > 0 && token !== '+' && token !== '-');
+            const firstToken = tokens[0] || '';
+            let formatName = '';
+            let fieldName = firstToken;
+            if (firstToken.includes('/')) {
+                const splitFirst = firstToken.split('/');
+                formatName = splitFirst[0] || '';
+                fieldName = splitFirst[1] || '';
+            }
+            let f = '', lib = '';
+            const sourceToken = tokens.find((token, index) => index > 0 && token.includes('/')) || tokens[1] || '';
+            if (sourceToken) {
+                const si = sourceToken.indexOf('/');
+                if (si >= 0) { lib = sourceToken.substring(0, si); f = sourceToken.substring(si + 1); }
+                else { f = sourceToken; }
+            }
+            return `${formatName}|${fieldName}|${f}|${lib}`;
+        };
+        const reffldChanged = extractReffldKey(oldField.reffld) !== extractReffldKey(field.reffld);
 
         const valueChanged = field.type === 'constant' && oldField.value !== field.value;
 
@@ -39769,7 +40041,8 @@ function applyFieldProperties({
             edtcdeChanged ||
             edtwrdChanged ||
             edtmskChanged ||
-            msgidChanged
+            msgidChanged ||
+            reffldChanged
         );
 
         if (shouldUpdateDds) {
@@ -45786,10 +46059,12 @@ function generateFieldReffldLinesUI({ field }) {
         return [`     A                                      REFFLD(${reffld.raw})`];
     }
 
-    // If reffld is an object with parts (future UI support), reconstruct it
-    // For Phase 1, this path is not used, but we prepare for Phase 3
+    // If reffld is an object with parts (UI support), reconstruct it.
     if (reffld.fieldName) {
-        let parts = [reffld.fieldName];
+        const firstToken = reffld.formatName
+            ? `${reffld.formatName}/${reffld.fieldName}`
+            : reffld.fieldName;
+        let parts = [firstToken];
         if (reffld.file) {
             if (reffld.library) {
                 parts.push(`${reffld.library}/${reffld.file}`);

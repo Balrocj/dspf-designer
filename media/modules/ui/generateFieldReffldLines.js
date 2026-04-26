@@ -39,10 +39,12 @@ export function generateFieldReffldLinesUI({ field }) {
         return [`     A                                      REFFLD(${reffld.raw})`];
     }
 
-    // If reffld is an object with parts (future UI support), reconstruct it
-    // For Phase 1, this path is not used, but we prepare for Phase 3
+    // If reffld is an object with parts (UI support), reconstruct it.
     if (reffld.fieldName) {
-        let parts = [reffld.fieldName];
+        const firstToken = reffld.formatName
+            ? `${reffld.formatName}/${reffld.fieldName}`
+            : reffld.fieldName;
+        let parts = [firstToken];
         if (reffld.file) {
             if (reffld.library) {
                 parts.push(`${reffld.library}/${reffld.file}`);

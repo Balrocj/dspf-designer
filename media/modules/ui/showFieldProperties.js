@@ -651,6 +651,35 @@ export function showFieldProperties({
                         <input type="text" id="prop-msgid-library" maxlength="10" size="10" placeholder="e.g. *LIBL" />
                     </div>
                 </div>
+
+                <div id="tab-dbref" class="tab-panel">
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-reffld-enabled" />
+                            Enable Database Reference (REFFLD)
+                        </label>
+                    </div>
+
+                    <div class="property-group reffld-value-group" style="display: none;">
+                        <label>Reference format</label>
+                        <input type="text" id="prop-reffld-format" maxlength="10" size="10" placeholder="e.g. RACMST" />
+                    </div>
+
+                    <div class="property-group reffld-value-group" style="display: none;">
+                        <label>Reference field</label>
+                        <input type="text" id="prop-reffld-fieldname" maxlength="10" size="10" placeholder="e.g. ACMPRO" />
+                    </div>
+
+                    <div class="property-group reffld-value-group" style="display: none;">
+                        <label>Reference file</label>
+                        <input type="text" id="prop-reffld-file" maxlength="10" size="10" placeholder="e.g. CUSTMST" />
+                    </div>
+
+                    <div class="property-group reffld-value-group" style="display: none;">
+                        <label>Reference library</label>
+                        <input type="text" id="prop-reffld-library" maxlength="10" size="10" placeholder="e.g. *LIBL" />
+                    </div>
+                </div>
             </div>
             
             <div style="padding: 16px; border-top: 1px solid var(--border-color); background-color: var(--panel-background);">
@@ -682,6 +711,12 @@ export function showFieldProperties({
         msgidBtn.setAttribute('data-tab', 'msgid');
         msgidBtn.textContent = 'Message ID (MSGID)';
         tabsContainer.appendChild(msgidBtn);
+
+        const dbrefBtn = document.createElement('button');
+        dbrefBtn.className = 'properties-tab';
+        dbrefBtn.setAttribute('data-tab', 'dbref');
+        dbrefBtn.textContent = 'Database reference';
+        tabsContainer.appendChild(dbrefBtn);
     }
 
     const usageSelect = document.getElementById('prop-usage');
@@ -696,6 +731,14 @@ export function showFieldProperties({
     const editingKeywordsTabPanel = document.getElementById('tab-editing-keywords');
     const msgidTabBtn = document.querySelector('.properties-tab[data-tab="msgid"]');
     const msgidTabPanel = document.getElementById('tab-msgid');
+    const dbrefTabBtn = document.querySelector('.properties-tab[data-tab="dbref"]');
+    const dbrefTabPanel = document.getElementById('tab-dbref');
+    const reffldEnabledCheckbox = document.getElementById('prop-reffld-enabled');
+    const reffldValueGroups = Array.from(document.querySelectorAll('.reffld-value-group'));
+    const reffldFormatInput = document.getElementById('prop-reffld-format');
+    const reffldFieldNameInput = document.getElementById('prop-reffld-fieldname');
+    const reffldFileInput = document.getElementById('prop-reffld-file');
+    const reffldLibraryInput = document.getElementById('prop-reffld-library');
     const checkCharGroups = Array.from(document.querySelectorAll('.check-char'));
     const checkNumGroups = Array.from(document.querySelectorAll('.check-num'));
     const checkCharTitles = Array.from(document.querySelectorAll('.check-char-title'));
@@ -807,13 +850,14 @@ export function showFieldProperties({
         }
 
         const isNumericType = ['numeric', 'zoned', 'packed', 'float', 'binary'].includes(selectedType);
+        const isReferenceType = selectedType === 'reference';
         const showEditingKeywords = field.type !== 'constant' && usageSelect && (usageSelect.value === 'O' || usageSelect.value === 'B') && isNumericType;
         const showMsgid = field.type !== 'constant'
             && field.type !== 'keyword'
             && !field.isKeyword
             && usageSelect
             && (usageSelect.value === 'O' || usageSelect.value === 'B')
-            && (['character', 'double'].includes(selectedType) || isNumericType);
+            && (['character', 'double'].includes(selectedType) || isNumericType || isReferenceType);
 
         const lockShiftForZonedOutputOnly = field.type !== 'constant'
             && usageSelect
@@ -854,6 +898,25 @@ export function showFieldProperties({
         if (!showMsgid && msgidTabBtn && msgidTabBtn.classList.contains('active')) {
             msgidTabBtn.classList.remove('active');
             msgidTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
+        }
+
+        const showDbRef = isVariableField
+            && usageSelect
+            && (['character', 'double'].includes(selectedType) || isNumericType || isReferenceType);
+
+        if (dbrefTabBtn) {
+            dbrefTabBtn.style.display = showDbRef ? 'inline-flex' : 'none';
+        }
+        if (dbrefTabPanel) {
+            dbrefTabPanel.style.display = showDbRef ? '' : 'none';
+        }
+        if (!showDbRef && dbrefTabBtn && dbrefTabBtn.classList.contains('active')) {
+            dbrefTabBtn.classList.remove('active');
+            dbrefTabPanel?.classList.remove('active');
             const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
             const basicPanel = document.getElementById('tab-basic');
             basicTab?.classList.add('active');
@@ -1666,6 +1729,72 @@ export function showFieldProperties({
             });
             if (this.checked && msgidPrefixInput) {
                 msgidPrefixInput.focus();
+            }
+        });
+    }
+
+    // Pre-populate Database reference (REFFLD) panel
+    if (field.reffld) {
+        let parsedFormat = '';
+        let parsedFieldName = '';
+        let parsedFile = '';
+        let parsedLibrary = '';
+
+        if (field.reffld.fieldName !== undefined) {
+            parsedFormat = (field.reffld.formatName || '').trim();
+            parsedFieldName = (field.reffld.fieldName || '').trim();
+            parsedFile = (field.reffld.file || '').trim();
+            parsedLibrary = (field.reffld.library || '').trim();
+
+            if (!parsedFormat && parsedFieldName.includes('/')) {
+                const splitFirst = parsedFieldName.split('/');
+                parsedFormat = splitFirst[0] || '';
+                parsedFieldName = splitFirst[1] || '';
+            }
+        } else {
+            const rawContent = field.reffld.raw
+                || (field.reffld.rawLines ? field.reffld.rawLines.join(' ').replace(/\s+/g, ' ').trim() : '');
+            const tokens = rawContent
+                .split(/\s+/)
+                .map(token => token.trim())
+                .filter(token => token.length > 0 && token !== '+' && token !== '-');
+            const firstToken = tokens[0] || '';
+
+            if (firstToken.includes('/')) {
+                const splitFirst = firstToken.split('/');
+                parsedFormat = splitFirst[0] || '';
+                parsedFieldName = splitFirst[1] || '';
+            } else {
+                parsedFieldName = firstToken;
+            }
+
+            const sourceToken = tokens.find((token, index) => index > 0 && token.includes('/')) || tokens[1] || '';
+            if (sourceToken) {
+                const slashIdx = sourceToken.indexOf('/');
+                if (slashIdx >= 0) {
+                    parsedLibrary = sourceToken.substring(0, slashIdx);
+                    parsedFile = sourceToken.substring(slashIdx + 1);
+                } else {
+                    parsedFile = sourceToken;
+                }
+            }
+        }
+
+        if (reffldEnabledCheckbox) {
+            reffldEnabledCheckbox.checked = true;
+        }
+        reffldValueGroups.forEach(g => { g.style.display = 'block'; });
+        if (reffldFormatInput) { reffldFormatInput.value = parsedFormat; }
+        if (reffldFieldNameInput) { reffldFieldNameInput.value = parsedFieldName; }
+        if (reffldFileInput) { reffldFileInput.value = parsedFile; }
+        if (reffldLibraryInput) { reffldLibraryInput.value = parsedLibrary; }
+    }
+
+    if (reffldEnabledCheckbox) {
+        reffldEnabledCheckbox.addEventListener('change', function() {
+            reffldValueGroups.forEach(g => { g.style.display = this.checked ? 'block' : 'none'; });
+            if (this.checked && reffldFieldNameInput) {
+                reffldFieldNameInput.focus();
             }
         });
     }
