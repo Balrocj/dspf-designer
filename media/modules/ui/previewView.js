@@ -74,6 +74,31 @@ export function updatePreviewView(options) {
 
     const availableIndicators = Array.from(availableIndicatorsSet).sort((a, b) => Number(a) - Number(b));
     const activeIndicators = new Set(simulationState.activeIndicators || []);
+    const hiddenFields = Array.from(new Map(parsedScreen.fields
+        .filter(field =>
+            field &&
+            field.isHidden &&
+            !field.isVisualCopy &&
+            field.recordName === currentRecord &&
+            !field.isBackgroundRecord
+        )
+        .map(field => [`${field.recordName || ''}|${field.name}|${field.dataType}|${field.length}|${field.decimals}`, field])
+    ).values());
+
+    const getHiddenTypeLabel = (field) => {
+        switch (field?.dataType) {
+            case 'character': return 'alphanumeric';
+            case 'zoned':
+            case 'packed':
+            case 'float':
+            case 'double': return 'numeric';
+            case 'date': return 'date';
+            case 'time': return 'time';
+            case 'timestamp': return 'timestamp';
+            case 'reference': return 'reference';
+            default: return field?.dataType || 'unknown';
+        }
+    };
 
     const rows = currentDisplaySize === 'DS3' ? 24 : 27;
     const cols = currentDisplaySize === 'DS3' ? 80 : 132;
@@ -97,6 +122,25 @@ export function updatePreviewView(options) {
                         `).join('')
                         : '<span style="color: #666; font-size: 12px;">No indicators detected</span>'}
                 </div>
+                <details style="position: relative; color: #cccccc; font-size: 12px; margin-left: auto;">
+                    <summary style="cursor: pointer; user-select: none; padding: 4px 8px; border: 1px solid #555; border-radius: 4px; background-color: #1a1a1a; white-space: nowrap;">
+                        Hidden fields (${hiddenFields.length})
+                    </summary>
+                    <div style="position: absolute; top: calc(100% + 6px); right: 0; z-index: 80; width: min(560px, 92vw); max-height: 220px; overflow: auto; padding: 8px; border: 1px solid #555; border-radius: 6px; background-color: #111111; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); display: grid; gap: 4px;">
+                        ${hiddenFields.length > 0
+                            ? hiddenFields.map(field => {
+                                const len = typeof field.length === 'number' ? field.length : '-';
+                                const dec = typeof field.decimals === 'number' ? field.decimals : '0';
+                                return `<div style="display: grid; grid-template-columns: 1.3fr 0.9fr auto auto; gap: 8px; font-family: 'Consolas', 'Courier New', monospace; color: #a8d5ff;">
+                                    <span>${field.name}</span>
+                                    <span style="color: #c8c8c8; font-family: inherit;">${getHiddenTypeLabel(field)}</span>
+                                    <span style="color: #9f9f9f; font-family: inherit;">L:${len}</span>
+                                    <span style="color: #9f9f9f; font-family: inherit;">D:${dec}</span>
+                                </div>`;
+                            }).join('')
+                            : '<span style="color: #777;">No hidden fields</span>'}
+                    </div>
+                </details>
             </div>
         `;
     }
@@ -149,7 +193,7 @@ export function updatePreviewView(options) {
 
     parsedScreen.fields.forEach(field => {
         const fieldForPreview = getPreviewSimulatedField ? getPreviewSimulatedField(field) : field;
-        if (fieldForPreview && fieldForPreview.hidden) {
+        if (fieldForPreview && (fieldForPreview.hidden || fieldForPreview.isHidden)) {
             return; // Field's conditioning indicators are not satisfied — hide it
         }
         if (parsedScreen.windowDimensions) {

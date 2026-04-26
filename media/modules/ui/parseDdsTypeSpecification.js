@@ -2,6 +2,13 @@
 // Returns: { length, typeChar, dataType } or null if invalid
 export function parseDdsTypeSpecification({ typeSpec, hasDecimals = false }) {
     const normalized = (typeSpec || '').trim().toUpperCase();
+    if (normalized === 'R') {
+        return {
+            length: 0,
+            typeChar: 'R',
+            dataType: 'reference'
+        };
+    }
     if (normalized === 'L') {
         return {
             length: 10,

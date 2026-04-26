@@ -504,6 +504,8 @@ import * as path from 'path';
 						</label>
 					</div>
 				</div>
+
+				<div id="designer-hidden-fields" style="display: none; margin-bottom: 10px;"></div>
 				
 				<!-- Screen with External Rulers -->
 				<div id="screen-with-rulers">

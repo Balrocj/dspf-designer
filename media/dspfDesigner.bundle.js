@@ -1397,7 +1397,8 @@ __webpack_require__.r(__webpack_exports__);
             // Parse field definitions only if we're in the target record
             // Align detection with Designer (absolute column 5 = 'A') and skip WINDOW keywords
                 const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
-                if (inTargetRecord && line.length > 6 && line[5] === 'A' && (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /(^|\s)\+\d{1,3}(\s|$)/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) && !trimmedLine.includes('WINDOW(')) {
+                const hasHiddenUsage = /\b(?:\d+[A-Z]?|L|T|Z|R)\s+(?:\d+H|H)(?:\s|$)/i.test(trimmedLine);
+                if (inTargetRecord && line.length > 6 && line[5] === 'A' && (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /(^|\s)\+\d{1,3}(\s|$)/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates || hasHiddenUsage) && !trimmedLine.includes('WINDOW(')) {
                 // Check for multi-line constant (ends with '-' or '+' before quote)
                 let lineToProcess = line;
                 if (line.includes("'") && line.match(/'[^']*[-+]\s*$/)) {
@@ -3710,7 +3711,7 @@ __webpack_require__.r(__webpack_exports__);
                 // Check if this is a field line: starts with spaces + A, and has field positioning
                 // Exclude lines that ONLY contain keywords (not field definitions with attributes)
                 // A keyword-only line doesn't have a field name before the keyword
-                const hasFieldName = /A\s+\w+\s+/.test(trimmedLine); // Has "A" followed by a word (field name) and spaces
+                const hasFieldName = /A\s+[A-Z0-9_@#$]+\s+/i.test(trimmedLine); // Has "A" followed by a DDS field name and spaces
                 const isKeywordOnlyLine = !hasFieldName && (
                     trimmedLine.includes('WINDOW(') || 
                     trimmedLine.includes('CF') || 
@@ -3727,13 +3728,14 @@ __webpack_require__.r(__webpack_exports__);
                 // These lines don't have field names like "A FIELDNAME 10A"
                 // Field lines have a recognizable pattern: field name (at least 3 chars) followed by type spec
                 // The type spec can be: "10A", "10", "10Y 0", or with spaces "64   O"
-                const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{0,9}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
+                const hasFieldNameInLine = /\b[A-Z][A-Z0-9_@#$]{0,9}\s+(?:\d+[A-Z]?|L|T|Z|R)\b/i.test(trimmedLine);
                 const hasAttributeKeyword = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex.test(trimmedLine);
                 const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
+                const hasHiddenUsage = /\b(?:\d+[A-Z]?|L|T|Z|R)\s+(?:\d+H|H)(?:\s|$)/i.test(trimmedLine);
                 
                 const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
                 const isFieldLine = line.length > 6 && line[5] === 'A' && 
-                    (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /(^|\s)\+\d{1,3}(\s|$)/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) &&
+                    (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /(^|\s)\+\d{1,3}(\s|$)/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates || hasHiddenUsage) &&
                     !isKeywordOnlyLine && !isAttributeOnlyLine &&
                     !trimmedLine.includes('WINDOW('); // Exclude WINDOW dimension lines
                 
@@ -3888,7 +3890,7 @@ __webpack_require__.r(__webpack_exports__);
                 
                 // Only parse fields if we're in the companion record
                 if (inCompanionRecord) {
-                    const hasFieldName = /A\s+\w+\s+/.test(trimmedLine);
+                    const hasFieldName = /A\s+[A-Z0-9_@#$]+\s+/i.test(trimmedLine);
                     const isKeywordOnlyLine = !hasFieldName && (
                         trimmedLine.includes('WINDOW(') || 
                         trimmedLine.includes('CF') || 
@@ -3902,13 +3904,14 @@ __webpack_require__.r(__webpack_exports__);
                         trimmedLine.includes('SFLCTL')
                     );
                     
-                    const hasFieldNameInLine = /\b[A-Z][A-Z0-9_]{0,9}\s+(?:\d+[A-Z]?|L|T|Z)\b/i.test(trimmedLine);
+                    const hasFieldNameInLine = /\b[A-Z][A-Z0-9_@#$]{0,9}\s+(?:\d+[A-Z]?|L|T|Z|R)\b/i.test(trimmedLine);
                     const hasAttributeKeyword = _modules_core_ddsConstants_js__WEBPACK_IMPORTED_MODULE_7__.attributeContentRegex.test(trimmedLine);
                     const isAttributeOnlyLine = !hasFieldNameInLine && hasAttributeKeyword;
+                    const hasHiddenUsage = /\b(?:\d+[A-Z]?|L|T|Z|R)\s+(?:\d+H|H)(?:\s|$)/i.test(trimmedLine);
                     
                     const hasCompactFixedCoordinates = line.length > 44 && /^[ 0-9]{2}[ 0-9]{3}/.test(line.substring(39, 44));
                     const isFieldLine = trimmedLine.startsWith('A ') &&
-                        (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /(^|\s)\+\d{1,3}(\s|$)/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates) &&
+                        (trimmedLine.includes("'") || /\d+\s+\d+/.test(trimmedLine) || /(^|\s)\+\d{1,3}(\s|$)/.test(trimmedLine) || /\d{4,5}(DATE|TIME|SYSNAME|USER)\b/.test(trimmedLine) || hasCompactFixedCoordinates || hasHiddenUsage) &&
                         !isKeywordOnlyLine && !isAttributeOnlyLine &&
                         !trimmedLine.includes('WINDOW(');
                     
@@ -3940,6 +3943,8 @@ __webpack_require__.r(__webpack_exports__);
                 }
             });
         }
+
+        renderDesignerHiddenFieldsSummary();
 
         // Normalize WINDOW dimensions for the current record/display size.
         // This avoids stale or first-match dimensions when both DS3 and DS4 are defined.
@@ -4058,6 +4063,10 @@ __webpack_require__.r(__webpack_exports__);
             
             // Render fields with repetition if needed
             fields.forEach(field => {
+                if (field.isHidden) {
+                    return;
+                }
+
                 // Render first instance (the real field)
                 if (windowDimensions) {
                     renderWindowField(field, windowDimensions);
@@ -4093,6 +4102,76 @@ __webpack_require__.r(__webpack_exports__);
         } else {
             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error('Fields container not found for rendering');
         }
+    }
+
+    function getHiddenFieldTypeLabel(field) {
+        switch (field?.dataType) {
+            case 'character': return 'alphanumeric';
+            case 'zoned':
+            case 'packed':
+            case 'float':
+            case 'double': return 'numeric';
+            case 'date': return 'date';
+            case 'time': return 'time';
+            case 'timestamp': return 'timestamp';
+            case 'reference': return 'reference';
+            default: return field?.dataType || 'unknown';
+        }
+    }
+
+    function renderDesignerHiddenFieldsSummary() {
+        const container = document.getElementById('designer-hidden-fields');
+        if (!container) {
+            return;
+        }
+
+        const hiddenFields = Array.from(new Map((fields || [])
+            .filter(field =>
+                field &&
+                field.isHidden &&
+                !field.isVisualCopy &&
+                field.recordName === currentRecord &&
+                !field.isBackgroundRecord
+            )
+            .map(field => [`${field.recordName}|${field.name}|${field.dataType}|${field.length}|${field.decimals}`, field])
+        ).values());
+
+        if (hiddenFields.length === 0) {
+            container.style.display = 'none';
+            container.innerHTML = '';
+            return;
+        }
+
+        const rows = hiddenFields.map(field => {
+            const lengthText = typeof field.length === 'number' ? String(field.length) : '-';
+            const decimalsText = typeof field.decimals === 'number' ? String(field.decimals) : '0';
+            return `
+                <div style="display: grid; grid-template-columns: 1.3fr 0.9fr 0.6fr 0.6fr; gap: 8px; font-size: 11px; padding: 3px 0; border-bottom: 1px dashed rgba(255,255,255,0.08);">
+                    <span style="font-family: 'Consolas', 'Courier New', monospace; color: #8fd3ff;">${field.name}</span>
+                    <span style="color: #d0d0d0;">${getHiddenFieldTypeLabel(field)}</span>
+                    <span style="color: #bdbdbd;">${lengthText}</span>
+                    <span style="color: #bdbdbd;">${decimalsText}</span>
+                </div>
+            `;
+        }).join('');
+
+        container.style.display = 'block';
+        container.innerHTML = `
+            <details style="border: 1px solid var(--vscode-panel-border); border-radius: 4px; background: rgba(255,255,255,0.03);">
+                <summary style="cursor: pointer; padding: 8px 10px; color: var(--vscode-foreground); font-weight: 600; font-size: 12px;">
+                    Hidden fields (${hiddenFields.length})
+                </summary>
+                <div style="padding: 8px 10px;">
+                    <div style="display: grid; grid-template-columns: 1.3fr 0.9fr 0.6fr 0.6fr; gap: 8px; font-size: 10px; text-transform: uppercase; color: #9a9a9a; letter-spacing: 0.03em; margin-bottom: 4px;">
+                        <span>Name</span>
+                        <span>Type</span>
+                        <span>Len</span>
+                        <span>Dec</span>
+                    </div>
+                    ${rows}
+                </div>
+            </details>
+        `;
     }
     
     
@@ -4203,7 +4282,8 @@ __webpack_require__.r(__webpack_exports__);
         //          "     A            W_DSP_EST      1A  O  8 19"
         
         // Check minimum length
-        if (line.length < 40) {
+        // Hidden fields (usage H) may not include coordinates/keywords and can be short.
+        if (line.length < 20) {
             return null;
         }
         
@@ -4377,7 +4457,7 @@ __webpack_require__.r(__webpack_exports__);
         let parts = content.split(/\s+/).filter(p => p.length > 0);
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Parts:`, parts);
         
-        if (parts.length < 4) {
+        if (parts.length < 3) {
             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.warn(`Not enough parts: ${parts.length}`);
             return null;
         }
@@ -4411,14 +4491,18 @@ __webpack_require__.r(__webpack_exports__);
         
         // Now parse the field starting from partIndex
         const fieldName = parts[partIndex];
+        const typeSpec = parts[partIndex + 1];
+
+        if (!fieldName || !typeSpec) {
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error(`Missing field name or type spec in line: ${line}`);
+            return null;
+        }
         
         // Validate field name using FieldNameValidator (should be alphanumeric with underscores, no special chars like *)
         if (!_modules_utils_fieldNameValidator_js__WEBPACK_IMPORTED_MODULE_5__.FieldNameValidator.isValid(fieldName, { mustStartWithLetter: false, allowEmpty: false })) {
             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.error(`Invalid field name: "${fieldName}"`);
             return null;
         }
-        
-        const typeSpec = parts[partIndex + 1];
         
         // Parse usage and decimals using helper (adjust index by partIndex)
         const usageInfo = parseUsageAndDecimals(parts, partIndex + 2);
@@ -4436,6 +4520,7 @@ __webpack_require__.r(__webpack_exports__);
         
         // Extract row and col using helper (adjust index by partIndex for indicators)
         let positionInfo = extractRowColFromParts(parts, usageInfo.nextIndex, parseContext ? parseContext.previousPosition : null);
+        const isHiddenUsage = usageInfo.usage === 'H';
         if (!positionInfo) {
             const fixedPositionArea = line.length > 39 ? line.substring(39) : '';
             const fixedPositionMatch = fixedPositionArea.match(/^\s*([ 0-9]{2})([ 0-9]{3})/);
@@ -4451,6 +4536,15 @@ __webpack_require__.r(__webpack_exports__);
                     _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Extracted compact fixed coordinates row=${parsedRow}, col=${parsedCol}`);
                 }
             }
+        }
+
+        if (!positionInfo && isHiddenUsage) {
+            positionInfo = {
+                row: null,
+                col: null,
+                nextIndex: usageInfo.nextIndex
+            };
+            _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`Hidden field parsed without coordinates: ${fieldName}`);
         }
 
         if (!positionInfo) {
@@ -4469,9 +4563,10 @@ __webpack_require__.r(__webpack_exports__);
         if (usageInfo.usage === 'I') {fieldType = 'input';}
         else if (usageInfo.usage === 'B') {fieldType = 'input';}
         else if (usageInfo.usage === 'O') {fieldType = 'output';}
+        else if (usageInfo.usage === 'H') {fieldType = 'hidden';}
 
-        // Normalize unused/legacy usages (e.g., Hidden) to Output for now
-        const normalizedUsage = usageInfo.usage === 'H' ? 'O' : (usageInfo.usage || 'O');
+        // Keep H usage so hidden fields can be listed and excluded from visual rendering.
+        const normalizedUsage = usageInfo.usage || 'O';
         
         _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.parse(`Parsed: ${fieldName} (${typeInfo.dataType}) at ${positionInfo.row},${positionInfo.col} length=${typeInfo.length}`);
         
@@ -4485,6 +4580,7 @@ __webpack_require__.r(__webpack_exports__);
             decimals: usageInfo.decimals,
             usage: normalizedUsage,
             dataType: typeInfo.dataType,
+            isHidden: normalizedUsage === 'H',
             value: ''
         };
         
@@ -41028,6 +41124,31 @@ function updatePreviewView(options) {
 
     const availableIndicators = Array.from(availableIndicatorsSet).sort((a, b) => Number(a) - Number(b));
     const activeIndicators = new Set(simulationState.activeIndicators || []);
+    const hiddenFields = Array.from(new Map(parsedScreen.fields
+        .filter(field =>
+            field &&
+            field.isHidden &&
+            !field.isVisualCopy &&
+            field.recordName === currentRecord &&
+            !field.isBackgroundRecord
+        )
+        .map(field => [`${field.recordName || ''}|${field.name}|${field.dataType}|${field.length}|${field.decimals}`, field])
+    ).values());
+
+    const getHiddenTypeLabel = (field) => {
+        switch (field?.dataType) {
+            case 'character': return 'alphanumeric';
+            case 'zoned':
+            case 'packed':
+            case 'float':
+            case 'double': return 'numeric';
+            case 'date': return 'date';
+            case 'time': return 'time';
+            case 'timestamp': return 'timestamp';
+            case 'reference': return 'reference';
+            default: return field?.dataType || 'unknown';
+        }
+    };
 
     const rows = currentDisplaySize === 'DS3' ? 24 : 27;
     const cols = currentDisplaySize === 'DS3' ? 80 : 132;
@@ -41051,6 +41172,25 @@ function updatePreviewView(options) {
                         `).join('')
                         : '<span style="color: #666; font-size: 12px;">No indicators detected</span>'}
                 </div>
+                <details style="position: relative; color: #cccccc; font-size: 12px; margin-left: auto;">
+                    <summary style="cursor: pointer; user-select: none; padding: 4px 8px; border: 1px solid #555; border-radius: 4px; background-color: #1a1a1a; white-space: nowrap;">
+                        Hidden fields (${hiddenFields.length})
+                    </summary>
+                    <div style="position: absolute; top: calc(100% + 6px); right: 0; z-index: 80; width: min(560px, 92vw); max-height: 220px; overflow: auto; padding: 8px; border: 1px solid #555; border-radius: 6px; background-color: #111111; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); display: grid; gap: 4px;">
+                        ${hiddenFields.length > 0
+                            ? hiddenFields.map(field => {
+                                const len = typeof field.length === 'number' ? field.length : '-';
+                                const dec = typeof field.decimals === 'number' ? field.decimals : '0';
+                                return `<div style="display: grid; grid-template-columns: 1.3fr 0.9fr auto auto; gap: 8px; font-family: 'Consolas', 'Courier New', monospace; color: #a8d5ff;">
+                                    <span>${field.name}</span>
+                                    <span style="color: #c8c8c8; font-family: inherit;">${getHiddenTypeLabel(field)}</span>
+                                    <span style="color: #9f9f9f; font-family: inherit;">L:${len}</span>
+                                    <span style="color: #9f9f9f; font-family: inherit;">D:${dec}</span>
+                                </div>`;
+                            }).join('')
+                            : '<span style="color: #777;">No hidden fields</span>'}
+                    </div>
+                </details>
             </div>
         `;
     }
@@ -41103,7 +41243,7 @@ function updatePreviewView(options) {
 
     parsedScreen.fields.forEach(field => {
         const fieldForPreview = getPreviewSimulatedField ? getPreviewSimulatedField(field) : field;
-        if (fieldForPreview && fieldForPreview.hidden) {
+        if (fieldForPreview && (fieldForPreview.hidden || fieldForPreview.isHidden)) {
             return; // Field's conditioning indicators are not satisfied — hide it
         }
         if (parsedScreen.windowDimensions) {
@@ -42974,6 +43114,13 @@ __webpack_require__.r(__webpack_exports__);
 // Returns: { length, typeChar, dataType } or null if invalid
 function parseDdsTypeSpecification({ typeSpec, hasDecimals = false }) {
     const normalized = (typeSpec || '').trim().toUpperCase();
+    if (normalized === 'R') {
+        return {
+            length: 0,
+            typeChar: 'R',
+            dataType: 'reference'
+        };
+    }
     if (normalized === 'L') {
         return {
             length: 10,

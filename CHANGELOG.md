@@ -2,6 +2,10 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.2.0] - 2026-04-25
+### ✨ Added
+-Adjusted field parsing to recognize hidden fields (usage 'H') without coordinates and added summary of hidden fields in Designer view.
+
 ## [2.1.1] - 2026-04-21
 ### 🐛 Fixed
 - Modified the logic that read the indicators to show in the preview view.
