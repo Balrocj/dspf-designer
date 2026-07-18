@@ -73,23 +73,23 @@
       "editor/title": [
         {
           "command": "dspfDesigner.openDesigner",
-          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds || editorLangId == dspf) && !dspfDesigner.isInDesignerMode",
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds.dspf) && !dspfDesigner.isInDesignerMode",
           "group": "navigation"
         },
         {
           "command": "dspfDesigner.exitDesigner",
-          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds || editorLangId == dspf) && dspfDesigner.isInDesignerMode",
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds.dspf) && dspfDesigner.isInDesignerMode",
           "group": "navigation"
         }
       ],
       "commandPalette": [
         {
           "command": "dspfDesigner.openDesigner",
-          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds || editorLangId == dspf) && !dspfDesigner.isInDesignerMode"
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds.dspf) && !dspfDesigner.isInDesignerMode"
         },
         {
           "command": "dspfDesigner.exitDesigner",
-          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds || editorLangId == dspf) && dspfDesigner.isInDesignerMode"
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds.dspf) && dspfDesigner.isInDesignerMode"
         }
       ]
     },
