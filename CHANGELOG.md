@@ -2,7 +2,7 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
-## [2.6.0] - 2026-05-01
+## [2.6.0] - 2026-07-18
 ### ✨ Added
 - Added support for the ERRMSG keyword for fields in the designer. The ERRMSG keyword allows you to specify an error message identifier for a field, which can be used to display custom error messages when validation fails for that field.
 
