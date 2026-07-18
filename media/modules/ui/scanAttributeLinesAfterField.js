@@ -15,7 +15,7 @@ export function scanAttributeLinesAfterField({
         includeChecks = false,
         preserveOriginalSpacing = false,
         stopOnFieldKeywordsRegex = null,
-        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(|TEXT\(/,
+        attributeRegex = attributeContentRegex || /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(|REFFLD\(|TEXT\(|ERRMSG\(/,
     } = options;
 
     if (!Array.isArray(field.keywordOrder)) {
@@ -356,6 +356,107 @@ export function scanAttributeLinesAfterField({
         return true;
     };
 
+    const parseErrmsgFromLine = (lineText, initialOffset) => {
+        if (!lineText) {
+            return null;
+        }
+
+        const errmsgStart = lineText.search(/ERRMSG\(/i);
+        if (errmsgStart < 0) {
+            return null;
+        }
+
+        const firstSegment = lineText.substring(errmsgStart + 'ERRMSG('.length).trim();
+        if (!firstSegment) {
+            return null;
+        }
+
+        const rawLines = [];
+        const closedInFirst = firstSegment.indexOf(')');
+        if (closedInFirst >= 0) {
+            rawLines.push(firstSegment.substring(0, closedInFirst).trim());
+            return { rawLines, consumedOffset: initialOffset };
+        }
+
+        rawLines.push(firstSegment);
+        let lookaheadOffset = initialOffset;
+
+        while ((startIndex + lookaheadOffset + 1) < lines.length) {
+            const continuationLine = lines[startIndex + lookaheadOffset + 1];
+            const continuationTrimmed = continuationLine.trim();
+            const continuationContentAfter18 = continuationLine.length > 18
+                ? continuationLine.substring(18).trim()
+                : '';
+
+            const continuationIsComment = (continuationLine.length > 6 && continuationLine[5] === 'A' && continuationLine[6] === '*') ||
+                continuationTrimmed.startsWith('A*') ||
+                continuationTrimmed.startsWith('*') ||
+                continuationTrimmed.startsWith('-');
+            const continuationHasFieldName = /^[A-Z][A-Z0-9_]{0,9}\s+\d+[A-Z]?/i.test(continuationContentAfter18);
+            const continuationIsRecordDef = continuationTrimmed.match(/^A\s+R\s+\w+/);
+            const continuationIsBlank = continuationTrimmed === '' || continuationTrimmed === 'A';
+
+            if (continuationIsComment || continuationHasFieldName || continuationIsRecordDef || continuationIsBlank) {
+                break;
+            }
+
+            const continuationKeywordArea = extractKeywordArea(continuationLine);
+            if (!continuationKeywordArea) {
+                break;
+            }
+
+            const closeIndex = continuationKeywordArea.indexOf(')');
+            if (closeIndex >= 0) {
+                const contentBeforeClose = continuationKeywordArea.substring(0, closeIndex).trim();
+                if (contentBeforeClose.length > 0) {
+                    rawLines.push(contentBeforeClose);
+                } else if (rawLines.length > 0) {
+                    rawLines.push(')');
+                }
+                lookaheadOffset++;
+                return { rawLines, consumedOffset: lookaheadOffset };
+            }
+
+            const trimmedContinuation = continuationKeywordArea.trim();
+            if (trimmedContinuation.length > 0) {
+                rawLines.push(trimmedContinuation);
+            }
+            lookaheadOffset++;
+        }
+
+        return {
+            rawLines,
+            consumedOffset: lookaheadOffset
+        };
+    };
+
+    const parseAndAssignErrmsg = (rawLines, lineOffsetForLog) => {
+        const rawErrmsg = rawLines.join(' ').replace(/\s+/g, ' ').trim();
+        if (rawErrmsg.length <= 0) {
+            return false;
+        }
+
+        const compacted = rawErrmsg.replace(/\s*[+-]\s*/g, '');
+        let errmsgValue = '';
+
+        const fullyQuoted = compacted.match(/^'((?:''|[^'])*)'$/);
+        if (fullyQuoted) {
+            errmsgValue = fullyQuoted[1].replace(/''/g, "'");
+        } else {
+            const firstQuoted = compacted.match(/'((?:''|[^'])*)'/);
+            errmsgValue = firstQuoted ? firstQuoted[1].replace(/''/g, "'") : compacted;
+        }
+
+        field.errmsg = {
+            value: errmsgValue,
+            raw: rawErrmsg,
+            rawLines: rawLines.slice()
+        };
+
+        Logger.parse(`Found ERRMSG(${rawErrmsg}) for ${contextLabel} field ${field.name} at offset ${lineOffsetForLog}`);
+        return true;
+    };
+
     let lineOffset = 1;
 
     // Some DDS files define REFFLD inline on the field line and continue it
@@ -395,6 +496,15 @@ export function scanAttributeLinesAfterField({
         parseAndAssignText(inlineText.rawLines, 0);
         if (inlineText.consumedOffset >= 1) {
             lineOffset = Math.max(lineOffset, inlineText.consumedOffset + 1);
+        }
+    }
+
+    const inlineErrmsg = parseErrmsgFromLine(baseLine, 0);
+    if (inlineErrmsg && inlineErrmsg.rawLines.length > 0) {
+        addKeywordOrder('ERRMSG');
+        parseAndAssignErrmsg(inlineErrmsg.rawLines, 0);
+        if (inlineErrmsg.consumedOffset >= 1) {
+            lineOffset = Math.max(lineOffset, inlineErrmsg.consumedOffset + 1);
         }
     }
 
@@ -777,6 +887,20 @@ export function scanAttributeLinesAfterField({
             addKeywordOrder('TEXT');
             if (parseAndAssignText(parsedText.rawLines, lineOffset) && parsedText.consumedOffset > lineOffset) {
                 lineOffset = parsedText.consumedOffset;
+            }
+        }
+
+        const parsedErrmsg = parseErrmsgFromLine(nextLine, lineOffset);
+        if (parsedErrmsg && parsedErrmsg.rawLines.length > 0) {
+            addKeywordOrder('ERRMSG');
+            if (parseAndAssignErrmsg(parsedErrmsg.rawLines, lineOffset) && parsedErrmsg.consumedOffset > lineOffset) {
+                lineOffset = parsedErrmsg.consumedOffset;
+            }
+
+            const errmsgIndicatorData = buildIndicatorGroups();
+            if (errmsgIndicatorData && errmsgIndicatorData.groups && errmsgIndicatorData.groups.length > 0) {
+                field.errmsgIndicators = errmsgIndicatorData;
+                Logger.debug(`[${contextLabel}] ERRMSG indicators parsed with ${errmsgIndicatorData.groups.length} group(s)`);
             }
         }
 

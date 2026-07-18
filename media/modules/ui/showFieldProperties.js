@@ -623,35 +623,6 @@ export function showFieldProperties({
                     </div>
                 </div>
 
-                <div id="tab-msgid" class="tab-panel">
-                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
-                        <label style="flex: 1;">
-                            <input type="checkbox" id="prop-msgid-enabled" />
-                            Enable Message ID (MSGID)
-                        </label>
-                    </div>
-
-                    <div class="property-group msgid-value-group" style="display: none;">
-                        <label>Message prefix</label>
-                        <input type="text" id="prop-msgid-prefix" maxlength="3" size="3" placeholder="" />
-                    </div>
-
-                    <div class="property-group msgid-value-group" style="display: none;">
-                        <label>Message identifier</label>
-                        <input type="text" id="prop-msgid-identifier" maxlength="4" size="4" placeholder="" />
-                    </div>
-
-                    <div class="property-group msgid-value-group" style="display: none;">
-                        <label>Message file</label>
-                        <input type="text" id="prop-msgid-file" maxlength="10" size="10" placeholder="" />
-                    </div>
-
-                    <div class="property-group msgid-value-group" style="display: none;">
-                        <label>Library</label>
-                        <input type="text" id="prop-msgid-library" maxlength="10" size="10" placeholder="e.g. *LIBL" />
-                    </div>
-                </div>
-
                 <div id="tab-dbref" class="tab-panel">
                     <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
                         <label style="flex: 1;">
@@ -678,6 +649,52 @@ export function showFieldProperties({
                     <div class="property-group reffld-value-group" style="display: none;">
                         <label>Reference library</label>
                         <input type="text" id="prop-reffld-library" maxlength="10" size="10" placeholder="e.g. *LIBL" />
+                    </div>
+                </div>
+
+                <div id="tab-errmsg" class="tab-panel">
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-errmsg-enabled" />
+                            Enable Error message (ERRMSG)
+                        </label>
+                    </div>
+
+                    <div class="property-group errmsg-value-group" style="display: none;">
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <span style="flex: 1;">Message text</span>
+                            <button class="indicator-config-btn" data-errmsg="enabled" title="Configurar indicadores"><span class="indicator-icon">🔢</span><span class="indicator-text">No ind.</span></button>
+                        </label>
+                        <textarea id="prop-errmsg-value" rows="3" maxlength="300" placeholder=""></textarea>
+                    </div>
+                </div>
+
+                <div id="tab-msgid" class="tab-panel">
+                    <div class="property-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="flex: 1;">
+                            <input type="checkbox" id="prop-msgid-enabled" />
+                            Enable Message ID (MSGID)
+                        </label>
+                    </div>
+
+                    <div class="property-group msgid-value-group" style="display: none;">
+                        <label>Message prefix</label>
+                        <input type="text" id="prop-msgid-prefix" maxlength="3" size="3" placeholder="" />
+                    </div>
+
+                    <div class="property-group msgid-value-group" style="display: none;">
+                        <label>Message identifier</label>
+                        <input type="text" id="prop-msgid-identifier" maxlength="4" size="4" placeholder="" />
+                    </div>
+
+                    <div class="property-group msgid-value-group" style="display: none;">
+                        <label>Message file</label>
+                        <input type="text" id="prop-msgid-file" maxlength="10" size="10" placeholder="" />
+                    </div>
+
+                    <div class="property-group msgid-value-group" style="display: none;">
+                        <label>Library</label>
+                        <input type="text" id="prop-msgid-library" maxlength="10" size="10" placeholder="e.g. *LIBL" />
                     </div>
                 </div>
 
@@ -721,17 +738,23 @@ export function showFieldProperties({
         editingKeywordsBtn.textContent = 'Editing keywords';
         tabsContainer.appendChild(editingKeywordsBtn);
 
-        const msgidBtn = document.createElement('button');
-        msgidBtn.className = 'properties-tab';
-        msgidBtn.setAttribute('data-tab', 'msgid');
-        msgidBtn.textContent = 'Message ID (MSGID)';
-        tabsContainer.appendChild(msgidBtn);
-
         const dbrefBtn = document.createElement('button');
         dbrefBtn.className = 'properties-tab';
         dbrefBtn.setAttribute('data-tab', 'dbref');
         dbrefBtn.textContent = 'Database reference';
         tabsContainer.appendChild(dbrefBtn);
+
+        const errmsgBtn = document.createElement('button');
+        errmsgBtn.className = 'properties-tab';
+        errmsgBtn.setAttribute('data-tab', 'errmsg');
+        errmsgBtn.textContent = 'Error messages';
+        tabsContainer.appendChild(errmsgBtn);
+
+        const msgidBtn = document.createElement('button');
+        msgidBtn.className = 'properties-tab';
+        msgidBtn.setAttribute('data-tab', 'msgid');
+        msgidBtn.textContent = 'Message ID (MSGID)';
+        tabsContainer.appendChild(msgidBtn);
 
         const textKeywordBtn = document.createElement('button');
         textKeywordBtn.className = 'properties-tab';
@@ -754,6 +777,8 @@ export function showFieldProperties({
     const msgidTabPanel = document.getElementById('tab-msgid');
     const dbrefTabBtn = document.querySelector('.properties-tab[data-tab="dbref"]');
     const dbrefTabPanel = document.getElementById('tab-dbref');
+    const errmsgTabBtn = document.querySelector('.properties-tab[data-tab="errmsg"]');
+    const errmsgTabPanel = document.getElementById('tab-errmsg');
     const textKeywordTabBtn = document.querySelector('.properties-tab[data-tab="text-keyword"]');
     const textKeywordTabPanel = document.getElementById('tab-text-keyword');
     const reffldEnabledCheckbox = document.getElementById('prop-reffld-enabled');
@@ -935,6 +960,10 @@ export function showFieldProperties({
             && usageSelect
             && (['character', 'double'].includes(selectedType) || isNumericType || isReferenceType);
 
+        const showErrmsg = isVariableField
+            && usageSelect
+            && ['I', 'O', 'B'].includes(usageSelect.value);
+
         const showTextKeyword = field.type !== 'keyword' && !field.isKeyword;
 
         if (dbrefTabBtn) {
@@ -946,6 +975,21 @@ export function showFieldProperties({
         if (!showDbRef && dbrefTabBtn && dbrefTabBtn.classList.contains('active')) {
             dbrefTabBtn.classList.remove('active');
             dbrefTabPanel?.classList.remove('active');
+            const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
+            const basicPanel = document.getElementById('tab-basic');
+            basicTab?.classList.add('active');
+            basicPanel?.classList.add('active');
+        }
+
+        if (errmsgTabBtn) {
+            errmsgTabBtn.style.display = showErrmsg ? 'inline-flex' : 'none';
+        }
+        if (errmsgTabPanel) {
+            errmsgTabPanel.style.display = showErrmsg ? '' : 'none';
+        }
+        if (!showErrmsg && errmsgTabBtn && errmsgTabBtn.classList.contains('active')) {
+            errmsgTabBtn.classList.remove('active');
+            errmsgTabPanel?.classList.remove('active');
             const basicTab = document.querySelector('.properties-tab[data-tab="basic"]');
             const basicPanel = document.getElementById('tab-basic');
             basicTab?.classList.add('active');
@@ -1609,6 +1653,9 @@ export function showFieldProperties({
     const msgidIdentifierInput = document.getElementById('prop-msgid-identifier');
     const msgidFileInput = document.getElementById('prop-msgid-file');
     const msgidLibraryInput = document.getElementById('prop-msgid-library');
+    const errmsgEnabledCheckbox = document.getElementById('prop-errmsg-enabled');
+    const errmsgValueGroups = Array.from(document.querySelectorAll('.errmsg-value-group'));
+    const errmsgValueInput = document.getElementById('prop-errmsg-value');
     const msgidLimits = {
         prefix: 3,
         messageId: 4,
@@ -1803,6 +1850,32 @@ export function showFieldProperties({
         });
     }
 
+    if (field.errmsg) {
+        if (errmsgEnabledCheckbox) {
+            errmsgEnabledCheckbox.checked = true;
+        }
+        errmsgValueGroups.forEach(group => {
+            group.style.display = 'block';
+        });
+        if (errmsgValueInput) {
+            const rawErrmsgValue = typeof field.errmsg.value === 'string'
+                ? field.errmsg.value
+                : (typeof field.errmsg.raw === 'string' ? field.errmsg.raw : '');
+            errmsgValueInput.value = rawErrmsgValue;
+        }
+    }
+
+    if (errmsgEnabledCheckbox) {
+        errmsgEnabledCheckbox.addEventListener('change', function() {
+            errmsgValueGroups.forEach(group => {
+                group.style.display = this.checked ? 'block' : 'none';
+            });
+            if (this.checked && errmsgValueInput) {
+                errmsgValueInput.focus();
+            }
+        });
+    }
+
     // Pre-populate Database reference (REFFLD) panel
     if (field.reffld) {
         let parsedFormat = '';
@@ -1974,6 +2047,19 @@ export function showFieldProperties({
             const count = Array.isArray(field.dftvalIndicators) ? field.dftvalIndicators.length : 
                          field.dftvalIndicators.groups.reduce((sum, g) => sum + g.indicators.length, 0);
             Logger.debug(`Marked DFTVAL button with ${count} indicators`);
+        }
+    }
+
+    if (field.errmsgIndicators) {
+        const hasIndicators = (Array.isArray(field.errmsgIndicators) && field.errmsgIndicators.length > 0) ||
+            (field.errmsgIndicators && field.errmsgIndicators.groups && field.errmsgIndicators.groups.length > 0);
+        if (hasIndicators) {
+            const btn = document.querySelector('.indicator-config-btn[data-errmsg="enabled"]');
+            setIndicatorButtonState(btn, field.errmsgIndicators);
+            const count = Array.isArray(field.errmsgIndicators)
+                ? field.errmsgIndicators.length
+                : field.errmsgIndicators.groups.reduce((sum, g) => sum + g.indicators.length, 0);
+            Logger.debug(`Marked ERRMSG button with ${count} indicators`);
         }
     }
 

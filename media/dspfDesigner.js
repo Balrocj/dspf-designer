@@ -82,6 +82,7 @@ import { generateFieldValuesLinesUI } from './modules/ui/generateFieldValuesLine
 import { generateFieldDftLinesUI } from './modules/ui/generateFieldDftLines.js';
 import { generateFieldDftvalLinesUI } from './modules/ui/generateFieldDftvalLines.js';
 import { generateFieldCntfldLinesUI } from './modules/ui/generateFieldCntfldLines.js';
+import { generateFieldErrmsgLinesUI } from './modules/ui/generateFieldErrmsgLines.js';
 import { generateFieldMsgidLinesUI } from './modules/ui/generateFieldMsgidLines.js';
 import { generateFieldReffldLinesUI } from './modules/ui/generateFieldReffldLines.js';
 import { generateFieldTextLinesUI } from './modules/ui/generateFieldTextLines.js';
@@ -1397,7 +1398,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                         startIndex: index,
                         field,
                         contextLabel: 'PREVIEW',
-                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(|REFFLD\(/
+                        attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|ERRMSG\(|MSGID\(|REFFLD\(/
                     });
                     
                     Logger.debug(`Parsed preview field: ${field.name} (${field.type}) at ${field.row},${field.col} for record ${currentRecordName}`);
@@ -1482,7 +1483,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                                 field,
                                 contextLabel: 'PREVIEW-COMPANION',
                                 includeDftval: true,
-                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|MSGID\(|REFFLD\(/,
+                                attributeRegex: /COLOR\(|DSPATR\(|EDTCDE\(|EDTWRD\(|EDTMSK\(|DFTVAL\(|DFT\(|VALUES\(|CNTFLD\(|ERRMSG\(|MSGID\(|REFFLD\(/,
                                 stopOnFieldKeywordsRegex: /(PSHBTN(FLD|CHC)|RANGE\()/
 
                             });
@@ -2888,8 +2889,23 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 }
             }
 
-            // Track whether we are inside a multi-line VALUES continuation block
-            let insideValuesContinuation = false;
+            if (searchField && searchField.errmsg && Array.isArray(searchField.errmsg.rawLines) && searchField.errmsg.rawLines.length > 1) {
+                const errmsgRawLines = searchField.errmsg.rawLines;
+                for (let i = 1; i < errmsgRawLines.length; i++) {
+                    const continuationText = i === errmsgRawLines.length - 1
+                        ? `${errmsgRawLines[i]})`
+                        : errmsgRawLines[i];
+                    multilineKeywordContinuationLinesToSkip.add((continuationText || '').trim());
+                }
+            }
+
+            // Track whether we are inside a multi-line continuation block for a known
+            // regenerated keyword (VALUES, ERRMSG, MSGID, REFFLD). This is a robust fallback
+            // for when the exact-text skip list (multilineKeywordContinuationLinesToSkip) fails
+            // to match, which previously caused stray continuation text to be misidentified as
+            // an unknown-keyword line and incorrectly preserved, resulting in duplicated lines.
+            let insideKnownMultilineContinuation = false;
+            const MULTILINE_KEYWORD_NAMES = new Set(['VALUES', 'ERRMSG', 'MSGID', 'REFFLD']);
             // Keep indicator-only lines pending until we know whether they belong to
             // a preserved (non-regenerated) keyword line that follows.
             let pendingIndicatorLines = [];
@@ -2908,6 +2924,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
 
                 if (contentAfter43 && multilineKeywordContinuationLinesToSkip.has(contentAfter43)) {
                     pendingIndicatorLines = [];
+                    insideKnownMultilineContinuation = /[+-]\s*$/.test(contentAfter43);
                     Logger.dds(`Skipping multiline regenerated continuation line ${globalIndex + 1}: "${contentAfter43}"`);
                     return;
                 }
@@ -2952,30 +2969,30 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                     return;
                 }
 
-                // Detect VALUES( lines and track multi-line continuation.
+                // Detect known multi-line keyword openings (VALUES, ERRMSG, MSGID, REFFLD) and
+                // track continuation state generically.
                 // A continuation line is one whose DDS line ends with - or + before the newline.
-                // When VALUES( is found on a line that ends with a continuation char, subsequent
-                // lines that are pure quoted-value continuations (no keyword word) must also be skipped.
-                if (/VALUES\(/i.test(contentAfter43)) {
+                const multilineOpenMatch = contentAfter43.match(/^([A-Z0-9_]+)\s*\(/i);
+                if (multilineOpenMatch && MULTILINE_KEYWORD_NAMES.has(multilineOpenMatch[1].toUpperCase())) {
                     pendingIndicatorLines = [];
-                    insideValuesContinuation = /[+-]\s*$/.test(contentAfter43);
-                    Logger.dds(`Skipping known VALUES line ${globalIndex + 1}, continuation=${insideValuesContinuation}`);
-                    return; // regenerated by generateFieldValuesLines
+                    insideKnownMultilineContinuation = /[+-]\s*$/.test(contentAfter43);
+                    Logger.dds(`Skipping known multiline keyword line ${globalIndex + 1} (${multilineOpenMatch[1].toUpperCase()}), continuation=${insideKnownMultilineContinuation}`);
+                    return; // regenerated by the corresponding generateField*Lines function
                 }
 
-                // Skip continuation lines that belong to a multi-line VALUES block
-                if (insideValuesContinuation) {
-                    // A pure continuation line has only quoted tokens (and possibly a closing paren)
-                    const isPureValuesContinuation = /^'/.test(contentAfter43) || /^\)/.test(contentAfter43);
-                    if (isPureValuesContinuation) {
+                // Skip continuation lines that belong to a multi-line keyword block
+                if (insideKnownMultilineContinuation) {
+                    // A pure continuation line does not open a new keyword of its own.
+                    const looksLikeNewKeyword = /^[A-Z0-9_]+\s*\(/i.test(contentAfter43);
+                    if (!looksLikeNewKeyword) {
                         pendingIndicatorLines = [];
                         // If this line does NOT end with a continuation char, the block is closed
-                        insideValuesContinuation = /[+-]\s*$/.test(contentAfter43);
-                        Logger.dds(`Skipping VALUES continuation line ${globalIndex + 1}, continuation=${insideValuesContinuation}`);
+                        insideKnownMultilineContinuation = /[+-]\s*$/.test(contentAfter43);
+                        Logger.dds(`Skipping multiline continuation line ${globalIndex + 1}, continuation=${insideKnownMultilineContinuation}`);
                         return;
                     }
-                    // If it doesn't look like a continuation token, stop tracking
-                    insideValuesContinuation = false;
+                    // If it looks like a new keyword, stop tracking
+                    insideKnownMultilineContinuation = false;
                 }
 
                 // Unknown keywords: keep them. Known attributes (COLOR, DSPATR, EDTCDE, etc.) are regenerated
@@ -3157,6 +3174,13 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     function generateFieldMsgidLines(field) {
         return generateFieldMsgidLinesUI({
             field
+        });
+    }
+
+    function generateFieldErrmsgLines(field) {
+        return generateFieldErrmsgLinesUI({
+            field,
+            generateDdsLineWithIndicators
         });
     }
 
@@ -3572,6 +3596,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         const dftLines = generateFieldDftLines(field);
         const dftvalLines = generateFieldDftvalLines(field);
         const cntfldLines = generateFieldCntfldLines(field);
+        const errmsgLines = generateFieldErrmsgLines(field);
         const msgidLines = generateFieldMsgidLines(field);
         const reffldLines = generateFieldReffldLines(field);
         const textLines = generateFieldTextLines(field);
@@ -3591,6 +3616,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             DFT: dftLines,
             DFTVAL: dftvalLines,
             CNTFLD: cntfldLines,
+            ERRMSG: errmsgLines,
             MSGID: msgidLines,
             REFFLD: reffldLines,
             TEXT: textLines,
@@ -3606,8 +3632,9 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             'DFT',
             'DFTVAL',
             'CNTFLD',
-            'MSGID',
             'REFFLD',
+            'ERRMSG',
+            'MSGID',
             'TEXT',
             'COLOR'
         ];
@@ -4782,6 +4809,26 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             }
         }
 
+        const errmsgMatch = line.match(/ERRMSG\(([^)]*)\)/i);
+        if (errmsgMatch) {
+            const rawErrmsg = errmsgMatch[1].trim().replace(/\s+/g, ' ');
+            if (rawErrmsg.length > 0) {
+                const compacted = rawErrmsg.replace(/\s*[+-]\s*/g, '');
+                const fullyQuoted = compacted.match(/^'((?:''|[^'])*)'$/);
+                const firstQuoted = compacted.match(/'((?:''|[^'])*)'/);
+                const errmsgValue = fullyQuoted
+                    ? fullyQuoted[1].replace(/''/g, "'")
+                    : (firstQuoted ? firstQuoted[1].replace(/''/g, "'") : compacted);
+
+                fieldObj.errmsg = {
+                    value: errmsgValue,
+                    raw: rawErrmsg,
+                    rawLines: [rawErrmsg]
+                };
+                Logger.parse(`Found inline ERRMSG(${rawErrmsg}) for field ${fieldName}`);
+            }
+        }
+
             const valuesMatch = line.match(/VALUES\(([^)]*)\)/i);
             if (valuesMatch) {
                 const rawValues = valuesMatch[1].replace(/\s+/g, ' ').trim();
@@ -5286,6 +5333,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             const fieldData = type === 'color' ? selectedField.colorIndicators?.[key] :
                             type === 'attr' ? selectedField.attributeIndicators?.[key] :
                             type === 'dftval' ? selectedField.dftvalIndicators :
+                            type === 'errmsg' ? selectedField.errmsgIndicators :
                             type === 'check' ? selectedField.checkIndicators?.[key] :
                             type === 'field-indicators' ? selectedField.indicators : null;
             
@@ -5570,6 +5618,22 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 }
                 selectedField.dftvalIndicatorsModified = true;
                 Logger.debug(`[SAVE] Updated dftvalIndicators:`, selectedField.dftvalIndicators);
+            } else if (type === 'errmsg') {
+                if (nonEmptyGroups.length === 0) {
+                    delete selectedField.errmsgIndicators;
+                } else if (nonEmptyGroups.length === 1) {
+                    selectedField.errmsgIndicators = {
+                        groups: [{ indicators: nonEmptyGroups[0] }],
+                        isOr: false
+                    };
+                } else {
+                    selectedField.errmsgIndicators = {
+                        groups: nonEmptyGroups.map(g => ({ indicators: g })),
+                        isOr: true
+                    };
+                }
+                selectedField.errmsgIndicatorsModified = true;
+                Logger.debug('[SAVE] Updated errmsgIndicators:', selectedField.errmsgIndicators);
             } else if (type === 'check') {
                 // CHECK uses key (ME or ER)
                 if (!selectedField.checkIndicators) {
@@ -5622,7 +5686,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             // Update the field in DDS immediately (if field exists)
             // NOTE: For field-level indicators, DON'T update DDS here - let applyFieldProperties handle it
             // so that the "Apply" button can detect changes properly
-            if (type !== 'sfldsp' && type !== 'sfldspctl' && type !== 'field-indicators') {
+            if (type !== 'sfldsp' && type !== 'sfldspctl' && type !== 'field-indicators' && type !== 'errmsg') {
                 updateFieldInDds(selectedField);
                 Logger.debug('[SAVE] DDS updated');
             }
@@ -5673,6 +5737,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         // Find button and update badge
         const buttonSelector = type === 'color' ? `.color-indicator-btn[data-color="${key}"]` :
                               type === 'attr' ? `.attr-indicator-btn[data-attr="${key}"]` :
+                              type === 'errmsg' ? '.indicator-config-btn[data-errmsg="enabled"]' :
                               type === 'field-indicators' ? `.indicator-config-btn[data-field-indicators="true"]` :
                               type === 'sfldsp' ? '#sfldsp-indicators-btn' :
                               type === 'sfldspctl' ? '#sfldspctl-indicators-btn' : null;
@@ -5681,7 +5746,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             const button = document.querySelector(buttonSelector);
             if (button) {
                 // For subfile keywords and field indicators, use setIndicatorButtonState
-                if (type === 'sfldsp' || type === 'sfldspctl' || type === 'field-indicators') {
+                if (type === 'sfldsp' || type === 'sfldspctl' || type === 'field-indicators' || type === 'errmsg') {
                     setIndicatorButtonState(button, config);
                 } else {
                     const badge = button.querySelector('.indicator-count');

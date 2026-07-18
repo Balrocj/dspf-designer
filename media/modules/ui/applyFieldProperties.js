@@ -1,4 +1,4 @@
-export function applyFieldProperties({
+﻿export function applyFieldProperties({
     field,
     Logger,
     getSelectedField,
@@ -39,6 +39,12 @@ export function applyFieldProperties({
             if (selectedField.dftvalIndicatorsModified) {
                 field.dftvalIndicatorsModified = selectedField.dftvalIndicatorsModified;
             }
+            if (selectedField.errmsgIndicatorsModified) {
+                field.errmsgIndicatorsModified = selectedField.errmsgIndicatorsModified;
+            }
+            if (selectedField.errmsgIndicators) {
+                field.errmsgIndicators = JSON.parse(JSON.stringify(selectedField.errmsgIndicators));
+            }
         }
 
         const oldField = {
@@ -57,7 +63,9 @@ export function applyFieldProperties({
                 values: field.values,
             dftval: field.dftval ? { ...field.dftval } : undefined,
                 dftvalIndicators: field.dftvalIndicators ? JSON.parse(JSON.stringify(field.dftvalIndicators)) : undefined,
-                reffld: field.reffld ? { ...field.reffld } : undefined
+                reffld: field.reffld ? { ...field.reffld } : undefined,
+                errmsg: field.errmsg ? JSON.parse(JSON.stringify(field.errmsg)) : undefined,
+                errmsgIndicators: field.errmsgIndicators ? JSON.parse(JSON.stringify(field.errmsgIndicators)) : undefined
         };
 
         Logger.debug('Applying properties to field:', oldField.name);
@@ -580,6 +588,49 @@ export function applyFieldProperties({
             delete field.msgid;
         }
 
+        const errmsgEnabledCheckbox = document.getElementById('prop-errmsg-enabled');
+        const errmsgValueInput = document.getElementById('prop-errmsg-value');
+        const errmsgEnabled = Boolean(errmsgEnabledCheckbox && errmsgEnabledCheckbox.checked);
+        const previousErrmsg = oldField.errmsg || null;
+        const canUseErrmsg = field.type !== 'constant'
+            && field.type !== 'keyword'
+            && !field.isKeyword
+            && ['I', 'O', 'B'].includes(field.usage || '');
+
+        if (canUseErrmsg && errmsgEnabled && errmsgValueInput) {
+            const normalizedValue = String(errmsgValueInput.value || '').replace(/\r/g, '');
+            const semanticValue = normalizedValue.replace(/\n/g, '');
+
+            if (semanticValue.length > 0) {
+                const nextErrmsg = { value: normalizedValue };
+                const previousValue = previousErrmsg && typeof previousErrmsg.value === 'string'
+                    ? previousErrmsg.value
+                    : '';
+
+                const sameAsPrevious = previousErrmsg
+                    && previousValue.replace(/\n/g, '') === semanticValue;
+
+                if (sameAsPrevious) {
+                    if (typeof previousErrmsg.raw === 'string' && previousErrmsg.raw.trim().length > 0) {
+                        nextErrmsg.raw = previousErrmsg.raw;
+                    }
+                    if (Array.isArray(previousErrmsg.rawLines) && previousErrmsg.rawLines.length > 0) {
+                        nextErrmsg.rawLines = previousErrmsg.rawLines.slice();
+                    }
+                }
+
+                field.errmsg = nextErrmsg;
+            } else {
+                delete field.errmsg;
+                delete field.errmsgIndicators;
+                field.errmsgIndicatorsModified = true;
+            }
+        } else {
+            delete field.errmsg;
+            delete field.errmsgIndicators;
+            field.errmsgIndicatorsModified = true;
+        }
+
         const reffldEnabledCheckbox = document.getElementById('prop-reffld-enabled');
         const reffldFormatInput = document.getElementById('prop-reffld-format');
         const reffldFieldNameInput = document.getElementById('prop-reffld-fieldname');
@@ -774,7 +825,8 @@ export function applyFieldProperties({
             field.attributeIndicatorsModified ||
             field.keywordIndicatorsModified ||
             field.fieldIndicatorsModified ||
-            field.dftvalIndicatorsModified
+            field.dftvalIndicatorsModified ||
+            field.errmsgIndicatorsModified
         );
 
         const oldColors = JSON.stringify(oldField.colors || [oldField.color].filter(Boolean));
@@ -803,7 +855,9 @@ export function applyFieldProperties({
         const edtwrdChanged = JSON.stringify(oldField.edtwrd || null) !== JSON.stringify(field.edtwrd || null);
         const edtmskChanged = JSON.stringify(oldField.edtmsk || null) !== JSON.stringify(field.edtmsk || null);
         const textChanged = JSON.stringify(oldField.text || null) !== JSON.stringify(field.text || null);
+        const errmsgChanged = JSON.stringify(oldField.errmsg || null) !== JSON.stringify(field.errmsg || null);
         const msgidChanged = JSON.stringify(oldField.msgid || null) !== JSON.stringify(field.msgid || null);
+        const errmsgIndicatorsChanged = JSON.stringify(oldField.errmsgIndicators || null) !== JSON.stringify(field.errmsgIndicators || null);
         // Compare REFFLD by semantic content (formatName/fieldName/file/library)
         const extractReffldKey = (r) => {
             if (!r) { return ''; }
@@ -868,18 +922,21 @@ export function applyFieldProperties({
             edtwrdChanged ||
             edtmskChanged ||
             textChanged ||
+            errmsgChanged ||
             msgidChanged ||
-            reffldChanged
+            reffldChanged ||
+            errmsgIndicatorsChanged
         );
 
         if (shouldUpdateDds) {
-            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, text: ${textChanged}, msgid: ${msgidChanged}, reffld: ${reffldChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
+            Logger.dds(`Updating DDS (colorIndicators: ${field.colorIndicatorsModified}, attributeIndicators: ${field.attributeIndicatorsModified}, checkIndicators: ${checkIndicatorsModified}, dft: ${dftChanged}, cntfld: ${cntfldChanged}, values: ${valuesChanged}, dftval: ${dftvalChanged}, dftvalIndicators: ${dftvalIndicatorsChanged}, edtcde: ${edtcdeChanged}, edtwrd: ${edtwrdChanged}, edtmsk: ${edtmskChanged}, text: ${textChanged}, errmsg: ${errmsgChanged}, errmsgIndicators: ${errmsgIndicatorsChanged}, msgid: ${msgidChanged}, reffld: ${reffldChanged}, position: ${positionChanged}, name: ${nameChanged}, color: ${colorChanged}, attributes: ${attributesChanged}, checks: ${checkOptionsChanged}, usage: ${usageChanged}, dataType: ${dataTypeChanged}, length: ${lengthChanged}, decimals: ${decimalsChanged}, shift: ${shiftChanged}, precision: ${precisionChanged}, value: ${valueChanged})`);
             updateFieldInDds(field, oldField);
             delete field.colorIndicatorsModified;
             delete field.attributeIndicatorsModified;
             delete field.checkIndicatorsModified;
             delete field.keywordIndicatorsModified;
             delete field.dftvalIndicatorsModified;
+            delete field.errmsgIndicatorsModified;
 
             const latestDocument = getCurrentDocument ? getCurrentDocument() : '';
             parseDspfFields(latestDocument);
@@ -928,3 +985,4 @@ export function applyFieldProperties({
         });
     }
 }
+

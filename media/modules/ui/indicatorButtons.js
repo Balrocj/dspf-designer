@@ -67,6 +67,16 @@ export function setupIndicatorButtons({ Logger, openIndicatorModal }) {
         });
     });
 
+    // ERRMSG indicator buttons
+    document.querySelectorAll('.indicator-config-btn[data-errmsg]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            Logger.debug('ERRMSG indicator button clicked');
+            openIndicatorModal('errmsg', 'enabled', 'ERRMSG indicators');
+        });
+    });
+
     // Field-level indicator buttons (variables, constants, keywords)
     document.querySelectorAll('.indicator-config-btn[data-field-indicators]').forEach(btn => {
         btn.addEventListener('click', function(e) {
