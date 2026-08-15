@@ -218,6 +218,13 @@ __webpack_require__.r(__webpack_exports__);
     const designerUndoStack = [];
     const designerRedoStack = [];
 
+    function updateUndoRedoButtons() {
+        const undoBtn = document.getElementById('undoBtn');
+        const redoBtn = document.getElementById('redoBtn');
+        if (undoBtn) undoBtn.disabled = designerUndoStack.length === 0;
+        if (redoBtn) redoBtn.disabled = designerRedoStack.length === 0;
+    }
+
     function getSaveMode() {
         return saveMode;
     }
@@ -299,6 +306,7 @@ __webpack_require__.r(__webpack_exports__);
     function resetDesignerHistory() {
         designerUndoStack.length = 0;
         designerRedoStack.length = 0;
+        updateUndoRedoButtons();
     }
 
     function captureDesignerHistorySnapshot(reason = 'designer-change') {
@@ -317,6 +325,7 @@ __webpack_require__.r(__webpack_exports__);
             }
             designerRedoStack.length = 0;
             _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug(`[HISTORY] Snapshot captured (${reason}). undo=${designerUndoStack.length}, redo=${designerRedoStack.length}`);
+            updateUndoRedoButtons();
         }
     }
 
@@ -351,7 +360,9 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         const previousDocument = designerUndoStack.pop();
-        return applyDesignerHistoryDocument(previousDocument, 'Undo');
+        const result = applyDesignerHistoryDocument(previousDocument, 'Undo');
+        updateUndoRedoButtons();
+        return result;
     }
 
     function redoDesignerChange() {
@@ -367,7 +378,9 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         const nextDocument = designerRedoStack.pop();
-        return applyDesignerHistoryDocument(nextDocument, 'Redo');
+        const result = applyDesignerHistoryDocument(nextDocument, 'Redo');
+        updateUndoRedoButtons();
+        return result;
     }
 
     function setupDesignerHistoryShortcut() {
@@ -37326,6 +37339,9 @@ function switchToView({
 
     const propertiesPanel = document.getElementById('properties-panel');
 
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+
     switch (viewName) {
         case 'designer': {
             const designerView = document.getElementById('designer-view');
@@ -37341,6 +37357,9 @@ function switchToView({
                 const previouslySelectedField = getSelectedField ? getSelectedField() : null;
                 const previouslySelectedFieldName = previouslySelectedField ? previouslySelectedField.name : null;
                 const currentDocument = getCurrentDocument ? getCurrentDocument() : '';
+
+                if (undoBtn) undoBtn.style.display = 'inline-block';
+                if (redoBtn) redoBtn.style.display = 'inline-block';
 
                 parseDspfFields(currentDocument);
 
@@ -37391,6 +37410,8 @@ function switchToView({
                 if (propertiesPanel) {
                     propertiesPanel.classList.add('hidden');
                 }
+                if (undoBtn) undoBtn.style.display = 'none';
+                if (redoBtn) redoBtn.style.display = 'none';
                 updatePreviewView();
                 Logger.debug('Preview view activated and visible');
             } else {
@@ -37408,6 +37429,8 @@ function switchToView({
                 if (propertiesPanel) {
                     propertiesPanel.classList.add('hidden');
                 }
+                if (undoBtn) undoBtn.style.display = 'none';
+                if (redoBtn) redoBtn.style.display = 'none';
                 updateSourceViewUI({
                     Logger,
                     vscode,
@@ -37855,9 +37878,9 @@ function showFieldProperties({
                             <option value="date" ${normalizedDataTypeForUi === 'date' ? 'selected' : ''}>Date (L)</option>
                             <option value="time" ${normalizedDataTypeForUi === 'time' ? 'selected' : ''}>Time (T)</option>
                             <option value="timestamp" ${normalizedDataTypeForUi === 'timestamp' ? 'selected' : ''}>Timestamp (Z)</option>
-                            <option value="packed" ${normalizedDataTypeForUi === 'packed' ? 'selected' : ''}>Packed (Empaquetado)</option>
-                            <option value="zoned" ${normalizedDataTypeForUi === 'zoned' ? 'selected' : ''}>Con Zona</option>
-                            <option value="float" ${normalizedDataTypeForUi === 'float' ? 'selected' : ''}>Coma flotante</option>
+                            <option value="packed" ${normalizedDataTypeForUi === 'packed' ? 'selected' : ''}>Packed</option>
+                            <option value="zoned" ${normalizedDataTypeForUi === 'zoned' ? 'selected' : ''}>Zoned</option>
+                            <option value="float" ${normalizedDataTypeForUi === 'float' ? 'selected' : ''}>Float</option>
                             <option value="double" ${normalizedDataTypeForUi === 'double' ? 'selected' : ''}>Double Byte</option>
                         </select>
                     </div>
@@ -38617,8 +38640,8 @@ function showFieldProperties({
                 break;
             case 'float':
                 options = `
-                        <option value="SINGLE">Sencilla</option>
-                        <option value="DOUBLE">Doble</option>
+                        <option value="SINGLE">Single</option>
+                        <option value="DOUBLE">Double</option>
                     `;
                 break;
             case 'double':

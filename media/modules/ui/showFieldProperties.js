@@ -299,9 +299,9 @@ export function showFieldProperties({
                             <option value="date" ${normalizedDataTypeForUi === 'date' ? 'selected' : ''}>Date (L)</option>
                             <option value="time" ${normalizedDataTypeForUi === 'time' ? 'selected' : ''}>Time (T)</option>
                             <option value="timestamp" ${normalizedDataTypeForUi === 'timestamp' ? 'selected' : ''}>Timestamp (Z)</option>
-                            <option value="packed" ${normalizedDataTypeForUi === 'packed' ? 'selected' : ''}>Packed (Empaquetado)</option>
-                            <option value="zoned" ${normalizedDataTypeForUi === 'zoned' ? 'selected' : ''}>Con Zona</option>
-                            <option value="float" ${normalizedDataTypeForUi === 'float' ? 'selected' : ''}>Coma flotante</option>
+                            <option value="packed" ${normalizedDataTypeForUi === 'packed' ? 'selected' : ''}>Packed</option>
+                            <option value="zoned" ${normalizedDataTypeForUi === 'zoned' ? 'selected' : ''}>Zoned</option>
+                            <option value="float" ${normalizedDataTypeForUi === 'float' ? 'selected' : ''}>Float</option>
                             <option value="double" ${normalizedDataTypeForUi === 'double' ? 'selected' : ''}>Double Byte</option>
                         </select>
                     </div>
@@ -1061,8 +1061,8 @@ export function showFieldProperties({
                 break;
             case 'float':
                 options = `
-                        <option value="SINGLE">Sencilla</option>
-                        <option value="DOUBLE">Doble</option>
+                        <option value="SINGLE">Single</option>
+                        <option value="DOUBLE">Double</option>
                     `;
                 break;
             case 'double':

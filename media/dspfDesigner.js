@@ -120,6 +120,13 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     const designerUndoStack = [];
     const designerRedoStack = [];
 
+    function updateUndoRedoButtons() {
+        const undoBtn = document.getElementById('undoBtn');
+        const redoBtn = document.getElementById('redoBtn');
+        if (undoBtn) undoBtn.disabled = designerUndoStack.length === 0;
+        if (redoBtn) redoBtn.disabled = designerRedoStack.length === 0;
+    }
+
     function getSaveMode() {
         return saveMode;
     }
@@ -201,6 +208,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     function resetDesignerHistory() {
         designerUndoStack.length = 0;
         designerRedoStack.length = 0;
+        updateUndoRedoButtons();
     }
 
     function captureDesignerHistorySnapshot(reason = 'designer-change') {
@@ -219,6 +227,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             }
             designerRedoStack.length = 0;
             Logger.debug(`[HISTORY] Snapshot captured (${reason}). undo=${designerUndoStack.length}, redo=${designerRedoStack.length}`);
+            updateUndoRedoButtons();
         }
     }
 
@@ -253,7 +262,9 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         }
 
         const previousDocument = designerUndoStack.pop();
-        return applyDesignerHistoryDocument(previousDocument, 'Undo');
+        const result = applyDesignerHistoryDocument(previousDocument, 'Undo');
+        updateUndoRedoButtons();
+        return result;
     }
 
     function redoDesignerChange() {
@@ -269,7 +280,9 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         }
 
         const nextDocument = designerRedoStack.pop();
-        return applyDesignerHistoryDocument(nextDocument, 'Redo');
+        const result = applyDesignerHistoryDocument(nextDocument, 'Redo');
+        updateUndoRedoButtons();
+        return result;
     }
 
     function setupDesignerHistoryShortcut() {

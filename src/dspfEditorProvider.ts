@@ -404,6 +404,10 @@ import * as path from 'path';
 			opacity: 0.5;
 			cursor: not-allowed;
 		}
+		#undoBtn:disabled, #redoBtn:disabled {
+			opacity: 0.4;
+			cursor: not-allowed;
+		}
 	</style>
 </head>
 <body>

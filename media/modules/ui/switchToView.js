@@ -36,6 +36,9 @@ export function switchToView({
 
     const propertiesPanel = document.getElementById('properties-panel');
 
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+
     switch (viewName) {
         case 'designer': {
             const designerView = document.getElementById('designer-view');
@@ -51,6 +54,9 @@ export function switchToView({
                 const previouslySelectedField = getSelectedField ? getSelectedField() : null;
                 const previouslySelectedFieldName = previouslySelectedField ? previouslySelectedField.name : null;
                 const currentDocument = getCurrentDocument ? getCurrentDocument() : '';
+
+                if (undoBtn) undoBtn.style.display = 'inline-block';
+                if (redoBtn) redoBtn.style.display = 'inline-block';
 
                 parseDspfFields(currentDocument);
 
@@ -101,6 +107,8 @@ export function switchToView({
                 if (propertiesPanel) {
                     propertiesPanel.classList.add('hidden');
                 }
+                if (undoBtn) undoBtn.style.display = 'none';
+                if (redoBtn) redoBtn.style.display = 'none';
                 updatePreviewView();
                 Logger.debug('Preview view activated and visible');
             } else {
@@ -118,6 +126,8 @@ export function switchToView({
                 if (propertiesPanel) {
                     propertiesPanel.classList.add('hidden');
                 }
+                if (undoBtn) undoBtn.style.display = 'none';
+                if (redoBtn) redoBtn.style.display = 'none';
                 updateSourceViewUI({
                     Logger,
                     vscode,
