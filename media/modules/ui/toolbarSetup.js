@@ -2,6 +2,8 @@ export function setupToolbarButtons({
     Logger,
     vscode,
     saveDocument,
+    undoDesignerChange,
+    redoDesignerChange,
     navigateToPreviousRecord,
     navigateToNextRecord,
     setViewZoom,
@@ -12,6 +14,26 @@ export function setupToolbarButtons({
         Logger.ui('Save button clicked!');
         saveDocument();
     });
+
+    const undoBtn = document.getElementById('undoBtn');
+    if (undoBtn) {
+        undoBtn.addEventListener('click', function() {
+            Logger.ui('Undo button clicked');
+            if (typeof undoDesignerChange === 'function') {
+                undoDesignerChange();
+            }
+        });
+    }
+
+    const redoBtn = document.getElementById('redoBtn');
+    if (redoBtn) {
+        redoBtn.addEventListener('click', function() {
+            Logger.ui('Redo button clicked');
+            if (typeof redoDesignerChange === 'function') {
+                redoDesignerChange();
+            }
+        });
+    }
 
     // Setup back button (if it exists, for multi-record files)
     const backBtn = document.getElementById('backBtn');

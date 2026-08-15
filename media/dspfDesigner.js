@@ -114,6 +114,11 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     let indicatorSimulationEnabled = false; // Preview-only indicator simulation (SDA-like)
     let activePreviewIndicators = new Set();
     let indicatorSimulationShortcutBound = false;
+    let designerHistoryShortcutBound = false;
+    let isApplyingDesignerHistory = false;
+    const DESIGNER_HISTORY_LIMIT = 100;
+    const designerUndoStack = [];
+    const designerRedoStack = [];
 
     function getSaveMode() {
         return saveMode;
@@ -138,11 +143,14 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     async function initializeDesigner() {
         await calibrateCharMetrics(ScreenCoordinates, Logger);
         setupIndicatorSimulationShortcut();
+        setupDesignerHistoryShortcut();
         setupCanvasInteraction(deselectAllFields, showScreenProperties);
         setupToolbarButtonsUI({
             Logger,
             vscode,
             saveDocument,
+            undoDesignerChange,
+            redoDesignerChange,
             navigateToPreviousRecord,
             navigateToNextRecord,
             setViewZoom,
@@ -188,6 +196,126 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         vscode.postMessage({ type: 'getDocument' });
         
         Logger.success('DSPF Designer initialized');
+    }
+
+    function resetDesignerHistory() {
+        designerUndoStack.length = 0;
+        designerRedoStack.length = 0;
+    }
+
+    function captureDesignerHistorySnapshot(reason = 'designer-change') {
+        if (isApplyingDesignerHistory || isReadOnly) {
+            return;
+        }
+
+        if (typeof currentDocument !== 'string') {
+            return;
+        }
+
+        if (designerUndoStack.length === 0 || designerUndoStack[designerUndoStack.length - 1] !== currentDocument) {
+            designerUndoStack.push(currentDocument);
+            if (designerUndoStack.length > DESIGNER_HISTORY_LIMIT) {
+                designerUndoStack.shift();
+            }
+            designerRedoStack.length = 0;
+            Logger.debug(`[HISTORY] Snapshot captured (${reason}). undo=${designerUndoStack.length}, redo=${designerRedoStack.length}`);
+        }
+    }
+
+    function applyDesignerHistoryDocument(nextDocument, directionLabel) {
+        if (typeof nextDocument !== 'string') {
+            return false;
+        }
+
+        isApplyingDesignerHistory = true;
+        try {
+            currentDocument = nextDocument;
+            parseFileMetadata(currentDocument);
+            parseDspfFields(currentDocument);
+            updateDocumentInEditor();
+            Logger.ui(`[HISTORY] ${directionLabel} applied`);
+            return true;
+        } finally {
+            isApplyingDesignerHistory = false;
+        }
+    }
+
+    function undoDesignerChange() {
+        if (isReadOnly || designerUndoStack.length === 0) {
+            return false;
+        }
+
+        if (typeof currentDocument === 'string') {
+            designerRedoStack.push(currentDocument);
+            if (designerRedoStack.length > DESIGNER_HISTORY_LIMIT) {
+                designerRedoStack.shift();
+            }
+        }
+
+        const previousDocument = designerUndoStack.pop();
+        return applyDesignerHistoryDocument(previousDocument, 'Undo');
+    }
+
+    function redoDesignerChange() {
+        if (isReadOnly || designerRedoStack.length === 0) {
+            return false;
+        }
+
+        if (typeof currentDocument === 'string') {
+            designerUndoStack.push(currentDocument);
+            if (designerUndoStack.length > DESIGNER_HISTORY_LIMIT) {
+                designerUndoStack.shift();
+            }
+        }
+
+        const nextDocument = designerRedoStack.pop();
+        return applyDesignerHistoryDocument(nextDocument, 'Redo');
+    }
+
+    function setupDesignerHistoryShortcut() {
+        if (designerHistoryShortcutBound) {
+            return;
+        }
+
+        designerHistoryShortcutBound = true;
+
+        document.addEventListener('keydown', (event) => {
+            if (currentView !== 'designer' || isReadOnly) {
+                return;
+            }
+
+            const target = event.target;
+            const isEditableTarget = target && (
+                target.tagName === 'INPUT' ||
+                target.tagName === 'TEXTAREA' ||
+                target.tagName === 'SELECT' ||
+                target.isContentEditable
+            );
+            if (isEditableTarget) {
+                return;
+            }
+
+            const hasPrimaryModifier = event.ctrlKey || event.metaKey;
+            if (!hasPrimaryModifier || event.altKey) {
+                return;
+            }
+
+            const key = (event.key || '').toLowerCase();
+            const wantsUndo = key === 'z' && !event.shiftKey;
+            const wantsRedo = key === 'y' || (key === 'z' && event.shiftKey);
+
+            if (!wantsUndo && !wantsRedo) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const changed = wantsUndo ? undoDesignerChange() : redoDesignerChange();
+            if (!changed) {
+                Logger.debug('[HISTORY] Nothing to undo/redo');
+            }
+        });
     }
 
     function setupIndicatorSimulationShortcut() {
@@ -1756,6 +1884,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     function addFieldToDds(field) {
         const lines = currentDocument.split('\n');
         const ddsLine = generateDdsLine(field);
+        captureDesignerHistorySnapshot('add-field');
         
         // Find the current record boundaries - CRITICAL for WINDOW records
         let recordStartIndex = -1;
@@ -2217,6 +2346,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     // Borra el campo del archivo source
     function removeFieldFromDds(field) {
         const lines = currentDocument.split('\n');
+        captureDesignerHistorySnapshot('remove-field');
         
         // Use the field's recordName if available, otherwise fall back to currentRecord
         const targetRecord = field.recordName || currentRecord;
@@ -3054,6 +3184,8 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             });
             return;
         }
+
+        captureDesignerHistorySnapshot('update-field');
         
         currentDocument = lines.join('\n');
         updateDocumentInEditor();
@@ -4327,6 +4459,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         }
         
         if (updated) {
+            captureDesignerHistorySnapshot('update-window');
             currentDocument = lines.join('\n');
             Logger.dds('Sending update message to VS Code...');
             // Save the updated document
@@ -4866,6 +4999,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             case 'documentContent':
                 const previousDocument = currentDocument;
                 currentDocument = message.content;
+                resetDesignerHistory();
                 currentRecord = message.currentRecord || null;
                 applyDisplaySizeSettingsFromDocument();
                 

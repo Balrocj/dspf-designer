@@ -361,8 +361,8 @@ import * as path from 'path';
 	<style>
 		#toolbar {
 			display: flex;
-			justify-content: space-between;
 			align-items: center;
+			gap: 12px;
 		}
 		.toolbar-left {
 			display: flex;
@@ -373,6 +373,8 @@ import * as path from 'path';
 			display: flex;
 			align-items: center;
 			gap: 10px;
+			margin-left: auto;
+			margin-right: 6px;
 		}
 		#backBtn {
 			background: var(--vscode-button-secondaryBackground);
@@ -417,6 +419,8 @@ import * as path from 'path';
 			</div>
 			<div class="toolbar-buttons">
 				<button id="saveBtn">Save</button>
+				<button id="undoBtn" title="Undo (Ctrl+Z)">Undo</button>
+				<button id="redoBtn" title="Redo (Ctrl+Y)">Redo</button>
 				<span id="autoSaveIndicator" style="display: none; padding: 6px 10px; border-radius: 999px; background: color-mix(in srgb, var(--vscode-button-background) 18%, transparent); border: 1px solid var(--vscode-panel-border); color: var(--vscode-descriptionForeground); font-size: 0.85em; white-space: nowrap;">Auto-save on</span>
 				<div class="zoom-controls" aria-label="Zoom controls">
 					<button id="zoomOutBtn" class="zoom-button" title="Zoom out">−</button>

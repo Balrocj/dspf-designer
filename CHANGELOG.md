@@ -2,6 +2,23 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.7.0] - 2026-08-15
+### ✨ Added
+- Added Undo/Redo support in Designer view using keyboard shortcuts:
+  - Ctrl+Z (Undo)
+  - Ctrl+Y (Redo)
+  - Ctrl+Shift+Z (Redo)
+- Added Undo and Redo buttons in the Designer toolbar.
+- Added Designer history snapshots for DDS-changing actions so undo/redo works across:
+  - Field add
+  - Field delete
+  - Field update/move/property apply flows
+  - WINDOW updates
+
+### 🎨 Improved
+- Undo/Redo shortcuts are scoped to Designer view and avoid interfering while editing text inputs, textareas, selects, or contenteditable elements.
+- History is reset when a new document/record payload is loaded to prevent cross-record undo states.
+
 ## [2.6.0] - 2026-07-18
 ### ✨ Added
 - Added support for the ERRMSG keyword for fields in the designer. The ERRMSG keyword allows you to specify an error message identifier for a field, which can be used to display custom error messages when validation fails for that field.
