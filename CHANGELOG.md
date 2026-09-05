@@ -2,6 +2,17 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.8.0] 2026-09-05
+### 🎨 Improved
+- DSPF Designer is no longer in Preview. After multiple releases and continued improvements, DSPF Designer is now considered stable for general use.
+- Added inline `Preview With DSPF Designer` CodeLens actions on record definitions (`A R <record>`), so preview can be launched directly from source.
+- Improved Preview launch flow to support configurable opening behavior through `dspfDesigner.previewOpenBehavior`:
+  - `newTab` (default): opens Preview in a new tab in the same editor group.
+  - `splitView`: opens Preview beside the current editor.
+- Preview now opens the specific record selected from the inline action instead of always defaulting to the first record.
+- In Preview-only mode, the `Back to Records` and `Source` controls are hidden for a cleaner, focused preview experience.
+
+
 ## [2.7.0] - 2026-08-15
 ### ✨ Added
 - Added Undo/Redo support in Designer view using keyboard shortcuts:

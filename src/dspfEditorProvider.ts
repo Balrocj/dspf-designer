@@ -5,8 +5,25 @@ import * as path from 'path';
  * Provider for DSPF files with visual designer interface
  */
 	export class DspfEditorProvider implements vscode.CustomTextEditorProvider {
+			private readonly queuedOpenModes = new Map<string, { mode: 'designer' | 'preview'; recordName?: string }>();
+			private readonly resolvedOpenModes = new Map<string, 'designer' | 'preview'>();
 
 	constructor(private readonly context: vscode.ExtensionContext) { }
+
+		public queueOpenMode(uri: vscode.Uri, mode: 'designer' | 'preview', recordName?: string): void {
+			this.queuedOpenModes.set(uri.toString(), { mode, recordName });
+		}
+
+		public getOpenMode(uri: vscode.Uri): 'designer' | 'preview' {
+			return this.resolvedOpenModes.get(uri.toString()) || 'designer';
+		}
+
+		private consumeQueuedOpenMode(uri: vscode.Uri): { mode: 'designer' | 'preview'; recordName?: string } {
+			const key = uri.toString();
+			const queued = this.queuedOpenModes.get(key) || { mode: 'designer' as const };
+			this.queuedOpenModes.delete(key);
+			return queued;
+		}
 
 	/**
 	 * Check if document is editable (not read-only)
@@ -79,6 +96,11 @@ import * as path from 'path';
 		const value = vscode.workspace.getConfiguration('dspfDesigner').get<string>('saveMode', 'manual');
 		return value === 'automatic' ? 'automatic' : 'manual';
 	}
+
+	private getOpenBehavior(): 'currentEditor' | 'newTab' {
+		const value = vscode.workspace.getConfiguration('dspfDesigner').get<string>('openBehavior', 'currentEditor');
+		return value === 'newTab' ? 'newTab' : 'currentEditor';
+	}
 	
 	/**
 	 * Resolve a custom editor for DSPF files
@@ -96,27 +118,43 @@ import * as path from 'path';
 
 		// Parse the DSPF file to find all records
 		const records = this.parseDspfRecords(document.getText());
+		const openRequest = this.consumeQueuedOpenMode(document.uri);
+		const forcePreviewMode = openRequest.mode === 'preview';
+		this.resolvedOpenModes.set(document.uri.toString(), forcePreviewMode ? 'preview' : 'designer');
 		const saveMode = this.getSaveMode();
+		const openBehavior = this.getOpenBehavior();
 		let currentRecordContext: string | undefined = undefined;
 		let currentReadOnlyMode: boolean = false; // Track if user chose Display mode
 		
 		// Check if document is read-only
 		const isReadOnly = await this.isDocumentReadOnly(document);
 		
-		if (records.length > 1) {
+		if (forcePreviewMode) {
+			const requestedRecordName = openRequest.recordName?.toUpperCase();
+			const matchedRecord = requestedRecordName
+				? records.find(record => record.name.toUpperCase() === requestedRecordName)
+				: undefined;
+			const previewRecord = matchedRecord?.name || (records.length > 0 ? records[0].name : 'MAIN');
+			currentRecordContext = previewRecord;
+			currentReadOnlyMode = true;
+			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, previewRecord, saveMode, 'preview', openBehavior);
+		} else if (records.length > 1) {
 			// Show record selector if multiple records exist
 			webviewPanel.webview.html = this.getRecordSelectorHtml(webviewPanel.webview, records, isReadOnly, saveMode);
 		} else {
 			// Show designer directly if only one record (or no records)
 			const recordName = records.length > 0 ? records[0].name : 'MAIN';
 			currentRecordContext = recordName;
-			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, recordName, saveMode);
+			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, recordName, saveMode, 'designer', openBehavior);
 		}
 
 		// Handle messages from the webview
 		// Handle messages from the webview
 		let suppressedSourceEchoContent: string | null = null;
 		let suppressSourceEchoUntil = 0;
+		webviewPanel.onDidDispose(() => {
+			this.resolvedOpenModes.delete(document.uri.toString());
+		});
 		const messageSubscription = webviewPanel.webview.onDidReceiveMessage(async (message) => {
 			console.log('📨 Received message:', message);
 			switch (message.type) {
@@ -135,13 +173,14 @@ import * as path from 'path';
 						if (message.origin !== 'source-editor') {
 							// Send back updated document with preserved record context
 							const isEditable = await this.isDocumentEditable(document);
+							const effectiveReadOnly = currentReadOnlyMode || !isEditable;
 							const recordsUpdate = this.parseDspfRecords(document.getText());
-							console.log('📤 Sending isReadOnly:', !isEditable, '(isEditable:', isEditable, ')');
+							console.log('📤 Sending isReadOnly:', effectiveReadOnly, '(isEditable:', isEditable, 'currentReadOnlyMode:', currentReadOnlyMode, ')');
 							webviewPanel.webview.postMessage({
 								type: 'documentContent',
 								content: document.getText(),
 								currentRecord: currentRecordContext, // Preserve the current record context
-								isReadOnly: !isEditable,
+								isReadOnly: effectiveReadOnly,
 								records: recordsUpdate
 							});
 						}
@@ -159,13 +198,14 @@ import * as path from 'path';
 					break;
 				case 'getDocument':
 					const isEditableGet = await this.isDocumentEditable(document);
+					const effectiveReadOnlyGet = currentReadOnlyMode || !isEditableGet;
 					const recordsGet = this.parseDspfRecords(document.getText());
-					console.log('📤 Sending isReadOnly:', !isEditableGet, '(isEditable:', isEditableGet, ')');
+					console.log('📤 Sending isReadOnly:', effectiveReadOnlyGet, '(isEditable:', isEditableGet, 'currentReadOnlyMode:', currentReadOnlyMode, ')');
 					webviewPanel.webview.postMessage({
 						type: 'documentContent',
 						content: document.getText(),
 						currentRecord: currentRecordContext, // Preserve the current record context
-						isReadOnly: !isEditableGet,
+						isReadOnly: effectiveReadOnlyGet,
 						records: recordsGet
 					});
 					break;
@@ -175,7 +215,7 @@ import * as path from 'path';
 					currentRecordContext = message.recordName;
 					currentReadOnlyMode = false; // Reset when explicitly selecting a record to edit
 					// Switch to designer view for selected record
-					webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, message.recordName, saveMode);
+					webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, message.recordName, saveMode, 'designer', openBehavior);
 					// Send document content and current record to the designer
 					setTimeout(async () => {
 						const isEditableSelect = await this.isDocumentEditable(document);
@@ -196,7 +236,7 @@ import * as path from 'path';
 					currentRecordContext = message.recordName;
 					currentReadOnlyMode = message.readOnly; // Save the user's choice
 					// Switch to designer view for selected record
-					webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, message.recordName, saveMode);
+					webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, message.recordName, saveMode, 'designer', openBehavior);
 					// Send document content with forced read-only mode
 					setTimeout(() => {
 						const recordsOpen = this.parseDspfRecords(document.getText());
@@ -277,13 +317,14 @@ import * as path from 'path';
 		// Send initial document content with current record context
 		setTimeout(async () => {
 			const isEditable = await this.isDocumentEditable(document);
+			const effectiveReadOnly = currentReadOnlyMode || !isEditable;
 			const records = this.parseDspfRecords(document.getText());
-			console.log('📤 Sending isReadOnly:', !isEditable, '(isEditable:', isEditable, ')');
+			console.log('📤 Sending isReadOnly:', effectiveReadOnly, '(isEditable:', isEditable, 'currentReadOnlyMode:', currentReadOnlyMode, ')');
 			webviewPanel.webview.postMessage({
 				type: 'documentContent',
 				content: document.getText(),
 				currentRecord: currentRecordContext,
-				isReadOnly: !isEditable,
+				isReadOnly: effectiveReadOnly,
 				records: records
 			});
 		}, 100);
@@ -326,7 +367,7 @@ import * as path from 'path';
 	/**
 	 * Get the static HTML for the webview
 	 */
-	private getHtmlForWebview(webview: vscode.Webview, recordName: string = 'MAIN', saveMode: 'manual' | 'automatic' = 'manual'): string {
+	private getHtmlForWebview(webview: vscode.Webview, recordName: string = 'MAIN', saveMode: 'manual' | 'automatic' = 'manual', initialView: 'designer' | 'preview' = 'designer', openBehavior: 'currentEditor' | 'newTab' = 'currentEditor'): string {
 		// Add timestamp to force cache refresh
 		const timestamp = Date.now();
 		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(
@@ -602,7 +643,9 @@ import * as path from 'path';
 
 	<script nonce="${nonce}">
 		window.dspfDesignerConfig = {
-			saveMode: '${saveMode}'
+			saveMode: '${saveMode}',
+			initialView: '${initialView}',
+			openBehavior: '${openBehavior}'
 		};
 
 		// Setup event listeners when DOM is ready

@@ -97,6 +97,10 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     window.vscodeApi = vscode; // Make it globally available
     const initialConfig = window.dspfDesignerConfig || {};
     let saveMode = initialConfig.saveMode === 'automatic' ? 'automatic' : 'manual';
+    const initialView = initialConfig.initialView === 'preview' ? 'preview' : 'designer';
+    const openBehavior = initialConfig.openBehavior === 'newTab' ? 'newTab' : 'currentEditor';
+    const isPreviewOnlyMode = initialView === 'preview';
+    const hideSourceTab = isPreviewOnlyMode || openBehavior === 'newTab';
     
     // IBM i Color Mappings (5250 standard colors) - now using ColorUtils
     const IBM_COLORS = ColorUtils.IBM_COLORS;
@@ -164,6 +168,23 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             getCurrentZoom: () => currentZoom,
             switchToView
         });
+
+        if (isPreviewOnlyMode) {
+            const backBtn = document.getElementById('backBtn');
+
+            if (backBtn) {
+                backBtn.style.display = 'none';
+            }
+        }
+
+        if (hideSourceTab) {
+            const sourceTab = document.getElementById('sourceTab');
+
+            if (sourceTab) {
+                sourceTab.style.display = 'none';
+            }
+        }
+
         setupDisplaySizeSelectorUI({
             Logger,
             getCurrentDisplaySize: () => currentDisplaySize,
@@ -196,8 +217,8 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             });
         }, 100);
         
-        // Ensure Designer view is active by default
-        switchToView('designer');
+        // Start in configured view (Designer by default, Preview for command-opened preview)
+        switchToView(initialView);
         
         // Request initial document content
         vscode.postMessage({ type: 'getDocument' });

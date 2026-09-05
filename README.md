@@ -31,6 +31,9 @@ Modern drag-and-drop interface for building IBM i display files with real-time D
 ### 👁️ Live Preview
 Real-time preview showing how your screen will appear on IBM i, directly generated from the visual designer and DDS source.
 
+- Inline `Preview With DSPF Designer` action on record lines (`A R <record>`) for quick per-record preview
+- Opens the selected record directly in preview mode
+
 ### 💾 Three-View Design
 - **Designer**: Visual canvas with toolbox and properties panel
 - **Preview**: Real-time IBM i screen simulation
@@ -40,9 +43,10 @@ Real-time preview showing how your screen will appear on IBM i, directly generat
 
 1. Open any `.dspf` file.
 2. Click **Open Designer Mode** from the editor title bar (or command palette).
-3. Drag fields from the toolbox onto the canvas.
-4. Configure properties and indicators in the side panel.
-5. Click **Save** to update the DDS source file.
+3. Or use **Preview With DSPF Designer** directly from a record line in source view.
+4. Drag fields from the toolbox onto the canvas.
+5. Configure properties and indicators in the side panel.
+6. Click **Save** to update the DDS source file.
 
 ## Requirements
 
@@ -56,6 +60,10 @@ This extension automatically associates with `.dspf` files and requires no addit
 	- `currentEditor`: Current behavior. Opening Designer Mode replaces the active editor tab.
 	- `newTab`: Opens Designer Mode in the same editor group as another tab (no split, no new window).
 
+- `dspfDesigner.previewOpenBehavior` (default: `newTab`)
+	- `newTab`: Opens Preview in a new tab in the same editor group.
+	- `splitView`: Opens Preview beside the current editor.
+
 - `dspfDesigner.saveMode` (default: `manual`)
 	- `manual`: Changes are saved only when pressing the Save button.
 	- `automatic`: Changes are saved automatically while editing (Designer and Source views).
@@ -64,7 +72,7 @@ You can edit your DSPF files offline. You can edit DSPF files located on your lo
 
 ## Known Limitations
 
-- This extension is currently in preview; not all DDS features are available in the designer yet
+- This extension is constantly evolving; not all DDS features are available in the designer yet
 - Not all DDS keywords are implemented in the designer yet (focus on the most common ones)
 - Some advanced or less common DDS keywords may require editing in Source view
 - Subfile and complex DDS features have limited visual support in this version

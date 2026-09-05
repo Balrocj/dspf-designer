@@ -2,7 +2,7 @@
   "name": "dspf-designer",
   "displayName": "DSPF Designer",
   "description": "Visual designer for IBM i DSPF (Display Files) with drag-and-drop interface.",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "publisher": "Balrocj",
   "icon": "media/icon-256.png",
   "engines": {
@@ -30,7 +30,7 @@
   "bugs": {
     "url": "https://github.com/Balrocj/dspf-designer/issues"
   },
-  "preview": true,
+  "preview": false,
   "main": "./dist/extension.js",
   "activationEvents": [
     "workspaceContains:**/*.dspf",
@@ -57,6 +57,11 @@
         "category": "DSPF"
       },
       {
+        "command": "dspfDesigner.openPreview",
+        "title": "Preview With DSPF Designer",
+        "category": "DSPF"
+      },
+      {
         "command": "dspfDesigner.exitDesigner",
         "title": "Exit Designer Mode",
         "category": "DSPF"
@@ -73,23 +78,23 @@
       "editor/title": [
         {
           "command": "dspfDesigner.openDesigner",
-          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds.dspf) && !dspfDesigner.isInDesignerMode",
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/) && !dspfDesigner.isInDesignerMode",
           "group": "navigation"
         },
         {
           "command": "dspfDesigner.exitDesigner",
-          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds.dspf) && dspfDesigner.isInDesignerMode",
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/) && dspfDesigner.isInDesignerMode",
           "group": "navigation"
         }
       ],
       "commandPalette": [
         {
           "command": "dspfDesigner.openDesigner",
-          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds.dspf) && !dspfDesigner.isInDesignerMode"
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/) && !dspfDesigner.isInDesignerMode"
         },
         {
           "command": "dspfDesigner.exitDesigner",
-          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds.dspf) && dspfDesigner.isInDesignerMode"
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/) && dspfDesigner.isInDesignerMode"
         }
       ]
     },
@@ -104,6 +109,15 @@
           ],
           "default": "currentEditor",
           "description": "Controls where Designer Mode opens: replace current editor or open as a new tab in the same editor group."
+        },
+        "dspfDesigner.previewOpenBehavior": {
+          "type": "string",
+          "enum": [
+            "newTab",
+            "splitView"
+          ],
+          "default": "newTab",
+          "description": "Controls where Preview opens: new tab in the same editor group or split view beside the current editor."
         },
         "dspfDesigner.saveMode": {
           "type": "string",
