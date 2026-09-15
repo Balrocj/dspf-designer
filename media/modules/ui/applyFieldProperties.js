@@ -283,7 +283,11 @@
                 }
             }
 
-            const attrFormat = field.hasGroupedDspatr ? 'grouped' : 'individual';
+            const hasSingleGroupedDspatr = field.hasGroupedDspatr &&
+                Array.isArray(field.dspatrGroups) &&
+                field.dspatrGroups.length === 1 &&
+                field.dspatrGroups[0].attributes.length > 1;
+            const attrFormat = hasSingleGroupedDspatr ? 'grouped' : 'individual';
             const attrIndicatorsModified = transferIndicators({
                 kind: 'attr',
                 keys: selectedAttrs,
@@ -296,7 +300,7 @@
                 delete field.attributes;
             }
 
-            if (field.hasGroupedDspatr && !attrIndicatorsModified) {
+            if (hasSingleGroupedDspatr && !attrIndicatorsModified) {
                 const oldAttrSet = new Set(Object.keys(oldField.attributes || {}).filter(k => oldField.attributes[k]));
                 const newAttrSet = new Set(Object.keys(field.attributes || {}).filter(k => field.attributes[k]));
 

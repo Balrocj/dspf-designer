@@ -746,6 +746,13 @@ export function scanAttributeLinesAfterField({
             addKeywordOrder('DSPATR');
             field.attributes = { ...field.attributes, ...attrResult.attrs };
 
+            const attrNames = Object.keys(attrResult.attrs).filter(attrName => attrResult.attrs[attrName]);
+            field.dspatrGroups = field.dspatrGroups || [];
+            field.dspatrGroups.push({
+                attributes: attrNames,
+                originalLine: preserveOriginalSpacing ? nextLine : null
+            });
+
             if (preserveOriginalSpacing) {
                 field.originalAttrLines = field.originalAttrLines || {};
             }

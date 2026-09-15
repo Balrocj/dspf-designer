@@ -1346,7 +1346,12 @@ export function showFieldProperties({
     }
 
     if (field.attributeIndicators) {
-        if (field.hasGroupedDspatr) {
+        const hasSingleGroupedDspatr = field.hasGroupedDspatr &&
+            Array.isArray(field.dspatrGroups) &&
+            field.dspatrGroups.length === 1 &&
+            field.dspatrGroups[0].attributes.length > 1;
+
+        if (hasSingleGroupedDspatr) {
             const firstAttr = Object.keys(field.attributeIndicators)[0];
             const sharedIndicatorData = field.attributeIndicators[firstAttr] || [];
 

@@ -13,7 +13,8 @@ const tests = [
     'run-relative-plus-normalization.js',
     'run-window-comment-ignore.js',
     'run-sfl-multiline-rowspan.js',
-    'run-keyword-position-preservation.js'
+    'run-keyword-position-preservation.js',
+    'run-mixed-dspatr-groups-regression.js'
 ];
 
 function runOne(scriptName) {
