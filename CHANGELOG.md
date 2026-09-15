@@ -2,6 +2,17 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.8.1] 2026-09-15
+
+### 🐛 Fixed
+- Fixed conditional `DSPATR` preservation for fields that mix grouped and individual attributes. Editing one attribute no longer merges unrelated attributes or replaces their indicators.
+- Fixed `DSPATR` regeneration when attributes from an original group receive different conditioning indicators. The designer now keeps the group when indicators match and splits it into individual `DSPATR` lines when they differ.
+- Added regression coverage for both conditional `DSPATR` scenarios, including removing an indicator from an individual attribute and assigning a different indicator to an attribute from a grouped line.
+
+### 🎨 Improved
+- Preserved the user-selected zoom while switching between Designer, Preview, and Source views.
+- Persisted the selected zoom per DSPF document, restoring it after leaving and reopening Designer Mode.
+
 ## [2.8.0] 2026-09-05
 ### 🎨 Improved
 - DSPF Designer is no longer in Preview. After multiple releases and continued improvements, DSPF Designer is now considered stable for general use.

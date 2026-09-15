@@ -211,7 +211,8 @@ __webpack_require__.r(__webpack_exports__);
     let currentDisplaySize = 'DS3'; // Current display size: DS3 (24x80) or DS4 (27x132)
     let isReadOnly = false; // Track if document is in read-only mode
     let currentView = 'designer'; // Track the current active view (designer, preview, source)
-    let currentZoom = 1; // Zoom level for views container
+    let currentZoom = Number.isFinite(initialConfig.zoom) ? initialConfig.zoom : 1;
+    let hasUserDefinedZoom = Number.isFinite(initialConfig.zoom);
     let fileMetadata = { ref: null }; // File-level metadata (REF keyword, etc.)
     let indicatorSimulationEnabled = false; // Preview-only indicator simulation (SDA-like)
     let activePreviewIndicators = new Set();
@@ -294,7 +295,7 @@ __webpack_require__.r(__webpack_exports__);
             applyDefaultZoomForDisplaySize,
             updatePreviewView
         });
-        setViewZoom(currentZoom);
+        setViewZoom(currentZoom, false);
         (0,_modules_ui_canvasSize_js__WEBPACK_IMPORTED_MODULE_13__.updateCanvasSize)(currentDisplaySize, _modules_utils_screenCoordinates_js__WEBPACK_IMPORTED_MODULE_1__.ScreenCoordinates, _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger);
         (0,_modules_ui_gridLines_js__WEBPACK_IMPORTED_MODULE_15__.setupGridLines)({
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,
@@ -621,18 +622,28 @@ __webpack_require__.r(__webpack_exports__);
         return simulatedField;
     }
 
-    function setViewZoom(zoomValue) {
-        return (0,_modules_ui_setViewZoom_js__WEBPACK_IMPORTED_MODULE_25__.setViewZoom)({
+    function setViewZoom(zoomValue, isUserDefined = true) {
+        const result = (0,_modules_ui_setViewZoom_js__WEBPACK_IMPORTED_MODULE_25__.setViewZoom)({
             zoomValue,
             setCurrentZoom: (value) => { currentZoom = value; }
         });
+
+        if (isUserDefined) {
+            hasUserDefinedZoom = true;
+            vscode.postMessage({ type: 'zoomChanged', zoom: currentZoom });
+        }
+
+        return result;
     }
 
     function applyDefaultZoomForDisplaySize(displaySize, targetView = currentView) {
+        if (hasUserDefinedZoom) {
+            return;
+        }
         const defaultZoom = targetView === 'designer'
             ? (displaySize === 'DS4' ? 0.7 : 1)
             : 1;
-        setViewZoom(defaultZoom);
+        setViewZoom(defaultZoom, false);
     }
 
     function syncDisplaySizeRadioButtons(displaySize) {
@@ -1391,12 +1402,6 @@ __webpack_require__.r(__webpack_exports__);
     
     // Switch between views
     function switchToView(viewName) {
-        if (viewName === 'designer') {
-            applyDefaultZoomForDisplaySize(currentDisplaySize, 'designer');
-        } else {
-            setViewZoom(1);
-        }
-
         return (0,_modules_ui_switchToView_js__WEBPACK_IMPORTED_MODULE_26__.switchToView)({
             viewName,
             Logger: _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger,

@@ -120,6 +120,8 @@ import * as path from 'path';
 		const records = this.parseDspfRecords(document.getText());
 		const openRequest = this.consumeQueuedOpenMode(document.uri);
 		const forcePreviewMode = openRequest.mode === 'preview';
+		const zoomStateKey = `dspfDesigner.zoom.${document.uri.toString()}`;
+		let savedZoom = this.context.workspaceState.get<number>(zoomStateKey);
 		this.resolvedOpenModes.set(document.uri.toString(), forcePreviewMode ? 'preview' : 'designer');
 		const saveMode = this.getSaveMode();
 		const openBehavior = this.getOpenBehavior();
@@ -137,7 +139,7 @@ import * as path from 'path';
 			const previewRecord = matchedRecord?.name || (records.length > 0 ? records[0].name : 'MAIN');
 			currentRecordContext = previewRecord;
 			currentReadOnlyMode = true;
-			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, previewRecord, saveMode, 'preview', openBehavior);
+			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, previewRecord, saveMode, 'preview', openBehavior, savedZoom);
 		} else if (records.length > 1) {
 			// Show record selector if multiple records exist
 			webviewPanel.webview.html = this.getRecordSelectorHtml(webviewPanel.webview, records, isReadOnly, saveMode);
@@ -145,7 +147,7 @@ import * as path from 'path';
 			// Show designer directly if only one record (or no records)
 			const recordName = records.length > 0 ? records[0].name : 'MAIN';
 			currentRecordContext = recordName;
-			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, recordName, saveMode, 'designer', openBehavior);
+			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, recordName, saveMode, 'designer', openBehavior, savedZoom);
 		}
 
 		// Handle messages from the webview
@@ -215,7 +217,7 @@ import * as path from 'path';
 					currentRecordContext = message.recordName;
 					currentReadOnlyMode = false; // Reset when explicitly selecting a record to edit
 					// Switch to designer view for selected record
-					webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, message.recordName, saveMode, 'designer', openBehavior);
+					webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, message.recordName, saveMode, 'designer', openBehavior, savedZoom);
 					// Send document content and current record to the designer
 					setTimeout(async () => {
 						const isEditableSelect = await this.isDocumentEditable(document);
@@ -236,7 +238,7 @@ import * as path from 'path';
 					currentRecordContext = message.recordName;
 					currentReadOnlyMode = message.readOnly; // Save the user's choice
 					// Switch to designer view for selected record
-					webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, message.recordName, saveMode, 'designer', openBehavior);
+					webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, message.recordName, saveMode, 'designer', openBehavior, savedZoom);
 					// Send document content with forced read-only mode
 					setTimeout(() => {
 						const recordsOpen = this.parseDspfRecords(document.getText());
@@ -261,6 +263,12 @@ import * as path from 'path';
 					console.log('🚪 Exiting Designer and returning to text editor');
 					await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 					await vscode.commands.executeCommand('vscode.open', document.uri);
+					break;
+				case 'zoomChanged':
+					if (typeof message.zoom === 'number' && Number.isFinite(message.zoom)) {
+						savedZoom = Math.max(0.5, Math.min(2, message.zoom));
+						await this.context.workspaceState.update(zoomStateKey, savedZoom);
+					}
 					break;
 				case 'openExtensionSettings':
 					await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:Balrocj.dspf-designer');
@@ -367,7 +375,7 @@ import * as path from 'path';
 	/**
 	 * Get the static HTML for the webview
 	 */
-	private getHtmlForWebview(webview: vscode.Webview, recordName: string = 'MAIN', saveMode: 'manual' | 'automatic' = 'manual', initialView: 'designer' | 'preview' = 'designer', openBehavior: 'currentEditor' | 'newTab' = 'currentEditor'): string {
+	private getHtmlForWebview(webview: vscode.Webview, recordName: string = 'MAIN', saveMode: 'manual' | 'automatic' = 'manual', initialView: 'designer' | 'preview' = 'designer', openBehavior: 'currentEditor' | 'newTab' = 'currentEditor', zoom?: number): string {
 		// Add timestamp to force cache refresh
 		const timestamp = Date.now();
 		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(
@@ -645,7 +653,8 @@ import * as path from 'path';
 		window.dspfDesignerConfig = {
 			saveMode: '${saveMode}',
 			initialView: '${initialView}',
-			openBehavior: '${openBehavior}'
+			openBehavior: '${openBehavior}',
+			zoom: ${typeof zoom === 'number' ? zoom : 'null'}
 		};
 
 		// Setup event listeners when DOM is ready

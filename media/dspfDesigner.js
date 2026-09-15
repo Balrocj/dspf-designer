@@ -113,7 +113,8 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     let currentDisplaySize = 'DS3'; // Current display size: DS3 (24x80) or DS4 (27x132)
     let isReadOnly = false; // Track if document is in read-only mode
     let currentView = 'designer'; // Track the current active view (designer, preview, source)
-    let currentZoom = 1; // Zoom level for views container
+    let currentZoom = Number.isFinite(initialConfig.zoom) ? initialConfig.zoom : 1;
+    let hasUserDefinedZoom = Number.isFinite(initialConfig.zoom);
     let fileMetadata = { ref: null }; // File-level metadata (REF keyword, etc.)
     let indicatorSimulationEnabled = false; // Preview-only indicator simulation (SDA-like)
     let activePreviewIndicators = new Set();
@@ -196,7 +197,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
             applyDefaultZoomForDisplaySize,
             updatePreviewView
         });
-        setViewZoom(currentZoom);
+        setViewZoom(currentZoom, false);
         updateCanvasSizeUI(currentDisplaySize, ScreenCoordinates, Logger);
         setupGridLinesUI({
             Logger,
@@ -523,18 +524,28 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         return simulatedField;
     }
 
-    function setViewZoom(zoomValue) {
-        return setViewZoomUI({
+    function setViewZoom(zoomValue, isUserDefined = true) {
+        const result = setViewZoomUI({
             zoomValue,
             setCurrentZoom: (value) => { currentZoom = value; }
         });
+
+        if (isUserDefined) {
+            hasUserDefinedZoom = true;
+            vscode.postMessage({ type: 'zoomChanged', zoom: currentZoom });
+        }
+
+        return result;
     }
 
     function applyDefaultZoomForDisplaySize(displaySize, targetView = currentView) {
+        if (hasUserDefinedZoom) {
+            return;
+        }
         const defaultZoom = targetView === 'designer'
             ? (displaySize === 'DS4' ? 0.7 : 1)
             : 1;
-        setViewZoom(defaultZoom);
+        setViewZoom(defaultZoom, false);
     }
 
     function syncDisplaySizeRadioButtons(displaySize) {
@@ -1293,12 +1304,6 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
     
     // Switch between views
     function switchToView(viewName) {
-        if (viewName === 'designer') {
-            applyDefaultZoomForDisplaySize(currentDisplaySize, 'designer');
-        } else {
-            setViewZoom(1);
-        }
-
         return switchToViewUI({
             viewName,
             Logger,
