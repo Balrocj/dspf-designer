@@ -63,6 +63,20 @@ function run() {
         assert.match(result, /A\s+33\s+DSPATR\(UL\)/, 'UL must keep indicator 33');
         assert.match(result, /A\s+DSPATR\(PR\)/, 'PR must remain without an indicator');
         assert.doesNotMatch(result, /A\s+32\s+DSPATR\(PR\)/, 'PR indicator 32 must be removed');
+
+        const splitField = JSON.parse(JSON.stringify(parsedField));
+        splitField.attributeIndicators.cursorPosition = {
+            groups: [{ indicators: [{ number: '55', not: false }] }],
+            isOr: false
+        };
+        splitField.attributeIndicatorsModified = true;
+        setCurrentDocument(source);
+        updateFieldInDds(splitField, parsedField);
+
+        const splitResult = getCurrentDocument();
+        assert.match(splitResult, /A\s+42\s+DSPATR\(RI\)/, 'RI must keep indicator 42 when PC changes');
+        assert.match(splitResult, /A\s+55\s+DSPATR\(PC\)/, 'PC must receive indicator 55');
+        assert.doesNotMatch(splitResult, /DSPATR\(RI PC\)/, 'Attributes with different indicators must not remain grouped');
         console.log('Test passed: mixed DSPATR groups preserve independent indicators.');
         process.exit(0);
     } catch (error) {

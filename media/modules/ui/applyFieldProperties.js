@@ -287,13 +287,12 @@
                 Array.isArray(field.dspatrGroups) &&
                 field.dspatrGroups.length === 1 &&
                 field.dspatrGroups[0].attributes.length > 1;
-            const attrFormat = hasSingleGroupedDspatr ? 'grouped' : 'individual';
             const attrIndicatorsModified = transferIndicators({
                 kind: 'attr',
                 keys: selectedAttrs,
                 field: field,
                 fieldType: 'field',
-                attrFormat: attrFormat
+                attrFormat: 'individual'
             });
 
             if (Object.keys(field.attributes).length === 0) {

@@ -40003,13 +40003,12 @@ function applyFieldProperties({
                 Array.isArray(field.dspatrGroups) &&
                 field.dspatrGroups.length === 1 &&
                 field.dspatrGroups[0].attributes.length > 1;
-            const attrFormat = hasSingleGroupedDspatr ? 'grouped' : 'individual';
             const attrIndicatorsModified = transferIndicators({
                 kind: 'attr',
                 keys: selectedAttrs,
                 field: field,
                 fieldType: 'field',
-                attrFormat: attrFormat
+                attrFormat: 'individual'
             });
 
             if (Object.keys(field.attributes).length === 0) {
@@ -46343,6 +46342,10 @@ function generateFieldDspatrLinesUI({
 
     if (Array.isArray(field.dspatrGroups) && field.dspatrGroups.length > 0) {
         const generatedAttributes = new Set();
+        const getIndicatorData = (attrName) => field.attributeIndicators && field.attributeIndicators[attrName]
+            ? field.attributeIndicators[attrName]
+            : [];
+        const indicatorSignature = (indicatorData) => JSON.stringify(indicatorData);
 
         for (const group of field.dspatrGroups) {
             const activeAttributes = group.attributes.filter(attrName => field.attributes[attrName]);
@@ -46358,12 +46361,23 @@ function generateFieldDspatrLinesUI({
                 continue;
             }
 
-            const attributeCodes = activeAttributes.map(attrName => DSPATR_ATTRIBUTE_MAP[attrName]);
-            const indicatorAttribute = activeAttributes.find(attrName =>
-                field.attributeIndicators && field.attributeIndicators[attrName]);
-            const indicatorData = indicatorAttribute ? field.attributeIndicators[indicatorAttribute] : [];
-            const generated = generateDdsLineWithIndicators(`DSPATR(${attributeCodes.join(' ')})`, indicatorData);
-            lines.push(...generated.split('\n'));
+            const firstIndicatorData = getIndicatorData(activeAttributes[0]);
+            const groupHasSharedIndicators = activeAttributes.every(attrName =>
+                indicatorSignature(getIndicatorData(attrName)) === indicatorSignature(firstIndicatorData));
+
+            if (groupHasSharedIndicators) {
+                const attributeCodes = activeAttributes.map(attrName => DSPATR_ATTRIBUTE_MAP[attrName]);
+                const generated = generateDdsLineWithIndicators(`DSPATR(${attributeCodes.join(' ')})`, firstIndicatorData);
+                lines.push(...generated.split('\n'));
+            } else {
+                activeAttributes.forEach(attrName => {
+                    const generated = generateDdsLineWithIndicators(
+                        `DSPATR(${DSPATR_ATTRIBUTE_MAP[attrName]})`,
+                        getIndicatorData(attrName)
+                    );
+                    lines.push(...generated.split('\n'));
+                });
+            }
         }
 
         for (const [attrName, ddsCode] of Object.entries(DSPATR_ATTRIBUTE_MAP)) {
