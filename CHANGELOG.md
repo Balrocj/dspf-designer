@@ -2,6 +2,10 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.8.2] 2026-10-24
+### 🐛 Fixed
+- Restored the `dds.dspf` language ID condition for the Designer commands in the editor title and Command Palette. This makes the commands available for IBM i DSPF source members whose filenames do not end in `.dspf`, such as `.dspf.file`.
+
 ## [2.8.1] 2026-09-15
 
 ### 🐛 Fixed
