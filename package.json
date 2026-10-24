@@ -2,7 +2,7 @@
   "name": "dspf-designer",
   "displayName": "DSPF Designer",
   "description": "Visual designer for IBM i DSPF (Display Files) with drag-and-drop interface.",
-  "version": "2.8.1",
+  "version": "2.8.2",
   "publisher": "Balrocj",
   "icon": "media/icon-256.png",
   "engines": {
@@ -78,23 +78,23 @@
       "editor/title": [
         {
           "command": "dspfDesigner.openDesigner",
-          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/) && !dspfDesigner.isInDesignerMode",
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds.dspf) && !dspfDesigner.isInDesignerMode",
           "group": "navigation"
         },
         {
           "command": "dspfDesigner.exitDesigner",
-          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/) && dspfDesigner.isInDesignerMode",
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds.dspf) && dspfDesigner.isInDesignerMode",
           "group": "navigation"
         }
       ],
       "commandPalette": [
         {
           "command": "dspfDesigner.openDesigner",
-          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/) && !dspfDesigner.isInDesignerMode"
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds.dspf) && !dspfDesigner.isInDesignerMode"
         },
         {
           "command": "dspfDesigner.exitDesigner",
-          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/) && dspfDesigner.isInDesignerMode"
+          "when": "(resourceExtname == .dspf || resourceFilename =~ /\\.[dD][sS][pP][fF]$/ || editorLangId == dds.dspf) && dspfDesigner.isInDesignerMode"
         }
       ]
     },
