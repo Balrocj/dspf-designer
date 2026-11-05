@@ -498,7 +498,7 @@ import * as path from 'path';
 				<div id="toolbox-panel" class="panel">
 					<h3>Toolbox</h3>
 					<div class="tool-category">
-						<h4>Fields</h4>
+						<h4>Fields/Vars</h4>
 						<div class="tool-item" draggable="true" data-type="text">
 							<div class="tool-icon">📝</div>
 							<span>Text</span>
@@ -509,7 +509,7 @@ import * as path from 'path';
 					</div>
 					<div class="tool-item" draggable="true" data-type="constant">
 						<div class="tool-icon">🔤</div>
-						<span>Constant</span>
+						<span>Label</span>
 					</div>
 					<div class="tool-item" draggable="true" data-type="field-date">
 						<div class="tool-icon">📆</div>
@@ -525,7 +525,7 @@ import * as path from 'path';
 					</div>
 				</div>
 				<div class="tool-category">
-					<h4>Specials</h4>
+					<h4>Specials Constants</h4>
 					<div class="tool-item" draggable="true" data-type="keyword-date">
 						<div class="tool-icon">📅</div>
 						<span>DATE</span>
