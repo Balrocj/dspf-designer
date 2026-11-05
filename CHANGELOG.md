@@ -2,6 +2,10 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.8.3] 2026-11-04
+### 🐛 Fixed
+- Fixed the inline `Preview With DSPF Designer` CodeLens not appearing when the file extension is uppercase (for example `.DSPF`), as in IBM i source members. The CodeLens is now matched case-insensitively.
+
 ## [2.8.2] 2026-10-24
 ### 🐛 Fixed
 - Restored the `dds.dspf` language ID condition for the Designer commands in the editor title and Command Palette. This makes the commands available for IBM i DSPF source members whose filenames do not end in `.dspf`, such as `.dspf.file`.

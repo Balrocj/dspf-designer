@@ -11,7 +11,7 @@ class DspfCodeLensProvider implements vscode.CodeLensProvider {
 
 		for (let i = 0; i < document.lineCount; i++) {
 			const line = document.lineAt(i).text;
-			const match = line.match(/^\s*A\s+R\s+(\w+)/i);
+			const match = line.match(/^\s*A\s+R\s+([A-Z0-9_@#$]+)/i);
 			if (match) {
 				const recordName = match[1];
 				const range = new vscode.Range(i, 0, i, 0);
@@ -188,7 +188,8 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	const codeLensProvider = vscode.languages.registerCodeLensProvider(
-		{ pattern: '**/*.dspf' },
+		// Globs are case-sensitive; the provider filters by lowercased file name.
+		{ pattern: '**/*' },
 		new DspfCodeLensProvider()
 	);
 
