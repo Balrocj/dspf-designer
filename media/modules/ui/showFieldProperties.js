@@ -880,19 +880,19 @@ export function showFieldProperties({
             dftGroup.style.display = showDFT ? 'flex' : 'none';
         }
         if (dftValueGroup) {
-            dftValueGroup.style.display = showDFT ? 'block' : 'none';
+            dftValueGroup.style.display = showDFT && document.getElementById('prop-dft-enabled')?.checked ? 'block' : 'none';
         }
         if (dftvalGroup) {
             dftvalGroup.style.display = showDFTVAL ? 'flex' : 'none';
         }
         if (dftvalValueGroup) {
-            dftvalValueGroup.style.display = showDFTVAL ? 'block' : 'none';
+            dftvalValueGroup.style.display = showDFTVAL && document.getElementById('prop-dftval-enabled')?.checked ? 'block' : 'none';
         }
         if (cntfldGroup) {
             cntfldGroup.style.display = showCNTFLD ? 'flex' : 'none';
         }
         if (cntfldValueGroup) {
-            cntfldValueGroup.style.display = showCNTFLD ? 'block' : 'none';
+            cntfldValueGroup.style.display = showCNTFLD && document.getElementById('prop-cntfld-enabled')?.checked ? 'block' : 'none';
         }
         if (generalKeywordsTabBtn) {
             generalKeywordsTabBtn.style.display = showGeneralKeywords ? 'inline-flex' : 'none';
