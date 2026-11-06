@@ -7,7 +7,7 @@ All notable changes to the "dspf-designer" extension will be documented in this 
 - Changed the default `dspfDesigner.openBehavior` from `currentEditor` to `newTab`, opening Designer Mode in a new tab in the same editor group.
 - Changed the default `dspfDesigner.saveMode` from `manual` to `automatic`, saving changes automatically in Designer and Source views.
 - Updated configuration fallback values and documentation to match the new defaults. Explicit user and workspace preferences remain unchanged.
-- The UI for the DFT, DFTVAL, and CNTFLD keywords is corrected.
+- The UI for the VALUES, DFT, DFTVAL, and CNTFLD keywords is corrected.
 - Some sections in the designer view have been renamed to make them more intuitive:
   - Fields: Fields/Var
   - Constant: Label

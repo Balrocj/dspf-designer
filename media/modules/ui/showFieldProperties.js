@@ -851,7 +851,7 @@ export function showFieldProperties({
             valuesGroup.style.display = showValues ? 'flex' : 'none';
         }
         if (valuesValueGroup) {
-            valuesValueGroup.style.display = showValues ? 'block' : 'none';
+            valuesValueGroup.style.display = showValues && document.getElementById('prop-values-enabled')?.checked ? 'block' : 'none';
         }
         if (validityCheckTabBtn) {
             validityCheckTabBtn.style.display = showValues ? 'inline-flex' : 'none';
