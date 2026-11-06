@@ -56,7 +56,7 @@ Real-time preview showing how your screen will appear on IBM i, directly generat
 
 This extension automatically associates with `.dspf` files and requires no additional configuration.
 
-- `dspfDesigner.openBehavior` (default: `currentEditor`)
+- `dspfDesigner.openBehavior` (default: `newTab`)
 	- `currentEditor`: Current behavior. Opening Designer Mode replaces the active editor tab.
 	- `newTab`: Opens Designer Mode in the same editor group as another tab (no split, no new window).
 
@@ -64,7 +64,7 @@ This extension automatically associates with `.dspf` files and requires no addit
 	- `newTab`: Opens Preview in a new tab in the same editor group.
 	- `splitView`: Opens Preview beside the current editor.
 
-- `dspfDesigner.saveMode` (default: `manual`)
+- `dspfDesigner.saveMode` (default: `automatic`)
 	- `manual`: Changes are saved only when pressing the Save button.
 	- `automatic`: Changes are saved automatically while editing (Designer and Source views).
 

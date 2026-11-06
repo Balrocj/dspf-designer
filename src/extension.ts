@@ -35,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
 	type OpenMode = 'designer' | 'preview';
 
 	const getOpenBehavior = (): OpenBehavior => {
-		const configValue = vscode.workspace.getConfiguration('dspfDesigner').get<string>('openBehavior', 'currentEditor');
+		const configValue = vscode.workspace.getConfiguration('dspfDesigner').get<string>('openBehavior', 'newTab');
 		return configValue === 'newTab' ? 'newTab' : 'currentEditor';
 	};
 

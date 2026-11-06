@@ -107,7 +107,7 @@
             "currentEditor",
             "newTab"
           ],
-          "default": "currentEditor",
+          "default": "newTab",
           "description": "Controls where Designer Mode opens: replace current editor or open as a new tab in the same editor group."
         },
         "dspfDesigner.previewOpenBehavior": {
@@ -125,7 +125,7 @@
             "manual",
             "automatic"
           ],
-          "default": "manual",
+          "default": "automatic",
           "description": "Controls save behavior in Designer and Source views: manual save with Save button or automatic save while editing."
         }
       }

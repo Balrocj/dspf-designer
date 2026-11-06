@@ -93,12 +93,12 @@ import * as path from 'path';
 	}
 
 	private getSaveMode(): 'manual' | 'automatic' {
-		const value = vscode.workspace.getConfiguration('dspfDesigner').get<string>('saveMode', 'manual');
+		const value = vscode.workspace.getConfiguration('dspfDesigner').get<string>('saveMode', 'automatic');
 		return value === 'automatic' ? 'automatic' : 'manual';
 	}
 
 	private getOpenBehavior(): 'currentEditor' | 'newTab' {
-		const value = vscode.workspace.getConfiguration('dspfDesigner').get<string>('openBehavior', 'currentEditor');
+		const value = vscode.workspace.getConfiguration('dspfDesigner').get<string>('openBehavior', 'newTab');
 		return value === 'newTab' ? 'newTab' : 'currentEditor';
 	}
 	
@@ -375,7 +375,7 @@ import * as path from 'path';
 	/**
 	 * Get the static HTML for the webview
 	 */
-	private getHtmlForWebview(webview: vscode.Webview, recordName: string = 'MAIN', saveMode: 'manual' | 'automatic' = 'manual', initialView: 'designer' | 'preview' = 'designer', openBehavior: 'currentEditor' | 'newTab' = 'currentEditor', zoom?: number): string {
+	private getHtmlForWebview(webview: vscode.Webview, recordName: string = 'MAIN', saveMode: 'manual' | 'automatic' = 'automatic', initialView: 'designer' | 'preview' = 'designer', openBehavior: 'currentEditor' | 'newTab' = 'newTab', zoom?: number): string {
 		// Add timestamp to force cache refresh
 		const timestamp = Date.now();
 		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(
@@ -1000,7 +1000,7 @@ import * as path from 'path';
 	/**
 	 * Get HTML for record selector view
 	 */
-	private getRecordSelectorHtml(webview: vscode.Webview, records: Array<{name: string, type: string, lineStart: number, lineEnd: number}>, isReadOnly: boolean = false, saveMode: 'manual' | 'automatic' = 'manual'): string {
+	private getRecordSelectorHtml(webview: vscode.Webview, records: Array<{name: string, type: string, lineStart: number, lineEnd: number}>, isReadOnly: boolean = false, saveMode: 'manual' | 'automatic' = 'automatic'): string {
 		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(
 			this.context.extensionUri, 'media', 'dspfDesigner.css'));
 		

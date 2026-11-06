@@ -2,6 +2,16 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.8.4] 2026-11-05
+### 🎨 Improved
+- Changed the default `dspfDesigner.openBehavior` from `currentEditor` to `newTab`, opening Designer Mode in a new tab in the same editor group.
+- Changed the default `dspfDesigner.saveMode` from `manual` to `automatic`, saving changes automatically in Designer and Source views.
+- Updated configuration fallback values and documentation to match the new defaults. Explicit user and workspace preferences remain unchanged.
+- Some sections in the designer view have been renamed to make them more intuitive:
+  - Fields: Fields/Var
+  - Constant: Label
+  - Special: Special Constants
+
 ## [2.8.3] 2026-11-04
 ### 🐛 Fixed
 - Fixed the inline `Preview With DSPF Designer` CodeLens not appearing when the file extension is uppercase (for example `.DSPF`), as in IBM i source members. The CodeLens is now matched case-insensitively.
