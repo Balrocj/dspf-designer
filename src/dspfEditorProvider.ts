@@ -388,7 +388,7 @@ import * as path from 'path';
 			this.context.extensionUri, 'media', '3270-Regular.woff'));
 
 		const nonce = this.getNonce();
-		const showBackButton = recordName !== 'MAIN';
+		const showBackButton = initialView !== 'preview';
 
 		return `
 <!DOCTYPE html>
@@ -467,8 +467,8 @@ import * as path from 'path';
 				<h2>DSPF Designer - ${recordName}</h2>
 			</div>
 			<div class="toolbar-center">
-				<button id="prevRecordBtn" style="display: ${showBackButton ? 'inline-block' : 'none'}" title="Go to previous record">← Previous Record</button>
-				<button id="nextRecordBtn" style="display: ${showBackButton ? 'inline-block' : 'none'}" title="Go to next record">Next Record →</button>
+				<button id="prevRecordBtn" style="display: inline-block" title="Go to previous record">← Previous Record</button>
+				<button id="nextRecordBtn" style="display: inline-block" title="Go to next record">Next Record →</button>
 			</div>
 			<div class="toolbar-buttons">
 				<button id="saveBtn">Save</button>
