@@ -2,6 +2,10 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.9.0]
+### 🐛 Fixed
+- Preserved Designer Undo/Redo history after manual and automatic saves. History now resets only when navigating to a different record or returning to the record list.
+
 ## [2.8.4] 2026-11-05
 ### 🐛 Fixed
 - Changed the default `dspfDesigner.openBehavior` from `currentEditor` to `newTab`, opening Designer Mode in a new tab in the same editor group.

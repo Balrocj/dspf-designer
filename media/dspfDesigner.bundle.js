@@ -5135,8 +5135,12 @@ __webpack_require__.r(__webpack_exports__);
         switch (message.type) {
             case 'documentContent':
                 const previousDocument = currentDocument;
+                const previousRecord = currentRecord;
+                const normalizeLineEndings = (text) => typeof text === 'string' ? text.replace(/\r\n/g, '\n') : '';
                 currentDocument = message.content;
-                resetDesignerHistory();
+                if (previousRecord !== (message.currentRecord || null)) {
+                    resetDesignerHistory();
+                }
                 currentRecord = message.currentRecord || null;
                 applyDisplaySizeSettingsFromDocument();
                 
@@ -5185,7 +5189,6 @@ __webpack_require__.r(__webpack_exports__);
                 _modules_core_logger_js__WEBPACK_IMPORTED_MODULE_6__.Logger.debug('Received document content for record:', currentRecord);
 
                 const activeViewBeforeSync = document.querySelector('.view.active');
-                const normalizeLineEndings = (text) => typeof text === 'string' ? text.replace(/\r\n/g, '\n') : '';
                 const isSourceEcho = !viewToRestore
                     && activeViewBeforeSync
                     && activeViewBeforeSync.id === 'source-view'

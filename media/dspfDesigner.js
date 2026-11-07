@@ -5037,8 +5037,12 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         switch (message.type) {
             case 'documentContent':
                 const previousDocument = currentDocument;
+                const previousRecord = currentRecord;
+                const normalizeLineEndings = (text) => typeof text === 'string' ? text.replace(/\r\n/g, '\n') : '';
                 currentDocument = message.content;
-                resetDesignerHistory();
+                if (previousRecord !== (message.currentRecord || null)) {
+                    resetDesignerHistory();
+                }
                 currentRecord = message.currentRecord || null;
                 applyDisplaySizeSettingsFromDocument();
                 
@@ -5087,7 +5091,6 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                 Logger.debug('Received document content for record:', currentRecord);
 
                 const activeViewBeforeSync = document.querySelector('.view.active');
-                const normalizeLineEndings = (text) => typeof text === 'string' ? text.replace(/\r\n/g, '\n') : '';
                 const isSourceEcho = !viewToRestore
                     && activeViewBeforeSync
                     && activeViewBeforeSync.id === 'source-view'
