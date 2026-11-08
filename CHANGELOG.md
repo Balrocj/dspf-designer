@@ -2,6 +2,10 @@
 
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
+## [2.9.0] 
+### 🎨 Improved
+- Logic is created for generating new records.
+
 ## [2.8.5] 2026-11-06
 ### 🐛 Fixed
 - Preserved Designer Undo/Redo history after manual and automatic saves. History now resets only when navigating to a different record or returning to the record list.

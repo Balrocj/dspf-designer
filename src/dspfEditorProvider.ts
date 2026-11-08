@@ -140,12 +140,12 @@ import * as path from 'path';
 			currentRecordContext = previewRecord;
 			currentReadOnlyMode = true;
 			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, previewRecord, saveMode, 'preview', openBehavior, savedZoom);
-		} else if (records.length > 1) {
-			// Show record selector if multiple records exist
+		} else if (records.length !== 1) {
+			// Show record selector when there are no records or multiple records.
 			webviewPanel.webview.html = this.getRecordSelectorHtml(webviewPanel.webview, records, isReadOnly, saveMode);
 		} else {
-			// Show designer directly if only one record (or no records)
-			const recordName = records.length > 0 ? records[0].name : 'MAIN';
+			// Show designer directly when the DSPF contains exactly one record.
+			const recordName = records[0].name;
 			currentRecordContext = recordName;
 			webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, recordName, saveMode, 'designer', openBehavior, savedZoom);
 		}
@@ -284,6 +284,12 @@ import * as path from 'path';
 					break;
 				case 'deleteRecord':
 					await this.deleteRecord(document, message.recordName, webviewPanel);
+					break;
+				case 'createRecord':
+					await this.createRecord(document, webviewPanel, saveMode, openBehavior, savedZoom, (recordName) => {
+						currentRecordContext = recordName;
+						currentReadOnlyMode = false;
+					});
 					break;
 				case 'error':
 					// Show error message to user
@@ -813,6 +819,71 @@ import * as path from 'path';
 	}
 
 	/**
+	 * Create a standard DDS record format and open it in the visual designer.
+	 */
+	private async createRecord(
+		document: vscode.TextDocument,
+		webviewPanel: vscode.WebviewPanel,
+		saveMode: 'manual' | 'automatic',
+		openBehavior: 'currentEditor' | 'newTab',
+		zoom: number | undefined,
+		onCreated: (recordName: string) => void
+	): Promise<void> {
+		if (await this.isDocumentReadOnly(document)) {
+			vscode.window.showErrorMessage('This DSPF file is read-only.');
+			return;
+		}
+
+		const existingNames = new Set(this.parseDspfRecords(document.getText()).map(record => record.name.toUpperCase()));
+		const recordName = await vscode.window.showInputBox({
+			prompt: 'Enter the new DDS record format name',
+			placeHolder: 'RECORD1',
+			validateInput: (value) => {
+				const normalizedName = value.trim().toUpperCase();
+				if (!/^[A-Z][A-Z0-9_@#$]{0,9}$/.test(normalizedName)) {
+					return 'Use 1-10 characters, starting with a letter. Allowed: A-Z, 0-9, _, @, #, $.';
+				}
+
+				if (existingNames.has(normalizedName)) {
+					return `Record "${normalizedName}" already exists.`;
+				}
+
+				return undefined;
+			}
+		});
+
+		if (!recordName) {
+			return;
+		}
+
+		const normalizedName = recordName.trim().toUpperCase();
+		const eol = document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
+		const content = document.getText();
+		const separator = content.length === 0 || content.endsWith('\n') || content.endsWith('\r') ? '' : eol;
+		const newContent = `${content}${separator}     A          R ${normalizedName}${eol}`;
+		const edit = new vscode.WorkspaceEdit();
+		const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(content.length));
+		edit.replace(document.uri, fullRange, newContent);
+
+		if (!await vscode.workspace.applyEdit(edit)) {
+			vscode.window.showErrorMessage(`Failed to create record "${normalizedName}".`);
+			return;
+		}
+
+		try {
+			await document.save();
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			vscode.window.showErrorMessage(`Record created, but failed to save file: ${message}`);
+			return;
+		}
+
+		onCreated(normalizedName);
+		webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, normalizedName, saveMode, 'designer', openBehavior, zoom);
+		vscode.window.showInformationMessage(`Record "${normalizedName}" created.`);
+	}
+
+	/**
 	 * Generate a DDS line for a field
 	 */
 	private generateDDSLine(field: any): string {
@@ -1309,7 +1380,7 @@ import * as path from 'path';
 			${recordCards}
 		</div>
 		
-		${/* !isReadOnly ? '<button class="add-record-btn">+ Add New Record</button>' : '' */''}
+		${!isReadOnly ? '<button class="add-record-btn">Add New Record</button>' : ''}
 	</div>
 
 	<script nonce="${nonce}">
@@ -1328,8 +1399,7 @@ import * as path from 'path';
 		}
 		
 		function addNewRecord() {
-			// TODO: Implement add new record functionality
-			alert('Add new record functionality coming soon!');
+			vscode.postMessage({ type: 'createRecord' });
 		}
 
 		function openAdvancedOptions() {
