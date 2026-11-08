@@ -76,7 +76,6 @@ You can edit your DSPF files offline. You can edit DSPF files located on your lo
 - Not all DDS keywords are implemented in the designer yet (focus on the most common ones)
 - Some advanced or less common DDS keywords may require editing in Source view
 - Subfile and complex DDS features have limited visual support in this version
-- This version focuses on editing existing record formats (record creation coming soon)
 - REFFLD field does not render type and long in preview because conection with IBM i server is not implemented yet, but the designer is prepared to receive the data from the server to show it in the preview view. The connection with the server will be implemented in future versions.
 
 ## Roadmap

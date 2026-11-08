@@ -4450,6 +4450,7 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         Logger.debug(`Looking for ${displayMarker} WINDOW after line ${recordLineIndex}...`);
         
         const windowRegex = /WINDOW\(\s*\d+\s+\d+\s+\d+\s+\d+\s*\)/;
+		let unmarkedWindowLineIndex = -1;
         let nextRecordLineIndex = lines.length; // Default: search until end
         
         // Find the next record definition to limit search scope
@@ -4494,7 +4495,19 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
                     Logger.dds(`   NEW: ${lines[i].trim()}`);
                     break;
                 }
+
+                if (windowRegex.test(line) && !line.includes('*DS3') && !line.includes('*DS4')) {
+                    unmarkedWindowLineIndex = i;
+                }
             }
+        }
+
+        if (!updated && currentDisplaySize === 'DS3' && unmarkedWindowLineIndex !== -1) {
+            const newPattern = `WINDOW(${newRow} ${newCol} ${newHeight} ${newWidth})`;
+            const oldLine = lines[unmarkedWindowLineIndex];
+            lines[unmarkedWindowLineIndex] = oldLine.replace(windowRegex, newPattern);
+            updated = true;
+            Logger.dds(`Updated unmarked DS3 WINDOW line ${unmarkedWindowLineIndex}: ${lines[unmarkedWindowLineIndex].trim()}`);
         }
         
         if (updated) {
