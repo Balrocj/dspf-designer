@@ -850,15 +850,15 @@ import * as path from 'path';
 		}
 
 		const recordType = typeof requestedType === 'string' ? requestedType.toUpperCase() : 'RECORD';
-		if (recordType !== 'RECORD' && recordType !== 'SFL' && recordType !== 'WINDOW') {
-			vscode.window.showErrorMessage('Only RECORD, SFL, and WINDOW record types can be created from the designer.');
+		if (recordType !== 'RECORD' && recordType !== 'SFL' && recordType !== 'WDWSFL' && recordType !== 'WINDOW') {
+			vscode.window.showErrorMessage('Only RECORD, SFL, WDWSFL, and WINDOW record types can be created from the designer.');
 			return;
 		}
 
 		const normalizedControlName = typeof requestedControlName === 'string'
 			? requestedControlName.trim().toUpperCase()
 			: '';
-		if (recordType === 'SFL') {
+		if (recordType === 'SFL' || recordType === 'WDWSFL') {
 			if (!/^[A-Z][A-Z0-9_@#$]{0,9}$/.test(normalizedControlName)) {
 				vscode.window.showErrorMessage('An SFL control record name must use 1-10 characters, start with a letter, and contain only A-Z, 0-9, _, @, #, or $.');
 				return;
@@ -875,6 +875,8 @@ import * as path from 'path';
 		const separator = content.length === 0 || content.endsWith('\n') || content.endsWith('\r') ? '' : eol;
 		const newRecords = recordType === 'SFL'
 			? this.createSflTemplate(normalizedName, normalizedControlName, eol)
+			: recordType === 'WDWSFL'
+				? this.createWdwSflTemplate(normalizedName, normalizedControlName, eol)
 			: recordType === 'WINDOW'
 				? this.createWindowTemplate(normalizedName, eol)
 			: `     A          R ${normalizedName}${eol}`;
@@ -898,8 +900,8 @@ import * as path from 'path';
 
 		onCreated(normalizedName);
 		webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, normalizedName, saveMode, 'designer', openBehavior, zoom);
-		const creationMessage = recordType === 'SFL'
-			? `SFL record "${normalizedName}" and control record "${normalizedControlName}" created.`
+		const creationMessage = recordType === 'SFL' || recordType === 'WDWSFL'
+			? `${recordType} record "${normalizedName}" and control record "${normalizedControlName}" created.`
 			: `${recordType} record "${normalizedName}" created.`;
 		vscode.window.showInformationMessage(creationMessage);
 	}
@@ -911,6 +913,41 @@ import * as path from 'path';
 		const recordLine = `     A          R ${recordName}`;
 		const windowLine = `     A${''.padEnd(38)}WINDOW(2 2 10 10)`;
 		return `${recordLine}${eol}${windowLine}${eol}`;
+	}
+
+	/**
+	 * Builds the window-subfile template independently from SFL and WINDOW records.
+	 */
+	private createWdwSflTemplate(windowSubfileName: string, controlName: string, eol: string): string {
+		const subfileRecord = `     A          R ${windowSubfileName.padEnd(26)}SFL`;
+		const controlRecord = `     A          R ${controlName.padEnd(26)}SFLCTL(${windowSubfileName})`;
+		const templateLines = [
+			subfileRecord,
+			'     A            SFLOPT         1A  B  6  3',
+			'     A            SFLOPT3       34A  O  6 17',
+			'     A            SFLOPT2        2A  O  6 10',
+			controlRecord,
+			'     A                                      WINDOW(8 17 13 50)',
+			"     A                                      CF03(03 'Exit')",
+			'     A                                      OVERLAY',
+			'     A  31                                  SFLDSP',
+			'     A  32                                  SFLDSPCTL',
+			'     A  33                                  SFLCLR',
+			'     A  34                                  SFLEND(*MORE)',
+			'     A                                      SFLSIZ(9999)',
+			'     A                                      SFLPAG(0005)',
+			"     A                                  3 37'Search:'",
+			"     A                                  5  1' Opt    Nme    Desc               -",
+			"     A                                                      '",
+			'     A                                      DSPATR(UL)',
+			'     A                                      COLOR(WHT)',
+			'     A            VSEARCH        2A  B  3 48',
+			"     A                                  3  1'X = Select'",
+			"     A                                  1 22' Title '",
+			'     A                                      DSPATR(RI)'
+		];
+
+		return `${templateLines.join(eol)}${eol}`;
 	}
 
 	/**
@@ -1509,9 +1546,9 @@ import * as path from 'path';
 				'<div class="modal-content">' +
 					'<h2>New Record</h2>' +
 					'<form class="create-record-form">' +
-						'<label>Name<input name="recordName" maxlength="10" autocomplete="off" autofocus required /></label>' +
-						'<label>Type<select name="recordType"><option value="RECORD">RECORD</option><option value="SFL">SFL</option><option value="WINDOW">WINDOW</option></select></label>' +
-						'<label class="sfl-control-name-row" hidden>Subfile control record name<input name="controlRecordName" maxlength="10" autocomplete="off" /></label>' +
+						'<label><span class="record-name-label">Name</span><input name="recordName" maxlength="10" autocomplete="off" autofocus required /></label>' +
+						'<label>Type<select name="recordType"><option value="RECORD">RECORD</option><option value="SFL">SFL</option><option value="WDWSFL">WDWSFL</option><option value="WINDOW">WINDOW</option></select></label>' +
+						'<label class="sfl-control-name-row" hidden><span class="control-name-label">Subfile control record name</span><input name="controlRecordName" maxlength="10" autocomplete="off" /></label>' +
 						'<div class="modal-buttons">' +
 							'<button class="modal-btn modal-no" type="button">Cancel</button>' +
 							'<button class="modal-btn create-record-btn" type="submit">Create</button>' +
@@ -1523,14 +1560,19 @@ import * as path from 'path';
 			const form = modal.querySelector('.create-record-form');
 			const nameInput = modal.querySelector('[name="recordName"]');
 			const typeSelect = modal.querySelector('[name="recordType"]');
+			const recordNameLabel = modal.querySelector('.record-name-label');
 			const controlNameRow = modal.querySelector('.sfl-control-name-row');
+			const controlNameLabel = modal.querySelector('.control-name-label');
 			const controlNameInput = modal.querySelector('[name="controlRecordName"]');
 			const closeModal = () => modal.remove();
 			const updateControlNameVisibility = () => {
-				const isSubfile = typeSelect.value === 'SFL';
-				controlNameRow.hidden = !isSubfile;
-				controlNameInput.required = isSubfile;
-				if (!isSubfile) {
+				const needsControlRecord = typeSelect.value === 'SFL' || typeSelect.value === 'WDWSFL';
+				const isWindowSubfile = typeSelect.value === 'WDWSFL';
+				recordNameLabel.textContent = isWindowSubfile ? 'Window subfile name' : 'Name';
+				controlNameLabel.textContent = isWindowSubfile ? 'Control record name' : 'Subfile control record name';
+				controlNameRow.hidden = !needsControlRecord;
+				controlNameInput.required = needsControlRecord;
+				if (!needsControlRecord) {
 					controlNameInput.value = '';
 					controlNameInput.setCustomValidity('');
 				}
@@ -1548,7 +1590,7 @@ import * as path from 'path';
 				}
 
 				const controlRecordName = controlNameInput.value.trim().toUpperCase();
-				if (typeSelect.value === 'SFL' && !/^[A-Z][A-Z0-9_@#$]{0,9}$/.test(controlRecordName)) {
+				if ((typeSelect.value === 'SFL' || typeSelect.value === 'WDWSFL') && !/^[A-Z][A-Z0-9_@#$]{0,9}$/.test(controlRecordName)) {
 					controlNameInput.setCustomValidity('Use 1-10 characters, starting with a letter.');
 					controlNameInput.reportValidity();
 					return;
