@@ -4513,6 +4513,19 @@ import { applyIndicatorChangesToFieldUI } from './modules/ui/applyIndicatorChang
         if (updated) {
             captureDesignerHistorySnapshot('update-window');
             currentDocument = lines.join('\n');
+            const dimensionPrefix = currentDisplaySize === 'DS3' ? 'window-ds3' : 'window-ds4';
+            const dimensionValues = {
+                row: newRow,
+                col: newCol,
+                height: newHeight,
+                width: newWidth
+            };
+            for (const [dimension, value] of Object.entries(dimensionValues)) {
+                const input = document.getElementById(`${dimensionPrefix}-${dimension}`);
+                if (input) {
+                    input.value = String(value);
+                }
+            }
             Logger.dds('Sending update message to VS Code...');
             // Save the updated document
             vscode.postMessage({
