@@ -286,7 +286,7 @@ import * as path from 'path';
 					await this.deleteRecord(document, message.recordName, webviewPanel);
 					break;
 				case 'createRecord':
-					await this.createRecord(document, webviewPanel, saveMode, openBehavior, savedZoom, (recordName) => {
+					await this.createRecord(document, message.recordName, message.recordType, message.controlRecordName, webviewPanel, saveMode, openBehavior, savedZoom, (recordName) => {
 						currentRecordContext = recordName;
 						currentReadOnlyMode = false;
 					});
@@ -823,6 +823,9 @@ import * as path from 'path';
 	 */
 	private async createRecord(
 		document: vscode.TextDocument,
+		requestedName: unknown,
+		requestedType: unknown,
+		requestedControlName: unknown,
 		webviewPanel: vscode.WebviewPanel,
 		saveMode: 'manual' | 'automatic',
 		openBehavior: 'currentEditor' | 'newTab',
@@ -835,32 +838,45 @@ import * as path from 'path';
 		}
 
 		const existingNames = new Set(this.parseDspfRecords(document.getText()).map(record => record.name.toUpperCase()));
-		const recordName = await vscode.window.showInputBox({
-			prompt: 'Enter the new DDS record format name',
-			placeHolder: 'RECORD1',
-			validateInput: (value) => {
-				const normalizedName = value.trim().toUpperCase();
-				if (!/^[A-Z][A-Z0-9_@#$]{0,9}$/.test(normalizedName)) {
-					return 'Use 1-10 characters, starting with a letter. Allowed: A-Z, 0-9, _, @, #, $.';
-				}
-
-				if (existingNames.has(normalizedName)) {
-					return `Record "${normalizedName}" already exists.`;
-				}
-
-				return undefined;
-			}
-		});
-
-		if (!recordName) {
+		const normalizedName = typeof requestedName === 'string' ? requestedName.trim().toUpperCase() : '';
+		if (!/^[A-Z][A-Z0-9_@#$]{0,9}$/.test(normalizedName)) {
+			vscode.window.showErrorMessage('Record names must use 1-10 characters, start with a letter, and contain only A-Z, 0-9, _, @, #, or $.');
 			return;
 		}
 
-		const normalizedName = recordName.trim().toUpperCase();
+		if (existingNames.has(normalizedName)) {
+			vscode.window.showErrorMessage(`Record "${normalizedName}" already exists.`);
+			return;
+		}
+
+		const recordType = typeof requestedType === 'string' ? requestedType.toUpperCase() : 'RECORD';
+		if (recordType !== 'RECORD' && recordType !== 'SFL') {
+			vscode.window.showErrorMessage('Only RECORD and SFL record types can be created from the designer.');
+			return;
+		}
+
+		const normalizedControlName = typeof requestedControlName === 'string'
+			? requestedControlName.trim().toUpperCase()
+			: '';
+		if (recordType === 'SFL') {
+			if (!/^[A-Z][A-Z0-9_@#$]{0,9}$/.test(normalizedControlName)) {
+				vscode.window.showErrorMessage('An SFL control record name must use 1-10 characters, start with a letter, and contain only A-Z, 0-9, _, @, #, or $.');
+				return;
+			}
+
+			if (normalizedControlName === normalizedName || existingNames.has(normalizedControlName)) {
+				vscode.window.showErrorMessage(`Record "${normalizedControlName}" already exists or matches the subfile name.`);
+				return;
+			}
+		}
+
 		const eol = document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
 		const content = document.getText();
 		const separator = content.length === 0 || content.endsWith('\n') || content.endsWith('\r') ? '' : eol;
-		const newContent = `${content}${separator}     A          R ${normalizedName}${eol}`;
+		const newRecords = recordType === 'SFL'
+			? this.createSflTemplate(normalizedName, normalizedControlName, eol)
+			: `     A          R ${normalizedName}${eol}`;
+		const newContent = `${content}${separator}${newRecords}`;
 		const edit = new vscode.WorkspaceEdit();
 		const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(content.length));
 		edit.replace(document.uri, fullRange, newContent);
@@ -880,7 +896,51 @@ import * as path from 'path';
 
 		onCreated(normalizedName);
 		webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, normalizedName, saveMode, 'designer', openBehavior, zoom);
-		vscode.window.showInformationMessage(`Record "${normalizedName}" created.`);
+		const creationMessage = recordType === 'SFL'
+			? `SFL record "${normalizedName}" and control record "${normalizedControlName}" created.`
+			: `RECORD "${normalizedName}" created.`;
+		vscode.window.showInformationMessage(creationMessage);
+	}
+
+	/**
+	 * Builds the standard SFL/SFLCTL pair used when creating a new subfile.
+	 */
+	private createSflTemplate(subfileName: string, controlName: string, eol: string): string {
+		const subfileRecord = `     A          R ${subfileName.padEnd(26)}SFL`;
+		const controlRecord = `     A          R ${controlName.padEnd(26)}SFLCTL(${subfileName})`;
+		const templateLines = [
+			subfileRecord,
+			'     A            SUBFOPC        1Y 0B 10  3EDTCDE(Z)',
+			'     A            SUBFNAME      10A  O 10  7',
+			controlRecord,
+			'     A  *DS3                                SFLSIZ(0012)',
+			'     A  *DS4                                SFLSIZ(0010)',
+			'     A  *DS3                                SFLPAG(0012)',
+			'     A  *DS4                                SFLPAG(0010)',
+			'     A  28                                  SFLDSP',
+			'     A                                      SFLDSPCTL',
+			'     A  30                                  SFLINZ',
+			'     A  32                                  SFLDLT',
+			'     A  29                                  SFLCLR',
+			'     A  27                                  SFLEND(*MORE)',
+			'     A                                  1 71DATE',
+			'     A                                      EDTCDE(Y)',
+			'     A                                      COLOR(WHT)',
+			'     A                                  2 71TIME',
+			'     A                                      COLOR(WHT)',
+			'     A                                  3 71SYSNAME',
+			'     A                                      COLOR(WHT)',
+			'     A                                  1 13USER',
+			'     A                                      COLOR(WHT)',
+			'     A            TITLE01       78A  O  9  2COLOR(WHT)',
+			'     A            PGMNAME       10A  O  2 13COLOR(WHT)',
+			"     A                                  1  3'USER....:'",
+			'     A                                      COLOR(WHT)',
+			"     A                                  2  3'PROGRAM.:'",
+			'     A                                      COLOR(WHT)'
+		];
+
+		return `${templateLines.join(eol)}${eol}`;
 	}
 
 	/**
@@ -1363,6 +1423,38 @@ import * as path from 'path';
 		.modal-yes:hover {
 			opacity: 0.8;
 		}
+		.create-record-modal h2 {
+			color: var(--vscode-foreground);
+		}
+		.create-record-form {
+			display: grid;
+			gap: 14px;
+		}
+		.create-record-form label {
+			display: grid;
+			gap: 6px;
+			color: var(--vscode-foreground);
+			font-weight: 600;
+		}
+		.create-record-form input,
+		.create-record-form select {
+			width: 100%;
+			padding: 8px;
+			color: var(--vscode-input-foreground);
+			background: var(--vscode-input-background);
+			border: 1px solid var(--vscode-input-border);
+			border-radius: 4px;
+		}
+		.create-record-btn {
+			background: var(--vscode-button-background);
+			color: var(--vscode-button-foreground);
+		}
+		.create-record-btn:hover {
+			background: var(--vscode-button-hoverBackground);
+		}
+		.sfl-control-name-row[hidden] {
+			display: none;
+		}
 	</style>
 </head>
 <body>
@@ -1399,7 +1491,67 @@ import * as path from 'path';
 		}
 		
 		function addNewRecord() {
-			vscode.postMessage({ type: 'createRecord' });
+			const modal = document.createElement('div');
+			modal.className = 'delete-modal create-record-modal';
+			modal.innerHTML = \
+				'<div class="modal-overlay"></div>' +
+				'<div class="modal-content">' +
+					'<h2>New Record</h2>' +
+					'<form class="create-record-form">' +
+						'<label>Name<input name="recordName" maxlength="10" autocomplete="off" autofocus required /></label>' +
+						'<label>Type<select name="recordType"><option value="RECORD">RECORD</option><option value="SFL">SFL</option></select></label>' +
+						'<label class="sfl-control-name-row" hidden>Subfile control record name<input name="controlRecordName" maxlength="10" autocomplete="off" /></label>' +
+						'<div class="modal-buttons">' +
+							'<button class="modal-btn modal-no" type="button">Cancel</button>' +
+							'<button class="modal-btn create-record-btn" type="submit">Create</button>' +
+						'</div>' +
+					'</form>' +
+				'</div>';
+			document.body.appendChild(modal);
+
+			const form = modal.querySelector('.create-record-form');
+			const nameInput = modal.querySelector('[name="recordName"]');
+			const typeSelect = modal.querySelector('[name="recordType"]');
+			const controlNameRow = modal.querySelector('.sfl-control-name-row');
+			const controlNameInput = modal.querySelector('[name="controlRecordName"]');
+			const closeModal = () => modal.remove();
+			const updateControlNameVisibility = () => {
+				const isSubfile = typeSelect.value === 'SFL';
+				controlNameRow.hidden = !isSubfile;
+				controlNameInput.required = isSubfile;
+				if (!isSubfile) {
+					controlNameInput.value = '';
+					controlNameInput.setCustomValidity('');
+				}
+			};
+
+			modal.querySelector('.modal-no').addEventListener('click', closeModal);
+			modal.querySelector('.modal-overlay').addEventListener('click', closeModal);
+			form.addEventListener('submit', (event) => {
+				event.preventDefault();
+				const recordName = nameInput.value.trim().toUpperCase();
+				if (!/^[A-Z][A-Z0-9_@#$]{0,9}$/.test(recordName)) {
+					nameInput.setCustomValidity('Use 1-10 characters, starting with a letter.');
+					nameInput.reportValidity();
+					return;
+				}
+
+				const controlRecordName = controlNameInput.value.trim().toUpperCase();
+				if (typeSelect.value === 'SFL' && !/^[A-Z][A-Z0-9_@#$]{0,9}$/.test(controlRecordName)) {
+					controlNameInput.setCustomValidity('Use 1-10 characters, starting with a letter.');
+					controlNameInput.reportValidity();
+					return;
+				}
+
+				vscode.postMessage({ type: 'createRecord', recordName, recordType: typeSelect.value, controlRecordName });
+				closeModal();
+			});
+
+			nameInput.addEventListener('input', () => nameInput.setCustomValidity(''));
+			controlNameInput.addEventListener('input', () => controlNameInput.setCustomValidity(''));
+			typeSelect.addEventListener('change', updateControlNameVisibility);
+			updateControlNameVisibility();
+			nameInput.focus();
 		}
 
 		function openAdvancedOptions() {
