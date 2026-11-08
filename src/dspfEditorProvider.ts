@@ -850,8 +850,8 @@ import * as path from 'path';
 		}
 
 		const recordType = typeof requestedType === 'string' ? requestedType.toUpperCase() : 'RECORD';
-		if (recordType !== 'RECORD' && recordType !== 'SFL') {
-			vscode.window.showErrorMessage('Only RECORD and SFL record types can be created from the designer.');
+		if (recordType !== 'RECORD' && recordType !== 'SFL' && recordType !== 'WINDOW') {
+			vscode.window.showErrorMessage('Only RECORD, SFL, and WINDOW record types can be created from the designer.');
 			return;
 		}
 
@@ -875,6 +875,8 @@ import * as path from 'path';
 		const separator = content.length === 0 || content.endsWith('\n') || content.endsWith('\r') ? '' : eol;
 		const newRecords = recordType === 'SFL'
 			? this.createSflTemplate(normalizedName, normalizedControlName, eol)
+			: recordType === 'WINDOW'
+				? this.createWindowTemplate(normalizedName, eol)
 			: `     A          R ${normalizedName}${eol}`;
 		const newContent = `${content}${separator}${newRecords}`;
 		const edit = new vscode.WorkspaceEdit();
@@ -898,8 +900,17 @@ import * as path from 'path';
 		webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview, normalizedName, saveMode, 'designer', openBehavior, zoom);
 		const creationMessage = recordType === 'SFL'
 			? `SFL record "${normalizedName}" and control record "${normalizedControlName}" created.`
-			: `RECORD "${normalizedName}" created.`;
+			: `${recordType} record "${normalizedName}" created.`;
 		vscode.window.showInformationMessage(creationMessage);
+	}
+
+	/**
+	 * Builds the default WINDOW record with initial DS3 dimensions.
+	 */
+	private createWindowTemplate(recordName: string, eol: string): string {
+		const recordLine = `     A          R ${recordName}`;
+		const windowLine = `     A${''.padEnd(38)}WINDOW(2 2 10 10)`;
+		return `${recordLine}${eol}${windowLine}${eol}`;
 	}
 
 	/**
@@ -1499,7 +1510,7 @@ import * as path from 'path';
 					'<h2>New Record</h2>' +
 					'<form class="create-record-form">' +
 						'<label>Name<input name="recordName" maxlength="10" autocomplete="off" autofocus required /></label>' +
-						'<label>Type<select name="recordType"><option value="RECORD">RECORD</option><option value="SFL">SFL</option></select></label>' +
+						'<label>Type<select name="recordType"><option value="RECORD">RECORD</option><option value="SFL">SFL</option><option value="WINDOW">WINDOW</option></select></label>' +
 						'<label class="sfl-control-name-row" hidden>Subfile control record name<input name="controlRecordName" maxlength="10" autocomplete="off" /></label>' +
 						'<div class="modal-buttons">' +
 							'<button class="modal-btn modal-no" type="button">Cancel</button>' +

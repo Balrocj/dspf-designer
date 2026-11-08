@@ -4,8 +4,9 @@ All notable changes to the "dspf-designer" extension will be documented in this 
 
 ## [2.9.0] 
 ### 🎨 Improved
-- Logic is created for generating new records.
+- Logic is created for generating new Records.
 - Logic is created for generating new SFL
+- Logic is created for generating new Windows
 
 ## [2.8.5] 2026-11-06
 ### 🐛 Fixed
