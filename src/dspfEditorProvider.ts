@@ -872,6 +872,9 @@ import * as path from 'path';
 
 		const eol = document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
 		const content = document.getText();
+		const displaySizeDeclaration = this.hasDisplaySizeDeclaration(content)
+			? ''
+			: this.createDisplaySizeDeclaration(eol);
 		const separator = content.length === 0 || content.endsWith('\n') || content.endsWith('\r') ? '' : eol;
 		const newRecords = recordType === 'SFL'
 			? this.createSflTemplate(normalizedName, normalizedControlName, eol)
@@ -880,7 +883,7 @@ import * as path from 'path';
 			: recordType === 'WINDOW'
 				? this.createWindowTemplate(normalizedName, eol)
 			: `     A          R ${normalizedName}${eol}`;
-		const newContent = `${content}${separator}${newRecords}`;
+		const newContent = `${displaySizeDeclaration}${content}${separator}${newRecords}`;
 		const edit = new vscode.WorkspaceEdit();
 		const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(content.length));
 		edit.replace(document.uri, fullRange, newContent);
@@ -913,6 +916,14 @@ import * as path from 'path';
 		const recordLine = `     A          R ${recordName}`;
 		const windowLine = `     A${''.padEnd(38)}WINDOW(2 2 10 10)`;
 		return `${recordLine}${eol}${windowLine}${eol}`;
+	}
+
+	private hasDisplaySizeDeclaration(content: string): boolean {
+		return /^\s*A\s+DSPSIZ\s*\(/im.test(content);
+	}
+
+	private createDisplaySizeDeclaration(eol: string): string {
+		return `     A                                      DSPSIZ(24 80 *DS3)${eol}`;
 	}
 
 	/**
@@ -958,7 +969,7 @@ import * as path from 'path';
 		const controlRecord = `     A          R ${controlName.padEnd(26)}SFLCTL(${subfileName})`;
 		const templateLines = [
 			subfileRecord,
-			'     A            SUBFOPC        1Y 0B 10  3EDTCDE(Z)',
+			'     A            SUBFOPT        1Y 0B 10  3EDTCDE(Z)',
 			'     A            SUBFNAME      10A  O 10  7',
 			controlRecord,
 			'     A  *DS3                                SFLSIZ(0012)',
