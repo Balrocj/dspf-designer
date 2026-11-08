@@ -3,11 +3,12 @@
 All notable changes to the "dspf-designer" extension will be documented in this file.
 
 ## [2.9.0] 2026-11-08
-### 🎨 Improved
-- Logic is created for generating new Record.
-- Logic is created for generating new Subfile.
-- Logic is created for generating new Window.
-- Logic is created for generating new Window Subfile.
+### ✨ Added
+- Record format creation wizard created:
+  - Logic is created for generating new Record.
+  - Logic is created for generating new Subfile.
+  - Logic is created for generating new Window.
+  - Logic is created for generating new Window Subfile.
 
 ## [2.8.5] 2026-11-06
 ### 🐛 Fixed

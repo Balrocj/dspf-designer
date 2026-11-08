@@ -81,7 +81,7 @@ You can edit your DSPF files offline. You can edit DSPF files located on your lo
 ## Roadmap
 
 - Additional data types and field formats
-- Record format creation wizard
+- Extended format creation wizard
 - Extended keyword subfile support 
 - Extended keyword support for more DDS features
 - Connection to IBM i server for live data preview and validation
